@@ -1,3 +1,5 @@
+// Soal Nomor 2
+
 #include <stdio.h>
 
 const int jumlah_nimons = 5; // Parameter tetap yaitu 5
