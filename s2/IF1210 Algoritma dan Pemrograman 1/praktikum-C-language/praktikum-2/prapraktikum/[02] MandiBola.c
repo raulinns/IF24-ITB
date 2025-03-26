@@ -1,4 +1,5 @@
 // Soal nomor 2
+
 #include <stdio.h>
 
 void SelamatDatang(int input_1) {
