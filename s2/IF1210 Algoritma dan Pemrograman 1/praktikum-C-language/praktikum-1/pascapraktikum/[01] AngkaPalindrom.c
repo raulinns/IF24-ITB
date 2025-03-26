@@ -1,7 +1,8 @@
+// Soal Nomor 1
+
 #include <stdio.h>
 #include <math.h>
 
-// Soal Nomor 1
 int main() {
     int a, b, N, p, count = 0;
     scanf("%d", &N);
