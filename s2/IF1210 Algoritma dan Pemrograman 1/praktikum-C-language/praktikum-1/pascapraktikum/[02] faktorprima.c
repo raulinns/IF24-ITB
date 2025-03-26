@@ -1,4 +1,5 @@
 // Soal Nomor 2
+
 #include <stdio.h>
 
 
