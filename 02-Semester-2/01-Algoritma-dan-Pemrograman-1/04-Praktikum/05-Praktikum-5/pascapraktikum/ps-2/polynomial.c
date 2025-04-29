@@ -74,6 +74,7 @@
  /* Mutator */
  void SetCoefficient(Polynomial *p, int exponent, int coefficient) {
     if (exponent < 0 || exponent > MAX_DEGREE) return;  
+    
     p->coeff[exponent] = coefficient;
     p->degree = GetDegree(p);
  }
@@ -130,15 +131,15 @@
   */
  
  int IsEqual(Polynomial *p1, Polynomial *p2) {
-    if (GetDegree(p1) != GetDegree(p2)) {
+    if (p1->degree != p2->degree) {
         return 0;
     } else {
-        for (int i = 0; i <= GetDegree(p1); i++) {
+        for (int i = 0; i <= p1->degree; i++) {
             if (p1->coeff[i] != p2->coeff[i]) {
                 return 0;
             }
         }
-        return 1;
+        return 2;
     }
  }
  /**
@@ -148,67 +149,26 @@
   */
  
  /* Operasi Lain */
- void PrintPolynomial(Polynomial *p) {
+ void PrintPolynomial(Polynomial *p) { // TERIMA KASIH WISE ATAS BANTUANNYA FORMATTING YANG INI, code yang sebelumnya di terminal udah cocok persis, tapi testcasenya dapet 90 gak dapet 100
     int printed = 1;
     for (int i = GetDegree(p); i >= 0; i--) {
         if (p->coeff[i] == 0) continue;
-        if (i == GetDegree(p)) {
-            if (p->coeff[i] > 1) {
-                printf("%dx^%d", p->coeff[i], i);
-                printed = 0;
-            } else if (p->coeff[i] < -1) {
-                printf("-%dx^%d", abs(p->coeff[i]), i);
-                printed = 0;
-            } else if (p->coeff[i] == 1) {
-                printf("x^%d", i);
-                printed = 0;
-            } else if (p->coeff[i] == -1) {
-                printf("-x^%d", i);
-                printed = 0;
-            }
-        } else if (i > 1) {
-            if (p->coeff[i] > 1) {
-                printf(" + %dx^%d", p->coeff[i], i);
-                printed = 0;
-            }
-            else if (p->coeff[i] < -1) {
-                printf(" - %dx^%d", abs(p->coeff[i]), i);
-                printed = 0;
-            }
-            else if (p->coeff[i] == 1) {
-                printf(" + x^%d", i);
-                printed = 0;
-            }
-            else if (p->coeff[i] == -1) {
-                printf(" - x^%d", i);
-                printed = 0;
-            }
-        } else if (i == 1) {
-            if (p->coeff[i] > 1) {
-                printf(" + %dx", p->coeff[i]);
-                printed = 0;
-            }
-            else if (p->coeff[i] < -1) {
-                printf(" - %dx", abs(p->coeff[i]));
-                printed = 0;
-            }
-            else if (p->coeff[i] == 1) {
-                printf(" + x");
-                printed = 0;
-            }
-            else if (p->coeff[i] == -1) {
-                printf(" - x");
-                printed = 0;
-            }
-        } else if (i == 0) {
-            if (p->coeff[i] > 0) {
-                printf(" + %d", p->coeff[i]);
-                printed = 0;
-            }
-            else if (p->coeff[i] < 0) {
-                printf(" - %d", abs(p->coeff[i]));
-                printed = 0;
-            }
+
+        if (printed == 0) {
+            if (p->coeff[i] > 0) printf(" + ");
+            else if (p->coeff[i] < 0) printf(" - "); 
+        } else {
+            if (p->coeff[i] < 0) printf("-");
+            printed = 0;
+        }
+
+        int absC = abs(p->coeff[i]);
+        if (absC != 1 || i == 0) {
+            printf("%d", absC);
+        } 
+        if (i > 0) {
+            printf("x");
+            if (i > 1) printf("^%d", i);
         }
     }
     if (printed == 1) printf("0");
