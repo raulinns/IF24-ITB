@@ -1,18 +1,4 @@
-/* File : matrix.h */
-/* Deskripsi : Definisi ADT Matrix untuk representasi matriks dengan elemen float */
-#include <stdbool.h>
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-#define MAX_ROWS 100
-#define MAX_COLS 100
-
-typedef struct
-{
-  float data[MAX_ROWS][MAX_COLS];
-  int rows;
-  int cols;
-} Matrix;
+#include "matrix.h"
 
 /* Konstruktor */
 void CreateMatrix(int rows, int cols, Matrix *M) {
