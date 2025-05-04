@@ -9,18 +9,17 @@ int gcd(int a, int b) {
 
 int main() {
     ListDin l;
-    int n, k, selisih;
-    scanf("%d", &n);
-    CreateListDin(&l, n);
-    NEFF(l) = n;
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &ELMT(l, i));
-    }
-    k = abs(ELMT(l, 1) - ELMT(l, 0));
-    for (int i = 2; i < n; i++) {
-        for (int j = i; j < n; j++) {
-            selisih = abs(ELMT(l, j) - ELMT(l, j-i));
-            k = gcd(selisih, k);
+    int k, min, max;
+    int MAX = 100000;
+    CreateListDin(&l, MAX);
+    readList(&l);
+
+    extremeValues(l, &max, &min);
+    
+    k = abs(ELMT(l, 0) - min);
+    for (int i = 1; i < listLength(l); i++) {
+        if (ELMT(l, i) != min) {
+            k = gcd(ELMT(l, i) - min, k);
         }
     }
     dealocateList(&l);
