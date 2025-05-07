@@ -136,13 +136,14 @@ void printList(ListKontigu l) {
 /* ********** OPERATOR RELASIONAL ********** */
 /* *** Operasi pembandingan List: *** */
 boolean isListEqual(ListKontigu l1, ListKontigu l2) {
-	if (listLength(l1) == listLength(l2)) {
+	if (listLength(l1) != listLength(l2)) return FALSE;
+	else {
 		for (int i = firstIdx(l1); i <= lastIdx(l1); i++) {
 			for (int j = firstIdx(l2); j <= lastIdx(l2); j++) {
 				if (getElmt(l1, i) != getElmt(l2, j)) return FALSE;
 			}
 		}
-	} else return FALSE;
+	}
 	return TRUE;
 }
 /* Mengirimkan true jika l1 sama dengan l2 */
@@ -183,7 +184,7 @@ void shiftBlock(ListKontigu *l, int startPhys, int endPhys, int delta) {
 		for (int i = endPhys; i >= startPhys; i--) {
 			ELMT(*l, i + delta) = ELMT(*l, i);
 		}
-			for (int i = 0; i < delta; i++) {
+		for (int i = 0; i < delta; i++) {
 				ELMT(*l, startPhys + i) = MARK;
 		}
 	} else if (delta < 0) {
@@ -246,7 +247,14 @@ void insertAt(ListKontigu *l, ElType val, int i) {
 	int last = lastIdx(*l);
 	int physTarget = first + i;
 	
-	if (isEmpty(*l)) ELMT(*l, 0) = val;
+	if (isEmpty(*l) || i == 0) {
+		insertFirst(l, val);
+		return;
+	}
+	else if (i == listLength(*l)) {
+		insertLast(l, val);
+		return;
+	}
 	else if (last != CAPACITY - 1) {
 		shiftBlock(l, physTarget, last, 1);
 		ELMT(*l, physTarget) = val;
@@ -324,6 +332,8 @@ void concat(ListKontigu l1, ListKontigu l2, ListKontigu *l3) {
 			ELMT(*l3, i) = ELMT(l1, firstIdx(l1) + i);
 		} else if (!isEmpty(l2) && i >= listLength(l1)) {
 			ELMT(*l3, i) = ELMT(l2, firstIdx(l2) + i - listLength(l1));
+		} else if (i >= listLength(l1) + listLength(l2)) {
+			ELMT(*l3, i) = MARK;
 		}
 	}
 }
