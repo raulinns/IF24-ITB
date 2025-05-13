@@ -1,48 +1,67 @@
 #include <stdio.h>
 #include "listkontigu.h"
 
-boolean checkSorted (ListKontigu l, int i, ListKontigu *lNotSorted) {
-	boolean before;
-	boolean after;
-	if (i == firstIdx(l)) {
-		before = TRUE;
-		after = (ELMT(l, i + 1) >= ELMT(l, i)) ? TRUE : FALSE;
-	} else if (i == lastIdx(l)) {
-		after = TRUE;
-		before = (ELMT(l, i) >= ELMT(l, i - 1)) ? TRUE : FALSE;
-	}
-	else {
-		after = (ELMT(l, i + 1) >= ELMT(l, i)) ? TRUE : FALSE;
-		before = (ELMT(l, i) >= ELMT(l, i - 1)) ? TRUE : FALSE;
-	}
-	if (!(before && after)) insertLast(lNotSorted, i);
-	return before && after;
+void sortList(ListKontigu *l) {
+    for (int i = 0; i < listLength(*l) - 1; i++) {
+        for (int j = 0; j < listLength(*l) - i - 1; j++) {
+			if (ELMT(*l, j) > ELMT (*l, j + 1)) {
+				int temp = ELMT(*l, j);
+				ELMT(*l, j) = ELMT(*l, j + 1);
+				ELMT(*l, j + 1) = temp;
+            }
+        }
+    }
 }
 
-
 int main() {
-	ListKontigu l, lNotSorted;
-	CreateList(&lNotSorted);
+	ListKontigu l, lSorted, lCopy;
+
 	readList(&l);
+	copyList(l, &lSorted);
+	sortList(&lSorted);
+
 	int n = listLength(l);
-	if (n == 1) {
+	int firstRevIdx;
+	int lastRevIdx = lastIdx(l);
+	
+	if (n == 0 || n == 1) {
 		printf("YA\n");
-	} else {
-		int notSorted = 0;
-		for (int i = 0; i < n; i++) {
-			notSorted += !checkSorted(l, i, &lNotSorted);
-			if (notSorted > 2) {
-				break;
-			}
-		}
-		printList(lNotSorted);
-		// if (notSorted == 0) printf("YA\n");
-		// else if (notSorted == 2) {
-		// 	int val;
-
-		// } else if (notSorted > 2) printf("TIDAK\n");
-
+		return 0;
 	}
- 
+	if (isListEqual(lSorted, l)) {
+		printf("YA\n");
+		return 0;
+	} 
+	
+	for (int i = 0; i < n - 1; i++) {
+		if (ELMT(l, i) > ELMT(l, i + 1)) {
+			firstRevIdx = i;
+			break;
+		}
+	}
+
+	while (firstRevIdx < lastRevIdx) {
+		copyList(l, &lCopy);
+
+		int j = lastRevIdx;
+		for (int k = firstRevIdx; k <= lastRevIdx; k++) {
+			ELMT(lCopy, k) = ELMT(l, j--);
+		}
+		
+		if (isListEqual(lCopy, lSorted)) {
+			printf("YA\n");
+			printf("%d %d\n", firstRevIdx, lastRevIdx);
+			return 0;
+		} else lastRevIdx--;
+	}
+
+	if (isListEqual(lCopy, lSorted)) {
+		printf("YA\n");
+		printf("%d %d\n", firstRevIdx, lastRevIdx);
+		return 0;
+	} else {
+		printf("TIDAK\n");
+	}
+
 	return 0;
 }

@@ -4,28 +4,33 @@
 int main() {
 	int n;
 	ListKontigu l;
-	scanf("%d", &n);
+	do {
+		scanf("%d", &n);
+	} while (n < 0 || n > CAPACITY - 1);
+	
 	CreateList(&l);
-	int j;
+	int temp, testIndex;
+	
 	for (int i = 0; i < n; i++) {
-		int temp = MARK;
-		scanf("%d", &temp);
-		j = 0;
+		do {
+			scanf("%d", &temp);
+		} while (temp == MARK);
 
-		if (isEmpty(l)) insertFirst(&l, temp);
-		while (i > j) {
-			if (temp >= ELMT(l, j)) {
-				j++;
-			} else if (temp < ELMT(l, j)) {
-				break;
-			} 
+		if (i == 0) insertFirst(&l, temp);
+		else {
+			testIndex = IDX_UNDEF;
+			for (int j = 0; j < listLength(l); j++) {
+				if (ELMT(l, j) > temp) {
+					testIndex = j;
+					break;
+				}
+			}
+
+			if (testIndex == IDX_UNDEF) insertLast(&l, temp);
+			else {
+				insertAt(&l, temp, testIndex);
+			}
 		}
-
-		if (i != 0) insertAt(&l, temp, j);
-		printList(l);
-		printf("\n");
-	}
-	if (n == 0) {
 		printList(l);
 		printf("\n");
 	}
