@@ -10,7 +10,7 @@
 |3              |[Skema Pemrosesan Sekuensial untuk Array](./03-Praktikum-3)|
 |4              |[Skema Pemrosesan Sekuensial untuk File](./04-Praktikum-4) |
 |5              |[ADT Sederhana](./05-Praktikum-5)                          |
-|6              |[ADT List (Statis dan Dinamis)](./06-Praktikum-6           |
+|6              |[ADT List (Statis dan Dinamis)](./06-Praktikum-6)          |
 |7              |[ADT List Kontigu](./07-Praktikum-7)                       |
 
 ## Apresiasi
