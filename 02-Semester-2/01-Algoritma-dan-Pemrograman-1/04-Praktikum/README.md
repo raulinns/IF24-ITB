@@ -12,8 +12,9 @@
 |5              |[ADT Sederhana](./05-Praktikum-5)                          |
 |6              |[ADT List (Statis dan Dinamis)](./06-Praktikum-6)          |
 |7              |[ADT List Kontigu](./07-Praktikum-7)                       |
+|8              |[ADT Matrix](./08-Praktikum-8)                             |
 
-## Apresiasi
+## Kontributor
 Nicholas Wise Saragih Sumbayak  (13524037) </br>
 Samuelson Dharmawan Tanuraharja (13524001) </br>
 
