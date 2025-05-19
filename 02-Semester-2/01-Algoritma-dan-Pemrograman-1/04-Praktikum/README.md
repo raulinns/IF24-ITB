@@ -17,6 +17,6 @@
 ## Kontributor
 Nicholas Wise Saragih Sumbayak  (13524037) </br>
 Samuelson Dharmawan Tanuraharja (13524001) </br>
-
+Reinhard Alfonzo Hutabarat      (13524056) </br>
 
 ## Narendra Dharma Wistara Marpaung (13524044)
