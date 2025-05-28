@@ -13,6 +13,7 @@
 |6              |[ADT List (Statis dan Dinamis)](./06-Praktikum-6)          |
 |7              |[ADT List Kontigu](./07-Praktikum-7)                       |
 |8              |[ADT Matrix](./08-Praktikum-8)                             |
+|9              |[ADT Queue & Stack](./09-Praktikum-9)                      |
 
 ## Kontributor
 Nicholas Wise Saragih Sumbayak  (13524037) </br>
