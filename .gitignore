@@ -16,3 +16,4 @@ Note-Template/
 .vscode/
 /test.c
 /test.exe
+.idea/
