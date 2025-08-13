@@ -1,0 +1,375 @@
+% !TEX program = xelatex
+% Define Article
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage[margin=2.5cm]{geometry} % Set margin
+\usepackage{graphicx} % Add graphicx package for images
+\usepackage{amsmath, amssymb, amsthm} 
+\usepackage{xcolor} % Add color package
+\usepackage{mdframed} % Add mdframed package
+\usepackage{fontspec} % Add fontspec package for font selection
+\usepackage{enumitem} % Add enumitem package for list customization
+\usepackage{unicode-math} % Add unicode-math package for math font selection
+\usepackage{ragged2e} % Add ragged2e package for justify
+\usepackage{setspace} % Set line spacing
+\usepackage{etoolbox} % Add etoolbox package for patching commands
+\usepackage{tikz} % Add tikz package for drawing
+\usepackage{titlesec} % Add titlesec package for title formatting
+\usepackage{hyperref} % Add hyperref package for hyperlinks
+\usepackage{listings} % Add listings package for code listing
+\usepackage{multicol} % Add multicol package for multiple columns
+\usepackage{float} % Add float package for figure placement
+
+% Define colors
+\definecolor{ocre}{RGB}{243,102,25} % Define orange color
+\definecolor{mygray}{RGB}{240,240,240} % Define light gray
+\definecolor{shallowGreen}{RGB}{235,245,235} % Define light green
+\definecolor{deepGreen}{RGB}{0,100,0} % Define dark green
+\definecolor{shallowBlue}{RGB}{235,235,245} % Define light blue
+\definecolor{deepBlue}{RGB}{0,0,100} % Define dark blue
+\definecolor{shallowRed}{RGB}{245,235,235} % Define light red
+\definecolor{deepRed}{RGB}{100,0,0} % Define dark red
+
+% Define color for yellowbox
+\definecolor{shallowYellow}{RGB}{255,230,153} % Darker yellow
+\definecolor{deepYellow}{RGB}{255,153,51}     % Nearly orange
+
+% Yellow box command
+\newcommand\yellowbox[1]{%
+    \fcolorbox{deepYellow}{shallowYellow}{%
+        \parbox{\dimexpr\textwidth-4\fboxsep-2\fboxrule}{%
+            \vspace{10pt} % Inner top margin
+            \hspace{10pt} % Inner left margin
+            #1
+            \vspace{10pt} % Inner bottom margin
+            \hspace{10pt} % Inner right margin
+        }%
+    }%
+}
+
+% Font and page setting
+\setmainfont{Plus Jakarta Sans}[
+    Path = C:/Users/VICTUS/AppData/Local/Microsoft/Windows/Fonts/,
+    Extension =.ttf,
+    UprightFont = PlusJakartaSans-Regular,
+    BoldFont = PlusJakartaSans-Bold,
+    ItalicFont = PlusJakartaSans-Italic,
+    BoldItalicFont = PlusJakartaSans-BoldItalic
+]
+\setmathfont{Latin Modern Math}[Scale=1.2] % Set scale
+
+% Set JetBrains Mono as the monospaced font
+\setmonofont{JetBrains Mono}[
+    Path = C:/Users/VICTUS/AppData/Local/Microsoft/Windows/Fonts/,
+    Extension = .ttf,
+    UprightFont = JetBrainsMono-Regular,
+    BoldFont = JetBrainsMono-Bold,
+    ItalicFont = JetBrainsMono-Italic,
+    BoldItalicFont = JetBrainsMono-BoldItalic
+]
+
+\lstdefinelanguage{notal}{
+    morekeywords={function, Exp, integer, while, end, return}, 
+    sensitive=false,
+    morecomment=[s]{\{}{\}},
+    morecomment=[l]{//},
+    morestring=[b]{"},
+}
+\lstset{
+    language=notal,
+    basicstyle=\ttfamily\color{black}, % Use JetBrains Mono font
+    keywordstyle=\underline,           % Keywords in blue
+    stringstyle=\color{red},
+    commentstyle=\color{gray},           % Strings in red
+    backgroundcolor=\color{mygray},    % Light gray background
+    numbers=left,                      % Line numbers on the left
+    numberstyle=\tiny\color{black},    % Line numbers in black
+    breaklines=true,                   % Automatically break long lines
+    tabsize=2                          % Set tab size to 2 spaces
+}
+
+
+\justifying % Justify paragraph
+\geometry{a4paper} % Set paper size to A4
+\parindent 1.25cm % Paragraph indentation
+\setstretch{1.5} % Line spacing 1.5
+\setlength{\parskip}{0pt} % Remove additional spacing between paragraphs
+\setlength{\abovedisplayskip}{1.5pt}
+\setlength{\belowdisplayskip}{1.5pt}
+\AtBeginEnvironment{definition}{ % Set spacing before and after environment
+     \setlength{\abovedisplayskip}{1.5pt}
+     \setlength{\belowdisplayskip}{1.5pt}
+}
+\AtBeginEnvironment{theorem}{ % Set spacing before and after environment
+     \setlength{\abovedisplayskip}{1.5pt}
+     \setlength{\belowdisplayskip}{1.5pt}
+}
+\AtBeginEnvironment{example}{ % Set spacing before and after environment
+     \setlength{\abovedisplayskip}{1.5pt}
+     \setlength{\belowdisplayskip}{1.5pt}
+}
+\titlespacing*{\section}{0pt}{0pt}{1.5pt} % Adjust spacing for sections
+\titlespacing*{\subsection}{0pt}{0pt}{1.5pt} % Adjust spacing for subsections
+
+% Definition Environment (Red)
+\newtheoremstyle{definitionstyle}{3pt}{3pt}{\normalfont}{0cm}{\rmfamily\bfseries}{}{1em}{{\color{black}\thmname{#1}~\thmnumber{#2}}\thmnote{\,--\,#3}}
+\theoremstyle{definitionstyle}
+\newmdtheoremenv[linewidth=1pt, backgroundcolor=shallowRed, linecolor=deepRed, leftmargin=0pt, innerleftmargin=20pt, innerrightmargin=20pt,skipabove=10pt]{definition}{Definisi}[section]
+
+% Theorem Environment (Blue)
+\newtheoremstyle{theoremstyle}{3pt}{3pt}{\normalfont}{0cm}{\rmfamily\bfseries}{}{1em}{{\color{black}\thmname{#1}~\thmnumber{#2}}\thmnote{\,--\,#3}}
+\theoremstyle{theoremstyle}
+\newmdtheoremenv[linewidth=1pt, backgroundcolor=shallowBlue, linecolor=deepBlue, leftmargin=0pt, innerleftmargin=20pt, innerrightmargin=20pt]{theorem}{Teorema}[section]
+
+% Example Environment (Green)
+\newtheoremstyle{examplestyle}{3pt}{3pt}{\normalfont}{0cm}{\rmfamily\bfseries}{}{1em}{{\color{black}\thmname{#1}~\thmnumber{#2}}\thmnote{\,--\,#3}}
+\theoremstyle{examplestyle}
+\newmdtheoremenv[linewidth=1pt, backgroundcolor=shallowGreen, linecolor=deepGreen, leftmargin=0pt, innerleftmargin=20pt, innerrightmargin=20pt]{example}{Contoh}[section]
+
+% Title
+\title {
+    \Huge{\bfseries{INDUKSI MATEMATIKA}} \\
+}
+\author {
+    \rule{12.5cm}{0.5pt} \\[3pt]
+    \bfseries{IF1220 Matematika Diskrit}\\[3pt]
+    Narendra Dharma Wistara Marpaung \\[3pt]
+    NIM 13524044 \\[3pt]
+    Semester 2 Tahun 2025 \\[3pt]
+    \rule{12.5cm}{0.5pt} \\[1.5pt]
+}
+\date{}
+
+\begin{document}
+% Page 0
+\maketitle
+\thispagestyle{empty}
+\tableofcontents
+\section*{Referensi}
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+    \item Rinaldi Munir. (2025). Homepage Rinaldi Munir. \href{https://informatika.stei.itb.ac.id/~rinaldi.munir/Matdis/matdis.htm}{https://informatika.stei.itb.ac.id/~rinaldi.munir/Matdis/matdis.htm} \\
+    \textit{*Salindia bahan pelajaran terdapat di tautan tersebut.}
+    \item Kenneth H. Rosen. (2019). \textit{Discrete mathematics and its applications (Eight Edition)}. McGraw-Hill.
+\end{enumerate}
+
+\pagebreak
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\section{Pendahuluan}
+
+\begin{definition}[Induksi Matematika] \hfill \\
+    \textbf{Induksi Matematika} adalah metode pembuktian untuk proposisi yang berkaitan dengan bilangan bulat
+\end{definition}
+
+\noindent Contoh induksi matematika:
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+    \item Buktikan bahwa jumlah $n$ buah bilangan bulat positif pertama adalah $n(n + 1)/2$.
+    \item Buktikan bahwa jumlah $n$ buah bilangan ganjil positif pertama adalah $n^2$.
+\end{enumerate}
+
+Melalui induksi matematik, kita dapat mengurangi langkah-langkah pembuktian bahwa semua bilangan bulat termasuk ke dalam himpunan kebenaran dengan sejumlah langkah terbatas. Hal ini dilakukan karena tidak mungkin membuktikan suatu proposisi dengan mencoba semua bilangan bulat.
+
+\section{Prinsip Induksi Matematika}
+\subsection{Prinsip Induksi Sederhana}
+% Teorema 2.1
+\begin{theorem}[Prinsip Induksi Sederhana] \hfill \\
+    Misalkan $p(n)$ adalah pernyataan perihal bilangan bulat positif. Untuk membuktikan suatu proposisi $p(n)$ benar menggunakan induksi matematika, maka kita perlu menunjukkan bahwa:
+    \begin{enumerate}[left=0pt, label=\roman*), itemsep=1.5pt, topsep=1.5pt, leftmargin=1.5em]
+        \item \textbf{Basis Induksi}     : $p(1)$ benar.
+        \item \textbf{Langkah Induksi}   : jika $p(n)$ benar, maka $p(n + 1)$ juga benar, untuk setiap\\ $n \ge 1$.
+    \end{enumerate}
+    Langkah induksi berisi asumsi yang menyatakan bahwa $p(n)$ benar. Asumsi tersebut disebut \textbf{hipotesis induksi}.
+    Apabila kita sudah dapat menunjukkan kedua langkah tersebut benar, maka terbukti bahwa $p(n)$ benar untuk setiap bilangan bulat positif $n$.
+\end{theorem}
+
+% Contoh 2.1
+\begin{example} \hfill \\
+    Buktikan bahwa jumlah $n$ bilangan bulat positif pertama adalah $n(n+1)/2$. \\
+\end{example}
+Misalkan $p(n)$ adalah pernyataan proposisi bahwa jumlah $n$ bilangan bulat positif pertama adalah $n(n + 1)/2$, yaitu
+$$1 + 2 + 3 + \dots + n = n(n + 1)/2$$
+\textbf{Penyelesaian: }
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*), leftmargin=1.5em]
+    \item \textbf{Basis Induksi:} $p(1)$ benar, karena untuk $n = 1$ kita peroleh:
+    $$1 = 1(1 + 1)/2 = 1$$
+    \item \textbf{Langkah Induksi:} Asumsikan $p(n)$ benar, dengan kata lain asumsikan bahwa \\
+    $$p(n) = 1 + 2 + 3 + \dots + n = n\frac{(n+1)}{2}$$
+    benar (hipotesis induksi). Kita perlu menunjukkan bahwa $p(n + 1)$ juga benar, yaitu:
+    $$p(n+1) = 1 + 2 + 3 + \dots + n + (n + 1) = (n + 1)\frac{(n + 1) + 1}{2}$$
+    dengan cara:
+    \begin{align*}
+        p(n+1) &= 1 + 2 + 3 + \dots + n + (n + 1) \\
+        &= \underbrace{(1 + 2 + 3 + \dots + n)}_{n\frac{(n+1)}{2}\text{, menurut hipotesis induksi}} + (n + 1) \\
+        &= \frac{n(n + 1)}{2} + (n + 1)  \\
+        &= (n + 1)\frac{(n + 2)}{2} \\
+        &= (n + 1)\frac{(n + 1) + 1}{2}.
+    \end{align*}
+\end{enumerate}
+Langkah (i) dan (ii) sudah terbukti benar, maka menurut induksi matematika, $p(n)$ benar untuk setiap bilangan bulat positif $n$. \\
+
+\subsection{Prinsip Induksi yang Dirampatkan}
+% Teorema 2.2
+Prinsip induksi sederhana hanya dapat digunakan untuk $n \ge 1$. Namun, untuk sembarang $n \ge n_0$, kita dapat menggunakan prinsip induksi yang dirampatkan.
+\begin{theorem}[Prinsip Induksi yang Dirampatkan] \hfill \\
+    Misalkan $p(n)$ adalah pernyataan perihal bilangan bulat positif. Untuk membuktikan suatu proposisi $p(n)$ benar untuk semua bilangan bulat $n \ge n_0$ menggunakan induksi yang dirampatkan, maka kita perlu menunjukkan bahwa:
+    \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*), leftmargin=1.5em]
+        \item \textbf{Basis Induksi}    : $p(n_0)$ benar.
+        \item \textbf{Langkah Induksi}  : jika $p(n)$ benar, maka $p(n+1)$ juga benar, untuk semua bilangan bulat $n \ge n_0$
+    \end{enumerate}
+\end{theorem}
+
+% Contoh 2.2
+\begin{example}
+    Untuk semua $n \ge 1$, buktikan dengan induksi matematika bahwa $n^3 + 2n$ adalah kelipatan 3. Buktikan pernyataan ini menggunakan induksi matematika.
+\end{example}
+Misalkan, $p(n)$ adalah proposisi yang menyatakan $n^3 + 2n$ adalah kelipatan 3. \\
+\textbf{Penyelesaian: }
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*), leftmargin=1.5em]
+    \item \textbf{Basis Induksi:} $p(1)$ benar, karena $p(1) = (1)^3 + 2(1) = 3$, yang merupakan kelipatan 3.
+    \item \textbf{Langkah Induksi: } Asumsikan $p(n)$ benar, dengan kata lain asumsikan bahwa
+    $$p(n) = n^3 + 2n$$
+    benar. Kita perlu menunjukkan bahwa $p(n+1)$ juga benar, yaitu:
+    $$p(n+1) = (n + 1)^3 + 2(n + 1)$$
+    dengan cara:
+    \begin{align*}
+        p(n+1) &= (n + 1)^3 + 2(n + 1) \\
+        &= n^3 + 3n^2 + 3n + 1 + 2n + 2 \\
+        &= n^3 + 2n + (3n^2 + 5n + 3) \\ 
+        &= n^3 + 2n + 3(n^2 + n + 1).
+    \end{align*}
+    $n^3 + 2n$ adalah kelipatan 3 (menurut hipotesis induksi) dan $3(n^2 + n + 1)$ juga merupakan kelipatan 3. Oleh karena itu, $p(n + 1)$ juga kelipatan 3. \\
+    Langkah (i) dan (ii) sudah terbukti benar, maka menurut induksi matematika, $p(n)$ benar untuk setiap bilangan bulat positif $n$.
+\end{enumerate}
+
+% Contoh 2.3
+\begin{example} \hfill \\
+    Untuk tiap $n \ge 3$, jumlah sudut di dalam sebuah poligon dengan $n$ sisi adalah $180(n-2)^o$. Buktikan pernyataan ini menggunakan induksi matematika.
+\end{example}
+Misalkan $p(n)$ adalah proposisi yang menyatakan bahwa jumlah sudut di dalam sebuah poligon dengan $n$ sisi adalah $180(n-2)^o$. \\
+\textbf{Penyelesaian: }
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*), leftmargin=1.5em]
+    \item \textbf{Basis Induksi:} $p(3)$ benar, karena $p(3) = 180(3-2) = 180^o$. Di mana jumlah sudut dalam poligon 3 sudut (segitiga) adalah $180^o$.
+    \item \textbf{Langkah Induksi: } Asumsikan $p(n)$ benar, dengan kata lain asumsikan bahwa
+    $$p(n) = 180(n-2)^o$$
+    benar. Kita perlu menunjukkan bahwa $p(n+1)$ juga benar, yaitu:
+    $$p(n+1) = 180((n + 1) - 2)^o$$
+    dengan cara:
+    \begin{align*}
+        p(n+1) &= 180((n + 1) - 2)^o \\
+        &= 180(n - 1)^o \\
+        &= 180(n - 2)^o + 180^o.
+    \end{align*}
+    \begin{center}
+        \begin{tikzpicture}
+        
+        % Define the vertices of the polygon
+        \coordinate (P1) at (0, 0);
+        \coordinate (P2) at (2, 0.5);
+        \coordinate (P3) at (3, 2);
+        \coordinate (P4) at (2, 3.5);
+        \coordinate (P5) at (0, 4);
+        \coordinate (P6) at (-2, 3);
+        \coordinate (P7) at (-2.5, 1.5);
+        
+        % Draw the polygon edges
+        \draw (P1) -- (P2) -- (P3) -- (P4);
+        \draw[dashed] (P4) -- (P5);
+        \draw (P5) -- (P6) -- (P7);
+        \draw (P7) -- (P1);
+                
+        % Draw the diagonals
+        \draw[dashed] (P6) -- (P1);
+        
+        % Label the vertices
+        \node[below left] at (P1) {$P_1$};
+        \node[below right] at (P2) {$P_2$};
+        \node[right] at (P3) {$P_3$};
+        \node[above right] at (P4) {$P_4$};
+        \node[above left] at (P5) {$P_{k-1}$};
+        \node[left] at (P6) {$P_{k}$};
+        \node[below left] at (P7) {$P_{k+1}$};
+        
+        % Add the label for k = n
+        \node[right] at (4.5, 2) {$k = n$};
+        \end{tikzpicture}
+    \end{center}
+    Terlihat pada poligon di atas dengan $k = n$ bahwa jumlah sudut dalam poligon $k + 1$ sudut adalah jumlah sudut dalam poligon $k$, yaitu $180(n-2)^o$ ditambah sudut luar yang terbentuk oleh dua sisi yang bertemu di titik $P_{k+1}$ yaitu $180^o$. Oleh karena itu, $p(n + 1)$ juga benar. \\
+\end{enumerate}
+
+% Teorema 2.3
+\subsection{Prinsip Induksi Kuat}
+Terkadang, diperlukan adanya lebih dari satu hipotesis induksi untuk membuktikan sebuah pernyataan. Untuk itu, kita dapat menggunakan prinsip induksi kuat (\textit{strongly induction principle}).
+\begin{theorem}[Prinsip Induksi Kuat] \hfill \\
+    Misalkan $p(n)$ adalah pernyataan perihal bilangan bulat. Untuk membuktikkan sebuah proposisi $p(n)$ benar untuk semua bilangan bulat $n \ge n_0$ menggunakan induksi kuat, maka kita perlu menunjukkan bahwa:
+    \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*), leftmargin=1.5em]
+        \item \textbf{Basis Induksi}: $p(n_0)$ benar.
+        \item \textbf{Langkah Induksi}: jika $p(n_0), p(n_0 + 1), \dots, p(n)$ benar, maka $p(n + 1)$ juga benar, untuk semua bilangan bulat $n \ge n_0$.
+    \end{enumerate}
+    Pada langkah induksi, terdapat lebih dari satu hipotesis, yaitu mengasumsikan \\
+    $p(n_0), p(n_0 + 1), \dots, p(n)$ benar.
+\end{theorem}
+\begin{example} \hfill \\
+    Bilangan bulat positif disebut bilangan prima jika dan hanya jika bilangan bulat tersebut hanya habis dibagi dengan 1 dan dirinya sendiri. Buktikan dengan prinsip induksi kuat bahwa tiap bilangan bulat $n (n \ge 2)$ dapat dinyatakan dengan perkalian dari satu atau lebih bilangan prima.
+\end{example}
+Misalkan $p(n)$ adalah proposisi yang menyatakan bahwa bilangan bulat positif $n$ dapat dinyatakan dengan perkalian dari satu atau lebih bilangan prima. \\ 
+\textbf{Penyelesaian: }
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*), leftmargin=1.5em]
+    \item \textbf{Basis Induksi:} $p(2)$ benar, karena 2 adalah bilangan prima dan dapat dinyatakan sebagai perkalian dari satu buah bilangan prima, yaitu dirinya sendiri.
+    \item \textbf{Langkah Induksi: } Asumsikan $p(n_0), p(n_0 + 1), \dots, p(n)$ benar, dengan kata lain asumsikan bahwa bilangan bulat positif $2, 3, \dots, n$ dapat dinyatakan dengan perkalian dari satu atau lebih bilangan prima. Kita perlu menunjukkan bahwa $p(n + 1)$ juga benar, terdapat dua kemungkinan nilai $n+1$:
+    \begin{itemize}[left=0pt, itemsep=1.5pt, topsep=1.5pt, leftmargin=1.5em]
+        \item Jika $n + 1$ adalah bilangan prima, maka $p(n + 1)$ benar, karena $n + 1$ dapat dinyatakan sebagai perkalian dari satu buah bilangan prima, yaitu dirinya sendiri.
+        \item Jika $n + 1$ bukan bilangan prima, maka terdapat bilangan bulat positif $a$ dan $b$ sehingga $n + 1 = ab$, di mana $2 \leq a \leq b < n + 1$. Selain itu, $a$ dan $b$ dapat dinyatakan juga sebagai perkalian dari satu atau lebih bilangan positif, karena berada di antara 2 dan n (sesuai hipotesis induksi). Ini berarti, $n + 1$ jelas dapat dinyatakan sebagai perkalian dari dua bilangan bulat positif ($a$ dan $b$). \\
+    \end{itemize}
+\end{enumerate}
+Pada langkah (ii) kita menggunakan lebih dari satu hipotesis, yaitu mengasumsikan $2, 3, \dots, n$ dapat dinyatakan sebagai perkalian dari satu atau lebih bilangan prima. Dengan menggunakan banyak hipotesis induksi, pembuktiannya menjadi lebih kuat. Jika hanya satu hipotesisnya, yaitu $n$ dapat dinyatakan sebagai perkalian dari satu atau lebih bilangan prima, maka pembuktiannya menjadi kurang kuat. \\
+
+\section{Aplikasi Induksi Matematika}
+Sebagai seorang yang berkutat di dunia informatika dan pemrograman, kita dapat menggunakan induksi matematika untuk membuktikan bahwa algoritma yang dibuat benar.
+
+\begin{example} \hfill
+\begin{lstlisting}
+    function Exp(a: integer, m: integer)
+    { Fungsi untuk menghitung a^m }
+    DEKLARASI
+        k, r: integer
+    ALGORITMA
+        r <- 1
+        k <- m
+        while (k > 0)
+            r <- r * a
+            k <- k - 1
+        end
+        return r
+        { Computes: r = a^m
+            Loop invariant = r x a^k = a^m
+        }
+\end{lstlisting}
+    Buktikan algoritma di atas benar dengan induksi matematika, yaitu di akhir algoritma fungsi mengembalikan nilai $a^m$
+\end{example}
+
+Misal $r_n$ dan $k_n$ adalah nilai berturut-turut dari $r$ dan $k$ pada iterasi ke-$n$. Misalkan $p(n)$ adalah proposisi: $r_n \times a^k_n = a^m, n \ge 0$. \\
+\textbf{Penyelesaian: }
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*), leftmargin=1.5em]
+    \item \textbf{Basis Induksi}: Untuk $n = 0$, maka $r_0 = 1$ dan $k_0 = m$. Dengan kata lain, $p(0)$ benar, karena $1 \times a^m = a^m$.
+    \item \textbf{Langkah Induksi}: Asumsikan $p(n)$ benar, dengan kata lain asumsikan bahwa
+    $$p(n) = r_n \times a^{k_n} = a^m$$
+    benar. Kita perlu menunjukkan bahwa $p(n + 1)$ juga benar, yaitu: \\
+    $$p(n+1) = r_{n+1} \times a^{k_{n+1}} = a^m$$
+    dengan cara:
+    \begin{align*}
+        r_{n+1} &= r_n \times a \text{dan} k_{n+1} = k_n - 1 \\
+        r_{n+1} \times a^{k_{n+1}} &= (r_n \times a) \times a^{k_n - 1} \\
+        &= (r_n \times a) \times a^{k_n} \times a^{-1} \\
+        &= r_n \times a^{k_n} = a^m
+    \end{align*}
+    Dengan demikian, terbukti bahwa $r_n \times a^{k_n} = a^m$ untuk setiap iterasi $n \ge 0$. \\
+    Langkah (i) dan (ii) sudah terbukti benar, maka menurut induksi matematika, $p(n)$ benar untuk setiap bilangan bulat positif $n$.
+\end{enumerate}
+\vfill
+\yellowbox{
+    \centering
+    Untuk lebih banyak contoh dan latihan, silakan lihat salindia \href{https://informatika.stei.itb.ac.id/~rinaldi.munir/Matdis/2024-2025/08-Induksi-matematik-bagian1-2024.pdf}{Induksi Matematika Bagian 1} dan \href{https://informatika.stei.itb.ac.id/~rinaldi.munir/Matdis/2024-2025/09-Induksi-matematik-bagian2-2024.pdf}{Induksi Matematika Bagian 2}.
+}
+\end{document}

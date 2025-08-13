@@ -1,0 +1,166 @@
+    % !TEX program = xelatex
+    % Define Article
+    \documentclass[11pt]{article}
+
+    % Packages
+    \usepackage[margin=2.5cm]{geometry} % Set margin
+    \usepackage{graphicx} % Add graphicx package for images
+    \usepackage{amsmath, amssymb, amsthm} 
+    \usepackage{xcolor} % Add color package
+    \usepackage{mdframed} % Add mdframed package
+    \usepackage{fontspec} % Add fontspec package for font selection
+    \usepackage{enumitem} % Add enumitem package for list customization
+    \usepackage{unicode-math} % Add unicode-math package for math font selection
+    \usepackage{ragged2e} % Add ragged2e package for justify
+    \usepackage{setspace} % Set line spacing
+    \usepackage{etoolbox} % Add etoolbox package for patching commands
+    \usepackage{tikz} % Add tikz package for drawing
+    \usepackage{titlesec} % Add titlesec package for title formatting
+    \usepackage{hyperref} % Add hyperref package for hyperlinks
+    \usepackage{listings} % Add listings package for code listing
+    \usepackage{multicol} % Add multicol package for multiple columns
+    \usepackage{float} % Add float package for figure placement
+
+    % Define colors
+    \definecolor{ocre}{RGB}{243,102,25} % Define orange color
+    \definecolor{mygray}{RGB}{240,240,240} % Define light gray
+    \definecolor{shallowGreen}{RGB}{235,245,235} % Define light green
+    \definecolor{deepGreen}{RGB}{0,100,0} % Define dark green
+    \definecolor{shallowBlue}{RGB}{235,235,245} % Define light blue
+    \definecolor{deepBlue}{RGB}{0,0,100} % Define dark blue
+    \definecolor{shallowRed}{RGB}{245,235,235} % Define light red
+    \definecolor{deepRed}{RGB}{100,0,0} % Define dark red
+
+    % Define color for yellowbox
+    \definecolor{shallowYellow}{RGB}{255,230,153} % Darker yellow
+    \definecolor{deepYellow}{RGB}{255,153,51}     % Nearly orange
+
+    % Yellow box command
+    \newcommand\yellowbox[1]{%
+        \fcolorbox{deepYellow}{shallowYellow}{%
+            \parbox{\dimexpr\textwidth-4\fboxsep-2\fboxrule}{%
+                \vspace{10pt} % Inner top margin
+                \hspace{10pt} % Inner left margin
+                #1
+                \vspace{10pt} % Inner bottom margin
+                \hspace{10pt} % Inner right margin
+            }%
+        }%
+    }
+
+    % Font and page setting
+    \setmainfont{Plus Jakarta Sans}[
+        Path = C:/Users/VICTUS/AppData/Local/Microsoft/Windows/Fonts/,
+        Extension =.ttf,
+        UprightFont = PlusJakartaSans-Regular,
+        BoldFont = PlusJakartaSans-Bold,
+        ItalicFont = PlusJakartaSans-Italic,
+        BoldItalicFont = PlusJakartaSans-BoldItalic
+    ]
+    \setmathfont{Latin Modern Math}[Scale=1.2] % Set scale
+
+    % Set JetBrains Mono as the monospaced font
+    \setmonofont{JetBrains Mono}[
+        Path = C:/Users/VICTUS/AppData/Local/Microsoft/Windows/Fonts/,
+        Extension = .ttf,
+        UprightFont = JetBrainsMono-Regular,
+        BoldFont = JetBrainsMono-Bold,
+        ItalicFont = JetBrainsMono-Italic,
+        BoldItalicFont = JetBrainsMono-BoldItalic
+    ]
+
+    \lstdefinelanguage{notal}{
+        morekeywords={function, Exp, integer, while, end, return}, 
+        sensitive=false,
+        morecomment=[s]{\{}{\}},
+        morecomment=[l]{//},
+        morestring=[b]{"},
+    }
+    \lstset{
+        language=notal,
+        basicstyle=\ttfamily\color{black}, % Use JetBrains Mono font
+        keywordstyle=\underline,           % Keywords in blue
+        stringstyle=\color{red},
+        commentstyle=\color{gray},           % Strings in red
+        backgroundcolor=\color{mygray},    % Light gray background
+        numbers=left,                      % Line numbers on the left
+        numberstyle=\tiny\color{black},    % Line numbers in black
+        breaklines=true,                   % Automatically break long lines
+        tabsize=2                          % Set tab size to 2 spaces
+    }
+
+
+    \justifying % Justify paragraph
+    \geometry{a4paper} % Set paper size to A4
+    \parindent 1.25cm % Paragraph indentation
+    \setstretch{1.5} % Line spacing 1.5
+    \setlength{\parskip}{0pt} % Remove additional spacing between paragraphs
+    \setlength{\abovedisplayskip}{1.5pt}
+    \setlength{\belowdisplayskip}{1.5pt}
+    \AtBeginEnvironment{definition}{ % Set spacing before and after environment
+        \setlength{\abovedisplayskip}{1.5pt}
+        \setlength{\belowdisplayskip}{1.5pt}
+    }
+    \AtBeginEnvironment{theorem}{ % Set spacing before and after environment
+        \setlength{\abovedisplayskip}{1.5pt}
+        \setlength{\belowdisplayskip}{1.5pt}
+    }
+    \AtBeginEnvironment{example}{ % Set spacing before and after environment
+        \setlength{\abovedisplayskip}{1.5pt}
+        \setlength{\belowdisplayskip}{1.5pt}
+    }
+    \titlespacing*{\section}{0pt}{0pt}{1.5pt} % Adjust spacing for sections
+    \titlespacing*{\subsection}{0pt}{0pt}{1.5pt} % Adjust spacing for subsections
+
+    % Definition Environment (Red)
+    \newtheoremstyle{definitionstyle}{3pt}{3pt}{\normalfont}{0cm}{\rmfamily\bfseries}{}{1em}{{\color{black}\thmname{#1}~\thmnumber{#2}}\thmnote{\,--\,#3}}
+    \theoremstyle{definitionstyle}
+    \newmdtheoremenv[linewidth=1pt, backgroundcolor=shallowRed, linecolor=deepRed, leftmargin=0pt, innerleftmargin=20pt, innerrightmargin=20pt,skipabove=10pt]{definition}{Definisi}[section]
+
+    % Theorem Environment (Blue)
+    \newtheoremstyle{theoremstyle}{3pt}{3pt}{\normalfont}{0cm}{\rmfamily\bfseries}{}{1em}{{\color{black}\thmname{#1}~\thmnumber{#2}}\thmnote{\,--\,#3}}
+    \theoremstyle{theoremstyle}
+    \newmdtheoremenv[linewidth=1pt, backgroundcolor=shallowBlue, linecolor=deepBlue, leftmargin=0pt, innerleftmargin=20pt, innerrightmargin=20pt]{theorem}{Teorema}[section]
+
+    % Example Environment (Green)
+    \newtheoremstyle{examplestyle}{3pt}{3pt}{\normalfont}{0cm}{\rmfamily\bfseries}{}{1em}{{\color{black}\thmname{#1}~\thmnumber{#2}}\thmnote{\,--\,#3}}
+    \theoremstyle{examplestyle}
+    \newmdtheoremenv[linewidth=1pt, backgroundcolor=shallowGreen, linecolor=deepGreen, leftmargin=0pt, innerleftmargin=20pt, innerrightmargin=20pt]{example}{Contoh}[section]
+
+    % Title
+    \title {
+        \Huge{\bfseries{ALGORITMA BOOLEAN}} \\
+    }
+    \author {
+        \rule{12.5cm}{0.5pt} \\[3pt]
+        \bfseries{IF1220 Matematika Diskrit}\\[3pt]
+        Narendra Dharma Wistara Marpaung \\[3pt]
+        NIM 13524044 \\[3pt]
+        Semester 2 Tahun 2025 \\[3pt]
+        \rule{12.5cm}{0.5pt} \\[1.5pt]
+    }
+    \date{}
+
+    \begin{document}
+    % Page 0
+    \maketitle
+    \thispagestyle{empty}
+    \tableofcontents
+    \pagebreak
+    \section*{Referensi}
+    \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+        \item Rinaldi Munir. (2025). Homepage Rinaldi Munir. \href{https://informatika.stei.itb.ac.id/~rinaldi.munir/Matdis/matdis.htm}{https://informatika.stei.itb.ac.id/~rinaldi.munir/Matdis/matdis.htm} \\
+        \textit{*Salindia bahan pelajaran terdapat di tautan tersebut.}
+        \item Kenneth H. Rosen. (2019). \textit{Discrete mathematics and its applications (Eight Edition)}. McGraw-Hill.
+    \end{enumerate}
+
+    \pagebreak
+
+    \pagenumbering{arabic}
+    \setcounter{page}{1}
+    \section{Deretan}
+    Deretan (\textit{sequences}) atau barisan (\textit{series}) adalah daftar terurut (\textit{ordered list}) elemen-elemen diskrit.
+    \begin{definition}[\textbf{Deretan}]\hfill \\
+        adalah fungsi dari subset suatu himpunan bilangan bulat (biasanya $N$ atau $P$) ke sebuah himpunan $S$
+    \end{definition}
+    \end{document}

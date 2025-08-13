@@ -1,0 +1,651 @@
+% !TEX program = xelatex
+% Define Article
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage[margin=2.5cm]{geometry} % Set margin
+\usepackage{graphicx} % Add graphicx package for images
+\usepackage{amsmath, amssymb, amsthm} 
+\usepackage{xcolor} % Add color package
+\usepackage{mdframed} % Add mdframed package
+\usepackage{fontspec} % Add fontspec package for font selection
+\usepackage{enumitem} % Add enumitem package for list customization
+\usepackage{unicode-math} % Add unicode-math package for math font selection
+\usepackage{ragged2e} % Add ragged2e package for justify
+\usepackage{setspace} % Set line spacing
+\usepackage{etoolbox} % Add etoolbox package for patching commands
+\usepackage{tikz} % Add tikz package for drawing
+\usepackage{titlesec} % Add titlesec package for title formatting
+\usepackage{hyperref} % Add hyperref package for hyperlinks
+\usepackage{listings} % Add listings package for code listing
+\usepackage{multicol} % Add multicol package for multiple columns
+\usepackage{float} % Add float package for figure placement
+
+% Define colors
+\definecolor{ocre}{RGB}{243,102,25} % Define orange color
+\definecolor{mygray}{RGB}{240,240,240} % Define light gray
+\definecolor{shallowGreen}{RGB}{235,245,235} % Define light green
+\definecolor{deepGreen}{RGB}{0,100,0} % Define dark green
+\definecolor{shallowBlue}{RGB}{235,235,245} % Define light blue
+\definecolor{deepBlue}{RGB}{0,0,100} % Define dark blue
+\definecolor{shallowRed}{RGB}{245,235,235} % Define light red
+\definecolor{deepRed}{RGB}{100,0,0} % Define dark red
+
+% Define color for yellowbox
+\definecolor{shallowYellow}{RGB}{255,230,153} % Darker yellow
+\definecolor{deepYellow}{RGB}{255,153,51}     % Nearly orange
+
+% Yellow box command
+\newcommand\yellowbox[1]{%
+    \fcolorbox{deepYellow}{shallowYellow}{%
+        \parbox{\dimexpr\textwidth-4\fboxsep-2\fboxrule}{%
+            \vspace{10pt} % Inner top margin
+            \hspace{10pt} % Inner left margin
+            #1
+            \vspace{10pt} % Inner bottom margin
+            \hspace{10pt} % Inner right margin
+        }%
+    }%
+}
+
+% Font and page setting
+\setmainfont{Plus Jakarta Sans}[
+    Path = C:/Users/VICTUS/AppData/Local/Microsoft/Windows/Fonts/,
+    Extension =.ttf,
+    UprightFont = PlusJakartaSans-Regular,
+    BoldFont = PlusJakartaSans-Bold,
+    ItalicFont = PlusJakartaSans-Italic,
+    BoldItalicFont = PlusJakartaSans-BoldItalic
+]
+\setmathfont{Latin Modern Math}[Scale=1.2] % Set scale
+
+% Set JetBrains Mono as the monospaced font
+\setmonofont{JetBrains Mono}[
+    Path = C:/Users/VICTUS/AppData/Local/Microsoft/Windows/Fonts/,
+    Extension = .ttf,
+    UprightFont = JetBrainsMono-Regular,
+    BoldFont = JetBrainsMono-Bold,
+    ItalicFont = JetBrainsMono-Italic,
+    BoldItalicFont = JetBrainsMono-BoldItalic
+]
+
+\lstdefinelanguage{notal}{
+    morekeywords={function, Exp, integer, while, end, return}, 
+    sensitive=false,
+    morecomment=[s]{\{}{\}},
+    morecomment=[l]{//},
+    morestring=[b]{"},
+}
+\lstset{
+    language=notal,
+    basicstyle=\ttfamily\color{black}, % Use JetBrains Mono font
+    keywordstyle=\underline,           % Keywords in blue
+    stringstyle=\color{red},
+    commentstyle=\color{gray},           % Strings in red
+    backgroundcolor=\color{mygray},    % Light gray background
+    numbers=left,                      % Line numbers on the left
+    numberstyle=\tiny\color{black},    % Line numbers in black
+    breaklines=true,                   % Automatically break long lines
+    tabsize=2                          % Set tab size to 2 spaces
+}
+
+
+\justifying % Justify paragraph
+\geometry{a4paper} % Set paper size to A4
+\parindent 1.25cm % Paragraph indentation
+\setstretch{1.5} % Line spacing 1.5
+\setlength{\parskip}{0pt} % Remove additional spacing between paragraphs
+\setlength{\abovedisplayskip}{1.5pt}
+\setlength{\belowdisplayskip}{1.5pt}
+\AtBeginEnvironment{definition}{ % Set spacing before and after environment
+     \setlength{\abovedisplayskip}{1.5pt}
+     \setlength{\belowdisplayskip}{1.5pt}
+}
+\AtBeginEnvironment{theorem}{ % Set spacing before and after environment
+     \setlength{\abovedisplayskip}{1.5pt}
+     \setlength{\belowdisplayskip}{1.5pt}
+}
+\AtBeginEnvironment{example}{ % Set spacing before and after environment
+     \setlength{\abovedisplayskip}{1.5pt}
+     \setlength{\belowdisplayskip}{1.5pt}
+}
+\titlespacing*{\section}{0pt}{0pt}{1.5pt} % Adjust spacing for sections
+\titlespacing*{\subsection}{0pt}{0pt}{1.5pt} % Adjust spacing for subsections
+
+% Definition Environment (Red)
+\newtheoremstyle{definitionstyle}{3pt}{3pt}{\normalfont}{0cm}{\rmfamily\bfseries}{}{1em}{{\color{black}\thmname{#1}~\thmnumber{#2}}\thmnote{\,--\,#3}}
+\theoremstyle{definitionstyle}
+\newmdtheoremenv[linewidth=1pt, backgroundcolor=shallowRed, linecolor=deepRed, leftmargin=0pt, innerleftmargin=20pt, innerrightmargin=20pt,skipabove=10pt]{definition}{Definisi}[section]
+
+% Theorem Environment (Blue)
+\newtheoremstyle{theoremstyle}{3pt}{3pt}{\normalfont}{0cm}{\rmfamily\bfseries}{}{1em}{{\color{black}\thmname{#1}~\thmnumber{#2}}\thmnote{\,--\,#3}}
+\theoremstyle{theoremstyle}
+\newmdtheoremenv[linewidth=1pt, backgroundcolor=shallowBlue, linecolor=deepBlue, leftmargin=0pt, innerleftmargin=20pt, innerrightmargin=20pt]{theorem}{Teorema}[section]
+
+% Example Environment (Green)
+\newtheoremstyle{examplestyle}{3pt}{3pt}{\normalfont}{0cm}{\rmfamily\bfseries}{}{1em}{{\color{black}\thmname{#1}~\thmnumber{#2}}\thmnote{\,--\,#3}}
+\theoremstyle{examplestyle}
+\newmdtheoremenv[linewidth=1pt, backgroundcolor=shallowGreen, linecolor=deepGreen, leftmargin=0pt, innerleftmargin=20pt, innerrightmargin=20pt]{example}{Contoh}[section]
+
+% Title
+\title {
+    \Huge{\bfseries{ALGORITMA BOOLEAN}} \\
+}
+\author {
+    \rule{12.5cm}{0.5pt} \\[3pt]
+    \bfseries{IF1220 Matematika Diskrit}\\[3pt]
+    Narendra Dharma Wistara Marpaung \\[3pt]
+    NIM 13524044 \\[3pt]
+    Semester 2 Tahun 2025 \\[3pt]
+    \rule{12.5cm}{0.5pt} \\[1.5pt]
+}
+\date{}
+
+\begin{document}
+% Page 0
+\maketitle
+\thispagestyle{empty}
+\tableofcontents
+\pagebreak
+\section*{Referensi}
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+    \item Rinaldi Munir. (2025). Homepage Rinaldi Munir. \href{https://informatika.stei.itb.ac.id/~rinaldi.munir/Matdis/matdis.htm}{https://informatika.stei.itb.ac.id/~rinaldi.munir/Matdis/matdis.htm} \\
+    \textit{*Salindia bahan pelajaran terdapat di tautan tersebut.}
+    \item Kenneth H. Rosen. (2019). \textit{Discrete mathematics and its applications (Eight Edition)}. McGraw-Hill.
+\end{enumerate}
+
+\pagebreak
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\section{Pendahuluan}
+
+\indent Aljabar Boolean ditemukan oleh George Boole pada tahun 1854. Boole melihat bahwa himpunan dan logika proposisional mempunyai sifat-sifat yang serupa. Dalam buku \textit{The Laws of Thought}, Boole memaparkan aturan-aturan dasar logika yang nantinya membentuk struktur matematika yang disebut \textbf{Aljabar Boolean}. 
+\begin{definition}[Aljabar Boolean] \hfill \\
+    Misalkan $B$ adalah himpunan yang didefinisikan pada dua operator biner, $+$ dan $\cdot$, serta satu opereator uner, $'$. Misal 0 dan 1 adalah dua elemen yang berbeda dalam $B$. Maka, tupel
+    $$<B, +, \cdot, ', 0, 1>$$
+    disebut aljabar Boolean jika untuk setiap $a, b, c \in B$ berlaku aksioma berikut:
+    \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+        \item Identitas
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $a + 0 = a$
+            \item $a \cdot 1 = a$
+        \end{enumerate}
+        \item Komutatif
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $a + b = b + a$
+            \item $a \cdot b = b \cdot a$
+        \end{enumerate}
+        \item Distributif
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $a \cdot (b + c) = a \cdot b + a \cdot c$
+            \item $a + (b \cdot c) = a + b \cdot a + c$
+        \end{enumerate}
+        \item Komplemen
+        \begin{enumerate}
+            \item $a + a' = 1$
+            \item $a \cdot a' = 0$
+        \end{enumerate}
+    \end{enumerate}
+    Elemen-elemen dari himpunan $B$ tidak didefinisikan nilainya dan bebas ditentukan anggota-anggotanya, sehingga terdapat banyak sekali aljabar Boolean.
+\end{definition}
+
+Aljabar himpunan dan aljabar logika proposisi juga merupakan aljabar Boolean karena memenuhi aksioma di atas. Dengan kata lain, aljabar himpunan dan aljabar logika proposisi adalah subset dari aljabar Boolean. \\ \\
+\textit{Catatan:} Penulisan $x \cdot y$ dapat pula ditulis dalam bentuk $xy$. Hal ini berlaku juga dengan variabel lainnya (dapat pula lebih dari dua variabel, misal $xyz$ atau $pqrs$) \\
+\section{Aljabar Boolean 2-Nilai}
+\indent Aljabar Boolean 2-nilai merupakan aljabar yang paling populer dikarenakan aplikasinya yang luas. Aljabar Boolean 2-nilai memiliki:
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+    \item $B = \{0,1\}$
+    \item operator biner $+$ dan $\cdot$, serta operator uner $'$
+    \item kaidah untuk operator biner dan uner sebagai berikut:
+    \begin{multicols}{3}
+        % First column - OR operation table
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{|c|c|c|}
+                \hline
+                $a$ & $b$ & $a + b$ \\
+                \hline
+                0 & 0 & 0 \\
+                0 & 1 & 1 \\
+                1 & 0 & 1 \\
+                1 & 1 & 1 \\
+                \hline
+            \end{tabular}
+            \caption{Operator $+$}
+        \end{table}
+        
+        \columnbreak
+        
+        % Second column - AND operation table
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{|c|c|c|}
+                \hline
+                $a$ & $b$ & $a \cdot b$ \\
+                \hline
+                0 & 0 & 0 \\
+                0 & 1 & 0 \\
+                1 & 0 & 0 \\
+                1 & 1 & 1 \\
+                \hline
+            \end{tabular}
+            \caption{Operator $\cdot$}
+        \end{table}
+        
+        \columnbreak
+        
+        % Third column - NOT operation table
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{|c|c|}
+                \hline
+                $a$ & $a'$ \\
+                \hline
+                0 & 1 \\
+                1 & 0 \\
+                \hline
+            \end{tabular}
+            \caption{Operator $'$}
+        \end{table}
+    \end{multicols}
+    \item Keempat aksioma aljabar Boolean terpenuhi. \\
+\end{enumerate}
+\section{Ekspresi Boolean}
+Ekspresi Boolean dibentuk dari elemen-elemen B dan/atau peubah-peubah (variabel) yang dapat dikombinasikan satu sama lain dengan operator $+$, $\cdot$, dan $'$.
+Contoh: $0, 1, a, b, a + b, a \cdot b, a' \cdot (b + c), \text{dan lain-lain}$ \\
+
+\section{Hukum-Hukum Aljabar Boolean}
+Terdapat beberapa hukum-hukum yang berlaku dalam aljabar Boolean. Hukum-hukum ini dapat digunakan untuk menyederhanakan ekspresi Boolean. Hukum-hukum tersebut adalah sebagai berikut:
+\begin{multicols}{2}
+    \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=0pt]
+        \item Hukum Identitas
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=0pt, label=\roman*)]
+            \item $a + 0 = 0$
+            \item $a \cdot 1 = a$
+        \end{enumerate}
+        \item Hukum Idempoten
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=0pt, label=\roman*)]
+            \item $a + a = a$
+            \item $a \cdot a = a$
+        \end{enumerate}
+        \item Hukum Komplemen
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $a + a' = 1$
+            \item $a \cdot a' = 0$
+        \end{enumerate}
+        \item Hukum Dominansi
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $a \cdot 0 = 0$
+            \item $a + 1 = 1$
+        \end{enumerate}
+        \item Hukum Involusi
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $(a')' = a$
+        \end{enumerate}
+        \item Hukum Penyerapan
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $a + a \cdot b = a$
+            \item $a \cdot (a + b) = a$
+        \end{enumerate}
+        \item Hukum Komutatif
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $a + b = b + a$
+            \item $a \cdot b = b \cdot a$
+        \end{enumerate}
+        \columnbreak
+        \item Hukum Asosiatif
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $a + (b + c) = (a + b) + c$
+            \item $a \cdot (b \cdot c) = (a \cdot b) \cdot c$
+        \end{enumerate}
+        \item Hukum Distributif
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $a + (b \cdot c) = (a + b) \cdot (a + c)$
+            \item $a a\cdot (b + c) = (a \cdot b) + (a \cdot c)$
+        \end{enumerate}
+        \item Hukum De Morgan
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $(a + b)' = a' \cdot b'$
+            \item $(a \cdot b)' = a' + b'$
+        \end{enumerate}
+        \item Hukum 0/1
+        \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt, label=\roman*)]
+            \item $0' = 1$
+            \item $1' = 0$
+        \end{enumerate}
+    \end{enumerate}
+\end{multicols}
+\begin{example} \hfill \\
+    Buktikan bahwa untuk sembarang elemen $a$ dan $b$ dari aljabar Boolean, maka kesamaan berikut:
+    \begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+        \item $a + a' \cdot b = a + b$
+        \item $a \cdot (a' + b) = a \cdot b$
+    \end{enumerate}
+\end{example}
+\textbf{Penyelesaian:}
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+    \item Soal 1
+    \begin{align*}
+        a + a' \cdot b &= (a + a \cdot b) + a' \cdot b &&\text{Hukum Penyerapan} \\
+        &= a + (a \cdot b + a' \cdot b) &&\text{Hukum Asosiatif} \\
+        &= a + (a + a') \cdot b &&\text{Hukum Distributif} \\
+        &= a + 1 \cdot b &&\text{Hukum Komplemen} \\
+        &= a + b &&\text{Hukum Identitas} \\
+    \end{align*}
+    \item Soal 2
+    \begin{align*}
+        a \cdot (a' + b) &= a \cdot a' + a \cdot b &&\text{Hukum Distributif} \\
+        &= 0 + a \cdot b &&\text{Hukum Komplemen} \\
+        &= a \cdot b &&\text{Hukum Identitas} \\
+    \end{align*}
+\end{enumerate}
+
+\section{Fungsi Boolean}
+\begin{example}[Contoh Fungsi Boolean]
+    \begin{itemize}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+        \item $f(x) = x$
+        \item $f(x, y) = x' \cdot y + x \cdot y' + y'$
+        \item $f(x, y, z) = x' \cdot y' \cdot z'$
+    \end{itemize}
+\end{example}
+
+Setiap peubah (variabel) di dalam fungsi Boolean—termasuk dalam bentuk komplemennya—disebut lateral. Misal: fungsi $h(x, y ,z) = x \cdot y \cdot z'$ terdiri dari 3 buah literal, yaitu $x$, $y$, $z'$. \\
+\section{Bentuk Kanonik}
+Bentuk kanonik merupakan ekspresi boolean yang menspesifikan suatu fungsi dapat disajikan dalam dua bentuk berbeda, yaitu sebagai penjumlahan dari hasil kali dan perkalian dari hasil jumlah. Misalnya:
+$$ f(x, y, z) = x' \cdot y' \cdot z + x \cdot y' \cdot z' + x \cdot y \cdot z$$
+$$ g(x, y, z) = (x + y + z) \cdot (x + y' + z) \cdot (x + y' + z') \cdot (x' + y + z') \cdot (x' + y' + z)$$
+adalah dua buah fungsi yang sama.
+
+Suku (\textit{term}) di dalam ekspresi boolean yang mengandung literal yang lengkap dalam bentuk lengkap dalam bentuk hasil kali disebut \textbf{\textit{Minterm}}. Sedangkan, suku (\textit{term}) di dalam ekspresi boolean yang mengandung literal yang lengkap dalam bentuk hasil jumlah disebut \textbf{\textit{Maxterm}}.
+\begin{example} \hfill \\
+    $f(x, y, z) = x' \cdot y' \cdot z + x \cdot y' \cdot z' + x \cdot y \cdot z$ memiliki 3 buah minterm, yaitu $x'y'z$, $xy'z'$, dan $xyz$. \\ \\
+    $g(x, y, z) = (x + y + z) \cdot (x + y' + z) \cdot (x + y' + z') \cdot (x' + y + z') \cdot (x' + y' + z)$ memiliki 5 buah maxterm, yaitu $(x + y  + z)$, $(x + y' + z')$, $(x + y' + z')$, $(x', y, z')$, $(x', y', z)$. 
+\end{example}
+
+Misal, fungsi dengan variabel x, y, z, maka $x'y$ dan $y'z'$ bukan minterm karena literal tidak lengkap. Namum, $xyz'$ merupakan minterm karena literalnya lengkap. $x + z$ bukan maxterm karena literal tidak lengkap. Sedangkan, $x' + y + z'$ merupakan maxterm karena literalnya lengkap. Namun, $xy' + y' + z$ bukan maxterm.
+
+Jadi, bentuk kanonik adalah ekspresi boolean yang dinyatakan sebagai penjumlahan dari satu atau lebih minterm atau perkalian dari satu atau lebih maxterm. Ada dua macam bentuk kanonik, yaitu penjumlahan dari hasil perkalian (\textit{sum-of-product} atau SOP) dan perkalian dari hasil jumlah (\textit{product-of-sum} atau POS). Fungsi f(x, y, z) pada \textbf{Contoh 6.1} dikatakan dalam bentuk SOP dan fungsi g(x, y, z) dikatakan dalam bentuk POS. 
+
+\noindent Cara membentuk minterm dan maxterm:
+\begin{itemize}[left=0pt, itemsep=1pt, topsep=1pt]
+    \item Untuk minterm, setiap peubah yang bernilai 0 dinyatakan dalam bentuk komplemen, sedangkan peubah yang bernilai 1 dinyatakan tanpa komplemen.
+    \item Untuk maxterm, setiap peubah yang bernilai 0 dinyatakan tanpa komplemen, sedangkan peubah yang bernilai 1 dinyatakan dalam bentuk komplemen.
+\end{itemize}
+\pagebreak
+Berikut tabel kebenaran untuk dua peubah dan tiga peubah.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        \textbf{x} & \textbf{y} & \textbf{Suku Minterm} & \textbf{Lambang} & \textbf{Suku Maxterm} & \textbf{Lambang} \\ \hline
+        0          & 0          & $x'y'$           & $m_0$           & $x + y$          & $M_0$           \\ \hline
+        0          & 1          & $x'y$            & $m_1$           & $x + y'$         & $M_1$           \\ \hline
+        1          & 0          & $xy'$            & $m_2$           & $x' + y$         & $M_2$           \\ \hline
+        1          & 1          & $xy$             & $m_3$           & $x' + y'$        & $M_3$           \\ \hline
+    \end{tabular}
+    \caption{Tabel Minterm dan Maxterm untuk dua peubah}
+\end{table}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline
+        \textbf{x} & \textbf{y} & \textbf{z} & \textbf{Suku Minterm} & \textbf{Lambang} & \textbf{Suku Maxterm} & \textbf{Lambang} \\ \hline
+        0          & 0          & 0          & $x'y'z'$              & $m_0$           & $x + y + z$           & $M_0$           \\ \hline
+        0          & 0          & 1          & $x'y'z$               & $m_1$           & $x + y + z'$          & $M_1$           \\ \hline
+        0          & 1          & 0          & $x'yz'$               & $m_2$           & $x + y' + z$          & $M_2$           \\ \hline
+        0          & 1          & 1          & $x'yz$                & $m_3$           & $x + y' + z'$         & $M_3$           \\ \hline
+        1          & 0          & 0          & $xy'z'$               & $m_4$           & $x' + y + z$          & $M_4$           \\ \hline
+        1          & 0          & 1          & $xy'z$                & $m_5$           & $x' + y + z'$         & $M_5$           \\ \hline
+        1          & 1          & 0          & $xyz'$                & $m_6$           & $x' + y' + z$         & $M_6$           \\ \hline
+        1          & 1          & 1          & $xyz$                 & $m_7$           & $x' + y' + z'$        & $M_7$           \\ \hline
+    \end{tabular}
+    \caption{Tabel Minterm dan Maxterm untuk tiga peubah}
+\end{table}
+
+Jika diberikan sebuah tabel kebenaran, kita dapat membentuk fungsi boolean dalam bentuk kanonik dengan cara mengambil minterm dari setiap fungsi yang bernilai 1 untuk SOP dan mengambil maxterm dari setiap fungsi yang bernilai 0.
+
+\begin{example} \hfill \\  
+    Tinjau dalam fungsi boolean yang dinyatakan oleh tabel di bawah ini. Nyatakan fungsi tersebut dalam bentuk kanonik SOP dan  POS. \\
+    \center{
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{x} & \textbf{y} & \textbf{z} & \textbf{f(x, y, z)} \\ \hline
+        0          & 0          & 0          & 0                   \\ \hline
+        0          & 0          & 1          & 1                   \\ \hline
+        0          & 1          & 0          & 0                   \\ \hline
+        0          & 1          & 1          & 0                   \\ \hline
+        1          & 0          & 0          & 1                   \\ \hline
+        1          & 0          & 1          & 0                   \\ \hline
+        1          & 1          & 0          & 0                   \\ \hline
+        1          & 1          & 1          & 1                   \\ \hline
+    \end{tabular}
+    }
+\end{example}
+\textbf{Penyelesaian:}
+\begin{itemize}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+    \item \textbf{SOP} \\
+    Kombinasi nilai-nilai peubah yang menghasilkan nilai fungsi sama dengan 1 adalah 001, 100, dan 111, maka fungsi Booleannya dalam bentuk kanonik SOP adalah
+    $$f(x, y, z) = x'y'z + xy'z' + xyz$$
+    atau dalam lambang minterm, $f(x, y, z) = m_1 + m_4 + m_7 = \Sigma(1, 4, 7)$
+    \item \textbf{POS} \\
+    Kombinasi nilai-nilai peubah yang menghasilkan nilai fungsi sama dengan 0 adalah 000, 010, 011, 101, 110, maka fungsi Booleannya dalam bentuk kanonik POS adalah
+    $$f(x, y, z) = (x + y + z)(x + y' + z)(x + y' + z')(x' + y + z')(x' + y' + z)$$
+    atau dalam lambang maxterm, $f(x, y, z) = M_0 + M_2 + M_3 + M_5 + M_6 = \Pi(0, 2, 3, 5, 6)$ \\
+\end{itemize} 
+\begin{example} \hfill \\
+    Nyatakan fungsi Boolean $f(x, y, z) = x + y'z$ dalam bentuk kanonik SOP dan POS. \\
+\end{example}
+\pagebreak
+\textbf{Penyelesaian:}
+\begin{itemize}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+    \item \textbf{SOP} 
+    \begin{align*}
+        f(x, y, z) &= x + y'z \\
+        &= x(y + y')(z + z') + y'z\\
+        &= (xy + xy')(z + z') + (x + x')y'z\\
+        &= xy(z + z') + xy'(z + z') + xy'z + x'y'z \\
+        &= xyz + xyz' + xy'z + xy'z' + xy'z + x'y'z \\
+        &= xyz + xyz' + xy'z + xy'z' + x'y'z \\
+        f(x, y, z) &= m_7 + m_6 + m_5 + m_4 + m_1 = \Sigma(1, 4, 5, 6, 7)
+    \end{align*}
+    \item \textbf{POS} \\
+    \begin{align*}
+        f(x, y, z) &= x + y'z \\
+        &= (x + y')(x + z) \\
+        &= (x + y' + zz')(x + yy' + z) \\
+        &= (x + y' + z)(x + y' + z')(x + y + z)(x + y' + z) \\
+        &= (x + y' + z)(x + y' + z')(x + y + z)\\
+        f(x, y, z) &= M_0M_2M_3 = \Pi(0, 2, 3) \\  
+    \end{align*}
+\end{itemize}
+
+\section{Konversi Antar Bentuk Kanonik} \hfill \\
+Misalkan $f$ adalah fungsi Boolean dalam bentuk SOP dengan tiga peubah 
+$$f(x, y, z) = \Sigma(1, 4, 5, 6, 7)$$ dan fungsi $f'$ adalah fungsi komplemen dari $f$,
+$$f'(x, y, z) = \Sigma(0, 2, 3) = m_0 + m _2 + m_3$$
+Dengan menggunakan hukum De Morgan, kita dapat memperoleh fungsi $f$ dalam bentuk POS
+\begin{align*}
+    f(x, y, z) = (f'(x, y, z))' &= (m_0 + m_2 + m_3)' = m_0' \cdot m_2' \cdot m_3' \\
+    &= (x'y'z')' \cdot (x'yz')' \cdot (x'yz)' \\
+    &= (x + y + z)(x + y' + z)(x + y' + z') \\
+    &= M_0M_2M_3 = \Pi(0, 2, 3)
+\end{align*}
+Kesimpulannya $m_j' = M_j$ dan $M_j' = m_j$ untuk semua $j$. \\
+
+\section{Rangkaian Logika}
+Fungsi Boolean dapat juga direpresentasikan dalam bentuk rangkaian logika. Ada tiga gerbang logika dasar, yaitu gerbang logika AND, OR, dan NOT (gambar berturut-turut dari kiri ke kanan). \\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{gerbanglogika.png}
+\end{figure}
+
+Adapula gerbang logika turunan yang merupakabn kombinasi dari gerbang logika dasar di atas, yaitu NAND, NOR, XOR, NXOR (gambar berturut-turut dari kiri ke kanan). \\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{gerbanglogika2.png} \\
+\end{figure}
+
+\section{Penyederhanaan Fungsi Boolean}\
+Menyederhanakan fungsi Boolean artinya mencari bentuk fungsi lain yang ekivalen tetapi dengan jumlah literal atau operasi yang lebih sedikit. Dipandang dari segi aplikasi aljabar Boolean, fungsi Boolean yang lebih sederhana berarti gerbang logika yang lebih sedikit.
+Tiga metode yang dapat digunakan untuk menyederhanakan fungsi Boolean adalah:
+\begin{enumerate}
+    \item Secara aljabar, menggunakan hukum aljabar Boolean
+    \item metode Peta Karnaugh
+    \item Metode Quine-McCluskey (tabulasi)
+\end{enumerate}
+\subsection{Peta Karnaugh}
+Peta Karnaugh (atau K-Map) merupakan metode grafis untuk menyederhanakan fungsi Boolean. Metode ini ditemukan oleh Maurice Karnaugh pada tahun 1953.
+Peta Karnaugh adalah sebuah diagram/peta yang terbentuk dari kotak-kotak yang bersisian
+Tiap kotak merepresentasikan sebuah minterm. Tiap kotak dikatakan bertetanggaan jika minterm-minterm yang merepresentasikan berbeda hanya 1 buah literal.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{petakarnaugh.png}
+    \caption{Peta Karnaugh untuk 2, 3, dan 4 peubah}
+\end{figure}
+Cara mengisi peta karnaugh adalah kotak yang menyatakan minterm diisi angka 1 (apabila terdapat lebih dari 1 variabel dalam minterm, maka cari irisannya), sisanya diisi angka 0.
+\begin{example} \hfill \\
+    $f(x, y, z) = xz' + y$ \\
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|}
+            \hline
+            \textbf{x/yz} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\ \hline
+            \textbf{0}    & 0           & 0           & 1           & 1           \\ \hline
+            \textbf{1}    & 1           & 0           & 1           & 1           \\ \hline
+        \end{tabular}
+        $$xz' + y$$
+    \end{center}
+    $x \rightarrow$ semua kotak pada baris ke-2 \\
+    $z' \rightarrow$ semua kotak pada kolom ke-1 dan ke-4\\
+    $xz'\rightarrow$ irisan dari keduanya
+    $y  \rightarrow$ semua kotak pada kolom ke-3 dan ke-4\\
+\end{example}
+
+Penggunaan Peta Karnaugh dalam penyederhanaan fungsi Boolean dilakukan dengan cara menggabungkan kotak-kotak yang bernilai 1 dan saling bersisian.
+Kelompok kotak yang bernilai 1 dapat membentuk pasangan(dua), kuad(empat), atau oktet(delapan).
+Untuk menyederhanakan fungsi Boolean, lihat kelompok kotak yang bernilai 1, lalu cari kesamaannya. Pada kesamaan tersebut, coret literal yang berbeda. Literal yang tersisa adalah fungsi Boolean yang lebih sederhana.
+\begin{example} \hfill \\
+    $f(w, x, y, z) = wxy'z' + wxy'z + wxyz' + wxy'z + wx'y'z' + wx'y'z + wx'yz + wx'yz'$
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|}
+            \hline
+            \textbf{wx/yz} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\ \hline
+            \textbf{00}    & 0           & 0           & 0           & 0           \\ \hline
+            \textbf{01}    & 0           & 0           & 0           & 0           \\ \hline
+            \textbf{11}    & \textbf{1}  & \textbf{1}  & \textbf{1}  & \textbf{1}  \\ \hline
+            \textbf{10}    & \textbf{1}  & \textbf{1}  & \textbf{1}  & \textbf{1}  \\ \hline
+        \end{tabular} \\
+        $f(w, x, y, z)$
+    \end{center}
+\end{example}
+\textbf{Penyelesaian:}
+
+Pada isi tabel yang di bold memiliki nilai 1, maka kita dapat mengelompokkan kotak-kotak tersebut menjadi oktet (delapan). Kita coret literal yang berbeda, sehingga kita dapat literal yang sama hanyalah $w$ (sama-sama memiliki nilai 1).
+Sehingga, fungsi Boolean yang lebih sederhana adalah $f(w, x, y, z) = w$. 
+
+Penyederhanaan juga dapat dilakukan dengan penggulungan, yaitu menautkan sisi kanan peta karnaugh dengan sisi kirinya dan sisi atas dengan sisi bawahnya layaknya digulung (2 gulungan). Sehingga, kolom paling kiri dengan kolom paling kanan dan kolom paling atas dengan kolom paling bawah bersentuhan dan dapat dikelompokkan. \\
+\textit{\textbf{Catatan:} Terdapat kasus unik, jika masing-masing ujung (corner) bernilai 1, maka masing-masing ujung dari kotak juga dapat bersentuhan dan dikelompokkan. (Lihat \textbf{Contoh minimisasi 6 dan 10} halaman 27 dan 30, salindia Aljabar Boolean Bagian 2 pada Referensi 1).} \\ \\
+\yellowbox{
+    \centering
+        Untuk pemahaman yang lebih jelas terkait penyederhanaan Aljabar Boolean, silakan pelajari dan lihat kembali salindia Aljabar Boolean Bagian 2 pada Referensi 1.
+} \\ \\
+Sangat disarankan untuk mengelompokkan nilai 1 yang bertetanggaan sebanyak mungkin, mulai dari mencari oktet, lalu kuad, dan terakhir pasangan.
+
+Peta Karnaugh ini juga dapat digunakan untuk merepresentasikan maxterm (atau POS). Namun, untuk penyederhanaannya, kita mengelompokkan kotak-kotak yang bernilai 0.
+
+\subsection{Peta Karnaugh untuk Lima Peubah}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{petakarnaugh5.png}
+    \caption{Peta Karnaugh untuk 5 Peubah}
+\end{figure}
+Dalam Peta Karnaugh lima peubah, dua kotak dianggap bertetanggaan jika secara fisik bersebalahan atau merupakan pencerminan terhadap garis ganda
+\begin{example} \hfill \\
+    Carilah fungsi sederhana dari 
+    $$f(v, w, x, y, z) =  \Sigma(0, 2, 4, 6, 9, 11, 13, 15, 17, 21, 25, 27, 29, 31)$$
+    Peta karnaugh dari fungsi tersebut adalah sebagai berikut:
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c||c|c|c|c|}
+            \hline
+            \textbf{vw/xyz} & \textbf{000} & \textbf{001} & \textbf{011} & \textbf{010} & \textbf{110} & \textbf{111} & \textbf{101} & \textbf{100} \\ \hline
+            \textbf{00}     & \textbf{1}   & 0            & 0            & \textbf{1}   & \textbf{1}   & 0            & 0            & \textbf{1}   \\ \hline
+            \textbf{01}     & 0            & \textbf{1}   & \textbf{1}   & 0            & 0            & \textbf{1}   & \textbf{1}   & 0            \\ \hline
+            \textbf{11}     & 0            & \textbf{1}   & \textbf{1}   & 0            & 0            & \textbf{1}   & \textbf{1}   & 0            \\ \hline
+            \textbf{10}     & 0            & \textbf{1}   & 0            & 0            & 0            & 0            & \textbf{1}   & 0            \\ \hline
+        \end{tabular} \\
+        $f(v, w, x, y, z)$
+    \end{center}
+    \textit{*Garis ganda pada tabel adalah garis pencerminan} \\
+    Penyederhanaan dari fungsi tersebut adalah $f(v, w, x, z) = wz + v'w'z' + vy'z$
+\end{example}
+\pagebreak
+
+Keadaan \textit{Don't Care} adalah kondisi nilai peubah yang tidak diperhitungkan oleh fungsinya. 
+Artinya nilai 1 atau 0 dari peubah \textit{don't care} tidak berpengaruh pada hasil fungsi tersebut.
+Misalnya, peraga digital angka desimal 0 sampai 9, sehingga jumlah angka bit yang diperlukan untuk merepresentasikan angka 0 sampai 9 (membutuhkan 4 bit).
+Sehingga, bit-bit untuk angka 10-15 tidak terpakai.
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{w} & \textbf{x} & \textbf{y} & \textbf{z} & \textbf{Desimal} \\ \hline
+        0          & 0          & 0          & 0          & 0                \\ \hline
+        0          & 0          & 0          & 1          & 1                \\ \hline
+        0          & 0          & 1          & 0          & 2                \\ \hline
+        0          & 0          & 1          & 1          & 3                \\ \hline
+        0          & 1          & 0          & 0          & 4                \\ \hline
+        0          & 1          & 0          & 1          & 5                \\ \hline
+        0          & 1          & 1          & 0          & 6                \\ \hline
+        0          & 1          & 1          & 1          & 7                \\ \hline
+        1          & 0          & 0          & 0          & 8                \\ \hline
+        1          & 0          & 0          & 1          & 9                \\ \hline
+        1          & 0          & 1          & 0          & X                \\ \hline
+        1          & 0          & 1          & 1          & X                \\ \hline
+        1          & 1          & 0          & 0          & X                \\ \hline
+        1          & 1          & 0          & 1          & X                \\ \hline
+        1          & 1          & 1          & 0          & X                \\ \hline
+        1          & 1          & 1          & 1          & X                \\ \hline
+    \end{tabular} \\
+Desimal yang ditandai oleh X adalah keadaan \textit{don't care} \\
+\end{center}    
+
+Dalam menyederhanakan Peta Karnaugh yang mengandung keadaan \textit{don't care}, ada hal yang perlu diperhatikan sebagai berikut:
+\begin{enumerate}[left=0pt, itemsep=1.5pt, topsep=1.5pt]
+    \item Anggap semua nilai \textit{don't care} (tanda X) dapat dibuat kelompok bersama angka 1.
+    \item Buatlah kelompok sebesar mungkin yang melibatkan angka 1 dan tanda X tersebut.
+    \item Semua nilai X yang tidak termasuk dalam kelompok tersebut dianggap bernilai 0.
+\end{enumerate}
+
+Dengan mengikuti cara ini, keadaan X telah dimanfaatkan semaksimal mungkin. Hal ini dapat dilakukan secara bebas.
+\begin{example} \hfill \\
+    Sebuah fungsi Boolean, $f$ dinyatakan dalam tabel berikut. \\
+    Minimisasi fungsi $f$ sederhana mungkin.
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{w} & \textbf{x} & \textbf{y} & \textbf{z} & \textbf{f(w,x,y,z)} \\ \hline
+        0          & 0          & 0          & 0          & 1                   \\ \hline
+        0          & 0          & 0          & 1          & 0                   \\ \hline
+        0          & 0          & 1          & 0          & 0                   \\ \hline
+        0          & 0          & 1          & 1          & 1                   \\ \hline
+        0          & 1          & 0          & 0          & 1                   \\ \hline
+        0          & 1          & 0          & 1          & 1                   \\ \hline
+        0          & 1          & 1          & 0          & 0                   \\ \hline
+        0          & 1          & 1          & 1          & 1                   \\ \hline
+        1          & 0          & 0          & 0          & X                   \\ \hline
+        1          & 0          & 0          & 1          & X                   \\ \hline
+        1          & 0          & 1          & 0          & X                   \\ \hline
+        1          & 0          & 1          & 1          & X                   \\ \hline
+        1          & 1          & 0          & 0          & X                   \\ \hline
+        1          & 1          & 0          & 1          & X                   \\ \hline
+        1          & 1          & 1          & 0          & X                   \\ \hline
+        1          & 1          & 1          & 1          & X                   \\ \hline
+    \end{tabular}
+\end{center}
+\end{example}
+\textbf{Penyelesaian:} \\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{petakarnaughdontcare.png}
+\end{figure} \\
+Hasil penyederhanaan dari fungsi tersebut adalah $f(w, x, y, z) = xz + y'z' + yz$ \\
+\end{document}
