@@ -7,9 +7,8 @@ Arsip akademik atas perjalanan di Teknik Informatika Institut Teknologi Bandung.
 Dilarang plagiasi! Gunakan sebagai referensi dan inspirasi saja.
 
 ## Dibuat Oleh
-- Narendra Dharma Wistara M. </br>
-- 13524044 </br>
-- Teknik Informatika/Informatics Engineering </br>
+Narendra Dharma Wistara M. (NIM 13524044) </br>
+Teknik Informatika/Informatics Engineering </br>
 
 Berdasarkan Kurikulum 2024 Teknik Informatika, Institut Teknologi Bandung. </br> 
 Dari Insan Akademis, ke Insan Akademis lainnya.
