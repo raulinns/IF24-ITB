@@ -1,10 +1,11 @@
-# Repository IF '24 ITB
+# Repositori IF '24 ITB
 
 ### Deskripsi
 Arsip akademik atas perjalanan ((panjang)) di Teknik Informatika (IF) Institut Teknologi Bandung. Dari Insan Akademis, ke Insan Akademis lainnya. Berjuang demi mencerdaskan kehidupan bangsa. 
 Berisi hasil pengerjaan atas tugas pemrograman dan praktikum yang sudah diselesaikan selama menempuh pendidikan di IF ITB. 
-Dengan adanya *repository* ini diharapkan dapat menjadi referensi dan inspirasi untuk mahasiswa/pelajar lain yang membutuhkan. Berdasarkan Kurikulum 2024 Teknik Informatika, Institut Teknologi Bandung. 
-Based on 2024 Informatics Engineering Curriculum of Institut Teknologi Bandung.
+Dengan adanya repositori ini diharapkan dapat menjadi referensi dan inspirasi untuk mahasiswa/pelajar lain yang membutuhkan. 
+
+Berdasarkan Kurikulum 2024 Teknik Informatika, Institut Teknologi Bandung. 
  
 ---
 ### Disclaimer
@@ -15,4 +16,3 @@ Repositori ini adalah arsip pribadi dan tidak dimaksudkan untuk disalin dan dipl
 Narendra Dharma Wistara M.
 13524044
 Teknik Informatika/Informatics Engineering
-This repository is a personal archive and is not intended to be copied or plagiarized. Use the work here as a reference and inspiration, not as a direct answer to your assignment. Plagiarism has serious academic consequences and is not the responsibility of the repository creator.
