@@ -7,7 +7,7 @@ Arsip akademik atas perjalanan di Teknik Informatika Institut Teknologi Bandung.
 Dilarang plagiasi! Gunakan sebagai referensi dan inspirasi saja.
 
 ## Daftar Isi
-### Semester 3
+### Semester 2
 | No. | Kode MK | Mata Kuliah                                                                                             |
 | --- | ------- | ------------------------------------------------------------------------------------------------------- |
 | 1   | IF1210  | [Algoritma dan Pemrograman 1](./02-Semester-2/01-Algoritma-dan-Pemrograman-1)                           |
