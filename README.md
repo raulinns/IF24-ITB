@@ -20,7 +20,7 @@ Dilarang plagiasi! Gunakan sebagai referensi dan inspirasi saja.
 ### Semester 3
 | No. | Kode MK | Mata Kuliah                                                                   |
 | --- | ------- | ----------------------------------------------------------------------------- |
-| 1   | IF2110  | [Algoritma dan Pemrograman 2](./02-Semester-3/01-Algoritma-dan-Pemrograman-2) |
+| 1   | IF2110  | [Algoritma dan Pemrograman 2](./03-Semester-3/01-Algoritma-dan-Pemrograman-2) |
 | 2   | IF1220  | Sistem Operasi                                                                |
 | 3   | IF1221  | Aljabar Linear dan Geometri                                                   |
 | 4   | IF1230  | Probabilitas dan Statistika                                                   |
