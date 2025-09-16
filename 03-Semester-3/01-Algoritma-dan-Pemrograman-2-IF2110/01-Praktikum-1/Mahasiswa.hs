@@ -43,7 +43,9 @@ isValidMahasiswa m = ((nama m) /= "") && ((nim m) /= "") && 0 <= (ipk m) && (ipk
 -- gantiIPK: mahasiswa -> Float -> mahasiswa
 -- {gantiIPK(M,ipkBaru) mengganti IPK mahasiswa M dengan ipkBaru (maksimal 4.0)}
 gantiIPK :: Mahasiswa -> Float -> Mahasiswa
-gantiIPK m ipkBaru = (makeMahasiswa (nama m) (nim m) ipkBaru)
+gantiIPK (Mahasiswa nama nim _) ipkBaru | ipkBaru > 4.0 = Mahasiswa nama nim 4.0
+                                         | ipkBaru < 0.0 = Mahasiswa nama nim 0.0
+                                         | otherwise = Mahasiswa nama nim ipkBaru
 
 -- klasifikasiMahasiswa: mahasiswa -> String
 -- {klasifikasiMahasiswa(M) memberikan predikat mahasiswa berdasarkan IPK}
@@ -62,6 +64,5 @@ klasifikasiMahasiswa m  | ((ipk m) >= 3.51) = "Cumlaude"
 -- {tampilMahasiswa(M) mengubah Mahasiswa M menjadi string deskriptif}
 -- Dengan format:
 -- "Nama: <nama>, NIM: <nim>, IPK: <ipk>"
--- tampilMahasiswa :: Mahasiswa -> String
--- tampilMahasiswa m = print("Nama: ", (nama m)
-
+tampilMahasiswa :: Mahasiswa -> String
+tampilMahasiswa m = "Nama: " ++ (nama m) ++ ", NIM: " ++ (nim m) ++ ", IPK: " ++ show(ipk m)

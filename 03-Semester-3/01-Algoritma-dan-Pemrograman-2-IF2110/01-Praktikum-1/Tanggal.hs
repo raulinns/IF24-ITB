@@ -57,16 +57,20 @@ makeTanggal d m y = Tanggal d m y
 -- isKabisat: Int -> Bool
 -- {isKabisat(t) benar jika t adalah tahun kabisat menurut aturan Gregorian}
 isKabisat :: Int -> Bool
-isKabisat y = (mod y 4 == 0 && mod y 100 /= 0) || (mod y  400 == 0)
+isKabisat y = (mod y 4 == 0 && mod y 100 /= 0) || (mod y 400 == 0)
 
 -- hariDalamBulan: Int -> Int -> Int
 -- {hariDalamBulan(b,t) memberikan jumlah hari pada bulan b di tahun t}
 hariDalamBulan :: Int -> Int -> Int
-hariDalamBulan m y = if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) then 31 else if (m == 4 || m == 6 || m == 9 || m == 11) then 30 else if (isKabisat y) then 29 else 28
+hariDalamBulan m y = 
+    if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) then 31
+    else if (m == 4 || m == 6 || m == 9 || m == 11) then 30 
+    else 
+        if isKabisat y then 29 else 28
 
 -- isValid: tanggal -> Bool
 -- {isValid(T) benar jika T adalah tanggal valid:
 --  tahun >= 1, 1 <= bulan <= 12, 1 <= hari <= hariDalamBulan(bulan,tahun)}
 isValid :: Tanggal -> Bool
-isValid t = tahun(t) >= 1 && (1 <= bulan(t) && bulan(t) >= 12) && (1 <= hari(t) && hari(t) >= hariDalamBulan (bulan t) (tahun t))
+isValid (Tanggal d m y) = y >= 1 && (1 <= m && m <= 12) && (1 <= d && d <= hariDalamBulan m y)
 

@@ -36,9 +36,9 @@ isOrigin p = (absis p == 0) && (ordinat p == 0)
 -- prekondisi: P bukan titik origin dan tidak terletak pada sumbu X atau Y
 kuadran :: Point -> Int
 kuadran p | ((absis p > 0) && (ordinat p > 0)) = 1
-          | ((absis p > 0) && (ordinat p < 0)) = 2
+          | ((absis p < 0) && (ordinat p > 0)) = 2
           | ((absis p < 0) && (ordinat p < 0)) = 3
-          | ((absis p < 0) && (ordinat p > 0)) = 4
+          | ((absis p > 0) && (ordinat p < 0)) = 4
 
 -- DEFINISI OPERATOR/FUNGSI LAIN TERHADAP POINT
 -- jarak: 2 point -> Float
