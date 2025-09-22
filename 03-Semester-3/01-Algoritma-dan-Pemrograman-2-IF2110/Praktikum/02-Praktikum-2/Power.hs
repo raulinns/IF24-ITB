@@ -10,7 +10,7 @@ module Power where
 -- DEFINISI DAN SPESIFIKASI UTAMA
 isPowerOf :: Int -> Int -> Bool
 isPowerOf n base
-  | n == 1 = True
-  | mod n base /= 0 || n < 1 = False
-  | otherwise = isPowerOf (div n base) base
-
+    | base <= 1 = n == 1
+    | n == 1 = True
+    | mod n base /= 0 || n <= 0 = False
+    | otherwise = isPowerOf (div n base) base
