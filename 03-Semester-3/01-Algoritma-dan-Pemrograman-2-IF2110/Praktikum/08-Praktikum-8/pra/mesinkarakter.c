@@ -8,8 +8,14 @@ static FILE *pita;
 static int retval;
 
 void START() {
-    pita = fopen("pita.txt", "r");
-    ADV();
+    pita = stdin;
+    retval = fscanf(pita,"%c",&currentChar); 
+    
+    if (retval == EOF) {
+        EOP = true;
+    } else {
+        EOP = (currentChar == MARK);
+    }
 }
 /* Mesin siap dioperasikan. Pita disiapkan untuk dibaca.
    Karakter pertama yang ada pada pita posisinya adalah pada jendela.
@@ -19,7 +25,7 @@ void START() {
           Jika currentChar = MARK maka EOP akan menyala (true) */
 
 void ADV() {
-    retval = fscanf(pita,"%c",&currentChar); 
+    retval = fscanf(pita, "%c", &currentChar);
     EOP = (currentChar == MARK);
     if (EOP) {
         fclose(pita);

@@ -17,7 +17,7 @@ void STARTWORD() {
   START();
   IgnoreBlanks();
 
-  if (currentChar == MARK) {
+  if (EOP) {
     EndWord = true;
   } else {
     EndWord = false;
@@ -31,10 +31,11 @@ void STARTWORD() {
 
 void ADVWORD() {
   IgnoreBlanks();
-  if (currentChar == MARK) {
+  if (EOP) {
     EndWord = true;
   } else {
     CopyWord();
+        IgnoreBlanks();
   }
 }
 /* I.S. : currentChar ada lah karakter pertama kata yang akan diakuisisi
@@ -45,10 +46,10 @@ void ADVWORD() {
 
 void CopyWord() {
   int i = 0;
-  while ((currentChar != MARK) && (currentChar != BLANK)) {
+  while ((currentChar != MARK) && (currentChar != BLANK) && (i < NMax)) {
     currentWord.TabWord[i] = currentChar;
-    ADV();
     i++;
+    ADV();
   }
   currentWord.Length = i;
 }
