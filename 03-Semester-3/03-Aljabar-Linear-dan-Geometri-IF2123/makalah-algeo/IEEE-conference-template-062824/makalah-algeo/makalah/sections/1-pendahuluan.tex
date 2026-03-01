@@ -1,0 +1,30 @@
+\section{Pendahuluan}
+Sebuah gambar dapat dipandang dari segi semantiknya (isi atau konten dari citra) dan segi gaya artistiknya.
+Segi semantik mencerminkan apa yang ada dalam gambar (objek, struktur, komposisi), sementara segi gaya mencerminkan bagaimana gambar tersebut dipresentasikan (tekstur, pola, palet warna).
+
+\begin{figure*}[b]
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/contohnst-1.png}
+    \caption{\href{https://www.linkedin.com/pulse/artificial-intelligence-applications-neural-style-transfer-mohan}{Contoh Aplikasi NST pada Lukisan Mona Lisa}}
+    \label{fig:contoh_nst_1}
+\end{figure*}
+
+Dari pembagian tersebut, muncul sebuah permasalahan dalam pemrosesan citra, yaitu "Dapatkah sebuah citra dipertahankan konten semantiknya, tetapi gambar tersebut disintesis gayanya?"
+Inilah yang disebut dengan transfer tekstur atau transfer gaya (\textit{style transfer}).
+Tujuan dari transfer gaya ini adalah untuk mensintesis gaya dari gambar sumber sambil membatasi sintesis gaya, sehingga konten semantik gambar target tetap terjaga. Dengan kata lain, kita ingin mengubah bagaimana gambar ditampilkan, tanpa mengubah apa yang ada dalam gambar tersebut. 
+
+Salah satu perkembangan teknologi yang menjadi salah satu solusi dalam masalah ini adalah \textit{Neural Style Transfer} (NST). 
+Algoritma NST menggunakan \textit{deep neural netrorks} untuk transformasi citra secara otomatis, memungkinkan sintesis gaya yang realistis dan artistik.
+Salah satu kegunaan NST untuk pembuatan karya seni buatan dari foto atau karya seni lainnya. Misalnya, dengan mentransfer penampilan atau gaya sebuah lukisan ke foto yang disediakan pengguna. 
+
+
+NST merupakan contoh dari penggayaan citra (image stylization), suatu masalah yang telah diteliti lebih dari dua dekade dalam bidang \href{https://en.wikipedia.org/wiki/Non-photorealistic_rendering}{\textit{non-photorealistic rendering}}. 
+NST pertama dipublikasikan dalam makalah "A Neural Algorithm of Artistic Style" oleh Leon Gatys, dkk. pada tahun 2015. Algoritma ini memungkinkan komputer untuk memisahkan dan menggabungkan kembali konten visual dari satu citra dengan gaya artistik dari citra lain, menciptakan karya seni digital baru yang memukau. Contoh konkret dari aplikasi ini adalah mentransfer gaya lukisan "Mona Lisa" karya Leonardo da Vinci menjadi gambar yang tetap mempertahankan identitas subjek, tetapi dengan karakteristik artistik yang berbeda (\ref{fig:contoh_nst_1}).
+
+
+Meskipun sering dipandang sebagai aplikasi dari \textit{Deep Learning} dan \textit{Convolutional Neural Network} (CNN), fondasi utama yang memungkinkan NST bekerja adalah prinsip-prinsip matematika yang dipelajari dalam Aljabar Linier dan Geometri. Citra digital pada dasarnya adalah representasi matriks atau tensor berdimensi tinggi dalam ruang Euclidean. Proses ekstraksi fitur, manipulasi gaya, dan rekonstruksi citra dalam NST sangat bergantung pada operasi matriks, transformasi ruang vektor, dan perhitungan jarak antar vektor.
+
+Dalam upaya mengatasi permasalahan pemisahan konten dan gaya, Gatys dkk. (2015) menemukan bahwa Matriks Gram adalah metode yang paling sesuai untuk merepresentasikan gaya secara matematis. Matriks Gram didefinisikan sebagai hasil perkalian inner product antara \textit{feature maps} dalam \textit{neural network}. Matriks Gram menyediakan cara yang sangat baik untuk menangkap karakteristik gaya sebagai korelasi statistik antar fitur, tanpa harus menyimpan informasi spasial. 
+
+Makalah ini bertujuan untuk menganalisis peran Matriks Gram dalam algoritma \textit{Neural Style Transfer} dari sudut pandang Aljabar Linier. 
+Penulis akan menganalisis bagaimana konsep-konsep Aljabar Linier seperti transposisi matriks, perkalian matriks, dan nilai eigen digunakan untuk memanipulasi informasi visual. 

@@ -1,0 +1,36 @@
+\subsection{Fungsi Loss}
+
+Fungsi \textit{Loss} (\textit{Loss Function}) adalah fungsi yang mengukur seberapa jauh keluaran suatu model atau suatu variavel keputusan dari nilai yang diinginkan. Secara umum, fungsi \textit{loss} memetakan pasangan prediksi dan target ke sebuah bilangan riil tak negatif.
+$$
+L_{\text{prediksi}, \text{target}} \in \mathbb{R}_{\ge 0}
+$$
+
+Semakin kecil nilai \textit{loss}, semakin baik kesesuaian antara prediksi dan target.
+
+Salah satu bentuk \textit{loss} yang paling dasar adalah loss berbasis jarak Euclidean. Misalkan $y, \hat{y} \in \mathbb{R}^{n}$ masing-masing menyatakan vektor target dan vektor prediksi. Jarak Euclidean antara keduanya didefinisikan sebagai:
+$$
+    d(y, \hat{y}) = \Vert y - \hat{y} \Vert_2 = 
+    \sqrt{ \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 }.
+$$
+
+Dalam banyak algoritma optimasi, sering digunakan \textit{squared Euclidean distance}, karena bentuk kuadrat ini lebih sederhana untuk dianalisis dan diturunkan gradiennya.
+$$
+    d(y, \hat{y})^2 = \Vert y - \hat{y} \Vert_2^2 = \sum_{i = 1}^n (y_1 - \hat{y}_i)^2
+$$
+
+Bentuk umum loss semacam ini dikenal sebagai \textit{mean squared error} (MSE) ketika nilai kuadrat perbedaan rata-ratanya yang digunakan:
+\[
+    L_{\mathrm{MSE}}(y, \hat{y}) 
+    = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2.
+\]
+
+Konsep yang sama dapat diperluas ke matriks. Misalkan $A, B \in \mathbb{R}^{m \times n}$. Salah satu ukuran perbedaan yang sering digunakan adalah norma Frobenius:
+$$
+    \| A - B \|_F^2 
+    = \sum_{i=1}^{m} \sum_{j=1}^{n} (A_{ij} - B_{ij})^2.
+$$
+
+Jika diperlukan, loss antara dua matriks dapat didefinisikan langsung sebagai
+$$
+    L(A,B) = \| A - B \|_F^2.
+$$

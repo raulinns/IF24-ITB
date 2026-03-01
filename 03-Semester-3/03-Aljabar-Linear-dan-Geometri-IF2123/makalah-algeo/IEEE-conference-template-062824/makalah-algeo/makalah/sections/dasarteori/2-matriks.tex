@@ -1,0 +1,89 @@
+\subsection{Matriks}
+Matriks adalah susunan bilangan-bilangan riil yaang diatur dalam yang diatur dalam baris dan kolom sehingga membentu \textit{array} persegi panjang. Secara formal sebuah matriks $A$ berukuran $m\times n$ berarti suatu kumpulan $m \cdot n$ bilangan yang disusun dalam $m$ baris dan $n$ kolom. 
+
+$$
+A = \begin{pmatrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \dots & a_{mn}
+\end{pmatrix}
+$$
+
+Matriks dapat ditulis sebagai $A \in \mathbb{R}^{m \times n}$, di mana setiap elemen $a_{ij}$ mewakili bilangan yang terletak di pada baris ke-$i$ dan kolom ke-$j$. Matriks dapat disebut sebagai matriks persegi, ketika baris dan kolomnya memiliki ukuran yang sama ($m = n$). Jika, matriks berbentuk persegi, maka elemen $a_{ij}$ di mana $i = j$ disebut sebagai diagonal utama dari matriks tersebut.
+
+Pada dasarnya, vektor merupakan matriks berukuran $1 \times n$ (vektor baris) atau $n \times 1$ (vektor kolom). Selain itu, terdapat juga bentuk matriks Identitas ($I_n$)dan matriks Nol ($0$). Matriks identitas $I_n$ merupakan matriks persegi $n 
+times n$ dengan diagonal utama bernilai 1 dan elemen lainnya 0. Sedangkan, matriks nol adalah matriks dengan semua elemen bernilai 0. Terakhir, terdapat matriks diagonal, yaitu matriks persegi dengan elemen non-nol hanya pada diagonal utama. 
+
+$$
+I_3 = 
+\begin{pmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+\end{pmatrix}
+\hspace{0.3cm}
+0 = \begin{pmatrix}
+    0   & 0     & 0 \\
+    0   & 0     & 0 \\
+    0   & 0     & 0 \\
+\end{pmatrix}
+\hspace{0.3cm}
+D = \begin{pmatrix}
+    d_1 & 0     & 0 \\
+    0   & d_2   & 0 \\
+    0   & 0     & d_3 \\
+\end{pmatrix}
+$$
+
+\subsection{Transpose Matrix}
+Transpose dari sebuah matriks $A \in \mathbb{R}^{m \times n}$ dinotasikan sebagai $A^T$ adalah matriks berukuran $n \times m$ yang diperoleh dengan menukar baris dan kolom dari A. 
+\begin{align*}
+    A = (a_{ij}) &\implies A^T = (a_{ji}) \\
+    A = \begin{pmatrix}
+        a_{11} & a_{12}  & a_{13} \\
+        a_{21} & a_{22}  & a_{23}
+    \end{pmatrix}_{2 \times 3}
+                 &\implies
+    A^T = \begin{pmatrix}
+        a_{11} & a_{21} \\
+        a_{12} & a_{22} \\
+        a_{13} & a_{23} 
+    \end{pmatrix}_{3 \times 2}
+\end{align*}
+
+\subsection{Matriks Simetris}
+Sebuah matriks persegi A disebut simetris jika $A = A^T$ artinya matriks sama dengan transposenya ($a_{ij} = a_{ji}$).
+Setiap matriks $AA^T$ atau $A^TA$ yang perkaliannya terdefinisi merupakan matriks simetris.
+Sebuah matriks simstris memiliki properti sebagai berikut:
+\begin{IEEEitemize}
+    \item Semua nilai eigen dari matriks simetris adalah bilangan riil
+    \item Vektor eigen yang bersesuaian dengan nilai eigen yang berbeda adalah orthogonal
+    \item Matriks simetris $A$ selalu dapat didiagonalisasi sehingga $A = Q \varLambda Q^T$ di mana $Q$ adalah matriks orthogonal dan $\varLambda$ adalah matriks diagonal.
+\end{IEEEitemize}
+
+\subsection{Perkalian Matriks}
+Perkalian dua matriks $A \in \mathbb{R}^{m \times n}$ dan $B \in \mathbb{R}^{n \times p}$ menghasilkan matriks $C \in \mathbb{R}^{m \times p}$ dengan elemen-elemen:
+$$
+C_{ij} = \sum{k = 1}^n A_ik \times B_kj
+$$
+Jumlah kolom $A$ harus sama dengan jumlah baris $B$ agar perkalian terdefinisi.
+
+\subsection{Hadamard Product}
+Perkalian \textit{element-wise} antara dua matriks $A$ dan $B$ dengan ukuran sama $m \times n$ menghasilkan matriks $C$ dengan elemen-elemen
+$$
+C = A  \odot B \implies C_{ij} = A_{ij} \cdot B_{ij}
+$$ 
+
+\subsection{Trace}
+Trace dari matriks persegi $A \in \mathbb{R}^{n \times n}$ adalah penjumlahan elemen-elemen diagonal utamanya.
+$$
+\mathrm{tr}(A) = \sum{i = 1}^n a_{ii} = a_{11} + a_{22} + \dots + a_{nn}
+$$
+
+\subsection{Frobenius Norm}
+Frobenius norm digunakan untuk mengukur \textit{magnitude} atau ukuran dari matriks secara keseluruhan. Ini merupakan generalisasi dari Euclidean norm untuk vektor. 
+Frabernius norm dari matriks $A \in \mathbb{R}^{m \times n}$ dapat dihitung dengan:
+$$
+\Vert A \Vert_F = \sqrt{\sum{i = 1}^m \sum{j = 1}^n a{ij}^2} = \sqrt{\mathrm{tr}(A^TA)}
+$$

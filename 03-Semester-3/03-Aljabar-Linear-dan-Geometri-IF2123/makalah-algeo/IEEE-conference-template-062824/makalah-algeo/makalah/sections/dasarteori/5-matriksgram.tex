@@ -1,0 +1,60 @@
+\subsection{Matriks Gram}
+
+Misalkan diberikan $n$ buah vektor $\mathbf{v}_1, \mathbf{v}_2, \ldots, \mathbf{v}_n \in \mathbb{R}^m$.
+Matriks Gram $G \in \mathbb{R}^{n \times n}$ didefinisikan sebagai matriks yang elemen-elemennya adalah hasil kali dalam (inner product) antara setiap pasangan vektor:
+$$
+    G_{ij} = \langle \mathbf{v}_i, \mathbf{v}_j \rangle, \qquad 1 \leq i,j \leq n.
+$$
+
+Jika vektor-vektor tersebut disusun sebagai kolom-kolom dari sebuah matriks
+$$
+    V =
+    \begin{pmatrix}
+        \vert & \vert &        & \vert \\
+        \mathbf{v}_1 & \mathbf{v}_2 & \cdots & \mathbf{v}_n \\
+        \vert & \vert &        & \vert
+    \end{pmatrix}
+    \in \mathbb{R}^{m \times n},
+$$
+maka matriks Gram dapat ditulis ringkas sebagai
+$$
+    G = V^\top V.
+$$
+Dengan demikian, matriks Gram dapat dipandang sebagai matriks yang merangkum seluruh inner product antara vektor-vektor pada kolom matriks $V$.
+
+Secara geometris, elemen-elemen matriks Gram memiliki makna sebagai berikut. Untuk setiap elemen diagonal $G_{ii}$ menyatakan kuadrat norma (panjang) vektor $\mathbf{v}_i$. 
+$$
+    G_{ii} = \langle \mathbf{v}_i, \mathbf{v}_i \rangle = \Vert \mathbf{v}_i \Vert_2^2
+$$
+
+Sedangkan, untuk elemen nondiagonal $G{ij}$ menyatakan sudut antara $\mathbf{v}_i$ dan $\mathbf{v}_j$.
+$$
+    G_{ij} = \langle \mathbf{v}_i, \mathbf{v}_j \rangle = \Vert \mathbf{v}_i \Vert_2  \cdot \Vert \mathbf{v}_j \Vert_2 \cdot \cos(\theta_{ij})
+$$
+
+Nilai $G_{ij}$ mengukur tingkat keselarasan (korelasi) antara dua vektor. Semakin besar nilai $G_{ij}$, maka semakin searah kedua vektor (menunjukkan korelasi yang kuat. Sebaliknya, semakin kecil nilai $G_{ij}$, maka semakin tidak searah kedua vektor (menunjukkan korelasi yang rendah). Jika, $G_{ij} \approx 0$, maka kedua vektor hampir orthogonal (sudut hampir mendekati $90^\circ$. Dengan demikian, matriks Gram dapat dipandang sebagai matriks korelasi (berbasis inner product) yang menangkap hubungan geometris antar vektor di dalam suatu himpunan.
+
+Matriks Gram memiliki beberapa sifat sebagai berikut.
+\begin{enumerate}
+    \item Matriks Gram merupakan matriks simetris. Dari definisi,
+    \[
+        G_{ij} = \langle \mathbf{v}_i, \mathbf{v}_j \rangle
+        = \langle \mathbf{v}_j, \mathbf{v}_i \rangle = G_{ji},
+    \]
+    sehingga diperoleh $G = G^\top$.
+
+\item Matriks Gram bersifat \href{https://en.wikipedia.org/wiki/Definite_matrix}{Positive semi-definite}.
+    Untuk setiap vektor $\mathbf{x} \in \mathbb{R}^n$ berlaku
+    $$
+        \mathbf{x}^\top G \mathbf{x}
+        = \mathbf{x}^\top V^\top V \mathbf{x}
+        = \| V \mathbf{x} \|_2^2 \geq 0.
+    $$
+    Konsekuensinya, semua nilai eigen dari $G$ tidak negatif. $\lambda_k \ge 0$ untuk setiap nilai eigen $\lambda_k$ dari $G$
+
+    \item Matriks Gram dapat didiagonalisasi secara orthogonal. Akibat $G$ simetris dan positive semi-definite, $G$ dapat didekomposisi secara orthogonal:
+    $$
+        G = Q \Lambda Q^\top,
+    $$
+    dengan $Q$ matriks orthogonal yang kolom-kolomnya adalah vektor-vektor eigen yang ternormalisasi, dan $\Lambda$ matriks diagonal yang berisi nilai-nilai eigen $\lambda_1, \ldots, \lambda_n$. Nilai eigen besar dapat ditafsirkan sebagai komponen utama yang dominan dalam struktur korelasi yang direpresentasikan oleh $G$.
+\end{enumerate}

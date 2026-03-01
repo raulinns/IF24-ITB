@@ -1,0 +1,57 @@
+\subsection{Vektor di Ruang Euclidean}
+Vektor adalah suatu entitas matematis yang memiliki besar dan arah di dalam ruang. Secara formal, vektor di ruang Euclidean berdimensi $n$ dinotasikan sebagai $\mathbb{R}^n$. Vektor didefinisikan sebagai susunan sekumpulan $n$ bilangan riil dalam urutan tertentu. Vektor biasanya direpresentasikan sebagai kolom atau baris bilangan-bilangan tersebut. Vektor dapat dinotasikan dengan huruf alfabet nonkapital yang dicetak tebal (misal $\textbf{v}$) atau diberi panah ke kanan (misal $\vec{v}$).
+
+Jika kita memiliki $n$ bilangan riil $v_1, v_2, \dots, v_n$, maka vektor $\mathbf{v}$ di $\mathbb{R}^n$, maka dapat ditulis sebagai vektor kolom
+$$
+\mathbf{v} = \begin{pmatrix}
+    v_1 \\
+    v_2 \\
+    \vdots \\
+    v_n
+\end{pmatrix}
+$$
+
+atau dalam notasi vektor baris.
+$$
+\mathbf{v} = \begin{pmatrix}
+    v_1, v_2, \dots, v_n
+\end{pmatrix}
+$$
+
+Vektor memiliki operasi fundamental, sebagai berikut:
+\begin{IEEEitemize}
+    \item  Operasi Penjumlahan
+        $$
+        \mathbf{u} + \mathbf{v} = \begin{pmatrix}
+            u_1 + v_1 \\
+            u_2 + v_2 \\
+            \vdots \\
+            u_n + v_n
+        \end{pmatrix}
+        $$
+
+    \item Perkalian Skalar
+        $$
+        c\mathbf{v} = \begin{pmatrix}
+            c v_1 \\
+            c v_2 \\
+            \vdots \\
+            c v_n
+        \end{pmatrix}
+        $$
+    \item \textit{Dot Product} atau disebut juga \textit{inner product} antara dua vektor $\mathbf{u}$ dan $\mathbf{v}$ di $\mathbb{R}^n$ didefinisikan sebagai:
+        $$
+        \langle \mathbf{u}, \mathbf{v} \rangle = \mathbf{u}^T \mathbf{v} = \sum{i = 1}^{n} u_i v_i = u_1v_1 + u_2v_2 + \dots + u_n v_n
+        $$
+        
+        atau secara geometris, \textit{inner product} antara dua vektor dapat diinterpretasikan sebagai.
+        $$
+        \langle \mathbf{u}, \mathbf{v} \rangle = \Vert \mathbf{u} \Vert \cdot \Vert \mathbf{v} \Vert \cdot \cos{(\theta)}
+        $$
+
+    \item Norma Euclidean (L2 Norm) \\
+        Norma Euclidean digunakan untuk mengukur panjang atau \textit{magnitude} dari vektor. Secara geometris, dalam ruang 2D atau 3D, norma ini adalah jarak Euclidean dari titik $(0,0)$ ke titik yang ditunjuk vektor. 
+        $$
+        \Vert \mathbf{v} \Vert = \sqrt{\sum{i = 1}^{n} v_i^2} = \sqrt{v_1^2 + v_2^2 + \dots + v_n^2}
+        $$
+\end{IEEEitemize}

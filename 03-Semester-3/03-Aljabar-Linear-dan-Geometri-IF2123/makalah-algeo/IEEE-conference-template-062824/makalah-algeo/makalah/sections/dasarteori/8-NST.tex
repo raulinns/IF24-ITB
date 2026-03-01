@@ -1,0 +1,62 @@
+\subsection{Neural Style Transfer}
+Neural Style Transfer (NST) adalah sebuah metode yang bertujuan untuk menghasilkan citra baru $I_g$ yang menggabungkan konten dari sebuah citra konten $I_c$ dan gaya dari sebuah citra gaya $I_s$. Secara intuitif, konten mengacu pada struktur global atau tata letak objek dalam gambar (bentuk, posisi, dan susunan besar), sedangkan gaya berkaitan dengan karakteristik visual seperti tekstur, pola sapuan kuas, dan skema warna.
+
+Pendekatan NST memanfaatkan jaringan saraf konvolusional (CNN) yang telah dilatih sebelumnya (misalnya VGG-19) untuk memperoleh representasi fitur dari citra. Representasi ini kemudian digunakan untuk mendefinisikan \textit{content loss} dan \textit{style loss}, sehingga citra hasil $I_g$ dapat dioptimasi agar secara bersamaan mendekati konten $I_c$ dan gaya $I_s$.
+
+% \subsection{Representasi Konten dengan VGG-19}
+%
+% Seperti telah dibahas pada bagian CNN dan arsitektur VGG-19, setiap layer konvolusi pada VGG-19 menghasilkan \textit{feature maps} yang dapat dianggap sebagai representasi fitur dari citra pada tingkat abstraksi tertentu. Misalkan untuk sebuah layer ke-$l$ diperoleh tensor fitur berdimensi
+% $$
+% C_l \times H_l \times W_l,
+% $$
+% yang selanjutnya di-reshape menjadi sebuah matriks
+% $$
+% F^l \in \mathbb{R}^{C_l \times (H_l W_l)},
+% $$
+% di mana setiap baris dari $F^l$ merepresentasikan satu kanal fitur, dan setiap kolom merepresentasikan satu posisi spasial.
+%
+% Untuk merepresentasikan konten, dipilih satu layer menengah (misalnya \texttt{conv4\textsubscript{2}}) yang dianggap menangkap struktur global citra dengan baik. Jika $F^l_c$ menyatakan matriks fitur pada layer ke-$l$ untuk citra konten $I_c$, dan $F^l_g$ menyatakan matriks fitur pada layer yang sama untuk citra hasil $I_g$, maka \emph{content loss} pada layer tersebut didefinisikan sebagai
+% $$
+% L_{\mathrm{content}}^{(l)}
+% = \frac{1}{2} \big\| F^l_g - F^l_c \big\|_F^2.
+% $$
+% Norma Frobenius di sini mengukur jarak kuadrat antara kedua matriks fitur, sehingga meminimalkan $L_{\mathrm{content}}^{(l)}$ akan memaksa representasi fitur citra hasil mendekati representasi fitur citra konten pada layer tersebut.
+%
+% \subsection{Representasi Gaya dengan Matriks Gram}
+%
+% Untuk merepresentasikan gaya, digunakan Matriks Gram yang telah dibahas pada bagian sebelumnya. Ingat bahwa untuk sebuah matriks fitur
+% $$
+% F^l \in \mathbb{R}^{C_l \times (H_l W_l)},
+% $$
+% Matriks Gram pada layer ke-$l$ didefinisikan sebagai
+% $$
+% G^l = F^l (F^l)^\top \in \mathbb{R}^{C_l \times C_l},
+% $$
+% dengan elemen
+% $$
+% G^l_{ij} = \langle \mathbf{f}^l_i, \mathbf{f}^l_j \rangle,
+% $$
+% di mana $\mathbf{f}^l_i$ dan $\mathbf{f}^l_j$ adalah baris ke-$i$ dan ke-$j$ dari $F^l$, yang masing-masing merepresentasikan satu kanal fitur. Dengan demikian, $G^l_{ij}$ mengukur korelasi antara kanal fitur ke-$i$ dan ke-$j$ di seluruh lokasi spasial.
+%
+% Dalam konteks gaya, kesamaan Matriks Gram antara dua citra berarti bahwa kedua citra tersebut memiliki pola korelasi fitur yang serupa, sehingga tekstur, pola, dan karakteristik gaya globalnya menjadi mirip. Misalkan $G^l_s$ menyatakan Matriks Gram pada layer ke-$l$ untuk citra gaya $I_s$, dan $G^l_g$ menyatakan Matriks Gram pada layer yang sama untuk citra hasil $I_g$. Maka \emph{style loss} pada layer ke-$l$ dapat didefinisikan sebagai
+% $$
+% L_{\mathrm{style}}^{(l)}
+% = \big\| G^l_g - G^l_s \big\|_F^2.
+% $$
+%
+% Dalam praktiknya, gaya seringkali diambil dari beberapa layer sekaligus untuk menangkap tekstur pada berbagai skala, misalnya dari layer \texttt{conv1\_1}, \texttt{conv2\textsubscript{1}}, \texttt{conv3\textsubscript{1}}, \texttt{conv4\textsubscript{1}}, dan \texttt{conv5\textsubscript{1}}. Jika $w_l$ menyatakan bobot kontribusi layer ke-$l$ terhadap gaya total, maka style loss keseluruhan dapat ditulis sebagai
+% $$
+% L_{\mathrm{style}}
+% = \sum_{l \in \mathcal{L}_s} w_l \, L_{\mathrm{style}}^{(l)},
+% $$
+% dengan $\mathcal{L}_s$ adalah himpunan indeks layer yang digunakan untuk representasi gaya.
+%
+% \subsection{Fungsi Loss Total dalam NST}
+%
+% Neural Style Transfer menggabungkan content loss dan style loss ke dalam sebuah fungsi loss total. Jika $L_{\mathrm{content}}$ menyatakan content loss (misalnya hanya dari satu layer tertentu) dan $L_{\mathrm{style}}$ menyatakan style loss gabungan dari beberapa layer, maka loss total dapat ditulis sebagai
+% $$
+% L_{\mathrm{total}}
+% = \alpha \, L_{\mathrm{content}} + \beta \, L_{\mathrm{style}},
+% $$
+% dengan $\alpha > 0$ dan $\beta > 0$ adalah hiperparameter yang mengatur keseimbangan antara preservasi konten dan intensitas gaya. Nilai $\alpha$ yang relatif besar dibandingkan $\beta$ akan menghasilkan citra yang lebih mirip konten awal, sedangkan $\beta$ yang jauh lebih besar akan menekankan pola gaya sehingga struktur konten bisa terdistorsi. 
+%
