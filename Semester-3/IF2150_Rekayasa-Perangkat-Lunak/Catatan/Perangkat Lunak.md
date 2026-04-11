@@ -1,0 +1,4 @@
+# Pendahuluan
+Perangkat lunak (*software*) didesain dan dibuat oleh *software engineers*. Secara moral, *software engineers* diharuskan untuk membuat perangkat lunak yang dapat diandalkan (*reliable*) dan tidak berbahaya pada penggunanya. *Software engineers* harus dapat melihat sebuah perangkat lunak sebagai suatu hal yang dibuat oleh program, dokumen dan data yang diharuskan untuk mendesain dan membangun sebuah sistem.
+
+Perangkat lunak dianggap berhasil jika, perangkat lunak itu berhasil memenuhi kebutuhan penggunanya; bekerja dengan baik untuk jangka waktu yang lama; mudah untuk dimodifikasi; dan lebih mudah lagi untuk digunakan. Sebaliknya, perangkat lunak dianggap gagal, jika pengguna tidak puas dengan penggunaannya; mudah error; dan sulit untuk diubah dan digunakan. 

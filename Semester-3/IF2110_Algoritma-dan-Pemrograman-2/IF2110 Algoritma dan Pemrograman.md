@@ -1,0 +1,39 @@
+---
+cssclasses:
+  - dashboard
+---
+- ## Fungsional
+	- [[Paradigma Fungsional]]
+	- [[Ekspresi Kondisional]]
+	- [[Tipe Bentukan]]
+	- [[Rekursif]]
+	- [[List]]
+
+- ## Prosedural
+
+- ## Materi Perkuliahan
+	- [[00-Diktat-Dasar-Pemrograman-Fungsional.pdf]]
+	- [[00-Diktat-Struktur-Data.pdf]]
+	- [[00-Pengantar-Perkuliahan.pdf]]
+	- [[01-Berpikir-Abstrak-dalam-Paradigma-Pemrograman-Fungsional.pdf]]
+	- [[02-Ekspresi-Kondisional.pdf]]
+	- [[03-Tipe-Bentukan.pdf]]
+	- [[04-Rekursif.pdf]]
+	- [[05a-Pendahuluan-List.pdf]]
+	- [[05b-Operasi-pada-List.pdf]]
+	- [[05c-List-of-List.pdf]]
+	- [[06-Pohon-Biner.pdf]]
+	- [[07-Ekspresi-Lambda.pdf]]
+	- [[08a-Review-Pemrograman-Prosedural.pdf]]
+	- [[08b-Review-ADT-List-Berkait.pdf]]
+	- [[09-Analisis-Rekurens.pdf]]
+	- [[10-Mesin-Abstrak.pdf]]
+	- [[11a-Rekursif-List.pdf]]
+	- [[11b-Rekursif-List.pdf]]
+	- [[12a-Binary-Tree.pdf]]
+	- [[12b-Binary-Tree.pdf]]
+	- [[13-Graf]]
+	- [[14a-Multilist.pdf]]
+	- [[14b-RelasiM-N.pdf]]
+	- [[14c-Topological-Sort.pdf]]
+	- [[15-Kompleksitas-Algoritma.pdf]]
