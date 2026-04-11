@@ -19,3 +19,9 @@
 [submodule "Semester-3/IF2123_Aljabar-Linear-dan-Geometri/Tugas-Besar-1"]
 	path = Semester-3/IF2123_Aljabar-Linear-dan-Geometri/Tugas-Besar-1
 	url = https://github.com/IRK-23/algeo1-tidak-tahu-ares-cukup-ares.git
+[submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1"]
+	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1
+	url = https://github.com/Akram17t/Tubes1_IndonesiaSuksesLihatAkramManu.git
+[submodule "Semester-3/IF2150_Rekayasa-Perangkat-Lunak/Tugas-Besar-1"]
+	path = Semester-3/IF2150_Rekayasa-Perangkat-Lunak/Tugas-Besar-1
+	url = https://github.com/nicholaswisee/IF2150-2025-K01-G11-Tabung.git
