@@ -31,3 +31,6 @@
 [submodule "Semester-2/WI2002_Literasi-Data-dan-Inteligensi-Artifisial/Tugas-Besar"]
 	path = Semester-2/WI2002_Literasi-Data-dan-Inteligensi-Artifisial/Tugas-Besar
 	url = https://github.com/raulinns/Tubes-Lidia_TrafficAnalysis.git
+[submodule "Semester-3/IF2130_Sistem-Operasi/Tugas-Besar"]
+	path = Semester-3/IF2130_Sistem-Operasi/Tugas-Besar
+	url = https://github.com/labsister23/tugas-besar-os-templeos.git
