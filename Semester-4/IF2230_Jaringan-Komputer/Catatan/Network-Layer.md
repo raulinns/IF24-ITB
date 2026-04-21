@@ -437,3 +437,4 @@ Host range: .1 – .126   → 126 host
 ✅ **Sudah dikuasai:**
 - Physical Layer (seluruh materi)
 - Data Link Layer (seluruh materi)
+

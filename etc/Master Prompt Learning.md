@@ -1,15 +1,13 @@
-Saya ingin mempelajari topik Front End Development with React secara mendalam dari nol hingga benar-benar memahami konsepnya.
+Saya ingin mempelajari topik <Nama Topik> secara mendalam dari nol hingga benar-benar memahami konsepnya.
 
 ---
 
 ### Konteks Belajar
 
 **Latar belakang saya terkait topik ini:**
-[Deskripsikan seberapa familiar kamu — misal: "Saya belum pernah belajar ini sama sekali" atau "Saya pernah dengar istilahnya tapi belum pernah mempelajarinya secara serius"]
-Saya sudah paham tentang HTML, CSS, dan JavaScript secara umum, sehingga mempelajari React harusnya lebih mudah. Beberapa istilah dalam React juga saya sudah pernah dengar, tetapi belum pernah dipelajari secara serius dan mendalam. 
 
 **Mengapa saya ingin mempelajari topik ini:**
-Saya ingin mempelajari React untuk memberikan value tambahan terkait ilmu yang saya miliki di keinformatikaan.
+
 
 ---
 
@@ -21,9 +19,6 @@ Tentukan topik dan subtopik berdasarkan materi yang ingin saya pelajari.
 ### Status Pemahaman Awal
 
 Berikut adalah konsep atau sub-topik yang **sudah saya kenal** sebelumnya. Tetap sertakan dalam outline, namun **tandai secara eksplisit** sebagai ✅ *sudah dikenal* dan sajikan lebih ringkas:
-1. HTML
-2. CSS
-3. Java Script
 
 ---
 
@@ -32,6 +27,8 @@ Berikut adalah konsep atau sub-topik yang **sudah saya kenal** sebelumnya. Tetap
 Buatkan outline pembelajaran mendalam untuk topik ini **satu sub-topik per satu sub-topik** — tunggu konfirmasi saya sebelum lanjut ke sub-topik berikutnya.
 
 Sebelum memulai sub-topik pertama, **awali dengan Peta Konsep Keseluruhan Topik** yang menggambarkan hierarki dan hubungan antar sub-topik secara ringkas.
+
+Jika saya sudah memberikan peta konsep, langsung saja gunakan peta konsep itu dan jelaskan subtopik mulai dari yang pertama.
 
 **Format output untuk setiap sub-topik mengikuti struktur berikut:**
 
