@@ -37,3 +37,6 @@
 [submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-2"]
 	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-2
 	url = https://github.com/bangedaw/Tucil2_13524036_13524044.git
+[submodule "Semester-4/IF2010_Pemrograman-Berorientasi-Objek/Tugas-Besar-1"]
+	path = Semester-4/IF2010_Pemrograman-Berorientasi-Objek/Tugas-Besar-1
+	url = https://github.com/Labpro-22/tugas-besar-1-pop.git
