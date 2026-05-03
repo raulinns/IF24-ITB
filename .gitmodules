@@ -1,27 +1,9 @@
 [submodule "Semester-2/IF1221_Logika-Komputasional/Tugas-Besar"]
 	path = Semester-2/IF1221_Logika-Komputasional/Tugas-Besar
 	url = https://github.com/GAIB22/praktikum-if1221-logika-komputasional-n1m0nskalcerzfamz.git
-[submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-1"]
-	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-1
-	url = https://github.com/raulinns/Tucil1-13524044.git
-[submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-2"]
-	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-2
-	url = https://github.com/bangedaw/Tucil2_13524036_13524044.git
 [submodule "Semester-2/IF1210_Algoritma-dan-Pemrograman-1/Tugas-Besar"]
 	path = Semester-2/IF1210_Algoritma-dan-Pemrograman-1/Tugas-Besar
 	url = https://github.com/raulinns/Tubes-Alpro1_RS-Nimons.git
-[submodule "Semester-3/IF2120_Probabilitas-dan-Statistika/Tugas-Besar"]
-	path = Semester-3/IF2120_Probabilitas-dan-Statistika/Tugas-Besar
-	url = https://github.com/raulinns/Tubes-Probstat.git
-[submodule "Semester-3/IF2123_Aljabar-Linear-dan-Geometri/Tugas-Besar-2"]
-	path = Semester-3/IF2123_Aljabar-Linear-dan-Geometri/Tugas-Besar-2
-	url = https://github.com/IRK-23/algeo2-120.git
-[submodule "Semester-3/IF2123_Aljabar-Linear-dan-Geometri/Tugas-Besar-1"]
-	path = Semester-3/IF2123_Aljabar-Linear-dan-Geometri/Tugas-Besar-1
-	url = https://github.com/IRK-23/algeo1-tidak-tahu-ares-cukup-ares.git
-[submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1"]
-	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1
-	url = https://github.com/Akram17t/Tubes1_IndonesiaSuksesLihatAkramManu.git
 [submodule "Semester-2/WI2001_Pengenalan-Rekayasa-dan-Desain/Tugas-Besar"]
 	path = Semester-2/WI2001_Pengenalan-Rekayasa-dan-Desain/Tugas-Besar
 	url = https://github.com/raulinns/Tubes-PRD_AutofeederFisher.git
@@ -34,3 +16,21 @@
 [submodule "Semester-3/IF2150_Rekayasa-Perangkat-Lunak/Tugas-Besar"]
 	path = Semester-3/IF2150_Rekayasa-Perangkat-Lunak/Tugas-Besar
 	url = https://github.com/nicholaswisee/IF2150-2025-K01-G11-Tabung.git
+[submodule "Semester-3/IF2120_Probabilitas-dan-Statistika/Tugas-Besar"]
+	path = Semester-3/IF2120_Probabilitas-dan-Statistika/Tugas-Besar
+	url = https://github.com/raulinns/Tubes-Probstat.git
+[submodule "Semester-3/IF2123_Aljabar-Linear-dan-Geometri/Tugas-Besar-1"]
+	path = Semester-3/IF2123_Aljabar-Linear-dan-Geometri/Tugas-Besar-1
+	url = https://github.com/IRK-23/algeo1-tidak-tahu-ares-cukup-ares.git
+[submodule "Semester-3/IF2123_Aljabar-Linear-dan-Geometri/Tugas-Besar-2"]
+	path = Semester-3/IF2123_Aljabar-Linear-dan-Geometri/Tugas-Besar-2
+	url = https://github.com/IRK-23/algeo2-120.git
+[submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1"]
+	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1
+	url = https://github.com/Akram17t/Tubes1_IndonesiaSuksesLihatAkramManu.git
+[submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-1"]
+	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-1
+	url = https://github.com/raulinns/Tucil1-13524044.git
+[submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-2"]
+	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-2
+	url = https://github.com/bangedaw/Tucil2_13524036_13524044.git
