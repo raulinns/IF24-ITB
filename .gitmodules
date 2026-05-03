@@ -22,9 +22,6 @@
 [submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1"]
 	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1
 	url = https://github.com/Akram17t/Tubes1_IndonesiaSuksesLihatAkramManu.git
-[submodule "Semester-3/IF2150_Rekayasa-Perangkat-Lunak/Tugas-Besar-1"]
-	path = Semester-3/IF2150_Rekayasa-Perangkat-Lunak/Tugas-Besar-1
-	url = https://github.com/nicholaswisee/IF2150-2025-K01-G11-Tabung.git
 [submodule "Semester-2/WI2001_Pengenalan-Rekayasa-dan-Desain/Tugas-Besar"]
 	path = Semester-2/WI2001_Pengenalan-Rekayasa-dan-Desain/Tugas-Besar
 	url = https://github.com/raulinns/Tubes-PRD_AutofeederFisher.git
@@ -34,3 +31,6 @@
 [submodule "Semester-3/IF2130_Sistem-Operasi/Tugas-Besar"]
 	path = Semester-3/IF2130_Sistem-Operasi/Tugas-Besar
 	url = https://github.com/labsister23/tugas-besar-os-templeos.git
+[submodule "Semester-3/IF2150_Rekayasa-Perangkat-Lunak/Tugas-Besar"]
+	path = Semester-3/IF2150_Rekayasa-Perangkat-Lunak/Tugas-Besar
+	url = https://github.com/nicholaswisee/IF2150-2025-K01-G11-Tabung.git
