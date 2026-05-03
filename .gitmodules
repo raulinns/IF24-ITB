@@ -28,6 +28,9 @@
 [submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1"]
 	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1
 	url = https://github.com/Akram17t/Tubes1_IndonesiaSuksesLihatAkramManu.git
+[submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-2"]
+	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-2
+	url = https://github.com/nicholaswisee/Tubes2_TimsesDewaPetir.git
 [submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-1"]
 	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-1
 	url = https://github.com/raulinns/Tucil1-13524044.git
