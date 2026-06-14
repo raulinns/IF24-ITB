@@ -28,6 +28,12 @@
 [submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1"]
 	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-1
 	url = https://github.com/Akram17t/Tubes1_IndonesiaSuksesLihatAkramManu.git
+[submodule "Semester-4/IF2010_Pemrograman-Berorientasi-Objek/Tugas-Besar-1"]
+	path = Semester-4/IF2010_Pemrograman-Berorientasi-Objek/Tugas-Besar-1
+	url = https://github.com/Labpro-22/tugas-besar-1-pop.git
+[submodule "Semester-4/IF2010_Pemrograman-Berorientasi-Objek/Tugas-Besar-2"]
+	path = Semester-4/IF2010_Pemrograman-Berorientasi-Objek/Tugas-Besar-2
+	url = https://github.com/Labpro-22/tugas-besar-2-pop.git
 [submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-2"]
 	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-2
 	url = https://github.com/nicholaswisee/Tubes2_TimsesDewaPetir.git
@@ -37,12 +43,18 @@
 [submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-2"]
 	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-2
 	url = https://github.com/bangedaw/Tucil2_13524036_13524044.git
-[submodule "Semester-4/IF2010_Pemrograman-Berorientasi-Objek/Tugas-Besar-1"]
-	path = Semester-4/IF2010_Pemrograman-Berorientasi-Objek/Tugas-Besar-1
-	url = https://github.com/Labpro-22/tugas-besar-1-pop.git
-[submodule "Semester-4/IF2240_Basis-Data/Tugas-Besar"]
-	path = Semester-4/IF2240_Basis-Data/Tugas-Besar
-	url = https://github.com/naufalromi/TTS_IF2240_Tubes_2026.git
+[submodule "Semester-4/IF2230_Jaringan-Komputer/Tugas-Besar"]
+	path = Semester-4/IF2230_Jaringan-Komputer/Tugas-Besar
+	url = https://github.com/labsister23/tugas-besar-jarkom-7osilayertapicuman5layer.git
+[submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-3"]
+	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Kecil-3
+	url = https://github.com/raulinns/Tucil3_13524044.git
+[submodule "Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-3"]
+	path = Semester-4/IF2221_Strategi-Algoritma/Tugas-Besar-3
+	url = https://github.com/samuelsondhrm/Tubes3_PragmaticPlay.git
 [submodule "Semester-4/IF2224_Teori-Bahasa-Formal-dan-Otomata/Tugas-Besar"]
 	path = Semester-4/IF2224_Teori-Bahasa-Formal-dan-Otomata/Tugas-Besar
 	url = https://github.com/raulinns/ISL-Tubes-IF2224-2026.git
+[submodule "Semester-4/IF2240_Basis-Data/Tugas-Besar"]
+	path = Semester-4/IF2240_Basis-Data/Tugas-Besar
+	url = https://github.com/naufalromi/TTS_IF2240_Tubes_2026
