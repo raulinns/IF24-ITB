@@ -1,0 +1,181 @@
+\contentsline {section}{\numberline {1}Informasi Ujian}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Capaian Pembelajaran Mata Kuliah (CPMK)}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Tabel Hubungan CPMK dan Materi}{1}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Daftar Materi yang Diujikan}{1}{section.2}%
+\contentsline {section}{\numberline {3}Outline Keseluruhan Materi}{1}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Backtracking}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Branch and Bound}{2}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Route Planning}{2}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}String Matching}{2}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}String Matching with Regex}{2}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Program Dinamis}{2}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Teori P, NP, NPC}{2}{subsection.3.7}%
+\contentsline {section}{\numberline {4}Backtracking}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Outline Fundamental Konsep Materi}{3}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Pentingnya Materi dan Relevansinya}{3}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Mengapa Materi Ini Penting}{3}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}Implementasi Dasar}{4}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}Relevansi dengan Industri Saat Ini}{4}{subsubsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.4}Dependensi dan Hubungan dengan Materi Lain}{4}{subsubsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.3}Pola Soal UAS Sebelumnya dan Prioritas}{4}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}Formula Eksplisit yang Perlu Dikuasai}{5}{subsubsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.4}Penjelasan Konsep Fundamental}{5}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}Backtracking sebagai Perbaikan Exhaustive Search}{5}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}Properti Umum Algoritma Runut-balik}{6}{subsubsection.4.4.2}%
+\contentsline {paragraph}{\relax Mekanisme atau Prosedur Kerja}{6}{subsubsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.3}Pohon Ruang Status}{6}{subsubsection.4.4.3}%
+\contentsline {paragraph}{\relax Klasifikasi atau Perbandingan}{6}{subsubsection.4.4.3}%
+\contentsline {subsubsection}{\numberline {4.4.4}Aplikasi Backtracking}{6}{subsubsection.4.4.4}%
+\contentsline {subsection}{\numberline {4.5}Komponen Kunci Penting}{7}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Algoritma dan Rumus Penting}{7}{subsection.4.6}%
+\contentsline {subsubsection}{\numberline {4.6.1}Skema Umum Backtracking Rekursif}{7}{subsubsection.4.6.1}%
+\contentsline {subsubsection}{\numberline {4.6.2}Fungsi Pembatas Sum of Subsets}{7}{subsubsection.4.6.2}%
+\contentsline {subsection}{\numberline {4.7}Checklist Pemahaman}{8}{subsection.4.7}%
+\contentsline {subsubsection}{\numberline {4.7.1}Submateri yang Telah Dibahas}{8}{subsubsection.4.7.1}%
+\contentsline {subsubsection}{\numberline {4.7.2}Prioritas Belajar}{8}{subsubsection.4.7.2}%
+\contentsline {section}{\numberline {5}Branch and Bound}{8}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Outline Fundamental Konsep Materi}{8}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Pentingnya Materi dan Relevansinya}{9}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Mengapa Materi Ini Penting}{9}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Implementasi Dasar}{9}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Relevansi dengan Industri Saat Ini}{9}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}Dependensi dan Hubungan dengan Materi Lain}{9}{subsubsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.3}Pola Soal UAS Sebelumnya dan Prioritas}{9}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Formula Eksplisit yang Perlu Dikuasai}{10}{subsubsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.4}Penjelasan Konsep Fundamental}{11}{subsection.5.4}%
+\contentsline {subsubsection}{\numberline {5.4.1}Definisi Branch and Bound}{11}{subsubsection.5.4.1}%
+\contentsline {subsubsection}{\numberline {5.4.2}Pemangkasan pada B\&B}{11}{subsubsection.5.4.2}%
+\contentsline {subsubsection}{\numberline {5.4.3}Aplikasi B\&B}{11}{subsubsection.5.4.3}%
+\contentsline {subsection}{\numberline {5.5}Komponen Kunci Penting}{11}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}Algoritma dan Rumus Penting}{12}{subsection.5.6}%
+\contentsline {subsubsection}{\numberline {5.6.1}Cost Simpul}{12}{subsubsection.5.6.1}%
+\contentsline {subsubsection}{\numberline {5.6.2}Bound TSP dengan Reduced Cost Matrix}{12}{subsubsection.5.6.2}%
+\contentsline {subsection}{\numberline {5.7}Checklist Pemahaman}{12}{subsection.5.7}%
+\contentsline {subsubsection}{\numberline {5.7.1}Submateri yang Telah Dibahas}{12}{subsubsection.5.7.1}%
+\contentsline {subsubsection}{\numberline {5.7.2}Prioritas Belajar}{12}{subsubsection.5.7.2}%
+\contentsline {section}{\numberline {6}Route Planning}{13}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Outline Fundamental Konsep Materi}{13}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Pentingnya Materi dan Relevansinya}{14}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {6.2.1}Dependensi dan Hubungan dengan Materi Lain}{14}{subsubsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.3}Pola Soal UAS Sebelumnya dan Prioritas}{15}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Penjelasan Konsep Fundamental}{15}{subsection.6.4}%
+\contentsline {subsubsection}{\numberline {6.4.1}Model Graf untuk Route Planning}{15}{subsubsection.6.4.1}%
+\contentsline {subsubsection}{\numberline {6.4.2}Frontier, Simpul Ekspan, dan Kondisi Berhenti}{16}{subsubsection.6.4.2}%
+\contentsline {subsubsection}{\numberline {6.4.3}\textit {Uninformed Search}}{16}{subsubsection.6.4.3}%
+\contentsline {subsubsection}{\numberline {6.4.4}Uniform Cost Search}{17}{subsubsection.6.4.4}%
+\contentsline {subsubsection}{\numberline {6.4.5}\textit {Informed Search} dan Heuristik}{17}{subsubsection.6.4.5}%
+\contentsline {subsubsection}{\numberline {6.4.6}Greedy Best-First Search}{18}{subsubsection.6.4.6}%
+\contentsline {subsubsection}{\numberline {6.4.7}A*}{18}{subsubsection.6.4.7}%
+\contentsline {subsubsection}{\numberline {6.4.8}Admissible dan Consistent Heuristic}{18}{subsubsection.6.4.8}%
+\contentsline {subsection}{\numberline {6.5}Komponen Kunci Penting}{19}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Algoritma dan Rumus Penting}{19}{subsection.6.6}%
+\contentsline {subsubsection}{\numberline {6.6.1}Biaya Lintasan}{19}{subsubsection.6.6.1}%
+\contentsline {subsubsection}{\numberline {6.6.2}Fungsi Evaluasi UCS, Greedy Best-First Search, dan A*}{20}{subsubsection.6.6.2}%
+\contentsline {subsubsection}{\numberline {6.6.3}Admissibility Heuristic}{20}{subsubsection.6.6.3}%
+\contentsline {subsubsection}{\numberline {6.6.4}Consistency Heuristic}{21}{subsubsection.6.6.4}%
+\contentsline {subsubsection}{\numberline {6.6.5}Pseudocode Pencarian Best-First Generik}{21}{subsubsection.6.6.5}%
+\contentsline {subsubsection}{\numberline {6.6.6}Template Tabel Iterasi UAS}{22}{subsubsection.6.6.6}%
+\contentsline {subsection}{\numberline {6.7}Kesalahan Umum dan Edge Case}{22}{subsection.6.7}%
+\contentsline {subsection}{\numberline {6.8}Checklist Pemahaman}{23}{subsection.6.8}%
+\contentsline {subsubsection}{\numberline {6.8.1}Submateri yang Telah Dibahas}{23}{subsubsection.6.8.1}%
+\contentsline {subsubsection}{\numberline {6.8.2}Prioritas Belajar}{23}{subsubsection.6.8.2}%
+\contentsline {section}{\numberline {7}String Matching}{23}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Outline Fundamental Konsep Materi}{24}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Pentingnya Materi dan Relevansinya}{25}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Dependensi dan Hubungan dengan Materi Lain}{25}{subsubsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.3}Pola Soal UAS Sebelumnya dan Prioritas}{25}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Penjelasan Konsep Fundamental}{26}{subsection.7.4}%
+\contentsline {subsubsection}{\numberline {7.4.1}Definisi Teks, Pattern, dan Indeks Kecocokan}{26}{subsubsection.7.4.1}%
+\contentsline {subsubsection}{\numberline {7.4.2}Prefix, Suffix, dan Border}{26}{subsubsection.7.4.2}%
+\contentsline {subsubsection}{\numberline {7.4.3}Brute Force}{27}{subsubsection.7.4.3}%
+\contentsline {subsubsection}{\numberline {7.4.4}Knuth-Morris-Pratt}{27}{subsubsection.7.4.4}%
+\contentsline {subsubsection}{\numberline {7.4.5}Boyer-Moore}{27}{subsubsection.7.4.5}%
+\contentsline {subsection}{\numberline {7.5}Komponen Kunci Penting}{28}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Algoritma dan Rumus Penting}{28}{subsection.7.6}%
+\contentsline {subsubsection}{\numberline {7.6.1}Brute Force String Matching}{28}{subsubsection.7.6.1}%
+\contentsline {subsubsection}{\numberline {7.6.2}Fungsi Pinggiran KMP}{29}{subsubsection.7.6.2}%
+\contentsline {subsubsection}{\numberline {7.6.3}Pseudocode KMP}{29}{subsubsection.7.6.3}%
+\contentsline {subsubsection}{\numberline {7.6.4}Last Occurrence Boyer-Moore}{30}{subsubsection.7.6.4}%
+\contentsline {subsubsection}{\numberline {7.6.5}Pseudocode Boyer-Moore dengan Character-Jump}{30}{subsubsection.7.6.5}%
+\contentsline {subsection}{\numberline {7.7}Cara Menjawab Soal Manual}{30}{subsection.7.7}%
+\contentsline {subsubsection}{\numberline {7.7.1}Format Jawaban KMP}{30}{subsubsection.7.7.1}%
+\contentsline {subsubsection}{\numberline {7.7.2}Format Jawaban Boyer-Moore}{31}{subsubsection.7.7.2}%
+\contentsline {subsection}{\numberline {7.8}Kesalahan Umum dan Edge Case}{31}{subsection.7.8}%
+\contentsline {subsection}{\numberline {7.9}Checklist Pemahaman}{31}{subsection.7.9}%
+\contentsline {subsubsection}{\numberline {7.9.1}Submateri yang Telah Dibahas}{31}{subsubsection.7.9.1}%
+\contentsline {subsubsection}{\numberline {7.9.2}Prioritas Belajar}{32}{subsubsection.7.9.2}%
+\contentsline {section}{\numberline {8}String Matching with Regex}{32}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Outline Fundamental Konsep Materi}{32}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Pentingnya Materi dan Relevansinya}{33}{subsection.8.2}%
+\contentsline {subsubsection}{\numberline {8.2.1}Mengapa Materi Ini Penting}{33}{subsubsection.8.2.1}%
+\contentsline {subsubsection}{\numberline {8.2.2}Implementasi Dasar}{33}{subsubsection.8.2.2}%
+\contentsline {subsubsection}{\numberline {8.2.3}Relevansi dengan Industri Saat Ini}{33}{subsubsection.8.2.3}%
+\contentsline {subsubsection}{\numberline {8.2.4}Dependensi dan Hubungan dengan Materi Lain}{33}{subsubsection.8.2.4}%
+\contentsline {subsection}{\numberline {8.3}Pola Soal UAS Sebelumnya dan Prioritas}{33}{subsection.8.3}%
+\contentsline {subsubsection}{\numberline {8.3.1}Formula Eksplisit yang Perlu Dikuasai}{34}{subsubsection.8.3.1}%
+\contentsline {subsection}{\numberline {8.4}Penjelasan Konsep Fundamental}{35}{subsection.8.4}%
+\contentsline {subsubsection}{\numberline {8.4.1}Definisi Regex}{35}{subsubsection.8.4.1}%
+\contentsline {subsubsection}{\numberline {8.4.2}Character Class}{35}{subsubsection.8.4.2}%
+\contentsline {subsubsection}{\numberline {8.4.3}Quantifier dan Boundary Matcher}{35}{subsubsection.8.4.3}%
+\contentsline {subsection}{\numberline {8.5}Komponen Kunci Penting}{35}{subsection.8.5}%
+\contentsline {subsection}{\numberline {8.6}Algoritma dan Rumus Penting}{35}{subsection.8.6}%
+\contentsline {subsubsection}{\numberline {8.6.1}Penggunaan Dasar Regex di Python}{35}{subsubsection.8.6.1}%
+\contentsline {subsection}{\numberline {8.7}Checklist Pemahaman}{36}{subsection.8.7}%
+\contentsline {subsubsection}{\numberline {8.7.1}Submateri yang Telah Dibahas}{36}{subsubsection.8.7.1}%
+\contentsline {subsubsection}{\numberline {8.7.2}Prioritas Belajar}{36}{subsubsection.8.7.2}%
+\contentsline {section}{\numberline {9}Program Dinamis}{36}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Outline Fundamental Konsep Materi}{36}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Pentingnya Materi dan Relevansinya}{37}{subsection.9.2}%
+\contentsline {subsubsection}{\numberline {9.2.1}Dependensi dan Hubungan dengan Materi Lain}{38}{subsubsection.9.2.1}%
+\contentsline {subsection}{\numberline {9.3}Pola Soal UAS Sebelumnya dan Prioritas}{38}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}Penjelasan Konsep Fundamental}{38}{subsection.9.4}%
+\contentsline {subsubsection}{\numberline {9.4.1}Definisi Program Dinamis}{38}{subsubsection.9.4.1}%
+\contentsline {subsubsection}{\numberline {9.4.2}Tahap, Status, Keputusan, dan Transisi}{39}{subsubsection.9.4.2}%
+\contentsline {subsubsection}{\numberline {9.4.3}Prinsip Optimalitas}{39}{subsubsection.9.4.3}%
+\contentsline {subsubsection}{\numberline {9.4.4}Memoization dan Tabulation}{39}{subsubsection.9.4.4}%
+\contentsline {subsubsection}{\numberline {9.4.5}Program Dinamis Maju dan Mundur}{40}{subsubsection.9.4.5}%
+\contentsline {subsection}{\numberline {9.5}Komponen Kunci Penting}{40}{subsection.9.5}%
+\contentsline {subsection}{\numberline {9.6}Algoritma dan Rumus Penting}{40}{subsection.9.6}%
+\contentsline {subsubsection}{\numberline {9.6.1}Skema Umum Program Dinamis}{40}{subsubsection.9.6.1}%
+\contentsline {subsubsection}{\numberline {9.6.2}Shortest Path Bertahap}{41}{subsubsection.9.6.2}%
+\contentsline {subsubsection}{\numberline {9.6.3}House Robber atau Coin-Row}{41}{subsubsection.9.6.3}%
+\contentsline {subsubsection}{\numberline {9.6.4}Integer Knapsack}{42}{subsubsection.9.6.4}%
+\contentsline {subsubsection}{\numberline {9.6.5}Coin Exchange}{42}{subsubsection.9.6.5}%
+\contentsline {subsubsection}{\numberline {9.6.6}TSP dengan Program Dinamis}{42}{subsubsection.9.6.6}%
+\contentsline {subsection}{\numberline {9.7}Cara Menjawab Soal Manual}{43}{subsection.9.7}%
+\contentsline {subsubsection}{\numberline {9.7.1}Template Jawaban Formulasi DP}{43}{subsubsection.9.7.1}%
+\contentsline {subsubsection}{\numberline {9.7.2}Template Tabel Shortest Path}{43}{subsubsection.9.7.2}%
+\contentsline {subsection}{\numberline {9.8}Kesalahan Umum dan Edge Case}{43}{subsection.9.8}%
+\contentsline {subsection}{\numberline {9.9}Checklist Pemahaman}{44}{subsection.9.9}%
+\contentsline {subsubsection}{\numberline {9.9.1}Submateri yang Telah Dibahas}{44}{subsubsection.9.9.1}%
+\contentsline {subsubsection}{\numberline {9.9.2}Prioritas Belajar}{44}{subsubsection.9.9.2}%
+\contentsline {section}{\numberline {10}Teori P, NP, NPC}{44}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Outline Fundamental Konsep Materi}{45}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Pentingnya Materi dan Relevansinya}{46}{subsection.10.2}%
+\contentsline {subsubsection}{\numberline {10.2.1}Dependensi dan Hubungan dengan Materi Lain}{46}{subsubsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.3}Pola Soal UAS Sebelumnya dan Prioritas}{46}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}Penjelasan Konsep Fundamental}{47}{subsection.10.4}%
+\contentsline {subsubsection}{\numberline {10.4.1}Persoalan Keputusan dan Persoalan Optimisasi}{47}{subsubsection.10.4.1}%
+\contentsline {subsubsection}{\numberline {10.4.2}Polynomial-time, Tractable, dan Intractable}{47}{subsubsection.10.4.2}%
+\contentsline {subsubsection}{\numberline {10.4.3}Decidable dan Undecidable}{47}{subsubsection.10.4.3}%
+\contentsline {subsubsection}{\numberline {10.4.4}Algoritma Deterministik dan Non-deterministik}{47}{subsubsection.10.4.4}%
+\contentsline {subsubsection}{\numberline {10.4.5}Kelas P}{48}{subsubsection.10.4.5}%
+\contentsline {subsubsection}{\numberline {10.4.6}Kelas NP}{48}{subsubsection.10.4.6}%
+\contentsline {subsubsection}{\numberline {10.4.7}NP-Complete}{48}{subsubsection.10.4.7}%
+\contentsline {subsubsection}{\numberline {10.4.8}NP-Hard}{48}{subsubsection.10.4.8}%
+\contentsline {subsection}{\numberline {10.5}Komponen Kunci Penting}{49}{subsection.10.5}%
+\contentsline {subsection}{\numberline {10.6}Algoritma dan Rumus Penting}{49}{subsection.10.6}%
+\contentsline {subsubsection}{\numberline {10.6.1}Kelas P}{49}{subsubsection.10.6.1}%
+\contentsline {subsubsection}{\numberline {10.6.2}Kelas NP}{49}{subsubsection.10.6.2}%
+\contentsline {subsubsection}{\numberline {10.6.3}Relasi P dan NP}{50}{subsubsection.10.6.3}%
+\contentsline {subsubsection}{\numberline {10.6.4}Reduksi Polinomial}{50}{subsubsection.10.6.4}%
+\contentsline {subsubsection}{\numberline {10.6.5}Syarat NP-Complete dan NP-Hard}{50}{subsubsection.10.6.5}%
+\contentsline {subsection}{\numberline {10.7}Contoh Klasifikasi yang Sering Muncul}{51}{subsection.10.7}%
+\contentsline {subsection}{\numberline {10.8}Jebakan Benar/Salah yang Perlu Diwaspadai}{51}{subsection.10.8}%
+\contentsline {subsection}{\numberline {10.9}Cara Menjawab Soal Manual}{51}{subsection.10.9}%
+\contentsline {subsubsection}{\numberline {10.9.1}Menentukan Apakah Persoalan Berada di NP}{51}{subsubsection.10.9.1}%
+\contentsline {subsubsection}{\numberline {10.9.2}Membuktikan NP-Complete}{52}{subsubsection.10.9.2}%
+\contentsline {subsubsection}{\numberline {10.9.3}Menganalisis Konsekuensi Algoritma Polinomial}{52}{subsubsection.10.9.3}%
+\contentsline {subsection}{\numberline {10.10}Checklist Pemahaman}{52}{subsection.10.10}%
+\contentsline {subsubsection}{\numberline {10.10.1}Submateri yang Telah Dibahas}{52}{subsubsection.10.10.1}%
+\contentsline {subsubsection}{\numberline {10.10.2}Prioritas Belajar}{52}{subsubsection.10.10.2}%

@@ -1,0 +1,45 @@
+\contentsline {section}{\numberline {1}Informasi Ujian}{1}{section.1}%
+\contentsline {section}{\numberline {2}Capaian Pembelajaran Mata Kuliah}{1}{section.2}%
+\contentsline {section}{\numberline {3}Keterpenuhan CPMK}{2}{section.3}%
+\contentsline {section}{\numberline {4}Daftar Materi yang Diujikan}{2}{section.4}%
+\contentsline {section}{\numberline {5}Outline Keseluruhan Materi}{2}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Application Layer}{3}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Transport Layer}{3}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Congestion Control}{3}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Wireless Network}{3}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Network Security}{3}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Transport Layer}{4}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Outline Fundamental Konsep Materi}{4}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Penjelasan Konsep Fundamental}{4}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Komponen Kunci Penting}{5}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Algoritma dan Rumus Penting}{6}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Hubungan dengan Materi Lain}{7}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Checklist Pemahaman}{8}{subsection.6.6}%
+\contentsline {section}{\numberline {7}Congestion Control}{9}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Outline Fundamental Konsep Materi}{9}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Penjelasan Konsep Fundamental}{9}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Komponen Kunci Penting}{11}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Algoritma dan Rumus Penting}{11}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Hubungan dengan Materi Lain}{13}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Checklist Pemahaman}{13}{subsection.7.6}%
+\contentsline {section}{\numberline {8}Application Layer}{14}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Outline Fundamental Konsep Materi}{14}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Penjelasan Konsep Fundamental}{14}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Komponen Kunci Penting}{16}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Algoritma dan Rumus Penting}{17}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Hubungan dengan Materi Lain}{18}{subsection.8.5}%
+\contentsline {subsection}{\numberline {8.6}Checklist Pemahaman}{18}{subsection.8.6}%
+\contentsline {section}{\numberline {9}Wireless Network}{19}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Outline Fundamental Konsep Materi}{19}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Penjelasan Konsep Fundamental}{19}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Komponen Kunci Penting}{21}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}Algoritma dan Rumus Penting}{21}{subsection.9.4}%
+\contentsline {subsection}{\numberline {9.5}Hubungan dengan Materi Lain}{22}{subsection.9.5}%
+\contentsline {subsection}{\numberline {9.6}Checklist Pemahaman}{22}{subsection.9.6}%
+\contentsline {section}{\numberline {10}Network Security}{24}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Outline Fundamental Konsep Materi}{24}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Penjelasan Konsep Fundamental}{24}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Komponen Kunci Penting}{26}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}Algoritma dan Rumus Penting}{26}{subsection.10.4}%
+\contentsline {subsection}{\numberline {10.5}Hubungan dengan Materi Lain}{27}{subsection.10.5}%
+\contentsline {subsection}{\numberline {10.6}Checklist Pemahaman}{27}{subsection.10.6}%

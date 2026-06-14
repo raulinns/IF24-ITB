@@ -1,0 +1,286 @@
+\section{Java Inheritance}
+
+Java Inheritance membahas mekanisme pewarisan class menggunakan \texttt{extends}, pemanggilan constructor superclass melalui \texttt{super}, overriding method, dynamic dispatch, dan polymorphism. Materi ini penting karena inheritance adalah salah satu pilar OOP, tetapi juga salah satu sumber desain buruk jika digunakan hanya karena dua class tampak mirip.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Bagian ini disusun dengan pengetahuan umum Java dan dikaitkan dengan pembahasan SOLID yang tersedia dari NotebookLM, terutama Liskov Substitution Principle. Penjelasan sintaks dan contoh Java merupakan pelengkap umum.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Konsep inheritance \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Relasi \textit{is-a} antara subclass dan superclass.
+        \item Subclass mewarisi field/method yang dapat diakses.
+        \item Java hanya mengizinkan satu superclass langsung.
+    \end{enumerate}
+    \item Constructor dan \texttt{super} \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Constructor tidak diwarisi.
+        \item Constructor subclass harus memanggil constructor superclass secara eksplisit atau implisit.
+        \item \texttt{super(...)} harus menjadi statement pertama constructor.
+    \end{enumerate}
+    \item Overriding dan dynamic dispatch \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Subclass dapat mengganti implementasi method instance.
+        \item Method yang dijalankan ditentukan oleh tipe runtime object.
+        \item \texttt{@Override} membantu validasi kompilasi.
+    \end{enumerate}
+    \item Polymorphism
+    \begin{enumerate}
+        \item Reference superclass dapat menunjuk object subclass.
+        \item Upcasting aman; downcasting berisiko \texttt{ClassCastException}.
+    \end{enumerate}
+    \item Access modifier dan inheritance
+    \begin{enumerate}
+        \item \texttt{private} tidak dapat diakses langsung oleh subclass.
+        \item \texttt{protected} memberi akses pada subclass dan package yang sama.
+        \item Field hiding berbeda dari method overriding.
+    \end{enumerate}
+    \item Abstract class dan final
+    \begin{enumerate}
+        \item Abstract class tidak dapat diinstansiasi.
+        \item Abstract method wajib diimplementasikan subclass konkret.
+        \item \texttt{final} mencegah inheritance atau overriding.
+    \end{enumerate}
+    \item Risiko desain
+    \begin{enumerate}
+        \item Inheritance harus menjaga LSP.
+        \item Prefer composition ketika relasi bukan \textit{is-a} yang kuat.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Inheritance memungkinkan reuse dan polymorphism, tetapi harus dipakai untuk relasi substitusi yang benar. Ujian sering menguji apakah subclass benar-benar dapat menggantikan superclass.
+\end{jawab}
+
+Inheritance membuat program dapat menulis kode terhadap tipe umum. Misalnya, daftar \texttt{List<Shape>} dapat berisi \texttt{Circle}, \texttt{Rectangle}, dan \texttt{Triangle}. Namun, inheritance juga memperkuat coupling antara subclass dan superclass. Jika superclass berubah, subclass dapat ikut terdampak. Karena itu, inheritance sebaiknya dipakai ketika ada kontrak perilaku yang stabil dan subclass benar-benar merupakan bentuk khusus dari superclass.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Inheritance berhubungan langsung dengan SOLID, khususnya LSP dan OCP. Interface memperluas konsep polymorphism tanpa mewarisi state. Exception memakai inheritance untuk hierarki \texttt{Throwable}. Collection memakai interface dan abstract class. Design pattern seperti Template Method, Factory Method, dan Strategy sering melibatkan inheritance atau polymorphism.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Relasi \textit{is-a} dan Pewarisan Class}
+
+\begin{jawab}[Inti Konsep.]
+Inheritance menyatakan bahwa subclass adalah bentuk khusus dari superclass. Jika \texttt{Dog extends Animal}, maka setiap \texttt{Dog} harus aman diperlakukan sebagai \texttt{Animal}.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Inheritance dasar di Java}, label={lst:inheritance-basic}]
+public class Animal {
+    private final String name;
+
+    public Animal(String name) {
+        this.name = name;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public void speak() {
+        System.out.println("Animal sound");
+    }
+}
+
+public class Cat extends Animal {
+    public Cat(String name) {
+        super(name);
+    }
+
+    @Override
+    public void speak() {
+        System.out.println("Meow");
+    }
+}
+\end{lstlisting}
+
+Class \texttt{Cat} mewarisi method \texttt{name} dan mengganti implementasi \texttt{speak}. Field \texttt{name} tetap \texttt{private}; subclass tidak mengaksesnya langsung, tetapi melalui method superclass.
+
+\subsubsection{Constructor Chaining dan \texttt{super}}
+
+\begin{jawab}[Inti Konsep.]
+Constructor subclass selalu memanggil constructor superclass sebelum menjalankan inisialisasi miliknya sendiri. Ini menjamin bagian superclass dari object terbentuk lebih dulu.
+\end{jawab}
+
+Jika constructor subclass tidak menulis \texttt{super(...)} secara eksplisit, compiler menyisipkan \texttt{super()} tanpa argumen. Jika superclass tidak memiliki no-argument constructor, subclass wajib memanggil constructor yang tersedia.
+
+\begin{lstlisting}[language=Java, caption={Constructor subclass wajib memanggil superclass}, label={lst:constructor-super}]
+class Vehicle {
+    private final String plateNumber;
+
+    Vehicle(String plateNumber) {
+        this.plateNumber = plateNumber;
+    }
+}
+
+class Car extends Vehicle {
+    private final int seatCount;
+
+    Car(String plateNumber, int seatCount) {
+        super(plateNumber);
+        this.seatCount = seatCount;
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Overriding, Overloading, dan Dynamic Dispatch}
+
+\begin{jawab}[Inti Konsep.]
+Overriding mengganti implementasi method superclass pada subclass dengan signature kompatibel. Overloading membuat beberapa method bernama sama tetapi parameter berbeda.
+\end{jawab}
+
+Dynamic dispatch berarti method instance yang dijalankan ditentukan oleh tipe runtime object, bukan tipe deklarasi reference.
+
+\begin{lstlisting}[language=Java, caption={Dynamic dispatch pada method overriding}, label={lst:dynamic-dispatch}]
+Animal animal = new Cat("Milo");
+animal.speak(); // Meow, karena object runtime adalah Cat.
+\end{lstlisting}
+
+Gunakan \texttt{@Override} setiap kali berniat override. Jika signature salah, compiler akan memberi error sehingga bug lebih cepat ditemukan.
+
+\subsubsection{Upcasting, Downcasting, dan \texttt{instanceof}}
+
+\begin{jawab}[Inti Konsep.]
+Upcasting dari subclass ke superclass aman karena setiap subclass adalah superclass. Downcasting membutuhkan pemeriksaan karena tidak setiap superclass adalah subclass tertentu.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Upcasting dan downcasting aman}, label={lst:casting-inheritance}]
+Animal animal = new Cat("Milo"); // upcasting, aman.
+
+if (animal instanceof Cat cat) {
+    cat.speak();
+}
+\end{lstlisting}
+
+Downcasting tanpa pemeriksaan dapat menyebabkan \texttt{ClassCastException}. Jika desain terlalu sering membutuhkan downcasting, itu tanda bahwa abstraksi superclass kurang tepat atau polymorphism belum dimanfaatkan.
+
+\subsubsection{Abstract Class dan Final}
+
+\begin{jawab}[Inti Konsep.]
+Abstract class mendefinisikan sebagian implementasi dan sebagian kontrak yang harus dilengkapi subclass. \texttt{final} membatasi inheritance atau overriding untuk menjaga kontrak.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Abstract class dan abstract method}, label={lst:abstract-class}]
+public abstract class Shape {
+    public abstract double area();
+
+    public void printArea() {
+        System.out.println("Area = " + area());
+    }
+}
+
+public final class Circle extends Shape {
+    private final double radius;
+
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    public double area() {
+        return Math.PI * radius * radius;
+    }
+}
+\end{lstlisting}
+
+Class \texttt{Circle} diberi \texttt{final} jika desain tidak mengizinkan subclass lanjutan. Ini berguna ketika class menjaga invariant yang tidak ingin diubah melalui overriding.
+
+\subsubsection{LSP dan Risiko Inheritance yang Salah}
+
+\begin{jawab}[Inti Konsep.]
+Subclass harus mematuhi kontrak superclass. Jika subclass hanya cocok secara nama tetapi merusak ekspektasi method superclass, inheritance tersebut melanggar LSP.
+\end{jawab}
+
+Contoh klasik adalah \texttt{Square extends Rectangle} pada object mutable. Secara matematika terlihat benar, tetapi dalam kode, \texttt{Rectangle} yang mengizinkan \texttt{setWidth} dan \texttt{setHeight} independen tidak dapat digantikan oleh \texttt{Square} tanpa perilaku mengejutkan. Untuk ujian, argumen pentingnya adalah: inheritance harus diuji dari sudut pandang klien superclass.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+\texttt{extends} & Kata kunci untuk mewarisi satu superclass. \\
+\hline
+Superclass & Class yang diwarisi. \\
+\hline
+Subclass & Class turunan yang memperluas atau mengkhususkan superclass. \\
+\hline
+\texttt{super} & Referensi ke constructor atau member superclass. \\
+\hline
+Overriding & Penggantian implementasi method superclass oleh subclass. \\
+\hline
+Dynamic dispatch & Pemilihan method berdasarkan tipe runtime object. \\
+\hline
+Abstract class & Class yang tidak dapat diinstansiasi dan dapat memiliki abstract method. \\
+\hline
+\texttt{final} & Pembatas inheritance, overriding, atau reassignment. \\
+\hline
+LSP & Prinsip bahwa subclass harus aman menggantikan superclass. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java Inheritance}
+\label{tab:komponen-kunci-java-inheritance}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Validasi Relasi Inheritance}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu memutuskan apakah inheritance layak dipakai atau sebaiknya diganti composition/interface.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode validasi inheritance}, label={lst:validasi-inheritance}]
+Input: Kandidat subclass S dan superclass T
+Output: Keputusan inheritance layak atau tidak
+
+1. Tanyakan: apakah setiap S benar-benar T?
+2. Tinjau semua method publik T.
+3. Untuk setiap method:
+      periksa apakah S dapat menjalankan kontrak yang sama
+      tanpa memperketat precondition dan tanpa melemahkan postcondition.
+4. Periksa invariant T:
+      S harus mempertahankan invariant tersebut.
+5. Jika klien T perlu mengecek instanceof S:
+      curigai desain polymorphism belum tepat.
+6. Jika S hanya memakai sebagian kecil perilaku T:
+      pertimbangkan composition.
+7. Jika semua kontrak aman:
+      inheritance dapat digunakan.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan relasi \textit{is-a}.
+    \item[$\square$] Saya dapat menulis class dengan \texttt{extends} dan constructor \texttt{super}.
+    \item[$\square$] Saya dapat membedakan overriding dan overloading.
+    \item[$\square$] Saya dapat menjelaskan dynamic dispatch.
+    \item[$\square$] Saya dapat memakai upcasting dan memahami risiko downcasting.
+    \item[$\square$] Saya dapat membedakan abstract class dan concrete class.
+    \item[$\square$] Saya dapat menjelaskan mengapa inheritance yang melanggar LSP berbahaya.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & \texttt{extends}, \texttt{super}, constructor chaining, overriding, dynamic dispatch, polymorphism, LSP. \\
+\hline
+\textbf{Cukup Paham Konsep} & Downcasting, \texttt{instanceof}, field hiding, abstract class, \texttt{final}. \\
+\hline
+\textbf{Sudah Dikuasai} & Materi ini pernah diuji dalam kuis, tetapi perlu diperdalam karena menjadi dasar interface, exception, dan design pattern. \\
+\hline
+\end{tabularx}

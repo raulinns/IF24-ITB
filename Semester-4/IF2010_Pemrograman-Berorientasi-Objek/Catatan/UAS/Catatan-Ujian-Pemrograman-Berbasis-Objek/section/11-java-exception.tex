@@ -1,0 +1,291 @@
+\section{Java Exception}
+
+Java Exception membahas mekanisme Java untuk merepresentasikan dan menangani kondisi error atau kejadian abnormal saat program berjalan. Exception membuat error dapat dipisahkan dari alur normal program, tetapi tetap harus dipakai dengan desain yang disiplin. Materi ini baru menurut isian awal, sehingga prioritasnya adalah memahami hierarki exception, checked vs unchecked exception, \texttt{try-catch-finally}, \texttt{throw}, \texttt{throws}, \texttt{try-with-resources}, dan cara merancang exception yang tidak merusak keterbacaan program.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini disusun menggunakan pengetahuan umum Java karena sumber NotebookLM yang terakses tidak memberikan pembahasan detail exception. Penjelasan dibuat mendalam karena materi ini disebut sebagai materi baru.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Konsep exception
+    \begin{enumerate}
+        \item Exception merepresentasikan kondisi abnormal.
+        \item Exception mengubah control flow dari lokasi error ke handler.
+        \item Exception bukan pengganti validasi alur normal.
+    \end{enumerate}
+    \item Hierarki exception
+    \begin{enumerate}
+        \item \texttt{Throwable}.
+        \item \texttt{Error}.
+        \item \texttt{Exception}.
+        \item \texttt{RuntimeException}.
+    \end{enumerate}
+    \item Checked vs unchecked exception
+    \begin{enumerate}
+        \item Checked exception wajib ditangani atau dideklarasikan.
+        \item Unchecked exception tidak wajib ditangani.
+        \item Error umumnya tidak ditangani aplikasi biasa.
+    \end{enumerate}
+    \item Sintaks penanganan
+    \begin{enumerate}
+        \item \texttt{try}.
+        \item \texttt{catch}.
+        \item \texttt{finally}.
+        \item Multi-catch.
+    \end{enumerate}
+    \item Melempar exception
+    \begin{enumerate}
+        \item \texttt{throw} untuk melempar object exception.
+        \item \texttt{throws} untuk mendeklarasikan potensi exception pada signature method.
+    \end{enumerate}
+    \item Resource management
+    \begin{enumerate}
+        \item \texttt{try-with-resources}.
+        \item \texttt{AutoCloseable}.
+    \end{enumerate}
+    \item Custom exception dan desain
+    \begin{enumerate}
+        \item Kapan membuat exception sendiri.
+        \item Menjaga pesan error, cause, dan level abstraksi.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Exception penting karena program nyata selalu berhadapan dengan input invalid, file hilang, koneksi gagal, parsing gagal, dan state yang tidak sesuai asumsi. Exception yang dirancang baik membuat error eksplisit dan dapat ditangani di level yang tepat.
+\end{jawab}
+
+Dalam OOP, exception adalah bagian dari kontrak method. Jika sebuah method dapat gagal karena kondisi eksternal, pemanggil harus tahu apakah kegagalan itu perlu ditangani. Namun, exception yang terlalu banyak atau terlalu umum juga merusak desain. Menangkap \texttt{Exception} secara luas, mengabaikan catch block, atau mengubah semua error menjadi unchecked exception tanpa alasan membuat program sulit didebug.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Exception menggunakan inheritance karena semua exception adalah subtype dari \texttt{Throwable}. Exception berhubungan dengan String untuk pesan error dan parsing, Collection/Stream untuk operasi yang dapat gagal, Assertion untuk validasi asumsi internal, Multithreading untuk exception pada thread, dan Design Pattern seperti Template Method atau Chain of Responsibility pada error handling.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Hierarki Exception}
+
+\begin{jawab}[Inti Konsep.]
+Semua exception dan error di Java berakar dari \texttt{Throwable}. Cabang utama adalah \texttt{Error} untuk masalah serius pada runtime dan \texttt{Exception} untuk kondisi yang mungkin ditangani aplikasi.
+\end{jawab}
+
+\begin{lstlisting}[caption={Hierarki konseptual Throwable}, label={lst:exception-hierarchy}]
+Throwable
+|-- Error
+|   |-- OutOfMemoryError
+|   |-- StackOverflowError
+|
+|-- Exception
+    |-- IOException          (checked)
+    |-- SQLException         (checked)
+    |-- RuntimeException     (unchecked)
+        |-- NullPointerException
+        |-- IllegalArgumentException
+        |-- IndexOutOfBoundsException
+\end{lstlisting}
+
+\texttt{Error} biasanya tidak ditangkap karena menandakan masalah serius seperti memory habis. \texttt{Exception} adalah kejadian yang lebih mungkin ditangani. \texttt{RuntimeException} adalah exception yang tidak wajib dideklarasikan atau ditangkap.
+
+\subsubsection{Checked dan Unchecked Exception}
+
+\begin{jawab}[Inti Konsep.]
+Checked exception diperiksa compiler dan harus ditangani dengan \texttt{catch} atau dideklarasikan dengan \texttt{throws}. Unchecked exception adalah subtype \texttt{RuntimeException} dan tidak wajib ditangani.
+\end{jawab}
+
+Checked exception cocok untuk kegagalan eksternal yang realistis dan dapat dipulihkan, misalnya file tidak ditemukan atau koneksi gagal. Unchecked exception cocok untuk bug pemrograman atau pelanggaran kontrak, misalnya argumen invalid, indeks di luar batas, atau object \texttt{null} yang tidak seharusnya.
+
+\begin{lstlisting}[language=Java, caption={Checked exception wajib ditangani atau dideklarasikan}, label={lst:checked-exception}]
+public String readFirstLine(Path path) throws IOException {
+    try (BufferedReader reader = Files.newBufferedReader(path)) {
+        return reader.readLine();
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Java, caption={Unchecked exception untuk argumen invalid}, label={lst:unchecked-exception}]
+public void withdraw(long amount) {
+    if (amount <= 0) {
+        throw new IllegalArgumentException("Amount harus positif");
+    }
+}
+\end{lstlisting}
+
+\subsubsection{\texttt{try}, \texttt{catch}, dan \texttt{finally}}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{try} membungkus kode yang mungkin gagal, \texttt{catch} menangani exception tertentu, dan \texttt{finally} menjalankan kode pembersihan baik terjadi exception maupun tidak.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={try-catch-finally}, label={lst:try-catch-finally}]
+FileInputStream input = null;
+try {
+    input = new FileInputStream("data.txt");
+    int firstByte = input.read();
+    System.out.println(firstByte);
+} catch (IOException e) {
+    System.err.println("Gagal membaca file: " + e.getMessage());
+} finally {
+    if (input != null) {
+        try {
+            input.close();
+        } catch (IOException ignored) {
+            // Hindari mengabaikan exception penting pada kode nyata.
+        }
+    }
+}
+\end{lstlisting}
+
+Kode di atas valid, tetapi verbose. Untuk resource, \texttt{try-with-resources} lebih idiomatis.
+
+\subsubsection{\texttt{try-with-resources}}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{try-with-resources} otomatis menutup resource yang mengimplementasikan \texttt{AutoCloseable}. Ini menggantikan banyak penggunaan \texttt{finally} untuk resource.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={try-with-resources}, label={lst:try-with-resources-exception}]
+public List<String> readAllLines(Path path) throws IOException {
+    try (BufferedReader reader = Files.newBufferedReader(path)) {
+        List<String> lines = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            lines.add(line);
+        }
+        return lines;
+    }
+}
+\end{lstlisting}
+
+Resource ditutup otomatis setelah blok \texttt{try} selesai, baik normal maupun karena exception. Jika exception terjadi saat menutup resource, Java dapat menyimpannya sebagai suppressed exception.
+
+\subsubsection{\texttt{throw} dan \texttt{throws}}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{throw} adalah aksi melempar exception; \texttt{throws} adalah deklarasi pada method bahwa method tersebut dapat melempar exception tertentu.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={throw vs throws}, label={lst:throw-throws}]
+public User findUser(String id) throws UserNotFoundException {
+    if (id == null || id.isBlank()) {
+        throw new IllegalArgumentException("id kosong");
+    }
+
+    return repository.findById(id)
+        .orElseThrow(() -> new UserNotFoundException(id));
+}
+\end{lstlisting}
+
+Exception argumen invalid tidak perlu masuk \texttt{throws} karena unchecked. Exception user tidak ditemukan perlu dideklarasikan jika ia checked exception.
+
+\subsubsection{Custom Exception}
+
+\begin{jawab}[Inti Konsep.]
+Custom exception dibuat ketika domain aplikasi membutuhkan jenis error yang lebih spesifik daripada exception standar. Exception harus membawa pesan jelas dan, bila membungkus error lain, menyimpan cause.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Custom checked exception}, label={lst:custom-exception}]
+public class UserNotFoundException extends Exception {
+    public UserNotFoundException(String id) {
+        super("User tidak ditemukan: " + id);
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Java, caption={Custom unchecked exception untuk domain}, label={lst:custom-runtime-exception}]
+public class InvalidOrderException extends RuntimeException {
+    public InvalidOrderException(String message) {
+        super(message);
+    }
+
+    public InvalidOrderException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+\end{lstlisting}
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+\texttt{Throwable} & Akar hierarki error dan exception. \\
+\hline
+\texttt{Exception} & Kelas dasar kondisi abnormal yang mungkin ditangani aplikasi. \\
+\hline
+\texttt{RuntimeException} & Exception unchecked. \\
+\hline
+\texttt{Error} & Masalah serius runtime yang umumnya tidak ditangani aplikasi. \\
+\hline
+\texttt{try}/\texttt{catch} & Struktur penanganan exception. \\
+\hline
+\texttt{finally} & Blok pembersihan yang selalu dijalankan. \\
+\hline
+\texttt{throw} & Melempar exception. \\
+\hline
+\texttt{throws} & Mendeklarasikan exception pada method. \\
+\hline
+\texttt{AutoCloseable} & Kontrak resource yang dapat ditutup otomatis. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java Exception}
+\label{tab:komponen-kunci-java-exception}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Memilih Jenis Exception}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu menentukan apakah error harus menjadi checked exception, unchecked exception, atau cukup ditangani secara lokal.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode pemilihan exception}, label={lst:exception-choice}]
+Input: Kondisi error yang mungkin terjadi
+Output: Strategi exception
+
+1. Jika kondisi adalah bug pemrograman atau argumen melanggar kontrak:
+      gunakan unchecked exception.
+2. Jika kondisi berasal dari faktor eksternal dan pemanggil realistis dapat memulihkan:
+      gunakan checked exception atau API yang memaksa handling.
+3. Jika error dapat diselesaikan di method yang sama:
+      tangani secara lokal dan jangan bocorkan detail.
+4. Jika error perlu diteruskan ke layer lebih tinggi:
+      lempar exception dengan pesan jelas.
+5. Jika membungkus exception lain:
+      sertakan cause.
+6. Jangan menangkap Exception terlalu umum kecuali di boundary aplikasi.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan hierarki \texttt{Throwable}.
+    \item[$\square$] Saya dapat membedakan checked dan unchecked exception.
+    \item[$\square$] Saya dapat memakai \texttt{try-catch-finally}.
+    \item[$\square$] Saya dapat memakai \texttt{try-with-resources}.
+    \item[$\square$] Saya dapat membedakan \texttt{throw} dan \texttt{throws}.
+    \item[$\square$] Saya dapat membuat custom exception yang masuk akal.
+    \item[$\square$] Saya dapat menentukan level yang tepat untuk menangani exception.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Hierarki exception, checked vs unchecked, \texttt{try-catch-finally}, \texttt{throw}, \texttt{throws}, \texttt{try-with-resources}. \\
+\hline
+\textbf{Cukup Paham Konsep} & Custom exception, suppressed exception, cause chaining, best practice boundary handling. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan; materi ini disebut sebagai materi baru sehingga harus diprioritaskan tinggi. \\
+\hline
+\end{tabularx}

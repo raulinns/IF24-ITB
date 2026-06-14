@@ -1,0 +1,93 @@
+\contentsline {section}{\numberline {1}Informasi Ujian}{1}{section.1}%
+\contentsline {section}{\numberline {2}Capaian Pembelajaran Mata Kuliah (CPMK)}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Tabel Keterpenuhan CPMK}{1}{subsection.2.1}%
+\contentsline {section}{\numberline {3}Daftar Materi yang Diujikan}{1}{section.3}%
+\contentsline {section}{\numberline {4}Outline Keseluruhan Materi}{1}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Transport Layer}{1}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Congestion Control}{2}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Application Layer}{2}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Wireless Network}{2}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Network Security}{2}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Transport Layer}{3}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Outline Fundamental Konsep Materi}{3}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Penjelasan Konsep}{4}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Pengantar Transport Layer}{4}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}UDP}{5}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}TCP}{6}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}TCP Reliability dan Sliding Window}{6}{subsubsection.5.2.4}%
+\contentsline {subsubsection}{\numberline {5.2.5}Adaptive Retransmission}{7}{subsubsection.5.2.5}%
+\contentsline {subsubsection}{\numberline {5.2.6}Flow Control}{8}{subsubsection.5.2.6}%
+\contentsline {subsubsection}{\numberline {5.2.7}Triggering Transmission dan Kinerja TCP}{8}{subsubsection.5.2.7}%
+\contentsline {subsubsection}{\numberline {5.2.8}RPC}{9}{subsubsection.5.2.8}%
+\contentsline {subsubsection}{\numberline {5.2.9}RTP dan RTCP}{9}{subsubsection.5.2.9}%
+\contentsline {subsubsection}{\numberline {5.2.10}SCTP}{10}{subsubsection.5.2.10}%
+\contentsline {subsubsection}{\numberline {5.2.11}QUIC sebagai Transport Modern Berbasis UDP\textsuperscript {\dag }}{10}{subsubsection.5.2.11}%
+\contentsline {subsubsection}{\numberline {5.2.12}Relasi Lintas Materi}{11}{subsubsection.5.2.12}%
+\contentsline {subsection}{\numberline {5.3}Algoritma dan Rumus Penting}{11}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}UDP Checksum}{11}{subsubsection.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.2}TCP Four-Tuple Demultiplexing}{12}{subsubsection.5.3.2}%
+\contentsline {subsubsection}{\numberline {5.3.3}Adaptive RTT Estimation}{12}{subsubsection.5.3.3}%
+\contentsline {subsubsection}{\numberline {5.3.4}Flow Control Window}{12}{subsubsection.5.3.4}%
+\contentsline {subsubsection}{\numberline {5.3.5}MSS dan Delay-Bandwidth Product}{13}{subsubsection.5.3.5}%
+\contentsline {subsubsection}{\numberline {5.3.6}Nagle's Algorithm}{13}{subsubsection.5.3.6}%
+\contentsline {section}{\numberline {6}Congestion Control}{14}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Outline Fundamental Konsep Materi}{14}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Penjelasan Konsep}{15}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {6.2.1}Konsep Dasar Alokasi Sumber Daya dan Congestion}{15}{subsubsection.6.2.1}%
+\contentsline {subsubsection}{\numberline {6.2.2}Kriteria Evaluasi}{16}{subsubsection.6.2.2}%
+\contentsline {subsubsection}{\numberline {6.2.3}Disiplin Antrean Router}{17}{subsubsection.6.2.3}%
+\contentsline {subsubsection}{\numberline {6.2.4}TCP Congestion Control}{18}{subsubsection.6.2.4}%
+\contentsline {subsubsection}{\numberline {6.2.5}Congestion Avoidance Lanjutan}{19}{subsubsection.6.2.5}%
+\contentsline {subsubsection}{\numberline {6.2.6}Quality of Service}{20}{subsubsection.6.2.6}%
+\contentsline {subsubsection}{\numberline {6.2.7}Relasi Lintas Materi}{21}{subsubsection.6.2.7}%
+\contentsline {subsection}{\numberline {6.3}Algoritma dan Rumus Penting}{21}{subsection.6.3}%
+\contentsline {subsubsection}{\numberline {6.3.1}Jain's Fairness Index}{21}{subsubsection.6.3.1}%
+\contentsline {subsubsection}{\numberline {6.3.2}Fair Queuing Finish Time}{22}{subsubsection.6.3.2}%
+\contentsline {subsubsection}{\numberline {6.3.3}AIMD dan Slow Start}{22}{subsubsection.6.3.3}%
+\contentsline {subsubsection}{\numberline {6.3.4}RED Average Queue Length dan Drop Probability}{22}{subsubsection.6.3.4}%
+\contentsline {subsubsection}{\numberline {6.3.5}Token Bucket}{23}{subsubsection.6.3.5}%
+\contentsline {section}{\numberline {7}Application Layer}{24}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Outline Fundamental Konsep Materi}{24}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Penjelasan Konsep}{25}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Fondasi Application Layer}{25}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}Domain Name System (DNS)}{26}{subsubsection.7.2.2}%
+\contentsline {subsubsection}{\numberline {7.2.3}Web dan HTTP}{27}{subsubsection.7.2.3}%
+\contentsline {subsubsection}{\numberline {7.2.4}Electronic Mail}{28}{subsubsection.7.2.4}%
+\contentsline {subsubsection}{\numberline {7.2.5}Arsitektur Lanjutan}{29}{subsubsection.7.2.5}%
+\contentsline {subsubsection}{\numberline {7.2.6}Protokol Aplikasi Khusus}{30}{subsubsection.7.2.6}%
+\contentsline {subsubsection}{\numberline {7.2.7}Relasi Lintas Materi}{30}{subsubsection.7.2.7}%
+\contentsline {subsection}{\numberline {7.3}Algoritma dan Rumus Penting}{31}{subsection.7.3}%
+\contentsline {subsubsection}{\numberline {7.3.1}DNS Resource Record}{31}{subsubsection.7.3.1}%
+\contentsline {subsubsection}{\numberline {7.3.2}Iterative DNS Resolution}{31}{subsubsection.7.3.2}%
+\contentsline {subsubsection}{\numberline {7.3.3}Non-persistent HTTP Response Time}{32}{subsubsection.7.3.3}%
+\contentsline {subsubsection}{\numberline {7.3.4}Conditional GET}{32}{subsubsection.7.3.4}%
+\contentsline {subsubsection}{\numberline {7.3.5}Base64 Encoding Size}{32}{subsubsection.7.3.5}%
+\contentsline {section}{\numberline {8}Wireless Network}{33}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Outline Fundamental Konsep Materi}{33}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Penjelasan Konsep}{33}{subsection.8.2}%
+\contentsline {subsubsection}{\numberline {8.2.1}Fondasi dan Elemen Wireless Network}{33}{subsubsection.8.2.1}%
+\contentsline {subsubsection}{\numberline {8.2.2}Standar dan Karakteristik Link}{34}{subsubsection.8.2.2}%
+\contentsline {subsubsection}{\numberline {8.2.3}MAC 802.11}{35}{subsubsection.8.2.3}%
+\contentsline {subsubsection}{\numberline {8.2.4}Mobilitas dan Routing}{36}{subsubsection.8.2.4}%
+\contentsline {subsubsection}{\numberline {8.2.5}Wireless Security}{37}{subsubsection.8.2.5}%
+\contentsline {subsubsection}{\numberline {8.2.6}Relasi Lintas Materi}{38}{subsubsection.8.2.6}%
+\contentsline {subsection}{\numberline {8.3}Algoritma dan Rumus Penting}{38}{subsection.8.3}%
+\contentsline {subsubsection}{\numberline {8.3.1}CSMA/CA dengan RTS/CTS}{38}{subsubsection.8.3.1}%
+\contentsline {subsubsection}{\numberline {8.3.2}Mobile IP Tunneling}{39}{subsubsection.8.3.2}%
+\contentsline {subsubsection}{\numberline {8.3.3}Delay Spread Intuition pada Multipath}{39}{subsubsection.8.3.3}%
+\contentsline {section}{\numberline {9}Network Security}{40}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Outline Fundamental Konsep Materi}{40}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Penjelasan Konsep}{41}{subsection.9.2}%
+\contentsline {subsubsection}{\numberline {9.2.1}Fondasi Network Security}{41}{subsubsection.9.2.1}%
+\contentsline {subsubsection}{\numberline {9.2.2}Kerentanan per Layer}{41}{subsubsection.9.2.2}%
+\contentsline {subsubsection}{\numberline {9.2.3}Cryptographic Building Blocks}{42}{subsubsection.9.2.3}%
+\contentsline {subsubsection}{\numberline {9.2.4}Key Predistribution, PKI, dan Authentication Protocols}{43}{subsubsection.9.2.4}%
+\contentsline {subsubsection}{\numberline {9.2.5}Security Systems by Layer}{43}{subsubsection.9.2.5}%
+\contentsline {subsubsection}{\numberline {9.2.6}Firewalls, Filtering, Malware, dan Availability Attacks}{44}{subsubsection.9.2.6}%
+\contentsline {subsubsection}{\numberline {9.2.7}Relasi Lintas Materi}{45}{subsubsection.9.2.7}%
+\contentsline {subsection}{\numberline {9.3}Algoritma dan Rumus Penting}{45}{subsection.9.3}%
+\contentsline {subsubsection}{\numberline {9.3.1}Stream Cipher XOR}{45}{subsubsection.9.3.1}%
+\contentsline {subsubsection}{\numberline {9.3.2}Cipher Block Chaining}{46}{subsubsection.9.3.2}%
+\contentsline {subsubsection}{\numberline {9.3.3}HMAC Konseptual}{46}{subsubsection.9.3.3}%
+\contentsline {subsubsection}{\numberline {9.3.4}Challenge-Response dengan Nonce}{46}{subsubsection.9.3.4}%
+\contentsline {subsubsection}{\numberline {9.3.5}SYN Flood Intuition}{47}{subsubsection.9.3.5}%

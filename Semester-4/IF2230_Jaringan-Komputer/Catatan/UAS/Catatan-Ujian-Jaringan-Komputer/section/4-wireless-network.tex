@@ -1,0 +1,163 @@
+\section{Wireless Network}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Elemen jaringan nirkabel: wireless host, base station, access point, cell tower, wireless link, wired infrastructure, dan mobility.
+    \item Mode operasi: infrastructure mode, ad hoc mode, handoff, association, scanning, beacon frame, dan distribution system.
+    \item Taksonomi: single-hop/multiple-hop dengan atau tanpa infrastructure, wireless mesh, sensor network, MANET, dan VANET.
+    \item Standar dan karakteristik: WLAN vs Wi-Fi, IEEE 802.11, Bluetooth/802.15, cellular 2G/3G/4G/LTE/WiMAX, data rate, jarak, MIMO, dan spektrum.
+    \item Karakter link wireless: attenuation, interference, bit errors, hidden terminal, dan exposed terminal.
+    \item MAC 802.11: CSMA/CA, RTS, CTS, ACK, collision avoidance, dan perbedaan dengan CSMA/CD.
+    \item Mobilitas dan routing: handoff, Mobile IP, ad hoc routing, AODV sebagai topik yang disebut, MACAW, ExOR, dan Roofnet.
+    \item Keamanan wireless: WEP, WPA2, IEEE 802.11i, CCMP, encryption, dan authentication.
+    \item Dampak ke Transport Layer dan Congestion Control: packet loss wireless dapat disalahartikan TCP sebagai congestion.
+\end{enumerate}
+
+\begin{cmt}{Audit Kelengkapan Materi}{}
+Verifikasi sumber menambahkan association melalui scanning dan beacon frame, distribution system pada mode infrastruktur, MIMO pada 802.11n, konteks soal yang meminta visualisasi CSMA/CA dengan RTS/CTS, serta posisi MACAW, ExOR, dan Roofnet sebagai topik riset atau lanjutan yang disebut dalam sumber.
+\end{cmt}
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\begin{jawab}[Inti Wireless Network]
+Wireless Network adalah jaringan yang memakai link radio atau medium nirkabel untuk menghubungkan host ke base station atau langsung ke host lain. Nirkabel tidak selalu berarti mobile: perangkat dapat diam tetapi tetap memakai link wireless.
+\end{jawab}
+
+Wireless host adalah perangkat pengguna seperti laptop dan smartphone. Base station adalah perangkat yang biasanya tersambung ke wired infrastructure dan menjadi relay antara wireless host dan jaringan kabel. Contoh base station adalah cell tower dan access point 802.11. Wireless link adalah media transmisi radio yang menghubungkan host ke base station atau menjadi backbone wireless.
+
+Pada infrastructure mode, host berkomunikasi melalui base station atau AP untuk mencapai jaringan kabel seperti Internet. Handoff terjadi ketika mobile host berpindah dari satu base station ke base station lain. Dalam 802.11, sumber juga menyinggung association: host menemukan AP melalui scanning terhadap beacon frame. Beacon frame disiarkan periodik oleh AP untuk mengumumkan keberadaan jaringan. Distribution system menghubungkan beberapa AP dalam jaringan infrastruktur.
+
+Pada ad hoc mode, tidak ada base station. Setiap node hanya dapat mengirim langsung ke node dalam jangkauan sinyalnya. Untuk mencapai node yang jauh, node harus mengatur routing sendiri.
+
+\subsubsection*{Taksonomi Wireless}
+
+Sumber mengklasifikasikan jaringan nirkabel berdasarkan ada tidaknya infrastructure dan jumlah hop:
+
+\begin{itemize}
+    \item \textbf{Single-hop dengan infrastructure}: host langsung ke base station, misalnya Wi-Fi, WiMAX, atau cellular.
+    \item \textbf{Single-hop tanpa infrastructure}: komunikasi langsung tanpa base station, misalnya Bluetooth atau ad hoc sederhana.
+    \item \textbf{Multiple-hop dengan infrastructure}: host mencapai base station melalui relay node wireless lain, misalnya wireless mesh network.
+    \item \textbf{Multiple-hop tanpa infrastructure}: jaringan multi-hop tanpa base station atau koneksi Internet.
+\end{itemize}
+
+MANET dan sensor network disebut sebagai bentuk jaringan ad hoc/mobile tanpa infrastruktur pusat. VANET muncul sebagai contoh kategori ad hoc kendaraan pada taksonomi lanjutan, tetapi detail algoritmanya tidak dijelaskan mendalam.
+
+\subsubsection*{Standar, Jarak, dan Spektrum}
+
+WLAN adalah perluasan jaringan kabel dengan teknologi wireless untuk memberi mobilitas. Wi-Fi adalah merek dan implementasi yang mengikuti keluarga standar IEEE 802.11.
+
+Rentang teknologi menurut sumber:
+
+\begin{itemize}
+    \item \textbf{Indoor 10-30 m}: IEEE 802.15/Bluetooth sekitar 1 Mbps.
+    \item \textbf{Outdoor 50-200 m}: IEEE 802.11, misalnya 802.11b 5-11 Mbps, 802.11a/g 54 Mbps, 802.11n 450 Mbps, 802.11ac 1300 Mbps, dan 802.11ax.
+    \item \textbf{Mid-range 200 m - 4 km}: 2G, 2.5G, dan 3G dengan laju data lebih rendah sampai beberapa Mbps.
+    \item \textbf{Long-range 5-20 km}: 4G seperti LTE dan WiMAX.
+\end{itemize}
+
+802.11n memakai MIMO, Multiple-Input Multiple-Output, untuk menaikkan data rate melalui beberapa antena. Pada sisi spektrum, sumber menyebut frequency hopping dan direct sequence/CDMA. CDMA memakai chipping code untuk memungkinkan beberapa transmisi berbagi medium.
+
+\subsubsection*{Karakter Link Wireless}
+
+Link wireless lebih rentan daripada kabel karena sinyal melemah akibat attenuation, terpengaruh jarak, interferensi, dan bit errors. Masalah ini menyebabkan packet loss yang tidak selalu berarti router congestion.
+
+Hidden terminal problem terjadi ketika dua node pengirim tidak dapat saling mendengar, tetapi keduanya mengirim ke receiver yang sama. Akibatnya sinyal bertabrakan pada receiver. Exposed terminal problem terjadi ketika sebuah node menahan transmisi karena mendengar transmisi lain di dekatnya, padahal transmisinya menuju arah berbeda dan sebenarnya aman.
+
+\subsubsection*{MAC 802.11 dan CSMA/CA}
+
+Ethernet kabel memakai CSMA/CD, Carrier Sense Multiple Access with Collision Detection. Pada wireless, collision detection sulit karena node tidak selalu dapat mendengar seluruh node lain dan sinyal kirim sendiri dapat menutupi sinyal terima. Karena itu 802.11 memakai CSMA/CA, Carrier Sense Multiple Access with Collision Avoidance.
+
+RTS/CTS membantu menghindari collision:
+
+\begin{enumerate}
+    \item Sender mengirim RTS, Request to Send, kepada receiver.
+    \item Receiver membalas CTS, Clear to Send.
+    \item Node lain yang mendengar CTS menahan diri sehingga hidden terminal tidak ikut mengirim.
+    \item Sender mengirim frame data.
+    \item Receiver membalas ACK jika frame diterima baik.
+\end{enumerate}
+
+Bundel soal menekankan bahwa jawaban CSMA/CA sebaiknya divisualisasikan dengan sender, receiver, dan hidden station yang mendengar CTS.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{itemize}
+    \item \textbf{Wireless host}: host pengguna pada link wireless.
+    \item \textbf{Base station/AP}: penghubung wireless host ke wired infrastructure.
+    \item \textbf{Handoff}: perpindahan base station saat host bergerak.
+    \item \textbf{Beacon frame}: frame periodik AP untuk mengumumkan jaringan.
+    \item \textbf{Scanning}: proses host mencari AP.
+    \item \textbf{Distribution system}: sistem yang menghubungkan beberapa AP.
+    \item \textbf{Hidden terminal}: node pengirim tidak saling mendengar tetapi bertabrakan di receiver.
+    \item \textbf{Exposed terminal}: node terlalu konservatif karena mendengar transmisi yang sebenarnya tidak mengganggu.
+    \item \textbf{RTS/CTS}: handshake kecil sebelum data untuk mengurangi collision.
+    \item \textbf{MIMO}: pemakaian beberapa antena untuk meningkatkan data rate.
+    \item \textbf{WEP/WPA2/802.11i}: mekanisme keamanan wireless pada data link.
+\end{itemize}
+
+\subsection{Algoritma dan Rumus Penting}
+
+Tidak ada rumus matematis utama yang diekstrak dari sumber untuk Wireless Network. Materi lebih menekankan mekanisme, taksonomi, dan urutan protokol.
+
+\subsubsection*{Association Dasar 802.11}
+
+\begin{lstlisting}[language={},caption={Association host ke access point}]
+wireless host scans channels
+access points periodically transmit beacon frames
+host selects an access point
+host associates with selected access point
+access point connects host through distribution system
+\end{lstlisting}
+
+\subsubsection*{CSMA/CA dengan RTS/CTS}
+
+\begin{lstlisting}[language={},caption={Urutan CSMA/CA dengan RTS/CTS}]
+sender senses wireless medium
+if medium appears idle:
+    sender sends RTS to receiver
+    receiver replies CTS
+    other stations hearing CTS defer transmission
+    sender transmits data frame
+    receiver replies ACK
+else:
+    sender waits and retries later
+\end{lstlisting}
+
+\subsubsection*{Dampak Wireless Loss pada TCP}
+
+\begin{lstlisting}[language={},caption={Kesalahan interpretasi TCP pada wireless}]
+wireless interference causes packet loss
+TCP sender observes timeout or duplicate ACK
+TCP assumes congestion
+TCP reduces congestion window
+throughput drops even if the real cause was bit error
+\end{lstlisting}
+
+\subsection{Hubungan dengan Materi Lain}
+
+\begin{itemize}
+    \item \textbf{Transport Layer}: TCP menganggap loss sebagai indikasi congestion; pada wireless, loss dapat terjadi karena bit error.
+    \item \textbf{Congestion Control}: multiplicative decrease dapat menurunkan throughput wireless secara tidak perlu jika loss bukan akibat bottleneck.
+    \item \textbf{Application Layer}: aplikasi real-time sensitif terhadap delay, jitter, dan loss pada link wireless.
+    \item \textbf{Network Security}: wireless memancarkan sinyal ke udara terbuka sehingga membutuhkan encryption dan authentication seperti WPA2/802.11i.
+    \item \textbf{Network Layer}: ad hoc mode dan mobility memerlukan routing mobile seperti Mobile IP atau ad hoc routing; AODV disebut tetapi tidak dirinci.
+\end{itemize}
+
+\begin{cmt}{Bagian yang Terbatas di Sumber}{}
+Detail handoff, algoritma AODV, MACAW, ExOR, Roofnet, struktur uplink/downlink cellular, dan matematika chipping code/CDMA hanya disebut atau dirujuk terbatas dalam sumber. Catatan ini tidak mengarang pseudocode atau rumus yang tidak muncul dalam NotebookLM.
+\end{cmt}
+
+\subsection{Checklist Pemahaman}
+
+\begin{itemize}
+    \item Dapat menjelaskan wireless host, base station, AP, cell tower, wireless link, dan wired infrastructure.
+    \item Dapat membedakan infrastructure mode dan ad hoc mode.
+    \item Dapat menjelaskan handoff, association, scanning, beacon frame, dan distribution system.
+    \item Dapat mengklasifikasikan single-hop/multiple-hop dengan atau tanpa infrastructure.
+    \item Dapat membedakan WLAN dan Wi-Fi serta menyebut keluarga 802.11/Bluetooth/cellular secara konseptual.
+    \item Dapat menjelaskan hidden terminal dan exposed terminal sebagai alasan collision avoidance.
+    \item Dapat menggambar alur RTS/CTS/data/ACK pada CSMA/CA.
+    \item Dapat menjelaskan mengapa wireless loss menurunkan performa TCP.
+    \item Dapat menjelaskan peran WEP, WPA2, dan IEEE 802.11i pada keamanan wireless.
+\end{itemize}

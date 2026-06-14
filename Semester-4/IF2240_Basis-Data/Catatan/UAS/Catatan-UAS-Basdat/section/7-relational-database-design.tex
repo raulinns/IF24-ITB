@@ -1,0 +1,610 @@
+\section{Relational Database Design}
+
+Relational Database Design membahas cara menilai dan memperbaiki kualitas skema relasional setelah kebutuhan data diterjemahkan menjadi tabel. Fokus utamanya adalah mengenali redundansi, anomali pembaruan, dan ketergantungan antaratribut, lalu memakai teori \textit{functional dependency} untuk mendekomposisi relasi ke bentuk yang lebih baik tanpa kehilangan informasi penting.
+
+Materi ini berada di antara pemodelan E-R dan implementasi SQL. E-R model memberi rancangan konseptual, relational model memberi bentuk tabel, sedangkan relational database design memeriksa apakah tabel tersebut sudah layak dipakai dalam DBMS relasional.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Tujuan desain relasional
+    \begin{enumerate}
+        \item \pwajib Redundansi, anomali, dan kebutuhan nilai \texttt{NULL}
+        \item \pwajib Relasi universal
+    \end{enumerate}
+    \item \pwajib Functional dependency
+    \begin{enumerate}
+        \item \pwajib Definisi formal \(\alpha \rightarrow \beta\)
+        \item \pwajib Trivial, non-trivial, dan transitive dependency
+        \item \pwajib Superkey dan candidate key
+        \item \ppaham Prime attribute
+    \end{enumerate}
+    \item \pwajib Closure dan inferensi dependensi
+    \begin{enumerate}
+        \item \pwajib Closure of functional dependencies \(F^+\)
+        \item \pwajib Attribute closure \(X^+\)
+        \item \pwajib Armstrong's axioms
+        \item \ppaham Aturan turunan Armstrong
+    \end{enumerate}
+    \item \pwajib Canonical cover
+    \begin{enumerate}
+        \item \pwajib Extraneous attribute
+        \item \pwajib Minimalisasi himpunan FD
+        \item \pwajib Peran canonical cover dalam sintesis 3NF
+    \end{enumerate}
+    \item \pwajib Decomposition
+    \begin{enumerate}
+        \item \pwajib Lossless join
+        \item \pwajib Dependency preservation
+        \item \ppaham Uji lossless join untuk dekomposisi biner
+    \end{enumerate}
+    \item \pwajib Boyce-Codd Normal Form (BCNF)
+    \begin{enumerate}
+        \item \pwajib Definisi BCNF
+        \item \pwajib Pengujian pelanggaran BCNF
+        \item \pwajib Algoritma dekomposisi BCNF
+    \end{enumerate}
+    \item \pwajib Third Normal Form (3NF)
+    \begin{enumerate}
+        \item \pwajib Definisi 3NF
+        \item \pwajib Algoritma sintesis 3NF
+        \item \pwajib Trade-off BCNF dan 3NF
+    \end{enumerate}
+    \item \ppaham Bentuk normal lanjutan
+    \begin{enumerate}
+        \item \ppaham First Normal Form (1NF)
+        \item \ppaham Second Normal Form (2NF)
+        \item \ppaham Multivalued dependency
+        \item \ppaham Fourth Normal Form (4NF)
+    \end{enumerate}
+    \item \ppaham Isu desain praktis
+    \begin{enumerate}
+        \item \ppaham Denormalization for performance
+        \item \ppaham Temporal data modeling
+        \item \ppaham Batasan penegakan FD kompleks di SQL
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Tujuan Desain Relasional}
+
+\begin{jawab}[Inti Konsep.]
+Tujuan desain relasional adalah menghasilkan sekumpulan skema relasi yang dapat menyimpan informasi tanpa redundansi yang tidak perlu dan tetap mudah digunakan untuk mengambil informasi. Konsep ini penting karena skema tabel yang buruk membuat data berulang, operasi pembaruan rawan inkonsisten, dan beberapa fakta sulit direpresentasikan tanpa nilai \texttt{NULL}.
+\end{jawab}
+
+Motivasi utamanya muncul dari masalah rancangan awal yang terlalu besar. Pada tahap awal, seluruh atribut yang menarik bagi sistem dapat saja dikumpulkan ke dalam satu \textbf{relasi universal}, yaitu satu skema besar yang memuat semua atribut sekaligus. Bentuk ini terlihat sederhana karena semua informasi berada di satu tempat, tetapi justru mencampur fakta dari beberapa entitas berbeda dalam satu tabel.
+
+Definisi kerja desain relasional yang baik adalah desain yang menempatkan setiap fakta pada relasi yang sesuai dengan ketergantungan logisnya. Jika fakta tentang departemen disimpan berulang pada setiap baris instruktur, maka basis data menyimpan informasi yang sama berkali-kali. Pengulangan ini menimbulkan tiga anomali utama.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Anomali} & \textbf{Makna dan Dampak} \\
+\hline
+\textbf{Update anomaly} & Perubahan satu fakta harus dilakukan di banyak baris. Jika sebagian baris lupa diperbarui, basis data menjadi inkonsisten. \\
+\hline
+\textbf{Insertion anomaly} & Fakta tertentu tidak dapat dimasukkan sebelum fakta lain tersedia. Misalnya departemen baru sulit dicatat jika belum ada instruktur pada departemen itu. \\
+\hline
+\textbf{Deletion anomaly} & Penghapusan satu tuple dapat menghapus fakta lain yang masih dibutuhkan. Misalnya menghapus instruktur terakhir pada departemen juga menghilangkan informasi gedung dan anggaran departemen. \\
+\hline
+\end{tabularx}
+\caption{Anomali pada rancangan relasional yang buruk}
+\label{tab:anomali-relasional}
+\end{table}
+
+Sumber menggunakan contoh skema \((ID, name, salary, dept\_name, building, budget)\). Jika beberapa instruktur bekerja pada departemen \textit{Physics}, maka fakta bahwa \textit{Physics} berada di gedung \textit{Watson} dengan anggaran tertentu akan diulang pada setiap tuple instruktur. Inilah contoh \textbf{repetition of information}, yaitu pengulangan fakta yang seharusnya disimpan satu kali.
+
+Mekanisme umum memperbaiki rancangan adalah normalisasi:
+\begin{enumerate}
+    \item Mulai dari skema relasional awal, baik hasil reduksi E-R, relasi universal, maupun rancangan ad hoc.
+    \item Identifikasi \textit{functional dependencies} yang benar berdasarkan semantik dunia nyata.
+    \item Uji apakah skema berada dalam bentuk normal yang diinginkan.
+    \item Jika tidak, dekomposisi skema menjadi relasi lebih kecil.
+    \item Pastikan dekomposisi tidak menghilangkan informasi dan, jika mungkin, tetap mempertahankan dependensi.
+\end{enumerate}
+
+Konsep ini berhubungan langsung dengan seluruh materi berikutnya: \textit{functional dependency} memberi bahasa formal untuk menyatakan aturan data, sedangkan BCNF dan 3NF memberi kriteria apakah aturan tersebut sudah ditempatkan pada tabel yang tepat.
+
+\subsubsection{Functional Dependency}
+
+\begin{jawab}[Inti Konsep.]
+\textit{Functional dependency} (FD) adalah batasan logis antaratribut yang menyatakan bahwa nilai satu himpunan atribut menentukan nilai himpunan atribut lain. FD digunakan untuk mendeteksi redundansi, mendefinisikan key, dan menguji bentuk normal seperti BCNF dan 3NF.
+\end{jawab}
+
+Motivasi FD adalah kebutuhan untuk menuliskan aturan dunia nyata secara formal. Dalam relasi departemen, misalnya, nama departemen dapat menentukan gedung dan anggaran. Jika dua tuple memiliki \texttt{dept\_name} yang sama tetapi \texttt{building} berbeda, maka salah satu fakta pasti tidak konsisten dengan aturan tersebut.
+
+Secara formal, untuk skema relasi \(R\), functional dependency \(\alpha \rightarrow \beta\) berlaku pada \(R\) jika untuk setiap instans legal \(r(R)\) dan untuk setiap dua tuple \(t_1,t_2 \in r\):
+\begin{equation}
+    t_1[\alpha] = t_2[\alpha] \Rightarrow t_1[\beta] = t_2[\beta]
+    \label{eq:fd-definition}
+\end{equation}
+dengan \(\alpha\) dan \(\beta\) adalah himpunan atribut pada \(R\). Artinya, kesamaan nilai pada atribut \(\alpha\) memaksa kesamaan nilai pada atribut \(\beta\).
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Istilah} & \textbf{Definisi atau Peran} \\
+\hline
+\textbf{Trivial FD} & FD \(\alpha \rightarrow \beta\) dengan \(\beta \subseteq \alpha\). Contoh: \(A,B \rightarrow A\). FD ini selalu benar dan tidak memberi batasan baru. \\
+\hline
+\textbf{Non-trivial FD} & FD yang sisi kanannya tidak sepenuhnya berada di sisi kiri. FD jenis ini dapat mengindikasikan redundansi dan dipakai dalam pengujian BCNF. \\
+\hline
+\textbf{Transitive dependency} & Dependensi tidak langsung: jika \(\alpha \rightarrow \beta\) dan \(\beta \rightarrow \gamma\), maka \(\alpha \rightarrow \gamma\). \\
+\hline
+\textbf{Superkey} & Himpunan atribut \(K\) yang menentukan semua atribut dalam \(R\), yaitu \(K \rightarrow R\). \\
+\hline
+\textbf{Candidate key} & Superkey minimal: \(K \rightarrow R\), tetapi tidak ada subset sejati \(K\) yang juga menentukan \(R\). \\
+\hline
+\end{tabularx}
+\caption{Istilah dasar dalam functional dependency}
+\label{tab:istilah-fd}
+\end{table}
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+\textbf{Prime attribute} adalah atribut yang menjadi anggota setidaknya satu candidate key. Istilah ini penting pada 3NF karena 3NF mengizinkan pelanggaran BCNF tertentu apabila atribut di sisi kanan FD adalah prime attribute. Informasi ini melengkapi formulasi standar yang biasa muncul pada pembahasan 3NF di buku sistem basis data.
+\end{cmt}
+
+FD bekerja sebagai alat uji. Ketika tuple baru dimasukkan atau diperbarui, DBMS atau perancang harus memastikan bahwa semua FD yang berlaku tetap benar. Dalam praktik SQL, FD yang murah ditegakkan biasanya adalah FD berbasis \texttt{primary key} atau \texttt{unique}; FD yang tidak berbasis key lebih sulit ditegakkan secara langsung.
+
+Hubungannya dengan normalisasi sangat kuat: BCNF mensyaratkan determinant FD non-trivial harus superkey, sedangkan 3NF memberi relaksasi tertentu. Tanpa FD, tidak ada dasar formal untuk mengatakan bahwa suatu tabel perlu dipecah.
+
+\subsubsection{Closure dan Inferensi Dependensi}
+
+\begin{jawab}[Inti Konsep.]
+Closure adalah cara menghitung semua dependensi yang secara logis mengikuti dari himpunan FD awal. \(F^+\) menyatakan semua FD yang terimplikasi oleh \(F\), sedangkan \(X^+\) menyatakan semua atribut yang dapat ditentukan oleh atribut \(X\).
+\end{jawab}
+
+Motivasinya adalah bahwa aturan eksplisit sering menghasilkan aturan implisit. Jika \(NIM \rightarrow PRODI\) dan \(PRODI \rightarrow FAKULTAS\), maka \(NIM \rightarrow FAKULTAS\) benar walaupun tidak ditulis langsung. Desain relasional harus memperhitungkan implikasi semacam ini karena pelanggaran normal form dapat berasal dari dependensi turunan.
+
+\textbf{Closure of functional dependencies} \(F^+\) adalah himpunan seluruh FD yang dapat diturunkan secara logis dari \(F\). Menghitung \(F^+\) secara penuh dapat mahal karena jumlah FD yang mungkin sangat besar. Karena itu, perancang sering memakai \textbf{attribute closure} \(X^+\), yaitu himpunan semua atribut yang dapat ditentukan oleh \(X\) berdasarkan \(F\).
+
+Aksioma Armstrong menyediakan aturan inferensi dasar yang \textit{sound} dan \textit{complete}. \textit{Sound} berarti aturan tidak menghasilkan FD palsu; \textit{complete} berarti semua FD yang benar-benar terimplikasi dapat diturunkan dengan aturan tersebut.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|L{0.28\textwidth}|X|}
+\hline
+\textbf{Aksioma} & \textbf{Bentuk} & \textbf{Makna} \\
+\hline
+Reflexivity & Jika \(\beta \subseteq \alpha\), maka \(\alpha \rightarrow \beta\). & Himpunan atribut selalu menentukan subset-nya sendiri. \\
+\hline
+Augmentation & Jika \(\alpha \rightarrow \beta\), maka \(\gamma\alpha \rightarrow \gamma\beta\). & Menambahkan atribut yang sama pada kedua sisi FD menjaga kebenaran FD. \\
+\hline
+Transitivity & Jika \(\alpha \rightarrow \beta\) dan \(\beta \rightarrow \gamma\), maka \(\alpha \rightarrow \gamma\). & Dependensi dapat dirantai secara logis. \\
+\hline
+\end{tabularx}
+\caption{Aksioma Armstrong}
+\label{tab:armstrong}
+\end{table}
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Aturan turunan yang lazim dipakai adalah \textit{union}, \textit{decomposition}, dan \textit{pseudotransitivity}. Jika \(\alpha \rightarrow \beta\) dan \(\alpha \rightarrow \gamma\), maka \(\alpha \rightarrow \beta\gamma\) (\textit{union}). Jika \(\alpha \rightarrow \beta\gamma\), maka \(\alpha \rightarrow \beta\) dan \(\alpha \rightarrow \gamma\) (\textit{decomposition}). Jika \(\alpha \rightarrow \beta\) dan \(\gamma\beta \rightarrow \delta\), maka \(\alpha\gamma \rightarrow \delta\) (\textit{pseudotransitivity}).
+\end{cmt}
+
+Algoritma attribute closure:
+\begin{lstlisting}[caption={Pseudocode attribute closure \(X^+\)}, label={lst:attribute-closure}]
+Input: attribute set X, functional dependencies F
+Output: X_plus
+
+X_plus := X
+repeat
+    changed := false
+    for each FD Y -> Z in F do
+        if Y subset of X_plus and Z not subset of X_plus then
+            X_plus := X_plus union Z
+            changed := true
+until changed = false
+return X_plus
+\end{lstlisting}
+
+Untuk menguji apakah \(X\) adalah superkey bagi \(R\), hitung \(X^+\). Jika \(X^+\) memuat semua atribut dalam \(R\), maka \(X \rightarrow R\) dan \(X\) adalah superkey. Perhitungan ini dipakai berulang pada pengujian BCNF, 3NF, canonical cover, dan dependency preservation.
+
+\subsubsection{Canonical Cover}
+
+\begin{jawab}[Inti Konsep.]
+\textit{Canonical cover} adalah himpunan FD yang ekuivalen dengan himpunan FD semula, tetapi sudah disederhanakan dengan menghapus atribut dan dependensi yang tidak perlu. Ia penting karena menjadi input utama algoritma sintesis 3NF dan mengurangi biaya pengecekan constraint.
+\end{jawab}
+
+Motivasi canonical cover adalah efisiensi dan kebersihan logika. Dua himpunan FD \(F\) dan \(G\) ekuivalen jika \(F^+ = G^+\). Jika \(G\) jauh lebih kecil tetapi closure-nya sama, maka \(G\) lebih mudah dipakai untuk desain, pengujian, dan sintesis skema.
+
+\textbf{Extraneous attribute} adalah atribut pada sisi kiri atau kanan FD yang dapat dihapus tanpa mengubah closure himpunan FD. Atribut dapat ekstranius pada \textbf{left-hand side} atau pada \textbf{right-hand side}.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Kasus} & \textbf{Cara Uji} \\
+\hline
+Atribut \(A \in \alpha\) pada sisi kiri \(\alpha \rightarrow \beta\) & Hitung \((\alpha-\{A\})^+\) terhadap \(F\). Jika hasilnya tetap memuat \(\beta\), maka \(A\) ekstranius. \\
+\hline
+Atribut \(A \in \beta\) pada sisi kanan \(\alpha \rightarrow \beta\) & Ganti FD menjadi \(\alpha \rightarrow (\beta-\{A\})\), lalu cek apakah \(\alpha^+\) tetap memuat \(A\). Jika ya, \(A\) ekstranius. \\
+\hline
+\end{tabularx}
+\caption{Uji atribut ekstranius}
+\label{tab:extraneous-attribute}
+\end{table}
+
+Pseudocode canonical cover:
+\begin{lstlisting}[caption={Pseudocode canonical cover}, label={lst:canonical-cover}]
+Input: functional dependencies F
+Output: canonical cover Fc
+
+Fc := F
+repeat
+    combine dependencies in Fc with the same left-hand side
+    find an FD alpha -> beta in Fc with an extraneous attribute
+    if an extraneous attribute exists then
+        delete that attribute from the FD
+    if an FD has empty right-hand side then
+        delete that FD
+until Fc no longer changes
+return Fc
+\end{lstlisting}
+
+Sumber memberi contoh relasi \texttt{cust\_banker\_branch} dengan FD:
+\[
+    customer\_id, employee\_id \rightarrow branch\_name, type
+\]
+\[
+    employee\_id \rightarrow branch\_name
+\]
+\[
+    customer\_id, branch\_name \rightarrow employee\_id
+\]
+Atribut \texttt{branch\_name} pada sisi kanan FD pertama ekstranius, sehingga canonical cover menjadi:
+\[
+    customer\_id, employee\_id \rightarrow type
+\]
+\[
+    employee\_id \rightarrow branch\_name
+\]
+\[
+    customer\_id, branch\_name \rightarrow employee\_id
+\]
+
+Canonical cover menghubungkan teori FD dengan algoritma desain. Tanpa canonical cover, sintesis 3NF dapat menghasilkan skema berlebih atau membawa dependensi yang sebenarnya redundan.
+
+\subsubsection{Decomposition, Lossless Join, dan Dependency Preservation}
+
+\begin{jawab}[Inti Konsep.]
+Dekomposisi adalah pemecahan satu skema relasi besar menjadi beberapa skema yang lebih kecil. Dekomposisi yang baik harus \textit{lossless join}, sehingga informasi tidak hilang atau bertambah palsu saat di-join kembali, dan sebaiknya \textit{dependency preserving}, sehingga FD tetap dapat dicek tanpa join mahal.
+\end{jawab}
+
+Motivasinya adalah memperbaiki relasi yang melanggar bentuk normal. Namun memecah tabel tidak boleh dilakukan sembarangan. Jika tabel dipecah berdasarkan atribut yang salah, natural join tabel pecahan dapat menghasilkan tuple palsu atau kehilangan kemampuan memeriksa aturan data.
+
+Misalkan skema \(R\) didekomposisi menjadi \(R_1, R_2, \ldots, R_n\). Dekomposisi bersifat \textbf{lossless} jika untuk setiap instans legal \(r(R)\), join proyeksi relasi hasil dekomposisi menghasilkan kembali \(r\) secara tepat:
+\begin{equation}
+    r = \Pi_{R_1}(r) \bowtie \Pi_{R_2}(r) \bowtie \cdots \bowtie \Pi_{R_n}(r)
+    \label{eq:lossless-join}
+\end{equation}
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Untuk dekomposisi biner \(R\) menjadi \(R_1\) dan \(R_2\), uji lossless yang umum dipakai adalah: \((R_1 \cap R_2) \rightarrow R_1\) atau \((R_1 \cap R_2) \rightarrow R_2\) harus berada dalam \(F^+\). Dengan kata lain, atribut irisan harus menjadi superkey untuk salah satu relasi hasil dekomposisi.
+\end{cmt}
+
+\textbf{Dependency preservation} berarti seluruh FD dalam \(F\) dapat ditegakkan dengan memeriksa tabel hasil dekomposisi secara individual. Jika suatu FD hanya dapat dicek setelah melakukan join, maka dekomposisi tidak dependency preserving. Ini penting karena join untuk memvalidasi setiap update mahal dan tidak praktis.
+
+Contoh dependency preservation: untuk \(R(A,B,C)\) dengan \(F=\{A \rightarrow B, B \rightarrow C\}\), dekomposisi menjadi \(R_1(A,B)\) dan \(R_2(B,C)\) mempertahankan kedua FD. Sebaliknya, dekomposisi menjadi \(R_1(A,B)\) dan \(R_2(A,C)\) tidak mempertahankan \(B \rightarrow C\) tanpa join.
+
+Pseudocode uji sederhana preservation untuk satu FD \(\alpha \rightarrow \beta\):
+\begin{lstlisting}[caption={Pseudocode uji dependency preservation}, label={lst:dependency-preservation}]
+Input: FD alpha -> beta, decomposition R1..Rn, dependencies F
+Output: preserved or not preserved
+
+result := alpha
+repeat
+    old_result := result
+    for each schema Ri in decomposition do
+        result := result union ((result intersect Ri)+ intersect Ri)
+until result = old_result
+
+if beta subset of result then
+    return preserved
+else
+    return not_preserved
+\end{lstlisting}
+
+Dekomposisi adalah jembatan menuju BCNF dan 3NF. BCNF mengutamakan penghilangan redundansi berbasis FD, sedangkan 3NF memberi kompromi agar dependency preservation tetap dapat dijamin.
+
+\subsubsection{Boyce-Codd Normal Form (BCNF)}
+
+\begin{jawab}[Inti Konsep.]
+BCNF adalah bentuk normal yang menuntut setiap FD non-trivial memiliki determinant berupa superkey. Ia penting karena menghilangkan redundansi yang dapat dijelaskan oleh functional dependency.
+\end{jawab}
+
+Motivasi BCNF adalah memperketat desain agar setiap fakta ditempatkan pada relasi yang determinant-nya benar-benar mengidentifikasi tuple. Jika ada FD \(\alpha \rightarrow \beta\) dan \(\alpha\) bukan superkey, maka nilai \(\alpha\) dapat muncul berulang dan membawa nilai \(\beta\) yang sama berulang pula.
+
+Secara formal, skema relasi \(R\) berada dalam BCNF terhadap \(F\) jika untuk setiap FD \(\alpha \rightarrow \beta\) dalam \(F^+\), salah satu kondisi berikut benar:
+\begin{enumerate}
+    \item \(\alpha \rightarrow \beta\) trivial, yaitu \(\beta \subseteq \alpha\).
+    \item \(\alpha\) adalah superkey untuk \(R\).
+\end{enumerate}
+
+Mekanisme pengujian BCNF:
+\begin{enumerate}
+    \item Ambil FD non-trivial \(\alpha \rightarrow \beta\) yang berlaku pada relasi.
+    \item Hitung \(\alpha^+\) terhadap FD yang relevan.
+    \item Jika \(\alpha^+\) memuat semua atribut \(R\), maka \(\alpha\) superkey dan FD tidak melanggar BCNF.
+    \item Jika \(\alpha^+\) tidak memuat seluruh atribut \(R\), maka FD tersebut melanggar BCNF.
+\end{enumerate}
+
+Algoritma dekomposisi BCNF:
+\begin{lstlisting}[caption={Pseudocode dekomposisi BCNF}, label={lst:bcnf-decomposition}]
+Input: relation schema R, functional dependencies F
+Output: BCNF decomposition
+
+result := {R}
+while exists schema Ri in result that violates BCNF do
+    choose a non-trivial FD alpha -> beta on Ri
+    such that alpha is not a superkey of Ri
+    replace Ri with:
+        R1 := alpha union beta
+        R2 := Ri - (beta - alpha)
+return result
+\end{lstlisting}
+
+Sumber memberi contoh relasi \texttt{class}:
+\[
+\begin{array}{l}
+course\_id, title, dept\_name, credits, sec\_id, semester, year,\\
+building, room\_number, capacity, time\_slot\_id
+\end{array}
+\]
+FD \(\texttt{course\_id} \rightarrow \texttt{title, dept\_name, credits}\) melanggar BCNF karena \texttt{course\_id} bukan superkey untuk keseluruhan \texttt{class}. Relasi dipecah menjadi \texttt{course(course\_id, title, dept\_name, credits)} dan relasi sisa. Pada relasi sisa, FD \(\texttt{building, room\_number} \rightarrow \texttt{capacity}\) juga melanggar BCNF, sehingga dipisah menjadi \texttt{classroom(building, room\_number, capacity)} dan \texttt{section}.
+
+BCNF berhubungan langsung dengan lossless join karena algoritma dekomposisinya dirancang menghasilkan dekomposisi lossless. Kelemahannya, BCNF tidak selalu dependency preserving.
+
+\subsubsection{Third Normal Form (3NF)}
+
+\begin{jawab}[Inti Konsep.]
+3NF adalah relaksasi BCNF yang tetap mengurangi redundansi besar, tetapi dirancang agar selalu dapat diperoleh dekomposisi yang lossless dan dependency preserving. Ia penting ketika BCNF menghilangkan kemampuan memeriksa FD tanpa join.
+\end{jawab}
+
+Motivasi 3NF muncul dari trade-off desain. BCNF lebih ketat, tetapi ada kasus ketika semua relasi BCNF tidak dapat mempertahankan semua dependency. 3NF mengizinkan beberapa FD yang determinant-nya bukan superkey, asalkan atribut di sisi kanan merupakan bagian dari candidate key.
+
+Relasi \(R\) berada pada 3NF terhadap \(F\) jika untuk setiap FD \(\alpha \rightarrow \beta\) dalam \(F^+\), setidaknya satu syarat berikut berlaku:
+\begin{enumerate}
+    \item \(\alpha \rightarrow \beta\) trivial.
+    \item \(\alpha\) adalah superkey untuk \(R\).
+    \item Setiap atribut \(A \in \beta-\alpha\) adalah prime attribute.
+\end{enumerate}
+
+Algoritma sintesis 3NF:
+\begin{lstlisting}[caption={Pseudocode sintesis 3NF}, label={lst:3nf-synthesis}]
+Input: relation schema R, functional dependencies F
+Output: 3NF decomposition
+
+compute canonical cover Fc for F
+result := empty set
+for each FD alpha -> beta in Fc do
+    if no schema in result contains alpha union beta then
+        add schema (alpha union beta) to result
+if no schema in result contains a candidate key for R then
+    add one schema containing a candidate key for R
+remove every schema that is subset of another schema
+return result
+\end{lstlisting}
+
+Sumber memakai contoh \texttt{cust\_banker\_branch(customer\_id, employee\_id, branch\_name, type)}. Setelah canonical cover diperoleh, sintesis menghasilkan skema:
+\[
+    (customer\_id, employee\_id, type)
+\]
+\[
+    (employee\_id, branch\_name)
+\]
+\[
+    (customer\_id, branch\_name, employee\_id)
+\]
+Karena salah satu skema sudah memuat candidate key, tidak perlu menambahkan skema key baru.
+
+Perbandingan BCNF dan 3NF:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|X|}
+\hline
+\textbf{Aspek} & \textbf{BCNF} & \textbf{3NF} \\
+\hline
+Kekuatan normalisasi & Lebih ketat; determinant FD non-trivial harus superkey. & Lebih longgar; mengizinkan sisi kanan berupa prime attribute. \\
+\hline
+Redundansi berbasis FD & Sangat kecil karena pelanggaran FD dipecah. & Masih mungkin ada redundansi tertentu. \\
+\hline
+Lossless join & Dapat dijamin oleh algoritma dekomposisi. & Dapat dijamin oleh algoritma sintesis. \\
+\hline
+Dependency preservation & Tidak selalu terjamin. & Dapat dijamin. \\
+\hline
+\end{tabularx}
+\caption{Trade-off BCNF dan 3NF}
+\label{tab:bcnf-3nf}
+\end{table}
+
+Dalam praktik SQL, BCNF sering lebih disukai jika constraint FD non-key sulit ditegakkan. SQL secara langsung mudah menegakkan FD melalui \texttt{primary key} dan \texttt{unique}; FD yang lebih kompleks dapat memerlukan mekanisme mahal seperti assertions atau trigger.
+
+\subsubsection{Bentuk Normal Lanjutan}
+
+\begin{jawab}[Inti Konsep.]
+Bentuk normal lanjutan memperluas normalisasi di luar FD biasa. 1NF memastikan semua nilai atomik, 2NF menangani ketergantungan parsial pada candidate key komposit, sedangkan 4NF menangani multivalued dependency yang masih dapat menimbulkan redundansi walaupun relasi sudah BCNF.
+\end{jawab}
+
+Motivasi bentuk normal lanjutan adalah bahwa tidak semua masalah desain ditangkap oleh BCNF dan 3NF. Sebelum FD dianalisis, relasi harus memenuhi 1NF. Setelah BCNF, masih ada kasus redundansi yang bersumber dari \textit{multivalued dependency}.
+
+\textbf{First Normal Form (1NF)} mensyaratkan setiap domain atribut bersifat atomik. Nilai atomik adalah nilai yang tidak perlu dipecah lagi oleh model relasional. Misalnya satu nomor akun dapat dianggap atomik, tetapi satu sel berisi himpunan banyak nomor akun tidak atomik.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+\textbf{Second Normal Form (2NF)} adalah bentuk normal historis yang mensyaratkan relasi sudah 1NF dan setiap atribut non-prime bergantung penuh pada seluruh candidate key, bukan hanya pada sebagian candidate key komposit. Dalam praktik modern, 2NF sering dipelajari sebagai tahap antara menuju 3NF; jika relasi sudah 3NF, maka masalah 2NF juga sudah teratasi.
+\end{cmt}
+
+\textbf{Multivalued dependency} (MVD) menuliskan fakta bahwa satu atribut menentukan sekumpulan nilai atribut lain secara independen dari atribut lain. Notasinya:
+\begin{equation}
+    \alpha \twoheadrightarrow \beta
+    \label{eq:mvd}
+\end{equation}
+dibaca \(\alpha\) multidetermines \(\beta\). Sumber memberi contoh \(\texttt{isbn} \twoheadrightarrow \texttt{author}\): satu ISBN dapat memiliki banyak author.
+
+\textbf{Fourth Normal Form (4NF)} menggunakan MVD sebagai dasar. Relasi berada pada 4NF jika untuk setiap MVD non-trivial \(\alpha \twoheadrightarrow \beta\), \(\alpha\) adalah superkey. Jika tidak, relasi perlu didekomposisi lebih lanjut.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.18\textwidth}|X|}
+\hline
+\textbf{Bentuk} & \textbf{Fokus Utama} \\
+\hline
+1NF & Domain atomik; tidak ada nilai multivalued atau composite dalam satu sel. \\
+\hline
+2NF & Menghindari ketergantungan parsial pada candidate key komposit. \\
+\hline
+3NF & Mengurangi dependensi non-key sambil menjaga dependency preservation. \\
+\hline
+BCNF & Memaksa determinant FD non-trivial menjadi superkey. \\
+\hline
+4NF & Menghilangkan redundansi akibat multivalued dependency. \\
+\hline
+\end{tabularx}
+\caption{Fokus beberapa bentuk normal}
+\label{tab:normal-forms}
+\end{table}
+
+Bentuk normal lanjutan berkaitan dengan BCNF karena BCNF belum selalu cukup. Jika redundansi berasal dari MVD, maka desain perlu dianalisis dengan 4NF, bukan hanya FD.
+
+\subsubsection{Denormalization for Performance}
+
+\begin{jawab}[Inti Konsep.]
+Denormalization adalah keputusan sadar untuk menggabungkan kembali informasi yang sudah dinormalisasi demi mempercepat pembacaan data. Ia penting karena desain yang paling normal tidak selalu memberi performa query terbaik pada beban kerja tertentu.
+\end{jawab}
+
+Motivasi denormalisasi adalah trade-off antara kebersihan desain dan performa. Normalisasi memecah data agar redundansi berkurang, tetapi query tertentu menjadi membutuhkan banyak join. Jika query tersebut sangat sering dijalankan dan update relatif jarang, perancang dapat menyimpan data gabungan secara sengaja.
+
+Mekanismenya:
+\begin{enumerate}
+    \item Identifikasi query yang mahal karena terlalu banyak join.
+    \item Tentukan atribut dari beberapa relasi yang sering dibaca bersama.
+    \item Buat relasi denormalized atau materialized structure yang menyimpan hasil gabungan.
+    \item Pastikan ada strategi menjaga konsistensi saat data sumber berubah.
+    \item Evaluasi trade-off antara percepatan lookup dan biaya update.
+\end{enumerate}
+
+Sumber memberi contoh tabel \texttt{course} dan \texttt{prereq}. Desain normal memisahkan informasi course dan prerequisite, sehingga query harus melakukan join. Denormalisasi dapat menyimpan atribut course dan prereq berdampingan agar lookup lebih cepat.
+
+Biayanya adalah ruang penyimpanan ekstra dan operasi update yang lebih mahal. Jika judul course berubah, semua salinan pada struktur denormalized harus ikut diperbarui. Karena itu denormalisasi bukan pengganti normalisasi, melainkan keputusan performa setelah struktur normal dipahami.
+
+Konsep ini terhubung dengan data warehouse. Model dimensional sering sengaja merelaksasi normalisasi, terutama pada star schema, agar query analitik read-only menjadi cepat.
+
+\subsubsection{Temporal Data Modeling}
+
+\begin{jawab}[Inti Konsep.]
+Temporal data modeling adalah cara memodelkan data yang berubah sepanjang waktu dengan menyimpan riwayat validitas fakta. Ia penting karena update biasa hanya menyimpan snapshot terbaru dan dapat menghapus informasi historis yang dibutuhkan.
+\end{jawab}
+
+Motivasi temporal modeling adalah kebutuhan menyimpan data saat ini sekaligus data historis. Jika nama mata kuliah \texttt{CS-201 Intro. to C} berubah menjadi \texttt{CS-201 Intro. to Java}, update biasa akan menghapus fakta lama. Dalam desain temporal, kedua versi dapat disimpan beserta interval waktu berlakunya.
+
+Mekanismenya:
+\begin{enumerate}
+    \item Tambahkan atribut waktu seperti \texttt{start} dan \texttt{end} pada tuple historis.
+    \item Definisikan periode validitas fakta dunia nyata.
+    \item Sesuaikan key agar mempertimbangkan waktu, misalnya menggunakan temporal primary key.
+    \item Modifikasi operasi join agar hanya menggabungkan tuple dengan interval waktu yang relevan atau saling tumpang tindih.
+    \item Gunakan predikat temporal seperti \textit{overlaps}, \textit{contains}, \textit{before}, dan \textit{after}.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Istilah} & \textbf{Definisi atau Peran} \\
+\hline
+\textbf{Snapshot} & Keadaan data pada satu titik waktu tertentu. \\
+\hline
+\textbf{Temporal functional dependency} & FD yang berlaku pada titik atau interval waktu tertentu, bukan selalu sepanjang umur relasi. \\
+\hline
+\textbf{Temporal primary key} & Key yang memasukkan dimensi waktu agar beberapa versi historis objek yang sama dapat disimpan. \\
+\hline
+\textbf{Temporal join} & Join yang memperhitungkan tumpang tindih interval waktu antar tuple. \\
+\hline
+\end{tabularx}
+\caption{Istilah dalam temporal data modeling}
+\label{tab:temporal-modeling}
+\end{table}
+
+Temporal modeling memperluas konsep FD, key, dan operasi relasional. Ia tetap bagian dari desain relasional karena perubahan struktur waktu dapat memengaruhi normal form dan cara constraint didefinisikan.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Functional Dependency}
+
+\begin{jawab}[Makna Rumus.]
+Rumus FD menyatakan kapan satu himpunan atribut menentukan himpunan atribut lain. Rumus ini digunakan untuk mendefinisikan key, menguji normal form, dan menentukan apakah dekomposisi diperlukan.
+\end{jawab}
+
+\begin{equation}
+    \alpha \rightarrow \beta \iff \forall t_1,t_2 \in r,\; t_1[\alpha]=t_2[\alpha] \Rightarrow t_1[\beta]=t_2[\beta]
+    \label{eq:fd-formal}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item \(R\): skema relasi.
+    \item \(r\): instans legal dari \(R\).
+    \item \(\alpha,\beta\): himpunan atribut pada \(R\).
+    \item \(t_1,t_2\): tuple dalam \(r\).
+\end{itemize}
+
+\subsubsection{Attribute Closure}
+
+\begin{jawab}[Tujuan Algoritma.]
+Attribute closure menghitung semua atribut yang dapat ditentukan oleh suatu himpunan atribut. Hasilnya dipakai untuk menguji superkey, implied dependency, BCNF, 3NF, dan dependency preservation.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode attribute closure}, label={lst:attribute-closure-final}]
+Input: X, F
+Output: X_plus
+
+X_plus := X
+repeat
+    old := X_plus
+    for each dependency Y -> Z in F do
+        if Y subset of X_plus then
+            X_plus := X_plus union Z
+until X_plus = old
+return X_plus
+\end{lstlisting}
+
+\subsubsection{BCNF Decomposition}
+
+\begin{jawab}[Tujuan Algoritma.]
+Algoritma dekomposisi BCNF memecah relasi yang melanggar BCNF menjadi relasi lebih kecil yang lossless dan memenuhi BCNF. Algoritma ini tidak selalu mempertahankan semua dependency.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode dekomposisi BCNF}, label={lst:bcnf-final}]
+Input: R, F
+Output: result
+
+result := {R}
+while exists Ri in result and FD alpha -> beta violates BCNF on Ri do
+    result := result - {Ri}
+    result := result union {alpha union beta}
+    result := result union {Ri - (beta - alpha)}
+return result
+\end{lstlisting}
+
+\subsubsection{3NF Synthesis}
+
+\begin{jawab}[Tujuan Algoritma.]
+Algoritma sintesis 3NF membuat dekomposisi yang berada pada 3NF, lossless, dan dependency preserving. Input pentingnya adalah canonical cover agar relasi hasil tidak membawa atribut atau dependensi berlebihan.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode sintesis 3NF}, label={lst:3nf-final}]
+Input: R, F
+Output: schemas
+
+Fc := canonical_cover(F)
+schemas := {}
+for each alpha -> beta in Fc do
+    if no schema in schemas contains alpha union beta then
+        schemas := schemas union {alpha union beta}
+if no schema in schemas contains a candidate key of R then
+    schemas := schemas union {one candidate key of R}
+remove schemas that are subsets of other schemas
+return schemas
+\end{lstlisting}

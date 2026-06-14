@@ -1,0 +1,183 @@
+% arara: pdflatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{graphicx}
+\input{preamble.sty}
+
+\title{%
+    \vspace{-2cm}
+    \textbf{\LARGE Catatan Ujian Akhir Semester} \\[0.25em]
+    \Large IF2240 Basis Data \\[0.25em]
+    \normalsize Semester 4 Tahun 2025/2026 \\[2em]
+}
+
+\author{%
+    Narendra Dharma Wistara M. \\[0.25em]
+    13524044 \\[2.5em]
+    Program Studi Teknik Informatika \\[0.25em]
+    Sekolah Teknik Elektro dan Informatika \\[0.25em]
+    Institut Teknologi Bandung \\[0.25em]
+}
+
+\begin{document}
+\pagenumbering{gobble}
+\begin{titlepage}
+    \maketitle
+    \thispagestyle{empty}
+\end{titlepage}
+
+\clearpage
+
+\pagenumbering{roman}
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic}
+
+\section{Informasi Ujian}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Jenis Ujian} & UAS \\
+\hline
+\textbf{Nama Mata Kuliah} & Basis Data \\
+\hline
+\textbf{Tanggal Ujian} & Senin, 8 Juni 2026 \\
+\hline
+\textbf{Sumber Utama} & NotebookLM: \url{https://notebooklm.google.com/notebook/e0b2f7c1-b643-4e02-af21-f7a6ef60a8e8} \\
+\hline
+\end{tabularx}
+\caption{Informasi ujian}
+\label{tab:informasi-ujian}
+\end{table}
+
+\section{Capaian Pembelajaran Mata Kuliah (CPMK)}
+
+\begin{enumerate}
+    \item Menjelaskan peranan sistem basis data dalam pemenuhan kebutuhan akan informasi.
+    \item Menjelaskan model data relasional dan mengekspresikan kebutuhan data menggunakan operasi relasional.
+    \item Melakukan pemodelan data skala kecil-menengah dengan menggunakan model entity-relationship.
+    \item Membuat rancangan skema basis data relasional.
+    \item Mengimplementasikan sebuah basis data menggunakan DBMS relasional.
+    \item Menyusun perintah SQL untuk memperoleh data dan informasi dari basis data serta memanipulasi data di dalam basis data.
+\end{enumerate}
+
+\subsection{Tabel Keterpenuhan CPMK}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.46\textwidth}|L{0.30\textwidth}|X|}
+\hline
+\textbf{CPMK} & \textbf{Materi Terkait} & \textbf{Keterpenuhan} \\
+\hline
+Menjelaskan peranan sistem basis data dalam pemenuhan kebutuhan akan informasi. & Introduction to Database; Model Data Multidimensi \& Data Warehouse & Peran DBMS, kebutuhan informasi, OLTP/OLAP, dan decision support dibahas. \\
+\hline
+Menjelaskan model data relasional dan mengekspresikan kebutuhan data menggunakan operasi relasional. & Relational Model; Relational Algebra \& Calculus & Relasi, tuple, domain, key, operator aljabar, dan kalkulus relasional dibahas. \\
+\hline
+Melakukan pemodelan data skala kecil-menengah dengan menggunakan model entity-relationship. & Model Data; Database Design using E-R Model & Entity, relationship, atribut, cardinality, participation, weak entity, dan reduksi E-R dibahas. \\
+\hline
+Membuat rancangan skema basis data relasional. & Database Design using E-R Model; Relational Database Design; Integrity Constraints & Skema relasional, FD, normal form, decomposition, dan constraints dibahas. \\
+\hline
+Mengimplementasikan sebuah basis data menggunakan DBMS relasional. & SQL; Integrity Constraints & DDL, tabel, key, foreign key, check, view, trigger, dan transaction dibahas. \\
+\hline
+Menyusun perintah SQL untuk memperoleh data dan informasi dari basis data serta memanipulasi data di dalam basis data. & SQL; Model Data Multidimensi \& Data Warehouse & Query dasar, join, agregasi, subquery, insert, delete, update, dan query analitik dibahas. \\
+\hline
+\end{tabularx}
+\caption{Keterpenuhan CPMK per materi yang dibahas}
+\label{tab:keterpenuhan-cpmk}
+\end{table}
+
+\section{Daftar Materi yang Diujikan}
+
+\begin{enumerate}
+    \item Introduction to Database
+    \item Model Data
+    \item Relational Model
+    \item Relational Algebra \& Calculus
+    \item SQL (Structured Query Language)
+    \item Database Design using E-R Model
+    \item Relational Database Design
+    \item Integrity Constraints
+    \item Model Data Multidimensi \& Data Warehouse
+\end{enumerate}
+
+\section{Outline Keseluruhan Materi}
+
+Bagian ini menyajikan peta belajar ringkas untuk seluruh materi yang diujikan.
+Penjelasan mendalam tersedia pada section masing-masing materi.
+
+\subsection{Introduction to Database}
+\begin{itemize}
+    \item Data, basis data, DBMS, peran DBMS, abstraksi data, schema-instance, data independence, komponen DBMS, dan bahasa basis data.
+    \item Proses pengembangan basis data melalui data modeling, SDLC, dan prototyping/RAD.
+\end{itemize}
+
+\subsection{Model Data}
+\begin{itemize}
+    \item Tujuan pemodelan, level conceptual-logical-physical, dan prosedur identifikasi grup data.
+    \item Kategori model data: E-R, relational, semi-structured, object-based, network, hierarchical, dan hubungan antar model.
+\end{itemize}
+
+\subsection{Relational Model}
+\begin{itemize}
+    \item Relation, attribute, tuple, domain, atomic value, schema, instance, key, foreign key, null, dan integrity constraints.
+    \item Relational model menjadi dasar SQL, aljabar relasional, kalkulus relasional, dan normalisasi.
+\end{itemize}
+
+\subsection{Relational Algebra \& Calculus}
+\begin{itemize}
+    \item Operator dasar aljabar relasional: selection, projection, union, set difference, Cartesian product, dan rename.
+    \item Operator turunan, aggregation, null, multiset semantics, tuple relational calculus, domain relational calculus, dan relational completeness.
+\end{itemize}
+
+\subsection{SQL (Structured Query Language)}
+\begin{itemize}
+    \item DDL, DML, query dasar, null logic, set operations, aggregation, grouping, joins, nested subquery, views, modification, authorization, dan transaction.
+    \item Advanced SQL mencakup stored procedure, trigger, JDBC/ODBC, prepared statement, recursive query, window function, cube, dan rollup.
+\end{itemize}
+
+\subsection{Database Design using E-R Model}
+\begin{itemize}
+    \item Fase desain basis data, entity, attribute, relationship, key, cardinality, participation, weak entity, dan E-R diagram.
+    \item Extended E-R, UML, isu desain, dan reduksi E-R ke skema relasional.
+\end{itemize}
+
+\subsection{Relational Database Design}
+\begin{itemize}
+    \item Tujuan desain relasional, universal relation, anomaly, functional dependency, closure, key, canonical cover, decomposition, lossless join, dan dependency preservation.
+    \item Normal form: 1NF, 2NF, 3NF, BCNF, 4NF, serta trade-off normalisasi, denormalization, dan temporal data modeling.
+\end{itemize}
+
+\subsection{Integrity Constraints}
+\begin{itemize}
+    \item Domain, entity, referential integrity, SQL constraints, named constraints, foreign key action, deferred checking, assertions, triggers, functions, dan procedures.
+\end{itemize}
+
+\subsection{Model Data Multidimensi \& Data Warehouse}
+\begin{itemize}
+    \item OLTP vs OLAP, data warehouse, ETL/ELT, fact, measure, dimension, member, data cube, grain, star schema, snowflake schema, galaxy schema, dan OLAP operations.
+\end{itemize}
+
+\newpage
+\input{section/1-introduction-to-database.tex}
+\newpage
+\input{section/2-model-data.tex}
+\newpage
+\input{section/3-relational-model.tex}
+\newpage
+\input{section/4-relational-algebra-calculus.tex}
+\newpage
+\input{section/5-sql.tex}
+\newpage
+\input{section/6-database-design-er-model.tex}
+\newpage
+\input{section/7-relational-database-design.tex}
+\newpage
+\input{section/8-integrity-constraints.tex}
+\newpage
+\input{section/9-model-data-multidimensi-data-warehouse.tex}
+
+\end{document}

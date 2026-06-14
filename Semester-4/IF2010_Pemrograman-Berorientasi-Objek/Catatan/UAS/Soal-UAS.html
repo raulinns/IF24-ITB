@@ -1,0 +1,1503 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Latihan UAS Pemrograman Berorientasi Objek — Java</title>
+  <style>
+    :root {
+      --ink: #1f2933;
+      --muted: #52606d;
+      --line: #cbd5e1;
+      --soft: #f5f7fa;
+      --accent: #1f4e79;
+      --accent-soft: #eaf2f8;
+      --warn-soft: #fff8e8;
+      --code: #f4f6f8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #edf1f5;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11pt;
+      line-height: 1.55;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 18px auto;
+      padding: 20mm 18mm;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(31, 41, 51, 0.12);
+    }
+
+    h1, h2, h3, h4 {
+      color: #142b43;
+      line-height: 1.3;
+      margin-top: 1.2em;
+      margin-bottom: 0.55em;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22pt;
+      margin-top: 0;
+      margin-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 16pt;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    h3 {
+      font-size: 13pt;
+      color: var(--accent);
+    }
+
+    h4 {
+      font-size: 11.5pt;
+    }
+
+    p {
+      margin: 0.5em 0;
+      text-align: justify;
+    }
+
+    header.exam-header {
+      margin-bottom: 28px;
+    }
+
+    .subtitle {
+      text-align: center;
+      margin-top: 0;
+      color: var(--muted);
+      font-size: 11pt;
+    }
+
+    .identity {
+      margin: 20px 0 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 24px;
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+    }
+
+    .identity div {
+      min-height: 24px;
+      border-bottom: 1px dotted #9aa5b1;
+    }
+
+    .exam-meta {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+    }
+
+    .exam-meta th,
+    .exam-meta td {
+      border: 1px solid var(--line);
+      padding: 7px 9px;
+      vertical-align: top;
+    }
+
+    .exam-meta th {
+      width: 24%;
+      background: var(--accent-soft);
+      text-align: left;
+    }
+
+    .instructions {
+      border: 1px solid var(--line);
+      background: var(--soft);
+      padding: 10px 15px;
+      margin-top: 16px;
+    }
+
+    .instructions ol {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+
+    .toc {
+      margin: 24px 0 28px;
+      padding: 14px 18px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .toc ol {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    article.question {
+      border-top: 4px solid var(--accent);
+      margin: 34px 0;
+      padding-top: 12px;
+      page-break-before: always;
+    }
+
+    article.question:first-of-type {
+      page-break-before: auto;
+    }
+
+    .question-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .question-title h2 {
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .weight {
+      font-weight: bold;
+      white-space: nowrap;
+      padding: 4px 9px;
+      color: #fff;
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    .materials {
+      margin: 10px 0 15px;
+      padding: 8px 11px;
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      font-size: 10.5pt;
+    }
+
+    ul, ol {
+      margin-top: 0.45em;
+      margin-bottom: 0.8em;
+    }
+
+    li {
+      margin: 0.28em 0;
+    }
+
+    .specification {
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      margin: 13px 0;
+      background: #fff;
+    }
+
+    .constraint {
+      border: 1px solid #ecd391;
+      background: var(--warn-soft);
+      padding: 10px 14px;
+      margin: 13px 0;
+    }
+
+    pre {
+      margin: 12px 0 16px;
+      padding: 12px 14px;
+      background: var(--code);
+      border: 1px solid #d9e2ec;
+      border-left: 4px solid #627d98;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.42;
+      font-size: 9.25pt;
+    }
+
+    code {
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    .filename {
+      display: block;
+      font-weight: bold;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #334e68;
+      margin-bottom: 5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 13px 0 18px;
+      font-size: 10.2pt;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--accent-soft);
+      text-align: left;
+    }
+
+    .task-list > li {
+      margin-bottom: 0.65em;
+    }
+
+    .subweight {
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    .note {
+      font-size: 10pt;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    details.coverage-note {
+      margin-top: 38px;
+      border: 2px dashed #8393a3;
+      padding: 10px 14px;
+      background: #f8fafc;
+      page-break-before: always;
+    }
+
+    details.coverage-note summary {
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 13pt;
+      color: var(--accent);
+      padding: 6px 0;
+    }
+
+    .remove-note {
+      margin: 10px 0 14px;
+      padding: 8px 10px;
+      background: #fff4d6;
+      border-left: 4px solid #d99a00;
+      font-size: 10pt;
+    }
+
+    footer {
+      margin-top: 30px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      color: var(--muted);
+      font-size: 9.5pt;
+      text-align: center;
+    }
+
+    @page {
+      size: A4;
+      margin: 16mm 15mm;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        font-size: 10.5pt;
+      }
+
+      .page {
+        width: auto;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+
+      article.question,
+      details.coverage-note {
+        break-before: page;
+      }
+
+      article.question:first-of-type {
+        break-before: auto;
+      }
+
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <header class="exam-header">
+      <h1>Latihan UAS Pemrograman Berorientasi Objek — Java</h1>
+      <p class="subtitle">Paket Latihan Implementasi, Analisis Kode, dan Perancangan Sistem Berorientasi Objek</p>
+
+      <div class="identity" aria-label="Identitas peserta">
+        <div><strong>Nama:</strong></div>
+        <div><strong>NIM:</strong></div>
+        <div><strong>Kelas:</strong></div>
+        <div><strong>Tanggal Pengerjaan:</strong></div>
+      </div>
+
+      <table class="exam-meta" aria-label="Informasi ujian">
+        <tbody>
+          <tr>
+            <th>Mata Kuliah</th>
+            <td>Pemrograman Berorientasi Objek</td>
+          </tr>
+          <tr>
+            <th>Bahasa Pemrograman</th>
+            <td>Java, menggunakan Java Standard Library</td>
+          </tr>
+          <tr>
+            <th>Materi</th>
+            <td>
+              SOLID, Java Fundamentals, Padanan Java–C++, String, Interface,
+              Generics, Wildcard, Collection, Exception, Assertion,
+              Multithreading, Reflection, dan Design Pattern
+            </td>
+          </tr>
+          <tr>
+            <th>Durasi Disarankan</th>
+            <td>180 menit</td>
+          </tr>
+          <tr>
+            <th>Total Bobot</th>
+            <td>100%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <section class="instructions" aria-labelledby="ketentuan">
+        <h3 id="ketentuan">Ketentuan Umum Pengerjaan</h3>
+        <ol>
+          <li>Tuliskan jawaban dalam bahasa Java yang valid secara konseptual dan menggunakan penamaan yang konsisten.</li>
+          <li>Anda boleh menambahkan atribut, method pendukung, constructor, atau kelas exception apabila diperlukan, selama tidak mengubah perilaku yang diminta.</li>
+          <li>Gunakan hanya Java Standard Library. Anda tidak diperkenankan menggunakan framework eksternal.</li>
+          <li>Apabila suatu bagian skeleton program kurang lengkap untuk memenuhi spesifikasi, lengkapilah bagian tersebut dan jelaskan keputusan penting Anda secara singkat.</li>
+          <li>Pada soal analisis kode, bila suatu baris tidak dapat dikompilasi atau berpotensi menghasilkan perilaku salah, nyatakan jenis masalahnya dan jelaskan alasannya.</li>
+          <li>Jawaban tidak harus memuat seluruh boilerplate yang tidak relevan, kecuali secara eksplisit diminta oleh soal.</li>
+        </ol>
+      </section>
+    </header>
+
+    <nav class="toc" aria-labelledby="daftar-isi">
+      <h2 id="daftar-isi">Daftar Isi</h2>
+      <ol>
+        <li><a href="#soal-1">Refactoring Sistem Notifikasi Bantuan Darurat</a> — 22%</li>
+        <li><a href="#soal-2">Pemrosesan Kode Akses Peserta Workshop</a> — 18%</li>
+        <li><a href="#soal-3">Gudang Peralatan Praktikum Generik</a> — 22%</li>
+        <li><a href="#soal-4">Reservasi Slot Ruang Belajar Serentak</a> — 18%</li>
+        <li><a href="#soal-5">Arsitektur Plugin Pemeriksa Berkas Pengumpulan</a> — 20%</li>
+      </ol>
+    </nav>
+
+    <main>
+      <article class="question" id="soal-1">
+        <div class="question-title">
+          <h2>Soal 1. Refactoring Sistem Notifikasi Bantuan Darurat</h2>
+          <span class="weight">Bobot: 22%</span>
+        </div>
+
+        <div class="materials">
+          <strong>Materi yang diuji:</strong>
+          Prinsip SOLID, Java Interface, Java Fundamentals, Collection, Exception, dan Design Pattern.
+        </div>
+
+        <h3>Narasi Kasus</h3>
+        <p>
+          Sebuah pusat koordinasi relawan memiliki aplikasi yang menerima laporan kebutuhan bantuan dari
+          posko lapangan. Setiap laporan memiliki nomor laporan, nama lokasi, tingkat urgensi, dan pesan
+          ringkas. Pada versi awal aplikasi, satu kelas melakukan seluruh pekerjaan: memvalidasi laporan,
+          menentukan isi pesan, mencetak pesan ke terminal, serta mengirim pesan menggunakan kanal tertentu.
+        </p>
+        <p>
+          Saat ini sistem hanya mendukung pengiriman melalui pesan singkat. Dalam waktu dekat, pusat
+          koordinasi ingin menambahkan kanal surel dan aplikasi percakapan. Selain itu, format pesan untuk
+          laporan <em>KRITIS</em> harus dapat berbeda dari laporan biasa tanpa memodifikasi seluruh bagian
+          aplikasi setiap kali ada perubahan aturan.
+        </p>
+
+        <h3>Desain Awal yang Diberikan</h3>
+        <pre><code><span class="filename">// File: AlertService.java</span>
+import java.util.ArrayList;
+import java.util.List;
+
+public class AlertService {
+    private List&lt;String&gt; sentLogs = new ArrayList&lt;&gt;();
+
+    public void sendAlert(String reportId, String location,
+                          String urgency, String message,
+                          String channel) {
+        if (reportId == null || reportId.isBlank()) {
+            throw new IllegalArgumentException("ID laporan kosong");
+        }
+
+        String formatted = "[" + urgency + "] " + location + ": " + message;
+
+        if (channel.equals("SMS")) {
+            System.out.println("SMS: " + formatted);
+        } else if (channel.equals("EMAIL")) {
+            System.out.println("EMAIL: " + formatted);
+        } else if (channel.equals("CHAT")) {
+            System.out.println("CHAT: " + formatted);
+        }
+
+        sentLogs.add(reportId + " - " + channel);
+    }
+
+    public List&lt;String&gt; getSentLogs() {
+        return sentLogs;
+    }
+}</code></pre>
+
+        <section class="specification">
+          <h3>Spesifikasi Sistem Baru</h3>
+          <ol>
+            <li>
+              Sebuah laporan direpresentasikan oleh kelas <code>ReliefReport</code> dengan data:
+              <code>reportId</code>, <code>location</code>, <code>urgency</code>, dan <code>message</code>.
+            </li>
+            <li>
+              Kanal pengiriman harus dapat ditambahkan tanpa mengubah kelas pengatur proses pengiriman yang sudah stabil.
+            </li>
+            <li>
+              Format pesan dapat dipilih secara independen dari kanal pengiriman. Minimal tersedia:
+              format pesan ringkas dan format pesan prioritas.
+            </li>
+            <li>
+              Pengiriman laporan yang sudah berhasil dilakukan dicatat sebagai log dalam suatu collection.
+            </li>
+            <li>
+              Pengiriman terhadap laporan yang tidak valid harus menghasilkan exception yang sesuai.
+            </li>
+          </ol>
+        </section>
+
+        <section class="constraint">
+          <h3>Batasan Implementasi</h3>
+          <ul>
+            <li>Gunakan interface untuk kontrak kanal pengiriman dan kontrak format pesan.</li>
+            <li>Gunakan satu design pattern yang sesuai agar pemilihan cara memformat pesan dapat diganti tanpa mengubah proses pengiriman utama.</li>
+            <li>Implementasi cukup mendukung tiga kanal: SMS, Email, dan Chat.</li>
+            <li>Log tidak boleh dapat diubah secara langsung oleh pemanggil melalui nilai kembalian getter.</li>
+          </ul>
+        </section>
+
+        <h3>Kerangka Program</h3>
+        <pre><code><span class="filename">// File: ReliefReport.java</span>
+public class ReliefReport {
+    private final String reportId;
+    private final String location;
+    private final String urgency;
+    private final String message;
+
+    // Lengkapi constructor dan getter yang diperlukan.
+}</code></pre>
+
+        <pre><code><span class="filename">// File: MessageFormatter.java</span>
+public interface MessageFormatter {
+    String format(ReliefReport report);
+}</code></pre>
+
+        <pre><code><span class="filename">// File: AlertChannel.java</span>
+public interface AlertChannel {
+    void send(String formattedMessage);
+    String getChannelName();
+}</code></pre>
+
+        <pre><code><span class="filename">// File: AlertDispatcher.java</span>
+import java.util.ArrayList;
+import java.util.List;
+
+public class AlertDispatcher {
+    private MessageFormatter formatter;
+    private final List&lt;String&gt; sentLogs = new ArrayList&lt;&gt;();
+
+    public AlertDispatcher(MessageFormatter formatter) {
+        // Lengkapi
+    }
+
+    public void setFormatter(MessageFormatter formatter) {
+        // Lengkapi bila diperlukan oleh desain Anda
+    }
+
+    public void dispatch(ReliefReport report, AlertChannel channel)
+            throws InvalidReportException {
+        // Validasi report.
+        // Format report menggunakan formatter.
+        // Kirim hasil format menggunakan channel.
+        // Tambahkan informasi pengiriman ke sentLogs.
+    }
+
+    public List&lt;String&gt; getSentLogs() {
+        // Lengkapi agar encapsulation tetap terjaga.
+        return null;
+    }
+}</code></pre>
+
+        <h3>Tugas Anda</h3>
+        <ol class="task-list" type="A">
+          <li>
+            <span class="subweight">(4%)</span>
+            Berdasarkan desain awal <code>AlertService</code>, identifikasi minimal tiga pelanggaran atau
+            masalah desain yang relevan terhadap prinsip SOLID. Untuk setiap masalah, tunjukkan bagian
+            desain yang menjadi penyebabnya dan perubahan struktur yang Anda usulkan.
+          </li>
+          <li>
+            <span class="subweight">(5%)</span>
+            Buatlah diagram kelas sederhana atau deskripsi relasi kelas/interface dari desain baru yang
+            melibatkan <code>ReliefReport</code>, <code>AlertDispatcher</code>,
+            <code>MessageFormatter</code>, minimal dua implementasi formatter, <code>AlertChannel</code>,
+            dan tiga implementasi kanal.
+          </li>
+          <li>
+            <span class="subweight">(7%)</span>
+            Implementasikan kelas <code>AlertDispatcher</code>, kelas exception yang diperlukan, dan
+            minimal satu implementasi konkret untuk masing-masing interface. Anda boleh melengkapi atau
+            menyesuaikan skeleton sepanjang tetap memenuhi spesifikasi.
+          </li>
+          <li>
+            <span class="subweight">(3%)</span>
+            Nyatakan design pattern yang Anda gunakan pada mekanisme pemformatan pesan, kemudian jelaskan
+            alasan pattern tersebut dibutuhkan oleh requirement sistem, bukan hanya berdasarkan nama pattern.
+          </li>
+          <li>
+            <span class="subweight">(3%)</span>
+            Tuliskan kelas <code>MainAlert</code> yang:
+            <ol type="a">
+              <li>membuat dua laporan dengan urgensi berbeda;</li>
+              <li>mengirim salah satu laporan melalui SMS dan laporan lainnya melalui Email atau Chat;</li>
+              <li>menggunakan dua formatter berbeda;</li>
+              <li>mencetak seluruh log pengiriman;</li>
+              <li>menangani satu skenario laporan tidak valid menggunakan exception handler.</li>
+            </ol>
+          </li>
+        </ol>
+      </article>
+
+      <article class="question" id="soal-2">
+        <div class="question-title">
+          <h2>Soal 2. Pemrosesan Kode Akses Peserta Workshop</h2>
+          <span class="weight">Bobot: 18%</span>
+        </div>
+
+        <div class="materials">
+          <strong>Materi yang diuji:</strong>
+          Pengenalan Bahasa Java, Padanan Java–C++, Java String, Exception, dan Assertion.
+        </div>
+
+        <h3>Narasi Kasus</h3>
+        <p>
+          Panitia sebuah workshop teknologi memberikan kode akses kepada setiap peserta dengan format:
+          <code>NAMA-TAHUN-KATEGORI</code>. Contoh kode valid adalah
+          <code>ENDRA-2026-STUDENT</code>. Nama peserta harus terdiri atas huruf, tahun harus berada pada
+          rentang 2020 sampai 2030, dan kategori hanya boleh bernilai <code>STUDENT</code>,
+          <code>PUBLIC</code>, atau <code>STAFF</code>.
+        </p>
+        <p>
+          Seorang programmer yang sebelumnya banyak menggunakan C++ menulis implementasi awal berikut.
+          Program dimaksudkan untuk memvalidasi kode, menormalkan tulisan menjadi huruf kapital, dan
+          menghitung jumlah kode valid yang diproses.
+        </p>
+
+        <h3>Potongan Kode Bermasalah</h3>
+        <pre><code><span class="filename">// File: AccessCodeProcessor.java</span>
+public class AccessCodeProcessor {
+    private int validCount = 0;
+
+    public boolean isStudentCategory(String category) {
+        return category == "STUDENT";
+    }
+
+    public String normalize(String rawCode) {
+        rawCode.toUpperCase();
+        return rawCode;
+    }
+
+    public String extractName(String normalizedCode) {
+        String[] parts = normalizedCode.split("-");
+        assert parts.length == 3 : "Format kode dari pengguna tidak benar";
+        return parts[0];
+    }
+
+    public void process(String code) {
+        String normalized = normalize(code);
+
+        if (normalized.length() == 0) {
+            System.out.println("Kode kosong");
+            return;
+        }
+
+        String[] parts = normalized.split("-");
+        int year = Integer.parseInt(parts[1]);
+
+        if (isStudentCategory(parts[2])) {
+            System.out.println("Akses mahasiswa: " + parts[0]);
+        }
+
+        validCount++;
+    }
+
+    public int getValidCount() {
+        return validCount;
+    }
+}</code></pre>
+
+        <section class="specification">
+          <h3>Spesifikasi Perbaikan</h3>
+          <ol>
+            <li>
+              Method <code>normalize</code> harus menghapus spasi awal/akhir dan menghasilkan kode
+              dalam huruf kapital tanpa mengubah objek <code>String</code> masukan.
+            </li>
+            <li>
+              Format, tahun, dan kategori yang salah merupakan kesalahan input pengguna dan harus
+              ditangani menggunakan exception, bukan assertion.
+            </li>
+            <li>
+              Setelah validasi input selesai, program boleh menggunakan assertion untuk memastikan
+              invariant internal bahwa hasil parsing selalu memiliki tepat tiga komponen.
+            </li>
+            <li>
+              <code>validCount</code> hanya bertambah apabila seluruh kode telah lolos validasi.
+            </li>
+            <li>
+              Mahasiswa harus menggunakan <code>.equals()</code> atau bentuk pembandingan String lain
+              yang benar dalam Java.
+            </li>
+          </ol>
+        </section>
+
+        <h3>Kerangka Perbaikan</h3>
+        <pre><code><span class="filename">// File: InvalidAccessCodeException.java</span>
+public class InvalidAccessCodeException extends Exception {
+    public InvalidAccessCodeException(String message) {
+        super(message);
+    }
+}</code></pre>
+
+        <pre><code><span class="filename">// File: AccessCode.java</span>
+public class AccessCode {
+    private final String participantName;
+    private final int year;
+    private final String category;
+
+    // Lengkapi constructor, getter, dan method representasi teks bila diperlukan.
+}</code></pre>
+
+        <pre><code><span class="filename">// File: AccessCodeProcessor.java</span>
+public class AccessCodeProcessor {
+    private int validCount;
+
+    public AccessCode parseAndValidate(String rawCode)
+            throws InvalidAccessCodeException {
+        // Lengkapi:
+        // 1. validasi null/kosong;
+        // 2. normalisasi String;
+        // 3. pecah komponen kode;
+        // 4. validasi nama, tahun, dan kategori;
+        // 5. gunakan assertion hanya untuk invariant internal setelah validasi;
+        // 6. tambah validCount dan kembalikan AccessCode.
+        return null;
+    }
+
+    public int getValidCount() {
+        return validCount;
+    }
+}</code></pre>
+
+        <h3>Tugas Anda</h3>
+        <ol class="task-list" type="A">
+          <li>
+            <span class="subweight">(5%)</span>
+            Jelaskan masalah pada setiap bagian kode awal berikut, termasuk apakah masalah tersebut berupa
+            kesalahan logika, kemungkinan runtime exception, atau penggunaan fitur Java yang tidak tepat:
+            <ol type="a">
+              <li><code>category == "STUDENT"</code>;</li>
+              <li>pemanggilan <code>rawCode.toUpperCase()</code> tanpa menggunakan nilai kembaliannya;</li>
+              <li>penggunaan <code>assert</code> untuk memeriksa format input pengguna;</li>
+              <li>pemanggilan <code>Integer.parseInt(parts[1])</code> tanpa validasi sebelumnya;</li>
+              <li>penambahan <code>validCount</code> pada implementasi awal.</li>
+            </ol>
+          </li>
+          <li>
+            <span class="subweight">(3%)</span>
+            Jelaskan secara singkat perbedaan relevan antara Java dan C++ pada kasus ini untuk dua hal berikut:
+            <ol type="a">
+              <li>pembandingan isi objek teks;</li>
+              <li>perilaku perubahan nilai <code>String</code> setelah method pemrosesan dipanggil.</li>
+            </ol>
+            Jawaban harus dikaitkan dengan perbaikan program, bukan berupa daftar perbedaan umum kedua bahasa.
+          </li>
+          <li>
+            <span class="subweight">(7%)</span>
+            Implementasikan <code>AccessCode</code> dan method
+            <code>parseAndValidate</code> sesuai spesifikasi. Gunakan exception untuk kesalahan input dan
+            assertion hanya pada invariant internal yang tepat.
+          </li>
+          <li>
+            <span class="subweight">(3%)</span>
+            Tuliskan <code>MainAccessCode</code> yang mencoba memproses:
+            <table aria-label="Data uji kode akses">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Data Masukan</th>
+                  <th>Tujuan Pengujian</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td><code>" endra-2026-student "</code></td>
+                  <td>Normalisasi dan input valid</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td><code>"RANI-2017-PUBLIC"</code></td>
+                  <td>Tahun di luar rentang</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td><code>"BIMA-2026-GUEST"</code></td>
+                  <td>Kategori tidak terdaftar</td>
+                </tr>
+              </tbody>
+            </table>
+            Program utama harus menangani exception yang muncul dan mencetak jumlah kode valid setelah
+            seluruh data dicoba.
+          </li>
+        </ol>
+      </article>
+
+      <article class="question" id="soal-3">
+        <div class="question-title">
+          <h2>Soal 3. Gudang Peralatan Praktikum Generik</h2>
+          <span class="weight">Bobot: 22%</span>
+        </div>
+
+        <div class="materials">
+          <strong>Materi yang diuji:</strong>
+          Java Generics, Java Generics Wildcard, Java Collection, Interface, Exception, dan Java Fundamentals.
+        </div>
+
+        <h3>Narasi Kasus</h3>
+        <p>
+          Laboratorium informatika mengelola peminjaman peralatan praktikum, seperti sensor,
+          mikrokontroler, dan kabel penghubung. Semua peralatan memiliki kode unik dan nama, tetapi
+          beberapa jenis peralatan memiliki informasi tambahan. Gudang perlu menyimpan data berdasarkan
+          kode, menjaga urutan barang yang baru ditambahkan, serta memindahkan sejumlah peralatan yang
+          tersedia ke daftar persiapan praktikum.
+        </p>
+        <p>
+          Karena kelas gudang akan digunakan untuk berbagai jenis peralatan, kelas tersebut harus dibuat
+          generik. Selain itu, operasi pemindahan harus dapat membaca daftar yang berisi turunan dari
+          <code>Equipment</code> dan menuliskannya ke collection tujuan yang dapat menerima
+          <code>Equipment</code>.
+        </p>
+
+        <section class="specification">
+          <h3>Spesifikasi Sistem</h3>
+          <ol>
+            <li>
+              Seluruh peralatan mengimplementasikan interface <code>Equipment</code> yang memiliki method
+              <code>getCode()</code> dan <code>getName()</code>.
+            </li>
+            <li>
+              Kelas <code>EquipmentWarehouse&lt;T extends Equipment&gt;</code> menyimpan:
+              <ul>
+                <li>pemetaan kode menuju objek peralatan agar pencarian berdasarkan kode efisien;</li>
+                <li>daftar urutan penambahan barang untuk kebutuhan pencetakan riwayat persediaan.</li>
+              </ul>
+            </li>
+            <li>
+              Tidak boleh terdapat dua barang dengan kode yang sama dalam satu gudang.
+            </li>
+            <li>
+              Operasi pengambilan berdasarkan kode yang tidak ditemukan harus melempar
+              <code>EquipmentNotFoundException</code>.
+            </li>
+            <li>
+              Disediakan method generik untuk menyalin seluruh barang dari sumber bertipe subtype
+              <code>Equipment</code> ke collection tujuan yang dapat menerima objek
+              <code>Equipment</code>.
+            </li>
+          </ol>
+        </section>
+
+        <h3>Contoh Urutan Operasi</h3>
+        <table aria-label="Contoh operasi gudang">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Aksi</th>
+              <th>Kondisi Setelah Operasi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0</td>
+              <td>Kondisi awal</td>
+              <td>Gudang kosong</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td><code>add(new Sensor("S-01", "Sensor Suhu"))</code></td>
+              <td>Kode tersimpan: <code>S-01</code></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><code>add(new Sensor("S-02", "Sensor Cahaya"))</code></td>
+              <td>Kode tersimpan: <code>S-01, S-02</code></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><code>getByCode("S-01")</code></td>
+              <td>Menghasilkan objek dengan kode <code>S-01</code></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><code>removeByCode("S-02")</code></td>
+              <td>Kode tersimpan: <code>S-01</code></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><code>getByCode("S-99")</code></td>
+              <td>Melempar <code>EquipmentNotFoundException</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <section class="constraint">
+          <h3>Batasan Implementasi</h3>
+          <ul>
+            <li>Gunakan minimal satu <code>Map</code> dan satu <code>List</code> pada kelas gudang.</li>
+            <li>Jangan menggunakan raw type.</li>
+            <li>Method pemindahan harus menggunakan wildcard yang tepat; penggunaan wildcard harus memiliki alasan type-safety yang jelas.</li>
+            <li>Getter collection tidak boleh membuka struktur internal agar dapat dimodifikasi sembarangan oleh pemanggil.</li>
+          </ul>
+        </section>
+
+        <h3>Kerangka Program</h3>
+        <pre><code><span class="filename">// File: Equipment.java</span>
+public interface Equipment {
+    String getCode();
+    String getName();
+}</code></pre>
+
+        <pre><code><span class="filename">// File: Sensor.java</span>
+public class Sensor implements Equipment {
+    private final String code;
+    private final String name;
+
+    // Lengkapi constructor dan implementasi method dari Equipment.
+}</code></pre>
+
+        <pre><code><span class="filename">// File: EquipmentWarehouse.java</span>
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class EquipmentWarehouse&lt;T extends Equipment&gt; {
+    private final Map&lt;String, T&gt; itemsByCode = new HashMap&lt;&gt;();
+    private final List&lt;T&gt; insertionOrder = new ArrayList&lt;&gt;();
+
+    public void add(T item) throws DuplicateEquipmentException {
+        // Lengkapi
+    }
+
+    public T getByCode(String code) throws EquipmentNotFoundException {
+        // Lengkapi
+        return null;
+    }
+
+    public T removeByCode(String code) throws EquipmentNotFoundException {
+        // Lengkapi: perbarui kedua collection secara konsisten.
+        return null;
+    }
+
+    public List&lt;T&gt; listInInsertionOrder() {
+        // Lengkapi dengan memperhatikan encapsulation.
+        return null;
+    }
+
+    public static &lt;E extends Equipment&gt; void transferAll(
+            List&lt;? extends E&gt; source,
+            List&lt;? super E&gt; destination) {
+        // Lengkapi
+    }
+}</code></pre>
+
+        <h3>Tugas Anda</h3>
+        <ol class="task-list" type="A">
+          <li>
+            <span class="subweight">(4%)</span>
+            Lengkapi interface dan kelas konkret yang diperlukan untuk memodelkan minimal dua jenis
+            peralatan, misalnya <code>Sensor</code> dan <code>Microcontroller</code>.
+          </li>
+          <li>
+            <span class="subweight">(9%)</span>
+            Implementasikan kelas <code>EquipmentWarehouse&lt;T extends Equipment&gt;</code> secara lengkap,
+            termasuk operasi <code>add</code>, <code>getByCode</code>, <code>removeByCode</code>, dan
+            <code>listInInsertionOrder</code>.
+          </li>
+          <li>
+            <span class="subweight">(3%)</span>
+            Buatlah kelas exception yang diperlukan untuk:
+            <ol type="a">
+              <li>kode barang ganda;</li>
+              <li>barang yang dicari atau dihapus tidak ditemukan.</li>
+            </ol>
+          </li>
+          <li>
+            <span class="subweight">(3%)</span>
+            Implementasikan method <code>transferAll</code> pada skeleton. Jelaskan secara singkat mengapa
+            parameter sumber menggunakan bentuk <code>? extends E</code> dan parameter tujuan menggunakan
+            bentuk <code>? super E</code>.
+          </li>
+          <li>
+            <span class="subweight">(3%)</span>
+            Tuliskan <code>MainWarehouse</code> untuk:
+            <ol type="a">
+              <li>membuat gudang sensor dan menambahkan minimal dua sensor;</li>
+              <li>mencetak urutan penambahan barang;</li>
+              <li>memindahkan data sensor ke suatu <code>List&lt;Equipment&gt;</code>;</li>
+              <li>menjalankan satu operasi normal dan satu operasi yang menghasilkan exception.</li>
+            </ol>
+          </li>
+        </ol>
+      </article>
+
+      <article class="question" id="soal-4">
+        <div class="question-title">
+          <h2>Soal 4. Reservasi Slot Ruang Belajar Serentak</h2>
+          <span class="weight">Bobot: 18%</span>
+        </div>
+
+        <div class="materials">
+          <strong>Materi yang diuji:</strong>
+          Java Multithreading, Java Collection, Exception, Assertion, dan Java Fundamentals.
+        </div>
+
+        <h3>Narasi Kasus</h3>
+        <p>
+          Perpustakaan kampus menyediakan ruang belajar kelompok yang dapat dipesan mahasiswa melalui
+          beberapa terminal layanan sekaligus. Setiap ruang memiliki sejumlah slot yang terbatas untuk satu
+          sesi waktu. Dua atau lebih mahasiswa dapat menekan tombol reservasi hampir bersamaan dari
+          terminal berbeda.
+        </p>
+        <p>
+          Pada implementasi awal, setiap permintaan reservasi dijalankan dalam thread tersendiri. Namun,
+          pengelola mendapati bahwa jumlah reservasi berhasil terkadang melampaui kapasitas ruang, atau
+          jumlah slot tersisa menjadi negatif.
+        </p>
+
+        <h3>Implementasi Awal</h3>
+        <pre><code><span class="filename">// File: StudyRoom.java</span>
+import java.util.ArrayList;
+import java.util.List;
+
+public class StudyRoom {
+    private final String roomCode;
+    private int remainingSlots;
+    private final List&lt;String&gt; confirmedStudents = new ArrayList&lt;&gt;();
+
+    public StudyRoom(String roomCode, int capacity) {
+        this.roomCode = roomCode;
+        this.remainingSlots = capacity;
+    }
+
+    public void reserve(String studentId) {
+        if (remainingSlots &gt; 0) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            confirmedStudents.add(studentId);
+            remainingSlots--;
+            System.out.println(studentId + " memperoleh slot.");
+        } else {
+            System.out.println(studentId + " gagal memperoleh slot.");
+        }
+    }
+
+    public int getRemainingSlots() {
+        return remainingSlots;
+    }
+
+    public List&lt;String&gt; getConfirmedStudents() {
+        return confirmedStudents;
+    }
+}</code></pre>
+
+        <pre><code><span class="filename">// File: MainReservation.java</span>
+public class MainReservation {
+    public static void main(String[] args) throws InterruptedException {
+        StudyRoom room = new StudyRoom("R-201", 2);
+
+        Thread t1 = new Thread(() -&gt; room.reserve("13524001"));
+        Thread t2 = new Thread(() -&gt; room.reserve("13524002"));
+        Thread t3 = new Thread(() -&gt; room.reserve("13524003"));
+
+        t1.start();
+        t2.start();
+        t3.start();
+
+        t1.join();
+        t2.join();
+        t3.join();
+
+        System.out.println("Sisa slot: " + room.getRemainingSlots());
+        System.out.println("Peserta terkonfirmasi: "
+                + room.getConfirmedStudents());
+    }
+}</code></pre>
+
+        <section class="specification">
+          <h3>Spesifikasi Perbaikan</h3>
+          <ol>
+            <li>
+              Satu slot hanya boleh diberikan kepada paling banyak satu mahasiswa.
+            </li>
+            <li>
+              Jika seluruh slot telah terisi, method reservasi harus menyatakan kegagalan secara eksplisit
+              melalui <code>ReservationFullException</code>.
+            </li>
+            <li>
+              Daftar mahasiswa terkonfirmasi dan jumlah slot tersisa harus selalu konsisten.
+            </li>
+            <li>
+              Program harus tetap menggunakan minimal tiga thread pemesanan.
+            </li>
+            <li>
+              Setelah seluruh thread selesai, invariant internal bahwa jumlah slot tidak negatif boleh
+              diperiksa menggunakan assertion.
+            </li>
+          </ol>
+        </section>
+
+        <section class="constraint">
+          <h3>Batasan Implementasi</h3>
+          <ul>
+            <li>
+              Gunakan salah satu pendekatan berikut: method/blok <code>synchronized</code>,
+              <code>ReentrantLock</code>, atau kombinasi operasi atomik dan collection thread-safe yang
+              dapat Anda jelaskan kebenarannya.
+            </li>
+            <li>
+              Jangan menghilangkan multithreading dengan memanggil seluruh operasi reservasi secara serial
+              dari <code>main</code>.
+            </li>
+            <li>
+              Method yang mengembalikan daftar mahasiswa harus tetap menjaga encapsulation.
+            </li>
+          </ul>
+        </section>
+
+        <h3>Kerangka Perbaikan</h3>
+        <pre><code><span class="filename">// File: ReservationFullException.java</span>
+public class ReservationFullException extends Exception {
+    public ReservationFullException(String message) {
+        super(message);
+    }
+}</code></pre>
+
+        <pre><code><span class="filename">// File: StudyRoom.java</span>
+import java.util.ArrayList;
+import java.util.List;
+
+public class StudyRoom {
+    private final String roomCode;
+    private final int capacity;
+    private int remainingSlots;
+    private final List&lt;String&gt; confirmedStudents = new ArrayList&lt;&gt;();
+
+    public StudyRoom(String roomCode, int capacity) {
+        // Lengkapi validasi dan inisialisasi.
+        this.roomCode = roomCode;
+        this.capacity = capacity;
+        this.remainingSlots = capacity;
+    }
+
+    public void reserve(String studentId) throws ReservationFullException {
+        // Lengkapi dengan pengamanan akses shared state.
+    }
+
+    public int getRemainingSlots() {
+        // Lengkapi bila memerlukan pengamanan pembacaan state.
+        return 0;
+    }
+
+    public List&lt;String&gt; getConfirmedStudents() {
+        // Lengkapi dengan menjaga encapsulation dan konsistensi pembacaan.
+        return null;
+    }
+
+    public void checkInvariant() {
+        // Gunakan assertion untuk invariant internal yang sesuai.
+    }
+}</code></pre>
+
+        <h3>Tugas Anda</h3>
+        <ol class="task-list" type="A">
+          <li>
+            <span class="subweight">(4%)</span>
+            Jelaskan kemungkinan race condition pada implementasi awal. Penjelasan harus menunjukkan
+            satu urutan interleaving yang memungkinkan lebih banyak mahasiswa dinyatakan berhasil
+            dibandingkan kapasitas ruang.
+          </li>
+          <li>
+            <span class="subweight">(8%)</span>
+            Implementasikan ulang kelas <code>StudyRoom</code> sehingga memenuhi seluruh spesifikasi.
+            Tunjukkan secara jelas bagian program yang menjamin pemeriksaan slot dan pengurangan slot
+            dilakukan sebagai satu operasi yang aman terhadap akses serentak.
+          </li>
+          <li>
+            <span class="subweight">(2%)</span>
+            Buatlah dan gunakan <code>ReservationFullException</code> pada kondisi ruang telah penuh.
+          </li>
+          <li>
+            <span class="subweight">(4%)</span>
+            Lengkapi <code>MainReservation</code> agar:
+            <ol type="a">
+              <li>menjalankan minimal tiga thread untuk ruang berkapasitas dua;</li>
+              <li>setiap thread menangani exception reservasinya sendiri;</li>
+              <li><code>main</code> menunggu semua thread selesai menggunakan <code>join()</code>;</li>
+              <li>setelah seluruh thread selesai, program menjalankan pemeriksaan invariant dan mencetak keadaan akhir ruang.</li>
+            </ol>
+          </li>
+        </ol>
+      </article>
+
+      <article class="question" id="soal-5">
+        <div class="question-title">
+          <h2>Soal 5. Arsitektur Plugin Pemeriksa Berkas Pengumpulan</h2>
+          <span class="weight">Bobot: 20%</span>
+        </div>
+
+        <div class="materials">
+          <strong>Materi yang diuji:</strong>
+          Java Reflection, Java Interface, Exception, Collection, Design Pattern, dan SOLID.
+        </div>
+
+        <h3>Narasi Kasus</h3>
+        <p>
+          Sebuah sistem pengumpulan tugas menerima berkas dari berbagai mata kuliah. Setiap mata kuliah
+          dapat membutuhkan aturan pemeriksaan tambahan, misalnya pemeriksaan nama berkas, larangan
+          ekstensi tertentu, atau pemeriksaan panjang deskripsi pengumpulan. Pengelola sistem tidak ingin
+          menambahkan percabangan baru di kelas utama setiap kali aturan pemeriksaan baru dibuat.
+        </p>
+        <p>
+          Oleh karena itu, pemeriksa tambahan akan dibuat sebagai plugin. Nama kelas plugin disediakan
+          melalui konfigurasi berupa sekumpulan <code>String</code>. Sistem harus memuat kelas tersebut
+          saat runtime, memastikan bahwa kelas tersebut memenuhi kontrak plugin, membuat objeknya, lalu
+          menjalankan validasi terhadap suatu objek pengumpulan.
+        </p>
+
+        <section class="specification">
+          <h3>Spesifikasi Sistem</h3>
+          <ol>
+            <li>
+              Sebuah pengumpulan direpresentasikan oleh kelas <code>Submission</code> yang memiliki
+              <code>studentId</code>, <code>fileName</code>, dan <code>description</code>.
+            </li>
+            <li>
+              Seluruh plugin pemeriksa harus mengimplementasikan interface
+              <code>SubmissionValidatorPlugin</code>.
+            </li>
+            <li>
+              Setiap plugin harus memiliki constructor tanpa parameter agar dapat dibuat melalui reflection.
+            </li>
+            <li>
+              <code>PluginLoader</code> menerima nama kelas lengkap plugin sebagai <code>String</code>,
+              memuat kelas dengan <code>Class.forName</code>, memeriksa kompatibilitas interface, dan
+              membuat instance melalui constructor.
+            </li>
+            <li>
+              <code>ValidationEngine</code> menyimpan beberapa plugin dan menjalankan seluruh plugin
+              terhadap satu pengumpulan.
+            </li>
+            <li>
+              Kegagalan pemuatan plugin harus dilaporkan melalui exception yang dirancang untuk aplikasi ini,
+              tanpa menyebabkan program utama berhenti sebelum plugin valid lain dapat dicoba.
+            </li>
+          </ol>
+        </section>
+
+        <section class="constraint">
+          <h3>Batasan Implementasi</h3>
+          <ul>
+            <li>Gunakan reflection hanya untuk proses pemuatan dan pembuatan objek plugin.</li>
+            <li>Gunakan interface untuk menjalankan operasi validasi setelah objek plugin berhasil dibuat.</li>
+            <li>Gunakan collection untuk menyimpan plugin yang berhasil dimuat.</li>
+            <li>Tidak diperkenankan menggunakan rangkaian <code>if-else</code> yang membandingkan nama setiap kelas plugin untuk membuat instance.</li>
+            <li>Minimal terdapat dua implementasi plugin berbeda dalam skenario pengujian.</li>
+          </ul>
+        </section>
+
+        <h3>Kerangka Program</h3>
+        <pre><code><span class="filename">// File: Submission.java</span>
+public class Submission {
+    private final String studentId;
+    private final String fileName;
+    private final String description;
+
+    // Lengkapi constructor dan getter.
+}</code></pre>
+
+        <pre><code><span class="filename">// File: SubmissionValidatorPlugin.java</span>
+public interface SubmissionValidatorPlugin {
+    String getPluginName();
+
+    void validate(Submission submission) throws SubmissionValidationException;
+}</code></pre>
+
+        <pre><code><span class="filename">// File: PluginLoadException.java</span>
+public class PluginLoadException extends Exception {
+    public PluginLoadException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public PluginLoadException(String message) {
+        super(message);
+    }
+}</code></pre>
+
+        <pre><code><span class="filename">// File: PluginLoader.java</span>
+public class PluginLoader {
+    public SubmissionValidatorPlugin load(String className)
+            throws PluginLoadException {
+        try {
+            Class&lt;?&gt; candidate = Class.forName(className);
+
+            // Periksa apakah candidate mengimplementasikan
+            // SubmissionValidatorPlugin.
+
+            // Ambil constructor tanpa parameter dengan
+            // getDeclaredConstructor(), lalu buat instance.
+
+            // Kembalikan instance sebagai SubmissionValidatorPlugin.
+            return null;
+        } catch (ReflectiveOperationException e) {
+            // Ubah exception reflection menjadi PluginLoadException.
+            throw new PluginLoadException("Plugin tidak dapat dimuat", e);
+        }
+    }
+}</code></pre>
+
+        <pre><code><span class="filename">// File: ValidationEngine.java</span>
+import java.util.ArrayList;
+import java.util.List;
+
+public class ValidationEngine {
+    private final List&lt;SubmissionValidatorPlugin&gt; plugins = new ArrayList&lt;&gt;();
+
+    public void register(SubmissionValidatorPlugin plugin) {
+        // Lengkapi
+    }
+
+    public void validateAll(Submission submission) {
+        // Jalankan seluruh plugin.
+        // Penanganan kegagalan validasi boleh disesuaikan dengan desain Anda.
+    }
+}</code></pre>
+
+        <h3>Contoh Konfigurasi Runtime</h3>
+        <table aria-label="Nama kelas plugin dari konfigurasi">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Nama Kelas Plugin dalam Konfigurasi</th>
+              <th>Keterangan Skenario</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><code>"FileNameValidatorPlugin"</code></td>
+              <td>Plugin valid yang memeriksa format nama berkas</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><code>"DescriptionLengthValidatorPlugin"</code></td>
+              <td>Plugin valid yang memeriksa panjang deskripsi</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><code>"UnknownValidatorPlugin"</code></td>
+              <td>Nama kelas tidak ditemukan untuk menguji exception loader</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Tugas Anda</h3>
+        <ol class="task-list" type="A">
+          <li>
+            <span class="subweight">(4%)</span>
+            Lengkapi kelas <code>Submission</code>, interface
+            <code>SubmissionValidatorPlugin</code> bila diperlukan, serta buat minimal dua implementasi
+            plugin konkret yang memiliki aturan validasi berbeda.
+          </li>
+          <li>
+            <span class="subweight">(7%)</span>
+            Implementasikan method <code>load</code> pada <code>PluginLoader</code> sesuai spesifikasi:
+            <ol type="a">
+              <li>memuat kelas berdasarkan nama;</li>
+              <li>memastikan kelas memenuhi kontrak plugin;</li>
+              <li>mengambil constructor tanpa parameter;</li>
+              <li>membuat instance secara reflektif;</li>
+              <li>menangani kegagalan melalui <code>PluginLoadException</code>.</li>
+            </ol>
+          </li>
+          <li>
+            <span class="subweight">(4%)</span>
+            Implementasikan <code>ValidationEngine</code> yang dapat meregistrasikan plugin dan
+            menjalankan seluruh plugin terhadap satu objek <code>Submission</code>. Anda boleh menambahkan
+            struktur hasil validasi apabila diperlukan, tetapi jelaskan kontraknya.
+          </li>
+          <li>
+            <span class="subweight">(3%)</span>
+            Tuliskan <code>MainSubmissionValidation</code> yang:
+            <ol type="a">
+              <li>menyimpan tiga nama kelas pada tabel konfigurasi di atas dalam sebuah collection;</li>
+              <li>mencoba memuat seluruh plugin satu per satu;</li>
+              <li>meregistrasikan plugin yang berhasil dimuat;</li>
+              <li>menangani plugin yang gagal dimuat tanpa menghentikan percobaan plugin berikutnya;</li>
+              <li>menjalankan validasi terhadap minimal satu objek pengumpulan.</li>
+            </ol>
+          </li>
+          <li>
+            <span class="subweight">(2%)</span>
+            Jelaskan mengapa struktur <code>interface + reflection + registry/engine</code> lebih mudah
+            diperluas daripada implementasi yang memilih validator melalui percabangan hardcoded. Dalam
+            jawaban Anda, hubungkan penjelasan dengan satu prinsip SOLID dan satu design pattern yang
+            relevan terhadap struktur plugin tersebut.
+          </li>
+        </ol>
+      </article>
+
+      <details class="coverage-note">
+        <summary>Catatan Penyusun: Matriks Cakupan Materi</summary>
+
+        <div class="remove-note">
+          Bagian ini ditujukan untuk penyusun soal dan dapat dihapus sebelum dokumen dibagikan kepada mahasiswa.
+        </div>
+
+        <table aria-label="Matriks cakupan materi">
+          <thead>
+            <tr>
+              <th>Materi</th>
+              <th>Soal yang Menguji</th>
+              <th>Alasan Materi Benar-Benar Diuji</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1. Prinsip OOP SOLID</td>
+              <td>Soal 1, Soal 5</td>
+              <td>Mahasiswa menganalisis desain tightly coupled, melakukan refactoring, dan mengaitkan extensibility plugin dengan prinsip desain.</td>
+            </tr>
+            <tr>
+              <td>2. Pengenalan Bahasa Java</td>
+              <td>Semua soal</td>
+              <td>Seluruh implementasi menggunakan class, constructor, modifier, object creation, method, exception, serta program utama Java.</td>
+            </tr>
+            <tr>
+              <td>3. Padanan Java dan C++</td>
+              <td>Soal 2</td>
+              <td>Mahasiswa membahas perbedaan pembandingan objek teks dan perilaku objek immutable dalam konteks koreksi kode Java.</td>
+            </tr>
+            <tr>
+              <td>4. Java String</td>
+              <td>Soal 2</td>
+              <td>Validasi kode akses memerlukan normalisasi, pemisahan komponen, equality yang benar, dan pemahaman immutability.</td>
+            </tr>
+            <tr>
+              <td>5. Java Interface</td>
+              <td>Soal 1, Soal 3, Soal 5</td>
+              <td>Interface digunakan sebagai kontrak kanal/formatter, tipe umum peralatan, dan kontrak plugin runtime.</td>
+            </tr>
+            <tr>
+              <td>6. Java Generics</td>
+              <td>Soal 3</td>
+              <td>Mahasiswa mengimplementasikan <code>EquipmentWarehouse&lt;T extends Equipment&gt;</code> serta method generik pemindahan.</td>
+            </tr>
+            <tr>
+              <td>7. Java Generics Wildcard</td>
+              <td>Soal 3</td>
+              <td>Method <code>transferAll</code> mewajibkan penggunaan producer/consumer melalui <code>? extends</code> dan <code>? super</code>.</td>
+            </tr>
+            <tr>
+              <td>8. Java Collection</td>
+              <td>Soal 1, Soal 3, Soal 4, Soal 5</td>
+              <td>Collection digunakan untuk log, pemetaan dan urutan gudang, shared reservation data, serta registry plugin.</td>
+            </tr>
+            <tr>
+              <td>9. Java Exception</td>
+              <td>Semua soal</td>
+              <td>Setiap sistem memuat kondisi gagal bermakna: laporan tidak valid, kode akses salah, barang tidak ditemukan, ruang penuh, dan plugin gagal dimuat.</td>
+            </tr>
+            <tr>
+              <td>10. Java Assertion</td>
+              <td>Soal 2, Soal 4</td>
+              <td>Mahasiswa harus membedakan validasi input dengan pemeriksaan invariant internal setelah state dianggap valid.</td>
+            </tr>
+            <tr>
+              <td>11. Java Multithreading</td>
+              <td>Soal 4</td>
+              <td>Sistem reservasi memuat shared mutable state, race condition, sinkronisasi, exception per thread, dan <code>join()</code>.</td>
+            </tr>
+            <tr>
+              <td>12. Java Reflection</td>
+              <td>Soal 5</td>
+              <td>Plugin dimuat menggunakan <code>Class.forName</code>, pemeriksaan interface, constructor reflektif, dan penanganan exception reflection.</td>
+            </tr>
+            <tr>
+              <td>13. Design Pattern</td>
+              <td>Soal 1, Soal 5</td>
+              <td>Formatter yang dapat dipertukarkan dan arsitektur plugin meminta mahasiswa menerapkan serta membenarkan pattern dari kebutuhan perubahan sistem.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="note">
+          Struktur paket latihan disusun berdasarkan arahan pembuatan paket soal dan pola asesmen
+          referensi ujian terdahulu yang diberikan. :contentReference[oaicite:0]{index=0} :contentReference[oaicite:1]{index=1}
+        </p>
+      </details>
+    </main>
+
+    <footer>
+      Latihan UAS Pemrograman Berorientasi Objek — Java · Total Bobot 100% · Java Standard Library
+    </footer>
+  </div>
+</body>
+</html>
+```
+

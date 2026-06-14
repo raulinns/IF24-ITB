@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluasi Catatan UAS IF2224 TBFO</title>
+<style>
+  body { font-family: system-ui, sans-serif; font-size: 15px; line-height: 1.7; color: #1a1a1a; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; background: #fff; }
+  h1 { font-size: 22px; font-weight: 600; border-bottom: 2px solid #1a1a1a; padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
+  h2 { font-size: 18px; font-weight: 600; margin-top: 2.5rem; border-left: 4px solid #374151; padding-left: 0.75rem; color: #111; }
+  h3 { font-size: 15px; font-weight: 600; margin-top: 1.5rem; color: #374151; }
+  .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 2rem; }
+  .verdict { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 12px; font-weight: 600; }
+  .v-lengkap { background: #dcfce7; color: #166534; }
+  .v-sebagian { background: #fef9c3; color: #854d0e; }
+  .v-belum { background: #fee2e2; color: #991b1b; }
+  .v-dangkal { background: #fde8d0; color: #92400e; }
+  .v-tidak { background: #f3e8ff; color: #6b21a8; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 1rem 0 1.5rem; }
+  th { background: #f3f4f6; text-align: left; padding: 8px 10px; border: 0.5px solid #d1d5db; font-weight: 600; font-size: 12px; color: #374151; }
+  td { padding: 7px 10px; border: 0.5px solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .section-header { background: #1f2937; color: #f9fafb; padding: 0.4rem 0.75rem; font-size: 12px; font-weight: 600; }
+  .gap-card { border: 0.5px solid #e5e7eb; border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; }
+  .gap-title { font-weight: 600; font-size: 14px; color: #1f2937; margin-bottom: 0.5rem; }
+  .gap-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 500; }
+  .t-penting { background: #fee2e2; color: #991b1b; }
+  .t-sedang { background: #fef9c3; color: #854d0e; }
+  .t-minor { background: #dcfce7; color: #166534; }
+  .priority-num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: #1f2937; color: #f9fafb; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-right: 0.5rem; }
+  .priority-item { display: flex; align-items: flex-start; margin: 0.75rem 0; padding: 0.75rem; border: 0.5px solid #e5e7eb; border-radius: 6px; }
+  .priority-content { flex: 1; }
+  .priority-title { font-weight: 600; font-size: 14px; }
+  .sublist { padding-left: 1.25rem; margin: 0.25rem 0; font-size: 13px; }
+  .sublist li { margin: 0.2rem 0; }
+  .verdict-final { background: #fef9c3; border: 1px solid #f59e0b; border-radius: 8px; padding: 1.25rem; margin-top: 1rem; }
+  .verdict-big { font-size: 20px; font-weight: 700; color: #92400e; }
+  .quality-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 1rem 0; }
+  .quality-item { border: 0.5px solid #e5e7eb; border-radius: 6px; padding: 0.75rem; }
+  .quality-label { font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 0.25rem; }
+  .quality-bar-wrap { background: #f3f4f6; border-radius: 4px; height: 6px; margin: 4px 0; }
+  .quality-bar { border-radius: 4px; height: 6px; }
+  .q-good { background: #22c55e; }
+  .q-ok { background: #eab308; }
+  .q-weak { background: #ef4444; }
+  .quality-note { font-size: 12px; color: #374151; }
+  .legend { display: flex; gap: 1rem; flex-wrap: wrap; margin: 0.5rem 0 1rem; font-size: 12px; align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  p { margin: 0.75rem 0; }
+  .callout { background: #f8fafc; border-left: 3px solid #64748b; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; font-size: 13px; margin: 0.5rem 0; }
+  .summary-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 1rem 0; text-align: center; }
+  .summary-cell { padding: 0.5rem; border-radius: 6px; }
+  .sc-l { background: #dcfce7; color: #166534; }
+  .sc-s { background: #fef9c3; color: #854d0e; }
+  .sc-b { background: #fee2e2; color: #991b1b; }
+  .sc-d { background: #fde8d0; color: #92400e; }
+  .sc-n { background: #e0e7ff; color: #3730a3; }
+  .summary-num { font-size: 24px; font-weight: 700; }
+  .summary-lbl { font-size: 11px; font-weight: 500; }
+  code { background: #f3f4f6; padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<h1>Evaluasi Catatan UAS IF2224 TBFO</h1>
+<div class="subtitle">Catatan: Narendra Dharma Wistara M. (13524044) · Outline: Outline-TBFO.md · Tanggal evaluasi: 9 Juni 2026</div>
+
+<!-- BAGIAN 1 -->
+<h2>1. Pemetaan outline ke catatan</h2>
+
+<div class="legend">
+  <span>Status:</span>
+  <div class="legend-item"><span class="verdict v-lengkap">Lengkap</span> dijelaskan baik dan mendalam</div>
+  <div class="legend-item"><span class="verdict v-sebagian">Sebagian</span> ada tetapi kurang lengkap</div>
+  <div class="legend-item"><span class="verdict v-belum">Belum Ada</span> tidak ditemukan</div>
+  <div class="legend-item"><span class="verdict v-dangkal">Terlalu Dangkal</span> hanya definisi permukaan</div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:3%">#</th>
+      <th style="width:30%">Poin Outline</th>
+      <th style="width:13%">Status</th>
+      <th style="width:28%">Lokasi/Penjelasan di Catatan</th>
+      <th>Catatan Evaluasi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- PDA -->
+    <tr><td colspan="5" class="section-header">§1 PDA, termasuk konversi CFG</td></tr>
+    <tr><td>1</td><td>PDA sebagai ε-NFA + stack LIFO, motivasi stack</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.1 + Komentar 5.1 (contoh L={a^n b^n})</td><td>Penjelasan batas FA dan peran LIFO jelas</td></tr>
+    <tr><td>2</td><td>Definisi formal 7-tuple dan peran tiap komponen</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.2 Tabel 3</td><td>Tabel komponen lengkap dan jelas</td></tr>
+    <tr><td>3</td><td>Fungsi transisi δ: Q×(Σ∪{ε})×Γ → 2^(Q×Γ*); operasi pop/no-op/replace/push; aturan no mixing</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.3 Tabel 4, Rumus 1</td><td>Aturan "no mixing and matching" eksplisit</td></tr>
+    <tr><td>4</td><td>Diagram transisi label a,X/γ dan transisi ε</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.4</td><td>Makna ε-transition untuk berpindah fase dijelaskan</td></tr>
+    <tr><td>5</td><td>ID (q,w,γ) dan makna tiap komponen</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.5 Tabel 5</td><td>Contoh konkret ID diberikan</td></tr>
+    <tr><td>6</td><td>Relasi ⊢ dan ⊢* dengan rumus formal</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.6, Rumus 2</td><td>Kasus ε-transition juga ditunjukkan</td></tr>
+    <tr><td>7</td><td>Sifat validitas ID: ekspansi input, ekspansi stack, pemotongan sisa input</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.7 Teorema 5.2</td><td>Makna praktis untuk bukti ekuivalensi dijelaskan</td></tr>
+    <tr><td>8</td><td>Acceptance by final state L(P)</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.8, Rumus 3</td><td>Perbandingan dengan FA disebutkan</td></tr>
+    <tr><td>9</td><td>Acceptance by empty stack N(P)</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.9, Rumus 4</td><td>Intuisi parsing sebagai stack penyelesaian kewajiban jelas</td></tr>
+    <tr><td>10</td><td>Ekuivalensi dua mode penerimaan: konversi empty→final dan final→empty</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.10</td><td>Konstruksi state bantu dan marker dijelaskan; peringatan rawan pemahaman ada</td></tr>
+    <tr><td>11</td><td>CFG ke PDA: transisi expand-variable dan match-terminal; simulasi leftmost derivation</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.11, §5.2.12</td><td>Konstruksi lengkap; kesetaraan N(P_G)=L(G) dibuktikan secara naratif</td></tr>
+    <tr><td>12</td><td>Relevansi UAS 2425 untuk CFG→PDA (modifikasi grammar ke transisi ε)</td><td><span class="verdict v-belum">Belum Ada</span></td><td>—</td><td>Outline secara eksplisit menyebut "relevansi UAS 2425" sebagai poin. Catatan tidak menyertakan contoh soal atau latihan bertipe UAS</td></tr>
+    <tr><td>13</td><td>PDA ke CFG: variabel [pXq], aturan start, aturan umum push panjang, kasus k=0</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.13, Rumus di §5.2.14</td><td>Konstruksi komposit dan aturan produksi rinci</td></tr>
+    <tr><td>14</td><td>Relevansi UAS 2425 untuk PDA→CFG (pemetaan transisi ke produksi)</td><td><span class="verdict v-belum">Belum Ada</span></td><td>—</td><td>Sama dengan poin 12, tidak ada contoh tipe soal</td></tr>
+    <tr><td>15</td><td>Isu ukuran grammar: blow-up O(n^n), mitigasi k−2 state bantu, target O(n^3)</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.14</td><td>Analisis blow-up dan solusi konstruktif dijelaskan</td></tr>
+    <tr><td>16</td><td>DPDA: syarat determinisme, eksklusivitas transisi input vs ε</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.15</td><td>Contoh L_{wwR} vs L_{wcwR} untuk membedakan NPDA/DPDA efektif</td></tr>
+    <tr><td>17</td><td>Hierarki Regular ⊂ L(DPDA) ⊂ CFL; unambiguous CFG</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.15–5.2.16</td><td>Hubungan DPDA dengan unambiguous CFG dijelaskan, termasuk catatan closure DCFL</td></tr>
+    <tr><td>18</td><td>Prefix property untuk empty-stack DPDA</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.16</td><td>Alasan intuitif diuraikan dengan jelas</td></tr>
+    <tr><td>19</td><td>Intersection CFL ∩ regular via product PDA-DFA: konstruksi state pasangan, syarat accept</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§5.2.17</td><td>Langkah konstruksi 4-poin tersedia; implikasi closure CFL explained</td></tr>
+    <tr><td>20</td><td>Inverse homomorphism via buffer internal PDA</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§5.2.17</td><td>Catatan hanya menyebut "mensimulasikan PDA seolah menerima h(a)" tanpa detail mekanisme buffer internal yang disebutkan outline. Prinsip benar, tetapi implementasi PDA kurang rinci</td></tr>
+
+    <!-- CYK -->
+    <tr><td colspan="5" class="section-header">§2 CYK dan Chomsky Normal Form</td></tr>
+    <tr><td>21</td><td>Definisi formal CNF: A→BC dan A→a; pohon parse biner sebagai konsekuensi</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§6.2.4, Tabel 6</td><td>Hubungan CNF dengan langkah CYK basis/induksi jelas</td></tr>
+    <tr><td>22</td><td>Nullable, unit pairs, generating, reachable symbols</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§6.2.5, Tabel 7</td><td>Definisi dan peran tiap konsep tersedia dalam tabel</td></tr>
+    <tr><td>23</td><td>Prosedur clean-up CNF: urutan ε → unit → useless → binary; langkah S_0, terminal separation</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§6.2.5 (6 langkah urutan)</td><td>Urutan penting sudah dicantumkan; Komentar 6.2 menyebut dampak blow-up</td></tr>
+    <tr><td>24</td><td>Kompleksitas konversi CNF: generating/reachable linear; unit-pair O(n²); hasil CNF O(n²)</td><td><span class="verdict v-belum">Belum Ada</span></td><td>—</td><td>Komentar 6.2 hanya menyebut "grammar dapat membesar" secara umum. Tidak ada angka kompleksitas spesifik untuk tiap tahap konversi. Ini penting jika soal menanyakan biaya konversi</td></tr>
+    <tr><td>25</td><td>Membership problem: CYK sebagai DP, motivasi menghindari brute-force eksponensial</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§6.2.1–6.2.3</td><td>Sifat optimal substructure DNF diuraikan</td></tr>
+    <tr><td>26</td><td>Tabel segitiga X_ij: definisi sel, tabel berbentuk segitiga</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§6.2.6, Rumus 5</td><td>Cara membaca tabel dijelaskan; penting untuk soal manual</td></tr>
+    <tr><td>27</td><td>Basis X_ii, induksi X_ij dengan semua split k, acceptance S ∈ X_1n</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§6.2.7–6.2.9, Rumus 6–7</td><td>Strategi ujian (tunjukkan baris basis + beberapa sel kunci) ada di Komentar 6.4</td></tr>
+    <tr><td>28</td><td>Kompleksitas O(n³) waktu dan O(n²) ruang; derivasi argumen</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§6.2.10</td><td>Argumen O(n²)×O(n) dijelaskan; catatan sumber juga menyebut dampak ukuran grammar</td></tr>
+    <tr><td>29</td><td>Contoh simulasi input baaba</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§6.2.11</td><td>Langkah basis dan contoh X_12 ditunjukkan; X_15 dinyatakan</td></tr>
+    <tr><td>30</td><td>CYK dan decidability CFL; CFL sebagai recursive language</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§6.2.12</td><td>Relasi dengan hierarki bahasa dijelaskan</td></tr>
+
+    <!-- Mesin Turing -->
+    <tr><td colspan="5" class="section-header">§3 Mesin Turing</td></tr>
+    <tr><td>31</td><td>Motivasi: program penguji paradoks, batas komputabilitas</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.1</td><td>Contoh program H dan H2 paradoks diuraikan</td></tr>
+    <tr><td>32</td><td>Church-Turing Thesis, Extended CTT</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.2 + Komentar 7.1</td><td>Perbedaan CTT dasar vs extended disebutkan dalam komentar</td></tr>
+    <tr><td>33</td><td>7-tuple M=(Q,Σ,Γ,δ,q0,B,F) dan komponen</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.3, Tabel 8</td><td>Peran B (blank) sebagai Γ\Σ jelas</td></tr>
+    <tr><td>34</td><td>Fungsi transisi δ(q,Z)=(p,Y,D); diagram X/YD</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.4, Rumus 8</td><td>Diagram label disebutkan; move kiri tanpa sisa dijelaskan</td></tr>
+    <tr><td>35</td><td>ID αqβ: state sebelum simbol yang dibaca, konvensi penulisan</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.5</td><td>Contoh konkret abqcd diberikan</td></tr>
+    <tr><td>36</td><td>Aturan gerak kanan dan kiri secara formal; kasus head paling kiri</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.6</td><td>Kasus blank muncul sebagai sel baru saat head ke kiri dari posisi awal disebutkan</td></tr>
+    <tr><td>37</td><td>Trace eksekusi, contoh UAS seperti pengenal {0^n 1^n}</td><td><span class="verdict v-belum">Belum Ada</span></td><td>—</td><td>Outline secara eksplisit menyebut trace eksekusi dengan contoh UAS. Catatan tidak menyertakan trace TM langkah demi langkah. Ini berpotensi jadi soal UAS</td></tr>
+    <tr><td>38</td><td>Acceptance by final state L(M) dan halting H(M); ekuivalensi</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.7–7.2.8, Rumus 9–10</td><td>Perbedaan recognizer vs decider jelas</td></tr>
+    <tr><td>39</td><td>Transducer: input integer unary, output di pita; relevansi UAS f(n)=2n</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§7.2.9</td><td>Konsep transducer ada (Tabel 9). Namun representasi unary dan contoh UAS f(n)=2n yang disebutkan outline tidak ada. Ini relevan karena outline menyatakan ini sebagai "relevansi UAS"</td></tr>
+    <tr><td>40</td><td>Enumerator: TM cetak string bahasa, marker #, canonical order</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§7.2.10</td><td>Konsep enumerator ada dengan dovetailing. Tetapi marker pemisah # dan canonical order tidak disebutkan secara eksplisit. Outline memasukkan ini sebagai detail penting</td></tr>
+    <tr><td>41</td><td>RE vs recursive; Teorema: jika L dan L̄ keduanya RE maka L recursive</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§7.2.11, Tabel 10</td><td>Perbedaan RE/recursive lengkap dan tabelnya baik. Tetapi teorema komplemen "jika L dan L̄ RE maka L recursive" tidak disebutkan. Ini teorema standar yang sering muncul dalam soal</td></tr>
+    <tr><td>42</td><td>Teknik pemrograman: storage in state, multiple tracks, marker/shifting-over, subroutines</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§7.2.12</td><td>Storage in state, multiple tracks, subroutines ada. Tetapi teknik "marker/shifting-over" (menandai dan menggeser isi pita) tidak disebutkan secara terpisah. Ini teknik penting untuk desain TM</td></tr>
+    <tr><td>43</td><td>Variasi TM: multitape, NTM, two-way, multi-head, off-line, semi-infinite, counter, multistack</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.13–7.2.15</td><td>Semua variasi utama ada; ekuivalensi dan simulasi dijelaskan</td></tr>
+    <tr><td>44</td><td>Hubungan TM dengan komputer riil; simulasi mutual</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.16</td><td>O(n³) untuk simulasi komputer disebutkan</td></tr>
+    <tr><td>45</td><td>Encoding TM menjadi string biner; enumerasi M_i dan w_i</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.17</td><td>Dasar diagonalization dan UTM dijelaskan</td></tr>
+    <tr><td>46</td><td>L_d: definisi, tabel diagonal, kontradiksi, L_d bukan RE</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.18</td><td>Argumen kontradiksi lengkap</td></tr>
+    <tr><td>47</td><td>L_u: UTM, L_u RE tetapi undecidable; UTM sebagai sumber reduksi</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.19, Pseudocode 3</td><td>Alasan L_u loop untuk non-anggota disebutkan</td></tr>
+    <tr><td>48</td><td>Reduction: arah dari problem sulit lama ke target; struktur bukti</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.21</td><td>Struktur 4-langkah bukti reduksi jelas</td></tr>
+    <tr><td>49</td><td>PCP: kartu (x_i, y_i), kondisi solusi, PCP undecidable/semi-decidable</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.20, Komentar 7.2</td><td>Relevansi PCP untuk undecidability grammar/CFL disebutkan</td></tr>
+    <tr><td>50</td><td>Rice's Theorem: properti nontrivial RE undecidable; contoh pertanyaan yang termasuk</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§7.2.22</td><td>Contoh pertanyaan (kosong, finite, regular, CFL) diuraikan; batas analisis program dijelaskan</td></tr>
+
+    <!-- Compiler -->
+    <tr><td colspan="5" class="section-header">§4 Compiler</td></tr>
+    <tr><td>51</td><td>Tujuan desain bahasa: simplicity, orthogonality, compilability, machine independence</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§8.2.1, Tabel 11</td><td>Dampak tiap tujuan pada compiler dipetakan dalam tabel</td></tr>
+    <tr><td>52</td><td>Perbandingan compiler vs interpreter: performa, diagnostik, ukuran kode</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§8.2.2</td><td>Penjelasan ada, tetapi tidak memuat tabel eksplisit 3 aspek perbandingan yang disebutkan outline (performance, diagnostics, code size). Lebih prosa umum</td></tr>
+    <tr><td>53</td><td>Bootstrapping dan cross-compiling; translator tools (Lex, Yacc, ANTLR, ELI, GENTLE)</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§8.2.4, Tabel 13</td><td>Bootstrapping dan tools utama ada. Cross-compiling tidak disebutkan sama sekali. TASSKAF (platform khusus mata kuliah ini) tidak ada</td></tr>
+    <tr><td>54</td><td>Komponen pipeline: front end, back end, passes, symbol table, error handler</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§8.2.5–8.2.6</td><td>Front end/back end dan passes ada. Error handler sebagai komponen global pipeline tidak disebutkan terpisah; hanya muncul implisit</td></tr>
+    <tr><td>55</td><td>Lexical analysis: lexeme, pattern, token; input buffering; RE + DFA; longest prefix</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§8.2.8–8.2.11</td><td>Semua komponen tersedia dengan detail cukup</td></tr>
+    <tr><td>56</td><td>Syntax analysis: top-down, bottom-up/shift-reduce/LR/Yacc, brute-force parsing</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§8.2.12–8.2.13</td><td>Top-down dan LR/Yacc ada. Brute-force parsing tidak dibahas dalam bagian Compiler (hanya muncul di bagian RDP). Ini membuat pipeline Compiler terasa tidak utuh sebagai overview</td></tr>
+    <tr><td>57</td><td>Semantic analysis: type checking, array bounds, coercion, overloading, SDD/SDT, on-the-fly codegen</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§8.2.14–8.2.15</td><td>Type checking, coercion, overloading, SDD/SDT ada. Array bounds checking sebagai aturan semantik tidak disebutkan. On-the-fly codegen hanya disebut sekilas di §8.2.14</td></tr>
+    <tr><td>58</td><td>Symbol table: atribut rinci (object-time address, depth, dimensi); tabel identifier/array/block/real/string/display</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§8.2.7, Tabel 15</td><td>Fragmentasi 5 tabel khusus tersedia; display table dan block table dijelaskan</td></tr>
+    <tr><td>59</td><td>Error handling sebagai bagian pipeline compiler: reaksi yang dilarang, ad-hoc recovery, syntax-directed recovery, context-sensitive repair, dummy identifier</td><td><span class="verdict v-belum">Belum Ada</span></td><td>—</td><td>Outline memasukkan Error Handling sebagai subbagian terpisah Compiler (§4.8). Catatan sama sekali tidak punya bagian ini di section Compiler; error handling hanya muncul di LL(1). Poin tentang "reaksi yang dilarang" (crash, infinite loop, target rusak), dummy identifier, dan spelling repair dalam konteks Compiler tidak ada</td></tr>
+    <tr><td>60</td><td>Intermediate code dalam pipeline: IR motivasi, postfix, 3AC, quadruple/triple (overview compiler)</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§8.2 (tidak ada subbagian eksplisit)</td><td>Detail IR dibahas di section 11 (IR), bukan sebagai subbagian Compiler section. Akibatnya overview Compiler tidak merangkum posisi IR dalam pipeline secara eksplisit dengan postfix</td></tr>
+    <tr><td>61</td><td>Runtime environment: code, static data, stack, heap, GC</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§8.2.16–8.2.18, Tabel 18</td><td>Semua area ada; activation record rinci</td></tr>
+    <tr><td>62</td><td>Code generation: instruction selection, evaluation order, register allocation, graph coloring, single accumulator, peephole optimization</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§8.2.19–8.2.20</td><td>Basic block, flow graph, register/address descriptor ada. Tetapi instruction selection, evaluation order, register allocation algorithms, graph coloring, dan peephole optimization — semua tidak ada. Ini gap serius karena outline menyebutnya WAJIB</td></tr>
+    <tr><td>63</td><td>Optimasi machine-independent (data-flow, gen-kill, reaching definitions, available expressions, live variables) dan machine-dependent + local (constant folding, loop unrolling, strength reduction)</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§8.2.21–8.2.24</td><td>Machine-independent optimization sangat lengkap. Machine-dependent optimization tidak disebutkan sama sekali. Local optimization (constant folding) tidak ada di Compiler section</td></tr>
+
+    <!-- RDP -->
+    <tr><td colspan="5" class="section-header">§5 Recursive Descent Parser</td></tr>
+    <tr><td>64</td><td>Top-down parsing: root→leaf, leftmost derivation, preorder DFS</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§9.2.1</td><td>Relasi dengan leftmost derivation jelas</td></tr>
+    <tr><td>65</td><td>Brute-force vs RD: backup stack+input vs call stack; keduanya ada masalah left recursion</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§9.2.5</td><td>Perbedaan struktural antara dua pendekatan dijelaskan</td></tr>
+    <tr><td>66</td><td>Arsitektur RD: satu fungsi per nonterminal, boolean return, token INT/PLUS/TIMES/OPEN/CLOSE, lookahead next, term(tok)</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§9.2.2–9.2.6</td><td>Semua komponen ada; implementasi boolean Listing 5 jelas</td></tr>
+    <tr><td>67</td><td>Backtracking: save pointer, reset pointer, rangkai OR</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§9.2.7</td><td>Mekanisme save/reset dengan contoh konkret; kelemahan efisiensi disebutkan</td></tr>
+    <tr><td>68</td><td>Left recursion langsung: A→Aα, infinite loop; contoh E→E+T</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§9.2.9</td><td>Komentar 9.2 menyebut rekursi kiri tidak langsung</td></tr>
+    <tr><td>69</td><td>Eliminasi left recursion: A→βA', A'→αA'|ε; bentuk umum beberapa α dan β</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§9.2.10, §9.3.2, Rumus 12–14</td><td>Contoh E→E+T diubah ke E→TE', E'→+TE'|ε</td></tr>
+    <tr><td>70</td><td>General left recursion (rekursi kiri tidak langsung melalui rantai nonterminal); algoritma sistematisnya</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§9.2.10 Komentar 9.3</td><td>Komentar 9.3 menyebutkan prinsip eliminasi sistematis untuk A_i dengan j&lt;i. Namun tidak ada algoritma formal langkah-langkah atau contoh konkret multi-nonterminal. Outline menyebutnya sebagai poin outline wajib</td></tr>
+    <tr><td>71</td><td>Left factoring: A→αβ1|αβ2 → A→αA', A'→β1|β2</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§9.2.11, §9.3.3, Rumus 15–17</td><td>Contoh T→int|int*T dan transformasinya ada</td></tr>
+    <tr><td>72</td><td>Predictive parsing (RD deterministik) dan hubungan ke FIRST/FOLLOW</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§9.2.12</td><td>Menjadi jembatan ke LL(1)</td></tr>
+    <tr><td>73</td><td>RD untuk SDT: inherited attrs sebagai params, synthesized attrs sebagai return, on-the-fly codegen</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§9.2.13</td><td>L-attributed SDD cocok dengan traversal top-down dijelaskan</td></tr>
+
+    <!-- LL(1) -->
+    <tr><td colspan="5" class="section-header">§6 LL(1) Parser</td></tr>
+    <tr><td>74</td><td>Makna LL(1): L-to-R, leftmost, satu lookahead; deterministic</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§10.2.1, Tabel 21</td><td>Tabel dekomposisi LL(1) jelas</td></tr>
+    <tr><td>75</td><td>Hubungan top-down → RD biasa → predictive → LL(1) table-driven</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§10.2.2, Tabel 22</td><td>Hierarki relasi konsep tersedia dalam tabel</td></tr>
+    <tr><td>76</td><td>FIRST: definisi formal, aturan komputasi 6-langkah, peran ε</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§10.2.3, Rumus 18</td><td>Aturan komputasi lengkap dan sistematis</td></tr>
+    <tr><td>77</td><td>FOLLOW: definisi formal, endmarker $, aturan propagasi 5-langkah</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§10.2.4, Rumus 19</td><td>Contoh grammar ekspresi tabel parsing tersedia</td></tr>
+    <tr><td>78</td><td>Syarat formal LL(1): FIRST(α) ∩ FIRST(β) = ∅; maks satu nullable; FIRST ∩ FOLLOW disjoint jika ada nullable</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§10.2.6</td><td>Catatan membahas konflik dari tiga penyebab (Tabel 24) tetapi tidak menyatakan tiga syarat formal secara eksplisit sebagaimana Dragon Book. Syarat "FIRST(α) ∩ FOLLOW(A) = ∅ jika ε ∈ FIRST(α)" tidak ditulis sebagai rumus</td></tr>
+    <tr><td>79</td><td>Tabel parsing M[A,a]: pengisian dari FIRST, pengisian dari FOLLOW untuk nullable; sel kosong = error</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§10.2.5, Tabel 23, §10.3.3</td><td>Contoh tabel ekspresi ada; pseudocode konstruksi tabel tersedia</td></tr>
+    <tr><td>80</td><td>Algoritma nonrecursive predictive parser: stack [$,S], input w$; aksi expand/match/accept/error</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§10.2.7, Tabel 25, §10.3.4</td><td>Trace int*int tersedia sebagai contoh konkret</td></tr>
+    <tr><td>81</td><td>Error handling: panic mode, synch entries, unit deletion, phrase-level recovery, spelling repair</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§10.2.9–10.2.10, Tabel 26</td><td>Tabel 6 strategi penanganan error cukup rinci</td></tr>
+    <tr><td>82</td><td>Dummy identifier sebagai error repair</td><td><span class="verdict v-belum">Belum Ada</span></td><td>—</td><td>Outline §6.7.5.2 menyebutkan dummy identifier sebagai salah satu teknik context-sensitive repair. Catatan tidak menyebutnya</td></tr>
+
+    <!-- IR -->
+    <tr><td colspan="5" class="section-header">§7 Intermediate Code</td></tr>
+    <tr><td>83</td><td>Motivasi IR: retargeting m+n vs m×n; machine-independent optimization</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§11.2.1–11.2.2</td><td>Pipeline posisi IR jelas</td></tr>
+    <tr><td>84</td><td>AST: node internal=operator, leaf=operand</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§11.2.3</td><td>Perbandingan AST vs DAG dalam Tabel 28 berguna</td></tr>
+    <tr><td>85</td><td>DAG: node shared, common subexpression; value-number/hash node</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§11.2.3–11.2.4</td><td>Proses hash dan batas validitas value-number ada</td></tr>
+    <tr><td>86</td><td>Postfix notation: format operand-operand-operator; BZ/BR untuk control flow; evaluasi stack</td><td><span class="verdict v-dangkal">Terlalu Dangkal</span></td><td>§11.2.8 (sekilas) dan §11.2.10 (kaitan UAS)</td><td>Postfix disebutkan hanya sebagai "sumber menekankan BZ dan BR" dalam konteks control flow. Tidak ada subsection khusus yang menjelaskan postfix notation secara sistematis sebagai bentuk IR. Padahal outline memasukkannya sebagai item tersendiri dan relevansi UAS sangat tinggi</td></tr>
+    <tr><td>87</td><td>3AC: bentuk x=y op z; address (variabel, konstanta, temporary); semua jenis instruksi (assignment, unary, copy, jump bersyarat/tak bersyarat, param, call, return)</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§11.2.5, Tabel 29</td><td>Tabel bentuk instruksi 6 baris memadai</td></tr>
+    <tr><td>88</td><td>Quadruple, triple (dengan referensi indeks (1)), indirect triple</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§11.2.6, Tabel 30</td><td>Implikasi optimasi tiap representasi dijelaskan; catatan strategis soal triple dengan referensi (1) ada</td></tr>
+    <tr><td>89</td><td>Translasi ekspresi aritmetika, array (offset), pointer (lvalue/rvalue)</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§11.2.7, Rumus 20</td><td>Formula offset (i−low)×w ada</td></tr>
+    <tr><td>90</td><td>Boolean dan control flow: jumping code, short-circuit, B.true/B.false/S.next, if/while</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§11.2.8</td><td>BZ/BR disebutkan; short-circuit evaluation untuk && dan || jelas</td></tr>
+    <tr><td>91</td><td>Backpatching: truelist, falselist, nextlist, makelist, merge, backpatch</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§11.2.9, §11.3.4, Pseudocode 12</td><td>Penggunaan untuk B→B1||MB2 dicontohkan</td></tr>
+    <tr><td>92</td><td>Optimasi IR: constant folding, redundant-subexpression elimination, loop unrolling, strength reduction, frequency reduction</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§11.2.11, Tabel 32</td><td>Loop unrolling, strength reduction, frequency reduction ada. Constant folding tidak ada sama sekali. Redundant-subexpression elimination tidak ada sebagai teknik bernama (hanya implied via DAG/available expressions). Unused parameter/variable cleanup tidak ada</td></tr>
+    <tr><td>93</td><td>Relasi ke code generation: temp → register/accumulator; quadruple → LDA/STO/ADD/SUB/MUL</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§11.2.10</td><td>Kaitan dengan soal UAS jelas dan praktis</td></tr>
+
+    <!-- VM -->
+    <tr><td colspan="5" class="section-header">§8 Interpreter dan Virtual Machine</td></tr>
+    <tr><td>94</td><td>Perbandingan compiler/interpreter/VM/bytecode/JIT; performa, diagnostik, hardware optimasi</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§12.2.1, Tabel 33</td><td>Tabel perbandingan 5 istilah jelas</td></tr>
+    <tr><td>95</td><td>Model hibrida: portabilitas, back end sederhana, verifikasi bytecode, profiling JIT</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§12.2.3</td><td>Keunggulan 4 poin model hibrida tersedia</td></tr>
+    <tr><td>96</td><td>HotSpot: client compiler (startup cepat) vs server compiler (optimasi agresif)</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§12.2.2, Tabel 34</td><td>Tradeoff JIT disebutkan dalam Komentar 12.1</td></tr>
+    <tr><td>97</td><td>Stack-based VM: pola load a, load b, add; JVM sebagai contoh</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§12.2.5</td><td>Implikasi format instruksi sederhana dijelaskan</td></tr>
+    <tr><td>98</td><td>Register-based VM: operand eksplisit; Dalvik vs JVM</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§12.2.6, Tabel 35</td><td>Perbandingan dua model tersedia</td></tr>
+    <tr><td>99</td><td>Instruction set: opcode 1 byte, typed instructions JVM (iload, iadd, fadd, invokevirtual, ireturn, dll.)</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§12.2.7, Tabel 36</td><td>Contoh instruksi JVM lengkap</td></tr>
+    <tr><td>100</td><td>Runtime memory model: code area, stack, activation record (params, locals, control/access links, return, operand stack), heap</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§12.2.8, Tabel 37</td><td>Komponen frame rinci; push/pop lifecycle frame dijelaskan</td></tr>
+    <tr><td>101</td><td>Siklus fetch-decode-execute: overhead dispatch dan indirect branch</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§12.2.9, Pseudocode 13</td><td>Sumber pipeline stall disebutkan</td></tr>
+    <tr><td>102</td><td>Optimasi VM: threaded code, top-of-stack caching, static/dynamic super-instructions</td><td><span class="verdict v-sebagian">Sebagian</span></td><td>§12.2.10</td><td>Ketiga teknik ada. Namun pembedaan static vs dynamic super-instruction hanya disebut sekilas ("pola multiply lalu add"); outline menekankan ini sebagai dua varian berbeda. Detail dynamic super-instruction untuk basic block tertentu tidak diuraikan</td></tr>
+    <tr><td>103</td><td>GC: root set, mark-and-sweep, reference counting</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§12.2.11, Pseudocode 15</td><td>Mark-and-sweep pseudocode lengkap; reference counting disebutkan</td></tr>
+    <tr><td>104</td><td>Relasi VM-IR-codegen: bytecode = IR linear rendah; stack VM = postfix; JIT = runtime codegen</td><td><span class="verdict v-lengkap">Lengkap</span></td><td>§12.2.12</td><td>Relasi hirarki IR sampai native code dijelaskan</td></tr>
+  </tbody>
+</table>
+
+<!-- Ringkasan Status -->
+<h3>Ringkasan statistik pemetaan</h3>
+<div class="summary-bar">
+  <div class="summary-cell sc-l"><div class="summary-num">72</div><div class="summary-lbl">Lengkap</div></div>
+  <div class="summary-cell sc-s"><div class="summary-num">12</div><div class="summary-lbl">Sebagian</div></div>
+  <div class="summary-cell sc-b"><div class="summary-num">8</div><div class="summary-lbl">Belum Ada</div></div>
+  <div class="summary-cell sc-d"><div class="summary-num">1</div><div class="summary-lbl">Terlalu Dangkal</div></div>
+  <div class="summary-cell sc-n"><div class="summary-num">11</div><div class="summary-lbl">Poin dengan gap</div></div>
+</div>
+
+<!-- BAGIAN 2 -->
+<h2>2. Evaluasi kedalaman penjelasan untuk poin yang bermasalah</h2>
+
+<div class="gap-card">
+  <div class="gap-title">§4 Compiler — Error Handling tidak ada sebagai bagian mandiri</div>
+  <div class="gap-meta"><span class="tag t-penting">Gap kritis</span><span class="tag t-penting">Belum Ada</span></div>
+  <p>Outline memasukkan Error Handling sebagai subbagian tersendiri dalam Compiler (§4.8), terpisah dari LL(1). Catatan saat ini hanya memiliki error handling di §10.2.9–10.2.10 (LL(1) section), sehingga konteks error handling sebagai komponen global compiler tidak ada. Poin-poin yang sepenuhnya hilang: (a) "reaksi yang dilarang" — compiler crash, infinite loop, atau target code rusak sebagai prinsip perancangan; (b) ad-hoc recovery; (c) dummy identifier sebagai teknik context-sensitive repair untuk identifier yang tidak dideklarasikan. Tanpa bagian ini, pembaca tidak memiliki gambaran bahwa error handling adalah komponen pipeline, bukan hanya fitur parser.</p>
+  <p>Yang perlu ditambahkan: paragraf 3–5 kalimat yang menjelaskan kontrak error handling compiler (lapor lokasi, lanjutkan parsing jika mungkin, jangan crash), lalu tabel singkat 5 strategi (panic mode, unit deletion, terminal repair, context-sensitive, spelling repair) dalam konteks compiler umum. Dummy identifier perlu satu contoh konkret: jika identifier x tidak dideklarasikan, compiler memasukkan x ke symbol table dengan tipe dummy agar analisis semantik lanjutan tidak cascade error.</p>
+</div>
+
+<div class="gap-card">
+  <div class="gap-title">§4 Compiler — Code Generation: instruction selection, register allocation, peephole hilang</div>
+  <div class="gap-meta"><span class="tag t-penting">Gap kritis</span><span class="tag t-penting">Belum Ada</span></div>
+  <p>Bagian Code Generation catatan hanya membahas basic block, flow graph (§8.2.19), dan register/address descriptor (§8.2.20). Empat poin outline yang hilang: (a) instruction selection — cara memilih instruksi target dari pola IR; (b) evaluation order — urutan evaluasi ekspresi untuk meminimasi penggunaan register; (c) graph coloring untuk register allocation — teknik memecah konflik penggunaan register sebagai masalah pewarnaan graf; (d) peephole optimization — optimasi lokal pasca code generation dengan melihat jendela instruksi sempit untuk menghapus redudansi seperti mov r0, r0 atau tumpukan load/store berurutan.</p>
+  <p>Yang perlu ditambahkan: (1) satu paragraf tentang instruction selection sebagai pemetaan pola IR ke instruksi target; (2) definisi singkat graph coloring — "register allocation as graph coloring: buat interference graph, warnai dengan k warna (jumlah register), spill variabel tanpa warna"; (3) definisi peephole optimization dengan 2–3 contoh pola eliminasi umum.</p>
+</div>
+
+<div class="gap-card">
+  <div class="gap-title">§3 Mesin Turing — Trace eksekusi TM pada input konkret tidak ada</div>
+  <div class="gap-meta"><span class="tag t-penting">Gap kritis</span><span class="tag t-penting">Belum Ada</span></div>
+  <p>Outline secara eksplisit menyebut "Trace eksekusi, termasuk contoh UAS seperti pengenal {0^n 1^n}" sebagai poin tersendiri. Ini sinyal kuat bahwa soal UAS dapat berupa "tunjukkan trace TM berikut pada input 0011" atau "rancang TM untuk bahasa X, tunjukkan langkah pada input tertentu." Catatan memiliki definisi ID dan aturan gerak yang baik, tetapi tidak ada contoh trace aktual step-by-step.</p>
+  <p>Yang perlu ditambahkan: trace tabel 4–5 kolom (state, tape content, head position, move, aksi) untuk TM pengenal {0^n 1^n} pada input 0011. Ini tidak membutuhkan penjelasan panjang — cukup tabel yang dapat diikuti sebagai template pengerjaan soal.</p>
+</div>
+
+<div class="gap-card">
+  <div class="gap-title">§3 Mesin Turing — Teorema komplemen RE hilang</div>
+  <div class="gap-meta"><span class="tag t-sedang">Gap sedang</span><span class="tag t-penting">Belum Ada</span></div>
+  <p>Outline §3.4.3 menyatakan: "Jika L RE dan komplemennya juga RE, maka L recursive." Ini teorema standar yang sering muncul dalam soal undecidability untuk membuktikan bahwa suatu bahasa bukan recursive (dengan menunjukkan komplemennya bukan RE). Catatan punya perbedaan RE/recursive yang baik di §7.2.11, tetapi tidak menyatakan teorema ini.</p>
+  <p>Yang perlu ditambahkan: satu paragraf + rumus: "Jika L ∈ RE dan L̄ ∈ RE, maka L ∈ Recursive. Kontraposisinya: jika L ∈ RE tetapi L ∉ Recursive, maka L̄ ∉ RE." Ini langsung berguna untuk analisis Ld dan Lu.</p>
+</div>
+
+<div class="gap-card">
+  <div class="gap-title">§3 Mesin Turing — Transducer untuk fungsi integer (representasi unary) tidak ada</div>
+  <div class="gap-meta"><span class="tag t-sedang">Gap sedang</span><span class="tag t-sebagian">Sebagian</span></div>
+  <p>Catatan §7.2.9 membahas transducer secara umum tetapi tidak menyebutkan representasi unary untuk integer. Outline menekankan "input integer direpresentasikan unary" dan "relevansi UAS: desain TM untuk f(n)=2n" sebagai poin eksplisit. Tanpa ini, mahasiswa tidak tahu format encoding yang dipakai saat soal meminta desain TM komputasi.</p>
+  <p>Yang perlu ditambahkan: kalimat "Integer n biasanya direpresentasikan sebagai n buah simbol 0 atau 1 (unary), misalnya n=3 ditulis 000" plus contoh singkat pola TM untuk f(n)=2n: scan input, untuk setiap 0 input tulis 00 pada output tape, dsb.</p>
+</div>
+
+<div class="gap-card">
+  <div class="gap-title">§2 CYK — Kompleksitas konversi CNF per tahap tidak ada</div>
+  <div class="gap-meta"><span class="tag t-sedang">Gap sedang</span><span class="tag t-penting">Belum Ada</span></div>
+  <p>Outline §2.1.5 menyebutkan tiga angka kompleksitas spesifik: generating/reachable cleanup = linear; unit-pair computation = O(n²); ukuran grammar hasil CNF = O(n²). Catatan hanya menyebutkan "grammar dapat membesar" secara umum di Komentar 6.2 tanpa angka. Jika soal menanyakan kompleksitas preprocessing CNF (bukan kompleksitas CYK itu sendiri), catatan tidak memberikan jawaban.</p>
+</div>
+
+<div class="gap-card">
+  <div class="gap-title">§7 IR — Postfix notation tidak punya subsection sendiri</div>
+  <div class="gap-meta"><span class="tag t-sedang">Gap sedang</span><span class="tag t-dangkal">Terlalu Dangkal</span></div>
+  <p>Postfix adalah bentuk IR yang paling sering muncul dalam soal UAS berupa "baca eksekusi stack" atau "ubah ekspresi ke postfix." Catatan menyebutkan BZ/BR di §11.2.8 dan menghubungkan ke "kaitan soal UAS" di §11.2.10, tetapi tidak punya penjelasan lengkap: apa itu postfix, bagaimana mengkonversi ekspresi aritmetika ke postfix, bagaimana control flow diwakili dengan BZ/BR. Catatan §12.2.12 menyebutkan "stack-based VM sejalan dengan postfix" tetapi penjelasan sistematis tidak ada.</p>
+  <p>Yang perlu ditambahkan: subsection kecil (setengah halaman) dengan: (1) definisi postfix; (2) konversi contoh a + b*c; (3) BZ (branch if zero/false) dan BR (branch) untuk if/while; (4) contoh trace evaluasi stack.</p>
+</div>
+
+<div class="gap-card">
+  <div class="gap-title">§7 IR — Constant folding tidak ada sebagai teknik optimasi bernama</div>
+  <div class="gap-meta"><span class="tag t-sedang">Gap sedang</span><span class="tag t-penting">Belum Ada</span></div>
+  <p>Constant folding (evaluasi ekspresi konstanta saat compile-time, misalnya 2+3 → 5) adalah optimasi paling dasar yang disebutkan outline §7.9.2.1 sebagai local optimization. Catatan §11.2.11 punya beberapa teknik optimasi tetapi tidak menyebut constant folding. Ini akan mudah muncul sebagai soal "identifikasi optimasi apa yang diterapkan".</p>
+</div>
+
+<div class="gap-card">
+  <div class="gap-title">§5 RDP — Algoritma general left recursion tidak eksplisit</div>
+  <div class="gap-meta"><span class="tag t-minor">Minor</span><span class="tag t-sebagian">Sebagian</span></div>
+  <p>Komentar 9.3 menyebutkan prinsip eliminasi rekursi kiri tidak langsung ("untuk setiap Ai, ganti produksi Ai→Ajγ dengan j&lt;i"). Namun tidak ada algoritma formal lengkap atau contoh konkret dengan dua nonterminal yang saling berulang. Outline menyebutkan ini sebagai poin terpisah. Untuk UAS, soal rekursi kiri tidak langsung jarang tetapi mungkin muncul.</p>
+</div>
+
+<div class="gap-card">
+  <div class="gap-title">§6 LL(1) — Syarat formal tiga kondisi LL(1) tidak ditulis eksplisit</div>
+  <div class="gap-meta"><span class="tag t-minor">Minor</span><span class="tag t-sebagian">Sebagian</span></div>
+  <p>Catatan §10.2.6 mendiskusikan konflik, tetapi tidak merumuskan tiga syarat formal Dragon Book: (1) FIRST(α) ∩ FIRST(β) = ∅; (2) paling banyak satu alternatif nullable; (3) jika ada nullable, FIRST alternatif lain ∩ FOLLOW(A) = ∅. Ketiganya sering muncul sebagai soal "buktikan/tunjukkan bahwa grammar ini LL(1)" dengan langkah formal.</p>
+</div>
+
+<!-- BAGIAN 3 -->
+<h2>3. Deteksi bagian catatan yang tidak relevan atau bermasalah</h2>
+
+<table>
+  <thead>
+    <tr><th>Bagian Catatan</th><th>Masalah</th><th>Saran Perbaikan</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>§8.2.1 Tujuan desain bahasa — Tabel 11 dengan 4 kolom detail</td>
+      <td>Relevan tetapi memberi bobot tidak proporsional pada topik perancangan bahasa yang bukan fokus ujian. Outline memasukkannya hanya sebagai poin pertama §4.1 (bukan bagian besar)</td>
+      <td>Pertahankan tetapi tidak perlu perluasan lebih lanjut; kompres ke paragraf singkat jika perlu ruang</td>
+    </tr>
+    <tr>
+      <td>§5.2.17 Komentar 5.5 — daftar closure CFL lengkap (union, concatenation, Kleene star, dll.)</td>
+      <td>Sedikit melebihi scope outline PDA. Outline hanya minta intersection dengan regular language dan inverse homomorphism. Daftar closure CFL lengkap di sini redundan karena juga ada di konteks teoritis lain</td>
+      <td>Pindahkan daftar closure CFL ke catatan terpisah atau ringkas menjadi footnote; fokus utama tetap product PDA-DFA dan inverse homomorphism</td>
+    </tr>
+    <tr>
+      <td>§8.3.2 Pseudocode iterative data-flow analysis — sangat rinci (20 baris)</td>
+      <td>Tepat relevan untuk outline, tetapi pseudocode ini mengulang informasi yang sudah ada di paragraf gen-kill §8.2.21. Ada sedikit redundansi antara penjelasan prosa dan pseudocode untuk topic yang sama</td>
+      <td>Pertahankan pseudocode; hapus penjelasan duplikat di paragraf prosa jika ada. Tidak perlu diubah signifikan</td>
+    </tr>
+    <tr>
+      <td>§12.2.2 HotSpot — Komentar 12.1 tentang tradeoff JIT (cost profiling vs savings)</td>
+      <td>Isi komentar benar dan relevan, tetapi posisinya memecah alur pembahasan HotSpot client/server. Pembaca mungkin bingung apakah ini kelanjutan dari Tabel 34 atau catatan terpisah</td>
+      <td>Gabungkan konten komentar ke dalam paragraf setelah Tabel 34 untuk menjaga alur lebih mulus</td>
+    </tr>
+    <tr>
+      <td>§11.2.10 "Kaitan dengan contoh soal UAS" — mendeskripsikan pola soal UAS 2425</td>
+      <td>Berguna tetapi lebih terasa seperti meta-catatan strategi ujian daripada konten konsep. Tidak ada di outline sebagai poin materi, hanya sebagai "PAHAM" pada outline</td>
+      <td>Pertahankan tetapi pisahkan secara visual (misalnya dengan box/callout khusus). Jangan menempatkannya di tengah alur penjelasan konsep</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- BAGIAN 4 -->
+<h2>4. Evaluasi struktur dan alur catatan</h2>
+
+<p>Secara umum struktur catatan mengikuti outline dengan baik: urutan 8 topik sesuai, tiap section punya sub-section "Outline Fundamental Konsep Materi" → "Penjelasan Konsep" → "Algoritma dan Rumus Penting" yang konsisten dan sistematis.</p>
+
+<p>Beberapa anomali perlu diperhatikan:</p>
+
+<p><strong>Compiler section menjadi "catch-all" yang tidak seimbang.</strong> Section Compiler (§8) memuat pembahasan runtime environment, data-flow analysis, live variables — topik yang di outline diletakkan sebagai subbagian di bawah Compiler, tetapi dalam catatan diberi kedalaman setara dengan section utama. Ini membuat Section Compiler menjadi 24 subseksi, jauh lebih panjang dari section lain. Sebaliknya, Code Generation subsection di Compiler sangat tipis (2 subseksi) dibandingkan kedalaman yang seharusnya. Ada ketidakseimbangan vertikal: analisis program (data-flow, live variables) overrepresented; code generation underrepresented.</p>
+
+<p><strong>Error handling tersebar dan tidak memiliki "rumah" di Compiler.</strong> Pembaca yang belajar Compiler section akan melewati 24 subseksi tanpa mendapat gambaran bahwa error handling adalah komponen pipeline. Baru di LL(1) section (§10) pembaca menemukan penjelasan yang relevan. Ini berlawanan dengan urutan pipeline yang logis: error handling seharusnya diperkenalkan di Compiler (sebagai konsep), lalu detail implementasinya ada di LL(1).</p>
+
+<p><strong>Postfix/IR dalam Compiler section tidak tersampaikan.</strong> Outline §4.9 memasukkan "Intermediate Code dalam Pipeline Compiler" sebagai subbagian eksplisit yang mencakup postfix, 3AC, quadruple/triple sebagai overview pipeline. Catatan tidak punya ini karena konten IR sudah penuh di Section 11. Akibatnya pembaca yang hanya membaca Section Compiler tidak mendapat peta posisi IR.</p>
+
+<p><strong>Transisi antarbagian baik dan konsisten.</strong> Setiap section diawali paragraf pengantar yang menjelaskan posisi materi dan kaitan dengan section lain (misalnya PDA→CFL, CYK→decidability, Compiler→parsing sections). Ini aspek yang kuat dari catatan.</p>
+
+<p><strong>Rekomendasi perbaikan struktur:</strong> (1) Di awal Compiler section, tambahkan diagram pipeline satu halaman yang menunjukkan posisi semua komponen termasuk error handler dan IR; (2) Pindahkan pengantar postfix ke dalam overview Compiler section §8 (bukan hanya di IR section §11); (3) Tambahkan subbagian Error Handling di Compiler section §8 sebelum pindah ke Lexical Analysis.</p>
+
+<!-- BAGIAN 5 -->
+<h2>5. Evaluasi kualitas akademik catatan</h2>
+
+<div class="quality-grid">
+  <div class="quality-item">
+    <div class="quality-label">Kejelasan definisi</div>
+    <div class="quality-bar-wrap"><div class="quality-bar q-good" style="width:90%"></div></div>
+    <div class="quality-note">Hampir semua definisi formal ditulis dengan rumus; komponen tuple selalu disertai tabel. Sangat baik.</div>
+  </div>
+  <div class="quality-item">
+    <div class="quality-label">Kelengkapan konsep</div>
+    <div class="quality-bar-wrap"><div class="quality-bar q-ok" style="width:75%"></div></div>
+    <div class="quality-note">~75% poin outline tercakup lengkap. Gap signifikan pada error handling Compiler, code generation, dan trace TM.</div>
+  </div>
+  <div class="quality-item">
+    <div class="quality-label">Ketepatan istilah</div>
+    <div class="quality-bar-wrap"><div class="quality-bar q-good" style="width:95%"></div></div>
+    <div class="quality-note">Terminologi konsisten dan sesuai referensi standar (HMU, Dragon Book). Tidak ditemukan miskonsepsi terminologi.</div>
+  </div>
+  <div class="quality-item">
+    <div class="quality-label">Kedalaman analisis</div>
+    <div class="quality-bar-wrap"><div class="quality-bar q-ok" style="width:80%"></div></div>
+    <div class="quality-note">Sebagian besar topik dianalisis melampaui definisi (misalnya motivasi, implikasi, batas). Lemah pada code generation dan postfix.</div>
+  </div>
+  <div class="quality-item">
+    <div class="quality-label">Kesesuaian contoh</div>
+    <div class="quality-bar-wrap"><div class="quality-bar q-ok" style="width:70%"></div></div>
+    <div class="quality-note">Contoh tersedia untuk PDA, CYK, LL(1), dan VM. TM tidak punya trace konkret. Contoh soal tipe UAS kurang di beberapa bagian.</div>
+  </div>
+  <div class="quality-item">
+    <div class="quality-label">Keterhubungan antarkonsep</div>
+    <div class="quality-bar-wrap"><div class="quality-bar q-good" style="width:88%"></div></div>
+    <div class="quality-note">Hubungan PDA↔CFG, CYK↔decidability, Compiler phases, IR↔VM dijelaskan dengan baik di banyak titik.</div>
+  </div>
+  <div class="quality-item">
+    <div class="quality-label">Potensi miskonsepsi</div>
+    <div class="quality-bar-wrap"><div class="quality-bar q-good" style="width:85%"></div></div>
+    <div class="quality-note">Komentar-komentar ("catatan titik rawan") efektif mencegah miskonsepsi umum. Section PDA dan LL(1) paling kuat di sini.</div>
+  </div>
+  <div class="quality-item">
+    <div class="quality-label">Kesiapan belajar ujian</div>
+    <div class="quality-bar-wrap"><div class="quality-bar q-ok" style="width:72%"></div></div>
+    <div class="quality-note">Pseudocode dan trace tersedia untuk simulasi, tetapi beberapa pola soal UAS (trace TM, postfix IR, graph coloring, error handling Compiler) tidak tercakup.</div>
+  </div>
+</div>
+
+<!-- BAGIAN 6 -->
+<h2>6. Daftar kekurangan utama (diurutkan prioritas)</h2>
+
+<div class="priority-item">
+  <span class="priority-num">1</span>
+  <div class="priority-content">
+    <div class="priority-title">Trace eksekusi Mesin Turing pada input konkret</div>
+    <ul class="sublist">
+      <li><strong>Masalah:</strong> Tidak ada trace step-by-step TM pada input seperti 0011 atau aabb</li>
+      <li><strong>Dampak:</strong> Soal UAS yang meminta "tunjukkan trace TM" atau "rancang TM untuk bahasa X" tidak dapat dikerjakan dari catatan ini</li>
+      <li><strong>Saran:</strong> Tambahkan tabel trace TM untuk {0^n 1^n} pada input 0011 (4–6 langkah cukup sebagai template); tambahkan juga pola desain TM untuk transducer f(n)=2n dengan encoding unary</li>
+    </ul>
+  </div>
+</div>
+
+<div class="priority-item">
+  <span class="priority-num">2</span>
+  <div class="priority-content">
+    <div class="priority-title">Subbagian Error Handling dalam Compiler section</div>
+    <ul class="sublist">
+      <li><strong>Masalah:</strong> Error handling Compiler tidak ada sebagai subseksi mandiri; dummy identifier, ad-hoc recovery, prinsip "dilarang crash" tidak ada</li>
+      <li><strong>Dampak:</strong> Jika soal Compiler meminta strategi error handling atau dummy identifier, tidak ada pegangan dari catatan</li>
+      <li><strong>Saran:</strong> Tambahkan §8.2.X "Error Handling dalam Compiler" dengan: (a) kontrak error handler; (b) tabel strategi recovery (panic mode, unit deletion, terminal repair, context-sensitive, spelling); (c) penjelasan dummy identifier</li>
+    </ul>
+  </div>
+</div>
+
+<div class="priority-item">
+  <span class="priority-num">3</span>
+  <div class="priority-content">
+    <div class="priority-title">Postfix notation sebagai bentuk IR dengan penjelasan sistematis</div>
+    <ul class="sublist">
+      <li><strong>Masalah:</strong> Postfix tidak punya subseksi sendiri; BZ/BR hanya disebut sekilas di IR section; stack evaluation tidak dicontohkan</li>
+      <li><strong>Dampak:</strong> Soal "ubah ke postfix" atau "trace evaluasi postfix" adalah tipe soal IR paling sering muncul; catatan tidak menyiapkan ini</li>
+      <li><strong>Saran:</strong> Tambahkan subseksi "Postfix Notation" di §11 dengan: konversi a+b*c; BZ/BR untuk if/while; trace stack 5 langkah untuk ekspresi sederhana</li>
+    </ul>
+  </div>
+</div>
+
+<div class="priority-item">
+  <span class="priority-num">4</span>
+  <div class="priority-content">
+    <div class="priority-title">Code Generation: peephole, graph coloring, instruction selection</div>
+    <ul class="sublist">
+      <li><strong>Masalah:</strong> Subseksi Code Generation di Compiler hanya ada basic block dan descriptors; instruction selection, register allocation (graph coloring), dan peephole optimization sama sekali tidak ada</li>
+      <li><strong>Dampak:</strong> Jika soal meminta "sebutkan teknik register allocation" atau "apa itu peephole optimization," catatan tidak membantu</li>
+      <li><strong>Saran:</strong> Tambahkan 3 paragraf pendek untuk masing-masing: instruction selection (pola IR → instruksi target), graph coloring untuk register allocation (interference graph, k-coloring, spilling), peephole (jendela instruksi kecil, eliminasi pola redundan)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="priority-item">
+  <span class="priority-num">5</span>
+  <div class="priority-content">
+    <div class="priority-title">Teorema komplemen RE dan implikasinya untuk undecidability</div>
+    <ul class="sublist">
+      <li><strong>Masalah:</strong> "Jika L dan L̄ keduanya RE maka L recursive" tidak ada di catatan</li>
+      <li><strong>Dampak:</strong> Bukti bahwa suatu bahasa tidak recursive melalui argumen komplemen tidak bisa dilakukan dari catatan</li>
+      <li><strong>Saran:</strong> Satu paragraf + satu baris rumus di §7.2.11; tambahkan contoh penerapannya untuk Ld</li>
+    </ul>
+  </div>
+</div>
+
+<div class="priority-item">
+  <span class="priority-num">6</span>
+  <div class="priority-content">
+    <div class="priority-title">Kompleksitas konversi CNF per tahap</div>
+    <ul class="sublist">
+      <li><strong>Masalah:</strong> Angka kompleksitas spesifik (linear untuk generating/reachable, O(n²) untuk unit pairs) tidak ada</li>
+      <li><strong>Dampak:</strong> Soal "apa kompleksitas preprocessing CNF sebelum CYK?" tidak dapat dijawab dari catatan</li>
+      <li><strong>Saran:</strong> Tambahkan 3 baris dalam Tabel 7 atau Komentar 6.2 dengan angka spesifik per tahap konversi</li>
+    </ul>
+  </div>
+</div>
+
+<div class="priority-item">
+  <span class="priority-num">7</span>
+  <div class="priority-content">
+    <div class="priority-title">Constant folding dan teknik local optimization lainnya</div>
+    <ul class="sublist">
+      <li><strong>Masalah:</strong> Constant folding tidak disebut; redundant subexpression elimination tidak punya nama di catatan</li>
+      <li><strong>Dampak:</strong> "Identifikasi teknik optimasi yang diterapkan pada kode berikut" tidak bisa dijawab jika melibatkan constant folding</li>
+      <li><strong>Saran:</strong> Tambahkan baris di Tabel 32 untuk constant folding dan CSE; masing-masing dengan satu contoh ekspresi pendek</li>
+    </ul>
+  </div>
+</div>
+
+<!-- BAGIAN 7 -->
+<h2>7. Rekomendasi penambahan isi</h2>
+
+<table>
+  <thead>
+    <tr><th>Bagian Outline</th><th>Materi yang Perlu Ditambahkan</th><th>Alasan</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>§3.2.7 Trace eksekusi TM</td>
+      <td>Tabel trace 5-10 langkah TM pengenal {0^n 1^n} pada input 0011; pola desain TM transducer dengan encoding unary (contoh f(n)=2n)</td>
+      <td>Outline menyebut trace eksekusi sebagai poin eksplisit; tipe soal UAS "tunjukkan langkah TM" tidak tercakup</td>
+    </tr>
+    <tr>
+      <td>§3.4.3 Relasi komplemen RE</td>
+      <td>Teorema: "L recursive ↔ L ∈ RE dan L̄ ∈ RE"; kontraposisi untuk bukti undecidability</td>
+      <td>Standar Dragon Book/HMU; sering jadi dasar argumen dalam soal undecidability</td>
+    </tr>
+    <tr>
+      <td>§3.5.3 Marker/shifting-over</td>
+      <td>Teknik menandai posisi di pita dengan simbol khusus lalu menggeser isi (shift-over) sebagai subroutine umum TM</td>
+      <td>Outline menyebutnya sebagai teknik pemrograman TM yang relevan; banyak konstruksi TM mengandalkan ini</td>
+    </tr>
+    <tr>
+      <td>§2.1.5 Kompleksitas konversi CNF</td>
+      <td>Tabel atau komentar: generating/reachable = O(|G|); unit-pair = O(n²); grammar hasil CNF = O(n²)</td>
+      <td>Outline §2.1.5 menyebutkan secara eksplisit; tanpa ini analisis biaya preprocessing sebelum CYK tidak lengkap</td>
+    </tr>
+    <tr>
+      <td>§4.8 Error handling compiler</td>
+      <td>Subbagian baru: kontrak error handler, tabel 5 strategi recovery dengan makna masing-masing, dummy identifier sebagai context-sensitive repair</td>
+      <td>Outline memasukkan ini sebagai subbagian tersendiri dalam Compiler; saat ini tidak ada sama sekali</td>
+    </tr>
+    <tr>
+      <td>§4.12 Code generation</td>
+      <td>Penjelasan singkat: (1) instruction selection dan pola IR→instruksi; (2) register allocation via interference graph + k-coloring + spilling; (3) peephole optimization dengan 2–3 contoh pola eliminasi</td>
+      <td>Semua tiga teknik ini disebutkan outline §4.12 sebagai poin terpisah; saat ini code generation section sangat tipis</td>
+    </tr>
+    <tr>
+      <td>§7.3 Postfix notation</td>
+      <td>Subseksi khusus: definisi, konversi ekspresi aritmetika ke postfix, BZ/BR untuk control flow, trace evaluasi stack 5 langkah</td>
+      <td>Outline memasukkan postfix sebagai bentuk IR linear tersendiri; relevansi UAS tinggi berdasarkan pola soal sebelumnya</td>
+    </tr>
+    <tr>
+      <td>§7.9 Optimasi IR lokal</td>
+      <td>Baris tambahan di Tabel 32: constant folding (2+3→5 at compile time) dan redundant subexpression elimination (CSE) sebagai nama teknik formal</td>
+      <td>Kedua teknik ini ada di outline §7.9 dan §4.11; tidak ada di catatan sebagai teknik bernama</td>
+    </tr>
+    <tr>
+      <td>§6.4 Syarat formal LL(1)</td>
+      <td>Tiga kondisi formal: (1) FIRST(α)∩FIRST(β)=∅; (2) max satu nullable; (3) FIRST nullable ∩ FOLLOW(A)=∅</td>
+      <td>Dragon Book §4.4.3 menyatakan ini sebagai definisi resmi LL(1); outline §6.4.3 menyebutkannya eksplisit</td>
+    </tr>
+    <tr>
+      <td>§1.4.1 Relevansi UAS CFG→PDA, §1.4.2 PDA→CFG</td>
+      <td>Satu contoh tipe soal UAS: "diketahui PDA berikut, buat CFG ekuivalennya" atau sebaliknya; dengan langkah penyelesaian manual</td>
+      <td>Outline secara eksplisit menandai "relevansi UAS 2425" untuk kedua konversi ini; catatan tidak menyiapkan mahasiswa untuk tipe soal ini</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- BAGIAN 8 -->
+<h2>8. Kesimpulan akhir</h2>
+
+<p><strong>Apakah catatan sudah mencakup seluruh outline?</strong> Belum sepenuhnya. Dari ~104 poin outline yang dipetakan, 72 (69%) sudah lengkap, 12 (12%) sebagian, 8 (8%) belum ada, dan 1 terlalu dangkal. Gap paling serius terkonsentrasi di tiga area: (1) Compiler section yang kehilangan Error Handling dan Code Generation detail; (2) Mesin Turing yang kehilangan trace eksekusi konkret dan teorema komplemen; (3) Intermediate Code yang kehilangan postfix sebagai subseksi sistematis.</p>
+
+<p><strong>Apakah catatan sudah cukup lengkap untuk memahami materi?</strong> Cukup untuk memahami, tetapi belum cukup untuk mengerjakan seluruh pola soal UAS. Catatan sangat kuat secara konseptual dan definitional, tetapi lemah dalam kesiapan prosedural: trace TM, postfix IR, peephole/graph coloring di code generation, dan error recovery Compiler adalah gap yang langsung berdampak pada kemampuan mengerjakan soal.</p>
+
+<p><strong>Bagian yang paling kuat:</strong> LL(1) Parser (§10) adalah section terlengkap dan paling siap-ujian dari seluruh catatan. FIRST/FOLLOW, tabel parsing, trace parsing, error recovery, dan synch entries semua tersedia dengan baik. PDA (§5) dan CYK (§6) juga sangat kuat dengan rumus formal, konstruksi lengkap, dan komentar rawan pemahaman yang efektif.</p>
+
+<p><strong>Bagian yang paling lemah:</strong> Compiler section Code Generation adalah titik paling kritis. Section ini menjadi "kurang seimbang" dengan data-flow analysis yang sangat dalam tetapi code generation yang sangat tipis. Setelah itu, Mesin Turing yang kehilangan trace eksekusi dan postfix IR yang tidak punya subseksi sendiri.</p>
+
+<p><strong>Prioritas revisi paling penting:</strong> Berdasarkan analisis dan relevansi soal UAS, urutan prioritas adalah: (1) trace TM; (2) postfix IR subseksi; (3) error handling Compiler; (4) code generation teknik lanjutan; (5) teorema komplemen RE; (6) kompleksitas CNF; (7) constant folding + CSE.</p>
+
+<div class="verdict-final">
+  <div class="verdict-big">Perlu Revisi Sedang</div>
+  <p style="margin:0.5rem 0 0;">Catatan sudah melampaui rata-rata catatan mahasiswa dalam hal kedalaman dan formalitas. Struktur tiga-bagian per section (outline fundamental, penjelasan, algoritma) dan penggunaan komentar "titik rawan" adalah kekuatan unik yang membuat catatan ini lebih dari sekadar ringkasan. Namun, beberapa pola soal UAS yang paling umum — trace TM, evaluasi postfix, code generation techniques — tidak tercakup. Revisi selama 4–6 jam pada 7 area di atas akan membawa catatan ini ke level <em>sangat lengkap</em>. Tanpa revisi, catatan ini layak untuk soal konseptual dan definitional, tetapi berisiko pada soal prosedural/aplikatif.</p>
+</div>
+
+</body>
+</html>

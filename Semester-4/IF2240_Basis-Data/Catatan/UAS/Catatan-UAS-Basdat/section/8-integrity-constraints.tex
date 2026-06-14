@@ -1,0 +1,436 @@
+\section{Integrity Constraints}
+
+Integrity Constraints membahas aturan yang menjaga konsistensi logis basis data ketika data disisipkan, dihapus, atau diperbarui. Materi ini adalah jembatan antara teori model relasional, desain skema, dan implementasi SQL: key, foreign key, domain, dan aturan bisnis tidak cukup hanya dipahami sebagai konsep, tetapi harus dinyatakan sebagai constraint yang ditegakkan oleh DBMS.
+
+Fokus utama untuk ujian adalah memahami jenis constraint, kapan constraint diperiksa, apa akibat operasi modifikasi terhadap constraint, dan mengapa constraint deklaratif di SQL lebih aman daripada memencarkan aturan ke kode aplikasi.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Tujuan integrity constraints
+    \begin{enumerate}
+        \item \pwajib Konsistensi data
+        \item \pwajib Integrity constraints vs security constraints
+        \item \ppaham Batasan constraint: menjaga konsistensi, bukan menjamin kebenaran dunia nyata
+    \end{enumerate}
+    \item \pwajib Pendekatan penegakan constraint
+    \begin{enumerate}
+        \item \pwajib Prosedur penambahan constraint baru
+        \item \pwajib Declarative integrity support
+        \item \ppaham Procedural integrity support
+    \end{enumerate}
+    \item \pwajib Konstrain fundamental model relasional
+    \begin{enumerate}
+        \item \pwajib Domain constraints
+        \item \pwajib Entity integrity
+        \item \pwajib Referential integrity
+    \end{enumerate}
+    \item \pwajib Implementasi constraint SQL
+    \begin{enumerate}
+        \item \pwajib \texttt{not null}
+        \item \pwajib \texttt{primary key}
+        \item \pwajib \texttt{unique}
+        \item \pwajib \texttt{check}
+        \item \ppaham Named constraint
+    \end{enumerate}
+    \item \pwajib Foreign key dan referential actions
+    \begin{enumerate}
+        \item \pwajib \texttt{foreign key references}
+        \item \pwajib \texttt{restrict} dan \texttt{no action}
+        \item \pwajib \texttt{cascade}
+        \item \pwajib \texttt{set null} dan \texttt{set default}
+    \end{enumerate}
+    \item \ppaham Constraint pada transaksi dan logika bisnis
+    \begin{enumerate}
+        \item \ppaham Transitory violation
+        \item \ppaham Deferred constraint checking
+        \item \ppaham Assertions
+        \item \ppaham Triggers
+        \item \ppaham Functions dan procedures
+    \end{enumerate}
+    \item \pwajib Hubungan integrity constraints dengan materi lain
+    \begin{enumerate}
+        \item \pwajib Keys dan relational model
+        \item \pwajib DDL SQL
+        \item \pwajib Relational database design dan normalisasi
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Tujuan Integrity Constraints}
+
+\begin{jawab}[Inti Konsep.]
+Integrity constraints adalah aturan logis yang memastikan perubahan data oleh pengguna yang sah tidak membuat basis data kehilangan konsistensi. Constraint penting karena DBMS harus menolak data yang melanggar struktur dan hubungan logis yang telah ditetapkan dalam skema.
+\end{jawab}
+
+Motivasi utama integrity constraints adalah melindungi basis data dari kerusakan yang tidak disengaja. Pengguna yang berwenang dapat saja memasukkan nilai yang salah tipe, menghapus baris induk yang masih dirujuk, atau memperbarui key menjadi nilai yang membuat tuple tidak dapat diidentifikasi. Constraint memberi batas formal agar operasi seperti \texttt{insert}, \texttt{delete}, dan \texttt{update} tidak merusak konsistensi.
+
+Secara konseptual, \textbf{integrity} berarti konsistensi data di dalam basis data. Integrity constraint tidak menjamin kebenaran absolut fakta dunia nyata. Jika gaji yang dimasukkan adalah \texttt{50000}, constraint dapat memastikan nilainya bertipe numerik dan berada di rentang sah, tetapi tidak selalu bisa membuktikan bahwa angka tersebut benar-benar gaji aktual pegawai.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Jenis Batasan} & \textbf{Fokus} \\
+\hline
+\textbf{Integrity constraints} & Mencegah kerusakan konsistensi data oleh operasi pengguna yang sah. Contoh: saldo harus melewati batas minimum, nomor telepon pelanggan tidak boleh kosong, foreign key harus merujuk tuple yang ada. \\
+\hline
+\textbf{Security constraints} & Mencegah akses atau operasi oleh pengguna yang tidak berwenang. Contoh: hanya admin yang boleh menghapus data atau hanya dosen tertentu yang boleh mengubah nilai. \\
+\hline
+\end{tabularx}
+\caption{Perbedaan integrity constraints dan security constraints}
+\label{tab:integrity-vs-security}
+\end{table}
+
+Contoh dari sumber mencakup aturan seperti saldo akun cek harus lebih besar dari nilai tertentu, gaji karyawan bank minimal bernilai tertentu, dan pelanggan harus memiliki nomor telepon non-null. Ketiga contoh tersebut menunjukkan bahwa constraint bukan hanya sintaks SQL, tetapi pernyataan aturan organisasi.
+
+Konsep ini berhubungan dengan relational model karena constraint mendefinisikan instans relasi mana yang legal. Ia juga berhubungan dengan SQL karena constraint biasanya ditulis dalam DDL agar ditegakkan otomatis oleh DBMS.
+
+\subsubsection{Pendekatan Penegakan Constraint}
+
+\begin{jawab}[Inti Konsep.]
+Constraint dapat ditegakkan secara deklaratif oleh DBMS atau secara prosedural oleh program aplikasi. Pendekatan deklaratif lebih kuat karena aturan ditulis pada skema dan otomatis berlaku untuk semua operasi data.
+\end{jawab}
+
+Motivasi membedakan pendekatan ini adalah menjaga aturan tetap terpusat. Jika aturan bisnis hanya ditulis di aplikasi, aplikasi lain atau query manual dapat melewati aturan tersebut. Jika constraint dideklarasikan di DBMS, semua jalur modifikasi data harus mematuhinya.
+
+Ketika constraint baru ditambahkan ke basis data yang sudah berisi data, DBMS tidak langsung menerimanya begitu saja. Mekanismenya:
+\begin{enumerate}
+    \item DBMS mengevaluasi kondisi basis data saat ini terhadap constraint baru.
+    \item Jika ada data lama yang melanggar, constraint ditolak.
+    \item Jika semua data lama memenuhi, constraint diterima.
+    \item Sejak saat itu, setiap operasi modifikasi harus mematuhi constraint tersebut.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Pendekatan} & \textbf{Definisi dan Implikasi} \\
+\hline
+\textbf{Declarative integrity support} & Constraint dideklarasikan langsung di DBMS, biasanya melalui DDL seperti \texttt{create table} atau \texttt{alter table}. DBMS otomatis menolak operasi yang melanggar. \\
+\hline
+\textbf{Procedural integrity support} & Aturan ditulis dalam program aplikasi. Semua aplikasi yang mengakses database harus mengulang logika yang sama; jika ada satu aplikasi lupa, konsistensi dapat rusak. \\
+\hline
+\end{tabularx}
+\caption{Pendekatan penegakan integrity constraints}
+\label{tab:declarative-procedural}
+\end{table}
+
+Pendekatan deklaratif terkait langsung dengan DDL SQL. Aturan seperti \texttt{primary key}, \texttt{foreign key}, dan \texttt{check} seharusnya berada di skema, bukan hanya di kode aplikasi.
+
+\subsubsection{Domain Constraints}
+
+\begin{jawab}[Inti Konsep.]
+Domain constraint membatasi nilai atribut agar berasal dari domain yang sah. Constraint ini penting karena menjadi lapisan paling dasar untuk memastikan nilai yang masuk ke kolom memiliki tipe, ukuran, dan rentang yang sesuai.
+\end{jawab}
+
+Motivasinya sederhana: operasi relasional hanya bermakna jika nilai atribut berasal dari domain yang benar. Atribut \texttt{salary} tidak seharusnya berisi teks bebas, atribut tanggal tidak seharusnya berisi angka acak, dan atribut semester hanya boleh memuat nilai semester yang dikenal.
+
+Secara formal, untuk atribut \(A\) dengan domain \(D_A\), setiap tuple \(t\) dalam relasi legal harus memenuhi:
+\begin{equation}
+    t[A] \in D_A
+    \label{eq:domain-constraint}
+\end{equation}
+
+Domain biasanya memuat nama domain, makna, tipe data, ukuran atau panjang, dan nilai atau rentang nilai yang diizinkan. Di SQL, domain constraint tampak pada tipe data seperti \texttt{integer}, \texttt{varchar(20)}, \texttt{numeric(12,2)}, serta pembatas tambahan seperti \texttt{check}.
+
+Mekanisme pemeriksaannya:
+\begin{enumerate}
+    \item Saat nilai baru masuk, DBMS membaca domain atribut tujuan.
+    \item DBMS memeriksa apakah nilai sesuai tipe dan batas domain.
+    \item Jika sesuai, operasi boleh berlanjut ke pemeriksaan constraint lain.
+    \item Jika tidak sesuai, operasi ditolak.
+\end{enumerate}
+
+Domain constraint menjadi dasar untuk \texttt{not null}, \texttt{check}, dan validasi tipe data. Tanpa domain yang benar, constraint tingkat key dan foreign key pun tidak cukup untuk menjaga kualitas data.
+
+\subsubsection{Entity Integrity}
+
+\begin{jawab}[Inti Konsep.]
+Entity integrity memastikan setiap relasi memiliki primary key yang dapat mengidentifikasi tuple secara unik dan tidak bernilai null. Konsep ini penting karena tuple yang tidak dapat diidentifikasi tidak dapat dirujuk, diperbarui, atau dibedakan secara aman.
+\end{jawab}
+
+Motivasi entity integrity adalah kebutuhan identitas. Dalam tabel relasional, setiap baris merepresentasikan fakta atau objek tertentu. Jika key bernilai null, DBMS tidak dapat memastikan tuple mana yang dimaksud. Jika dua tuple memiliki primary key sama, keduanya tidak dapat dibedakan sebagai entitas berbeda.
+
+Jika \(K\) adalah primary key relasi \(R\), maka setiap instans legal \(r(R)\) harus memenuhi:
+\begin{equation}
+    \forall t_1,t_2 \in r,\; t_1[K]=t_2[K] \Rightarrow t_1=t_2
+    \label{eq:key-unique}
+\end{equation}
+dan:
+\begin{equation}
+    \forall t \in r,\; t[K] \neq \texttt{NULL}
+    \label{eq:key-not-null}
+\end{equation}
+
+Dalam SQL, \texttt{primary key} otomatis menggabungkan sifat unik dan non-null. Karena itu, atribut primary key tidak perlu diberi \texttt{not null} secara terpisah.
+
+Entity integrity berhubungan langsung dengan referential integrity. Foreign key hanya bermakna jika relasi yang dirujuk memiliki key yang stabil, unik, dan non-null.
+
+\subsubsection{Referential Integrity}
+
+\begin{jawab}[Inti Konsep.]
+Referential integrity menjaga konsistensi hubungan antarrelasi dengan memastikan setiap foreign key merujuk tuple yang benar-benar ada, atau bernilai null jika diizinkan. Constraint ini penting karena relasi-relasi dalam database saling terhubung melalui key.
+\end{jawab}
+
+Motivasi referential integrity adalah mencegah \textbf{dangling reference}, yaitu nilai foreign key yang menunjuk data induk yang tidak ada. Contohnya, jika \texttt{course.dept\_name} merujuk \texttt{department.dept\_name}, maka setiap departemen pada \texttt{course} harus benar-benar ada di tabel \texttt{department}.
+
+Secara formal, misalkan atribut \(A\) pada relasi \(R\) menjadi foreign key yang merujuk primary key \(A\) pada relasi \(S\). Untuk setiap tuple \(t \in R\), nilai \(t[A]\) harus memenuhi:
+\begin{equation}
+    t[A] \in \Pi_A(S) \quad \text{atau} \quad t[A] = \texttt{NULL}
+    \label{eq:referential-integrity}
+\end{equation}
+jika nilai null memang diizinkan.
+
+Mekanisme pemeriksaan:
+\begin{enumerate}
+    \item Saat tuple anak dimasukkan atau foreign key diperbarui, DBMS mencari nilai yang sama pada key relasi induk.
+    \item Jika nilai induk ditemukan, operasi diterima.
+    \item Jika tidak ditemukan dan foreign key boleh null, nilai null dapat diterima.
+    \item Jika tidak ditemukan dan nilai bukan null, operasi ditolak.
+    \item Saat tuple induk dihapus atau key induk diperbarui, DBMS menjalankan referential action yang didefinisikan.
+\end{enumerate}
+
+Referential integrity adalah perekat struktur database relasional. Ia memakai konsep key dari relational model, dideklarasikan dengan DDL SQL, dan menjadi hasil konkret dari relationship pada E-R model.
+
+\subsubsection{SQL Constraints pada Relasi Tunggal}
+
+\begin{jawab}[Inti Konsep.]
+SQL menyediakan constraint deklaratif seperti \texttt{not null}, \texttt{primary key}, \texttt{unique}, dan \texttt{check} untuk menjaga validitas tuple dalam satu relasi. Constraint ini penting karena DBMS dapat langsung menolak operasi DML yang melanggar skema.
+\end{jawab}
+
+Motivasi SQL constraints adalah memindahkan aturan data dari aplikasi ke struktur database. Aturan yang dideklarasikan di tabel berlaku konsisten untuk semua pengguna dan semua aplikasi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Constraint} & \textbf{Definisi dan Contoh} \\
+\hline
+\texttt{not null} & Atribut tidak boleh bernilai null. Contoh: \texttt{name varchar(20) not null}. \\
+\hline
+\texttt{primary key} & Himpunan atribut menjadi key utama, unik, dan non-null. Contoh: \texttt{primary key (ID)}. \\
+\hline
+\texttt{unique} & Himpunan atribut harus unik seperti candidate key, tetapi SQL masih dapat mengizinkan null kecuali dilarang eksplisit. Contoh: \texttt{unique (email)}. \\
+\hline
+\texttt{check (P)} & Nilai tuple harus memenuhi predikat \(P\). Contoh: \texttt{check (semester in ('Fall','Winter','Spring','Summer'))}. \\
+\hline
+Named constraint & Constraint diberi nama eksplisit agar mudah dirujuk atau dihapus. Contoh: \texttt{constraint minsalary check (salary > 0)}. \\
+\hline
+\end{tabularx}
+\caption{Constraint SQL pada relasi tunggal}
+\label{tab:sql-single-relation-constraints}
+\end{table}
+
+Contoh struktur:
+\begin{lstlisting}[language=SQL, caption={Contoh constraint relasi tunggal}, label={lst:single-relation-constraints}]
+create table department (
+    dept_name varchar(20),
+    building varchar(15),
+    budget numeric(12,2) not null,
+    primary key (dept_name),
+    constraint positive_budget check (budget > 0)
+);
+\end{lstlisting}
+
+\texttt{check} dapat mengekspresikan predikat sederhana. Secara teoretis, SQL standard mengizinkan subquery dalam \texttt{check}, tetapi sumber menekankan bahwa implementasi komersial umumnya tidak mendukung pemeriksaan subquery semacam itu dengan baik. Untuk constraint lintas tabel, foreign key, assertions, atau triggers lebih relevan.
+
+\subsubsection{Foreign Key dan Referential Actions}
+
+\begin{jawab}[Inti Konsep.]
+Foreign key menghubungkan satu relasi dengan relasi lain melalui key yang dirujuk. Referential action menentukan apa yang dilakukan DBMS ketika tuple induk yang dirujuk dihapus atau key-nya diperbarui.
+\end{jawab}
+
+Motivasi referential action adalah operasi pada parent table dapat berdampak ke child table. Jika departemen dihapus, apa yang terjadi pada course yang merujuk departemen itu? Tanpa aturan eksplisit, database dapat menjadi tidak konsisten.
+
+Sintaks dasar:
+\begin{lstlisting}[language=SQL, caption={Contoh foreign key dengan referential action}, label={lst:foreign-key-action}]
+create table course (
+    course_id varchar(8),
+    title varchar(50),
+    dept_name varchar(20),
+    credits numeric(2,0),
+    primary key (course_id),
+    foreign key (dept_name) references department
+        on delete set null
+        on update cascade
+);
+\end{lstlisting}
+
+Target foreign key di SQL harus berupa primary key atau atribut yang dideklarasikan \texttt{unique}. Ini penting agar nilai foreign key menunjuk entitas induk secara tidak ambigu.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Aksi} & \textbf{Makna} \\
+\hline
+\texttt{restrict} & Operasi pada parent diblokir jika masih ada tuple child yang merujuknya. \\
+\hline
+\texttt{no action} & Operasi dievaluasi tanpa cascade bawaan; constraint tetap harus benar pada waktu pemeriksaan yang berlaku. \\
+\hline
+\texttt{cascade} & Penghapusan atau perubahan key parent diteruskan otomatis ke tuple child yang merujuk. \\
+\hline
+\texttt{set null} & Foreign key pada child diset menjadi null ketika parent hilang atau berubah. Tidak boleh digunakan jika foreign key juga bagian primary key yang non-null. \\
+\hline
+\texttt{set default} & Foreign key pada child diset ke nilai default yang ditentukan. \\
+\hline
+\end{tabularx}
+\caption{Referential actions pada foreign key}
+\label{tab:referential-actions}
+\end{table}
+
+Pada entitas lemah, foreign key biasanya merupakan bagian dari primary key. Karena primary key tidak boleh null, aksi \texttt{set null} tidak cocok untuk kasus tersebut.
+
+\subsubsection{Deferred Constraint Checking}
+
+\begin{jawab}[Inti Konsep.]
+Deferred constraint checking adalah penundaan pemeriksaan constraint sampai transaksi selesai. Konsep ini penting karena beberapa transaksi legal dapat melanggar constraint sementara pada langkah awal, lalu memperbaikinya pada langkah akhir.
+\end{jawab}
+
+Motivasinya muncul pada \textbf{transitory violation}, yaitu pelanggaran sementara selama transaksi. Dalam transaksi multi-langkah, keadaan antara mungkin tidak konsisten, tetapi keadaan akhir konsisten. Jika DBMS memeriksa constraint setelah setiap statement secara ketat, transaksi semacam itu dapat gagal padahal hasil akhirnya valid.
+
+Contoh sumber adalah relasi \texttt{person} yang memiliki foreign key \texttt{mother} dan \texttt{father} yang merujuk ke \texttt{person} sendiri. Ini menciptakan self-reference. Jika data orang tua dan anak saling bergantung dalam urutan penyisipan, sistem dapat mengalami kesulitan menemukan tuple yang dirujuk pada langkah pertama.
+
+Solusi yang mungkin:
+\begin{enumerate}
+    \item Sisipkan tuple orang tua lebih dahulu, lalu sisipkan anak.
+    \item Sisipkan anak dengan \texttt{mother} dan \texttt{father} bernilai null, lalu perbarui setelah data orang tua tersedia.
+    \item Gunakan deferred constraint checking agar pemeriksaan ditunda sampai transaksi selesai.
+\end{enumerate}
+
+Pseudocode konseptual:
+\begin{lstlisting}[caption={Pseudocode deferred constraint checking}, label={lst:deferred-checking}]
+begin transaction
+    mark selected constraints as deferred
+    execute insert/update/delete statements
+    at commit:
+        evaluate all deferred constraints
+        if every constraint holds then
+            commit
+        else
+            rollback
+end transaction
+\end{lstlisting}
+
+Konsep ini berkaitan dengan transaction control. Constraint tetap wajib benar, tetapi waktu pemeriksaannya dapat digeser dari statement-level ke transaction-level.
+
+\subsubsection{Assertions, Triggers, Functions, dan Procedures}
+
+\begin{jawab}[Inti Konsep.]
+Assertions, triggers, functions, dan procedures digunakan ketika constraint sederhana tidak cukup mengekspresikan aturan bisnis kompleks. Mereka penting karena aturan lintas tabel atau aturan prosedural sering tidak dapat ditulis hanya dengan \texttt{primary key}, \texttt{foreign key}, atau \texttt{check}.
+\end{jawab}
+
+Motivasi fitur lanjutan ini adalah batasan SQL DDL dasar. Banyak aturan bisnis membutuhkan logika lintas relasi, agregasi, atau reaksi otomatis terhadap event tertentu.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Fitur} & \textbf{Definisi dan Peran} \\
+\hline
+\textbf{Assertion} & Predikat deklaratif yang wajib selalu bernilai benar, ditulis secara konseptual sebagai \texttt{create assertion name check (predicate)}. Cocok untuk constraint global, tetapi mahal dan jarang didukung luas. \\
+\hline
+\textbf{Trigger} & Statement yang dijalankan otomatis sebagai efek samping event seperti \texttt{insert}, \texttt{delete}, atau \texttt{update}. Trigger memiliki kondisi pemicu dan aksi. \\
+\hline
+\textbf{Function} & Modul yang mengembalikan nilai dan dapat dipakai untuk logika bisnis yang lebih kompleks. \\
+\hline
+\textbf{Procedure} & Modul prosedural yang menjalankan rangkaian aksi di database, sering dipakai untuk aturan bisnis atau proses operasional. \\
+\hline
+\end{tabularx}
+\caption{Fitur lanjutan untuk constraint dan aturan bisnis}
+\label{tab:advanced-constraints}
+\end{table}
+
+Contoh trigger konseptual:
+\begin{lstlisting}[language=SQL, caption={Contoh struktur trigger konseptual}, label={lst:trigger-concept}]
+create trigger normalize_grade
+after update of grade on takes
+referencing old row as old_tuple new row as new_tuple
+for each row
+when (new_tuple.grade = '')
+begin
+    update takes
+    set grade = null
+    where ID = new_tuple.ID;
+end;
+\end{lstlisting}
+
+Assertion bersifat deklaratif, sedangkan trigger bersifat reaktif dan prosedural. Sumber menekankan bahwa assertion sering mahal karena DBMS harus memastikan predikat global selalu benar. Dalam praktik, trigger atau application logic kadang dipakai, tetapi semakin prosedural aturannya, semakin besar risiko kompleksitas dan efek samping.
+
+\subsubsection{Hubungan Integrity Constraints dengan Desain Relasional}
+
+\begin{jawab}[Inti Konsep.]
+Integrity constraints adalah bentuk implementasi dari key, dependency, dan hubungan antarrelasi yang ditemukan pada desain relasional. Mereka penting karena normalisasi menghasilkan struktur tabel, tetapi constraint memastikan struktur itu tetap konsisten saat digunakan.
+\end{jawab}
+
+Hubungan pertama adalah dengan \textbf{keys}. Entity integrity bergantung pada primary key; referential integrity bergantung pada foreign key yang merujuk primary key atau unique key. Tanpa key yang benar, constraint antarrelasi tidak dapat didefinisikan dengan aman.
+
+Hubungan kedua adalah dengan \textbf{DDL SQL}. Constraint dideklarasikan dalam \texttt{create table} atau \texttt{alter table}. Setelah constraint menjadi bagian dari skema, semua operasi DML harus mematuhinya.
+
+Hubungan ketiga adalah dengan \textbf{Relational Database Design}. Normalisasi berdasarkan FD mengurangi anomali, tetapi beberapa FD kompleks tidak mudah ditegakkan oleh SQL kecuali melalui primary key, unique, assertion, atau trigger. Sumber menekankan bahwa assertion dapat mahal, sehingga desain praktis sering mempertimbangkan trade-off antara BCNF, dependency preservation, dan biaya penegakan constraint.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Validasi Penambahan Constraint}
+
+\begin{jawab}[Tujuan Algoritma.]
+Algoritma ini menggambarkan cara DBMS menerima constraint baru pada database yang sudah berisi data. Constraint hanya boleh diterima jika semua data saat ini sudah mematuhinya.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode validasi constraint baru}, label={lst:add-constraint-validation}]
+Input: database instance D, new constraint C
+Output: accept or reject
+
+for each relevant tuple or relation state in D do
+    if C is violated then
+        reject C
+        stop
+add C to schema
+enforce C for all future modifications
+\end{lstlisting}
+
+\subsubsection{Kondisi Referential Integrity}
+
+\begin{jawab}[Makna Rumus.]
+Rumus referential integrity menyatakan bahwa nilai foreign key pada relasi anak harus muncul sebagai key pada relasi induk, kecuali jika nilai null diizinkan.
+\end{jawab}
+
+\begin{equation}
+    \forall t \in R,\; t[A] \in \Pi_A(S) \lor t[A] = \texttt{NULL}
+    \label{eq:ri-final}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item \(R\): relasi anak yang memiliki foreign key.
+    \item \(S\): relasi induk yang dirujuk.
+    \item \(A\): atribut foreign key di \(R\) sekaligus key yang dirujuk di \(S\).
+    \item \(\Pi_A(S)\): himpunan nilai atribut \(A\) yang ada pada relasi \(S\).
+\end{itemize}
+
+\subsubsection{Pemeriksaan Operasi DML terhadap Constraint}
+
+\begin{jawab}[Tujuan Algoritma.]
+Pseudocode ini merangkum cara DBMS mengevaluasi operasi modifikasi terhadap constraint sebelum perubahan dibuat permanen.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode pemeriksaan DML terhadap constraint}, label={lst:dml-constraint-check}]
+Input: operation op, database D, constraints C
+Output: commit operation or reject operation
+
+tentatively apply op to produce D_new
+for each constraint c in C do
+    if c is immediate and D_new violates c then
+        reject op
+        restore D
+        stop
+if transaction commits then
+    for each deferred constraint c in C do
+        if final transaction state violates c then
+            rollback transaction
+            stop
+commit changes
+\end{lstlisting}

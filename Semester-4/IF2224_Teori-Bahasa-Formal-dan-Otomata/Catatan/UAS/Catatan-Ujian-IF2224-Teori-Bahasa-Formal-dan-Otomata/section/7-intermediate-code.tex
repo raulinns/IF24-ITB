@@ -1,0 +1,542 @@
+\section{Intermediate Code}
+
+Intermediate Code atau Intermediate Representation (IR) adalah representasi program di antara source code dan target code. Dalam compiler, IR menjadi jembatan antara front end yang memahami bahasa sumber dan back end yang memahami mesin target. Dengan IR, compiler tidak harus dibuat ulang penuh untuk setiap kombinasi bahasa dan arsitektur.
+
+Fokus ujian pada materi ini adalah memahami bentuk-bentuk IR, terutama syntax tree, DAG, three-address code, quadruples, triples, dan indirect triples. Selain itu, mahasiswa perlu mampu menerjemahkan ekspresi dan control flow sederhana ke bentuk kode antara serta membaca representasi IR pada soal.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Motivasi Intermediate Representation
+    \begin{enumerate}
+        \item \pwajib Jembatan front end dan back end
+        \item \pwajib Modularitas $m$ bahasa dan $n$ mesin target
+        \item \pwajib Optimasi machine-independent
+    \end{enumerate}
+    \item \pwajib Posisi IR dalam pipeline compiler
+    \begin{enumerate}
+        \item \pwajib Setelah lexical, syntax, dan semantic analysis
+        \item \pwajib Sebelum optimizer dan code generator
+    \end{enumerate}
+    \item \pwajib Bentuk IR
+    \begin{enumerate}
+        \item \pwajib Syntax tree atau AST
+        \item \pwajib DAG
+        \item \ppaham Value-number atau hash node pada DAG
+        \item \pwajib Postfix notation
+        \item \pwajib Three-address code
+        \item \pwajib Quadruples
+        \item \pwajib Triples
+        \item \ppaham Indirect triples
+    \end{enumerate}
+    \item \pwajib Komponen three-address code
+    \begin{enumerate}
+        \item \pwajib Address
+        \item \pwajib Temporary variables
+        \item \pwajib Assignment, unary, binary, jump, dan call
+    \end{enumerate}
+    \item \pwajib Translasi ekspresi
+    \begin{enumerate}
+        \item \pwajib Ekspresi aritmetika
+        \item \pwajib Assignment
+        \item \ppaham Array
+        \item \ppaham Pointer
+    \end{enumerate}
+    \item \pwajib Boolean dan control flow
+    \begin{enumerate}
+        \item \pwajib Jumping code
+        \item \pwajib BZ dan BR
+        \item \pwajib Short-circuit evaluation
+        \item \pwajib If dan while
+    \end{enumerate}
+    \item \pwajib Backpatching
+    \begin{enumerate}
+        \item \pwajib \texttt{truelist}
+        \item \pwajib \texttt{falselist}
+        \item \pwajib \texttt{nextlist}
+        \item \pwajib \texttt{makelist}, \texttt{merge}, dan \texttt{backpatch}
+    \end{enumerate}
+    \item \ppaham Kaitan dengan contoh soal UAS
+    \begin{enumerate}
+        \item \ppaham Uninitialized variable detection
+        \item \ppaham Constant folding dan common subexpression elimination
+        \item \ppaham Loop-invariant code motion dan frequency reduction
+        \item \ppaham Strength reduction dan loop unrolling
+        \item \ppaham Dead code dan unreachable code elimination
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Motivasi Intermediate Representation}
+
+\begin{jawab}[Inti Konsep.]
+IR memisahkan detail bahasa sumber dari detail mesin target. Dengan IR, compiler menjadi modular: front end cukup menerjemahkan source program ke IR, sedangkan back end cukup menerjemahkan IR ke kode mesin target.
+\end{jawab}
+
+Tanpa IR, compiler untuk $m$ bahasa dan $n$ arsitektur harus dibuat sebanyak $m\times n$ kombinasi. Dengan IR yang stabil, cukup dibuat $m$ front end dan $n$ back end. Setiap front end menerjemahkan bahasa sumber ke IR yang sama, dan setiap back end menerjemahkan IR ke mesin target.
+
+IR juga membuat optimasi lebih mudah. Optimasi pada source code terlalu terikat pada sintaks bahasa, sedangkan optimasi pada assembly terlalu terikat pada mesin. IR berada di tengah: cukup rendah untuk dianalisis secara mekanis, tetapi cukup tinggi untuk masih menyimpan struktur program.
+
+Konsep ini menghubungkan materi compiler dengan teori bahasa formal. Front end memakai regular language dan CFG untuk menganalisis source program, lalu hasil analisis itu disusun menjadi representasi yang siap dioptimasi atau diterjemahkan.
+
+\subsubsection{Posisi IR dalam Pipeline Compiler}
+
+\begin{jawab}[Inti Konsep.]
+IR biasanya dibangkitkan setelah lexical analysis, syntax analysis, dan semantic analysis selesai. Output IR kemudian menjadi input untuk optimizer atau langsung ke code generator.
+\end{jawab}
+
+Pipeline konseptualnya:
+\[
+    \text{Source Code}
+    \rightarrow \text{Tokens}
+    \rightarrow \text{Syntax Tree}
+    \rightarrow \text{Checked Tree}
+    \rightarrow \text{IR}
+    \rightarrow \text{Target Code}.
+\]
+
+Lexical analyzer mengubah karakter menjadi token. Parser membentuk parse tree atau syntax tree. Semantic analyzer memeriksa tipe, scope, dan aturan makna lain. Setelah struktur program dianggap valid, intermediate code generator menghasilkan IR.
+
+IR dapat langsung diberikan ke code generator, tetapi compiler modern biasanya menambahkan machine-independent optimizer. Optimizer ini bekerja pada IR tanpa perlu mengetahui bahasa sumber asli atau detail register mesin target.
+
+\subsubsection{Syntax Tree dan DAG}
+
+\begin{jawab}[Inti Konsep.]
+Syntax tree merepresentasikan struktur ekspresi sebagai pohon, sedangkan DAG membagikan node untuk subekspresi yang sama. DAG membantu menemukan common subexpression agar komputasi tidak diulang.
+\end{jawab}
+
+**Syntax tree** atau **Abstract Syntax Tree (AST)** adalah bentuk IR tingkat tinggi. Node internal menyatakan operator, sedangkan leaf menyatakan operand seperti identifier atau konstanta. AST menghapus detail sintaks yang tidak penting, misalnya tanda kurung yang hanya mengatur prioritas.
+
+**Directed Acyclic Graph (DAG)** mirip AST, tetapi satu node dapat memiliki lebih dari satu parent. Jika ekspresi yang sama muncul berulang, DAG menyimpan satu node yang dipakai bersama. Ini penting untuk optimasi common subexpression.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|X|}
+\hline
+\textbf{Representasi} & \textbf{Kelebihan} & \textbf{Keterbatasan} \\
+\hline
+AST & Menyimpan struktur ekspresi secara natural dan mudah dipakai semantic analysis. & Kurang langsung untuk code generation linear. \\
+\hline
+DAG & Menghindari duplikasi subekspresi yang sama. & Lebih kompleks karena node dapat dipakai bersama. \\
+\hline
+\end{tabularx}
+\caption{Perbandingan AST dan DAG}
+\label{tab:ast-dag}
+\end{table}
+
+AST dan DAG biasanya lebih dekat ke front end, sedangkan three-address code lebih dekat ke back end.
+
+\subsubsection{Value-Number dan Hash Node pada DAG}
+
+\begin{jawab}[Inti Konsep.]
+Value-number adalah identitas untuk nilai hasil ekspresi pada DAG. Dengan hash node berdasarkan operator dan operand, compiler dapat mengenali subekspresi yang sama tanpa membangun node duplikat.
+\end{jawab}
+
+DAG berguna karena satu hasil komputasi dapat dipakai ulang oleh beberapa parent. Agar reuse ini sistematis, compiler perlu cara menentukan bahwa dua ekspresi menghasilkan nilai yang sama. Salah satu tekniknya adalah memberi **value-number**, yaitu nomor atau identitas kanonik untuk nilai yang dihitung.
+
+Saat membangun DAG untuk ekspresi, compiler dapat memakai tabel hash:
+\begin{enumerate}
+    \item Untuk leaf berupa variabel atau konstanta, cari atau buat node leaf dengan value-number terkait.
+    \item Untuk ekspresi operator, hitung key berdasarkan operator dan value-number operand.
+    \item Jika key sudah ada di hash table, gunakan node lama.
+    \item Jika key belum ada, buat node baru dan beri value-number baru.
+\end{enumerate}
+
+Contoh: jika ekspresi $b*(-c)$ muncul dua kali dan nilai $b$ maupun $c$ belum berubah, hash key untuk operasi perkalian dengan operand yang sama akan ditemukan kembali. DAG memakai node lama, sehingga optimizer dapat menghindari perhitungan ulang.
+
+\begin{cmt}{Catatan: Batas Validitas}{}
+Value-number hanya sah selama operand yang menjadi dasar ekspresi belum didefinisikan ulang. Jika assignment baru mengubah $b$ atau $c$, ekspresi $b*(-c)$ setelah assignment tersebut tidak boleh otomatis dianggap sama dengan ekspresi sebelumnya.
+\end{cmt}
+
+Teknik ini menghubungkan representasi DAG dengan optimasi common subexpression elimination. DAG bukan sekadar gambar ekspresi, tetapi struktur data yang membantu compiler menemukan nilai yang sama secara mekanis.
+
+\subsubsection{Postfix Notation sebagai Intermediate Code}
+
+\begin{jawab}[Inti Konsep.]
+Postfix notation menuliskan operator setelah operand, sehingga ekspresi dapat dievaluasi dengan stack tanpa tanda kurung. Dalam sumber UAS, postfix juga dipakai untuk control flow dengan instruksi branch seperti \texttt{BZ} dan \texttt{BR}.
+\end{jawab}
+
+Pada notasi infix biasa, ekspresi $a+b*c$ membutuhkan aturan prioritas operator. Dalam postfix, ekspresi yang sama ditulis:
+\[
+    a\ b\ c\ *\ +.
+\]
+Urutan ini eksplisit: hitung $b*c$ lebih dulu, lalu tambahkan $a$. Mesin stack atau interpreter sederhana dapat membaca token dari kiri ke kanan; operand di-push, operator mem-pop operand yang diperlukan, lalu hasilnya di-push kembali.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Instruksi} & \textbf{Makna} \\
+\hline
+Operand & Push nilai operand ke stack evaluasi. \\
+\hline
+Operator aritmetika & Pop operand, hitung hasil, lalu push hasil. \\
+\hline
+\texttt{BZ L} & Branch if zero/false: lompat ke label $L$ jika nilai kondisi bernilai salah. \\
+\hline
+\texttt{BR L} & Branch tanpa syarat ke label $L$. \\
+\hline
+\end{tabularx}
+\caption{Elemen postfix dan branch pada intermediate code}
+\label{tab:postfix-bz-br}
+\end{table}
+
+Trace evaluasi stack untuk postfix \texttt{3 4 + 2 *}:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.16\textwidth}|L{0.22\textwidth}|X|}
+\hline
+\textbf{Token} & \textbf{Stack Setelah Token} & \textbf{Aksi} \\
+\hline
+\texttt{3} & \texttt{[3]} & Push operand. \\
+\hline
+\texttt{4} & \texttt{[3, 4]} & Push operand. \\
+\hline
+\texttt{+} & \texttt{[7]} & Pop 3 dan 4, push 7. \\
+\hline
+\texttt{2} & \texttt{[7, 2]} & Push operand. \\
+\hline
+\texttt{*} & \texttt{[14]} & Pop 7 dan 2, push 14. \\
+\hline
+\end{tabularx}
+\caption{Trace stack untuk evaluasi postfix}
+\label{tab:trace-postfix}
+\end{table}
+
+Untuk control flow, \texttt{BZ} dan \texttt{BR} membuat postfix tidak hanya merepresentasikan ekspresi, tetapi juga aliran kendali. Misalnya pola \texttt{IF cond THEN S1 ELSE S2} memakai \texttt{BZ Lelse} setelah evaluasi kondisi, lalu \texttt{BR Lend} setelah bagian then agar eksekusi melompati bagian else.
+
+\begin{cmt}{Catatan: Pola Postfix UAS}{}
+Sumber NotebookLM menampilkan pola postfix untuk \texttt{IF a > b THEN c := d ELSE c := e}. Struktur instruksinya:
+\[
+    a\ b\ >\ L_{else}\ \texttt{BZ}\ c\ d\ :=\ L_{end}\ \texttt{BR}\ c\ e\ :=.
+\]
+Maknanya: evaluasi $a>b$; jika hasilnya false atau zero, \texttt{BZ} melompat ke blok \texttt{else}; setelah blok \texttt{then}, \texttt{BR} melompati blok \texttt{else}.
+
+Untuk \texttt{WHILE A < B DO A := A + 1}, pola umumnya:
+\[
+    L_{start}:\ A\ B\ <\ L_{out}\ \texttt{BZ}\ A\ A\ 1\ +\ :=\ L_{start}\ \texttt{BR}.
+\]
+Label awal loop harus disimpan agar \texttt{BR} dapat kembali mengulang evaluasi kondisi. Kesalahan umum adalah melompat kembali ke awal body, padahal kondisi harus diuji ulang setiap iterasi.
+\end{cmt}
+
+\subsubsection{Three-Address Code}
+
+\begin{jawab}[Inti Konsep.]
+Three-address code (3AC) adalah IR linear dengan instruksi sederhana yang umumnya memiliki paling banyak tiga address: dua operand dan satu hasil. Ekspresi kompleks dipecah menjadi urutan operasi kecil.
+\end{jawab}
+
+Instruksi 3AC berbentuk umum:
+\[
+    x = y\ \text{op}\ z.
+\]
+Setiap instruksi hanya memuat satu operator utama. Ekspresi panjang seperti
+\[
+    a = b * -c + b * -c
+\]
+dipecah menjadi temporary variables:
+\[
+\begin{aligned}
+    t_1 &= -c,\\
+    t_2 &= b * t_1,\\
+    t_3 &= -c,\\
+    t_4 &= b * t_3,\\
+    a &= t_2 + t_4.
+\end{aligned}
+\]
+
+**Address** adalah operand dalam 3AC. Address dapat berupa nama variabel, konstanta, atau temporary variable seperti $t_1,t_2,\ldots$. Temporary dibuat compiler untuk menyimpan hasil antara subekspresi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Bentuk Instruksi} & \textbf{Makna} \\
+\hline
+$x=y\ \text{op}\ z$ & Assignment biner, misalnya $x=y+z$. \\
+\hline
+$x=\text{op}\ y$ & Assignment unari, misalnya $x=-y$. \\
+\hline
+$x=y$ & Copy instruction. \\
+\hline
+\texttt{goto L} & Lompat tanpa syarat ke label $L$. \\
+\hline
+\texttt{if x relop y goto L} & Lompat bersyarat. \\
+\hline
+\texttt{param x}, \texttt{call p,n} & Pengiriman argumen dan pemanggilan prosedur. \\
+\hline
+\end{tabularx}
+\caption{Bentuk umum instruksi three-address code}
+\label{tab:bentuk-3ac}
+\end{table}
+
+3AC penting karena mudah dihasilkan dari syntax tree dan cukup dekat dengan instruksi mesin untuk code generation.
+
+\subsubsection{Quadruples, Triples, dan Indirect Triples}
+
+\begin{jawab}[Inti Konsep.]
+Quadruples, triples, dan indirect triples adalah cara menyimpan three-address code. Perbedaannya terletak pada cara menyimpan hasil instruksi dan cara instruksi dirujuk ulang.
+\end{jawab}
+
+**Quadruple** menyimpan empat field: \texttt{op}, \texttt{arg1}, \texttt{arg2}, dan \texttt{result}. Karena result eksplisit, instruksi mudah dipindahkan saat optimasi.
+
+**Triple** menyimpan tiga field: \texttt{op}, \texttt{arg1}, dan \texttt{arg2}. Hasil operasi dirujuk melalui nomor instruksi, misalnya hasil baris 1 ditulis sebagai \texttt{(1)}. Ini menghemat temporary eksplisit, tetapi menyulitkan pemindahan instruksi karena indeks berubah.
+
+**Indirect triple** menambahkan daftar pointer ke triple. Instruksi asli tetap berada di daftar triple, sedangkan urutan eksekusi diatur oleh daftar pointer. Optimasi dapat menukar urutan pointer tanpa mengubah nomor triple asli.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|X|}
+\hline
+\textbf{Representasi} & \textbf{Struktur} & \textbf{Implikasi Optimasi} \\
+\hline
+Quadruple & \texttt{op, arg1, arg2, result} & Mudah dipindah karena result eksplisit. \\
+\hline
+Triple & \texttt{op, arg1, arg2}; hasil adalah indeks instruksi. & Sulit dipindah karena referensi indeks dapat berubah. \\
+\hline
+Indirect triple & Triple ditambah list pointer urutan eksekusi. & Reordering cukup mengubah pointer. \\
+\hline
+\end{tabularx}
+\caption{Representasi implementasi three-address code}
+\label{tab:quad-triple}
+\end{table}
+
+Soal ujian sering menguji kemampuan membaca perbedaan ini, terutama bahwa triple memakai referensi seperti \texttt{(1)} dan tidak menyimpan variabel result eksplisit.
+
+\subsubsection{Translasi Ekspresi, Array, dan Pointer}
+
+\begin{jawab}[Inti Konsep.]
+Translasi ekspresi memecah perhitungan menjadi instruksi 3AC berurutan. Array dan pointer membutuhkan operasi alamat karena nilai yang diakses bergantung pada lokasi memori runtime.
+\end{jawab}
+
+Untuk ekspresi aritmetika, compiler biasanya membuat temporary baru untuk setiap hasil antara. Misalnya:
+\[
+    x = a + b * c
+\]
+diterjemahkan menjadi:
+\[
+\begin{aligned}
+    t_1 &= b * c,\\
+    x &= a + t_1.
+\end{aligned}
+\]
+
+Untuk array, alamat elemen harus dihitung. Jika elemen array memiliki lebar $w$ dan indeks bawah $low$, offset dasar indeks $i$ adalah:
+\[
+    (i-low) * w.
+\]
+Bentuk IR yang dipakai sumber mencakup:
+\begin{itemize}
+    \item $x = y[i]$: ambil nilai dari alamat berindeks.
+    \item $x[i] = y$: simpan nilai ke alamat berindeks.
+\end{itemize}
+
+Untuk pointer, IR menyediakan operasi:
+\begin{itemize}
+    \item $x=\&y$: ambil alamat $y$.
+    \item $x=*y$: baca nilai dari alamat yang disimpan di $y$.
+    \item $*x=y$: tulis nilai $y$ ke alamat yang disimpan di $x$.
+\end{itemize}
+
+Konsep kuncinya adalah membedakan **lvalue**, yaitu lokasi yang dapat diberi nilai, dan **rvalue**, yaitu nilai yang dihitung dari ekspresi.
+
+\subsubsection{Boolean dan Control Flow}
+
+\begin{jawab}[Inti Konsep.]
+Ekspresi boolean dapat diterjemahkan sebagai jumping code, bukan selalu sebagai nilai 0 atau 1. Dengan jumping code, hasil boolean diwujudkan sebagai lompatan ke label benar atau salah.
+\end{jawab}
+
+Untuk ekspresi boolean seperti $a<b$, compiler dapat menghasilkan:
+\[
+\begin{aligned}
+    &\texttt{if a < b goto Ltrue}\\
+    &\texttt{goto Lfalse}.
+\end{aligned}
+\]
+Pendekatan ini mendukung **short-circuit evaluation**. Pada ekspresi $B_1 || B_2$, jika $B_1$ sudah true, $B_2$ tidak perlu dievaluasi. Pada ekspresi $B_1 \&\& B_2$, jika $B_1$ false, $B_2$ tidak perlu dievaluasi.
+
+Control flow memakai label:
+\begin{itemize}
+    \item $B.true$: tujuan jika kondisi benar.
+    \item $B.false$: tujuan jika kondisi salah.
+    \item $S.next$: instruksi setelah statement selesai.
+\end{itemize}
+
+Contoh postfix dari sumber untuk:
+\[
+    \texttt{IF a > b THEN c := d ELSE c := e}
+\]
+memakai instruksi branch seperti **BZ** (\textit{branch if zero}) dan **BR** (\textit{branch}). Jika kondisi salah, BZ melompat ke bagian \texttt{else}; setelah bagian \texttt{then}, BR melompati bagian \texttt{else}.
+
+\subsubsection{Backpatching}
+
+\begin{jawab}[Inti Konsep.]
+Backpatching adalah teknik mengisi target instruksi jump yang belum diketahui saat instruksi dibuat. Compiler menyimpan daftar instruksi bolong, lalu mengisinya ketika label tujuan sudah tersedia.
+\end{jawab}
+
+Backpatching diperlukan pada translasi one-pass, terutama untuk boolean dan control flow. Saat compiler menghasilkan instruksi \texttt{goto \_}, label tujuan mungkin belum diketahui karena bagian program tujuan belum dibaca.
+
+Tiga list utama:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{List} & \textbf{Peran} \\
+\hline
+$B.truelist$ & Daftar instruksi jump yang harus menuju label ketika boolean $B$ true. \\
+\hline
+$B.falselist$ & Daftar instruksi jump yang harus menuju label ketika boolean $B$ false. \\
+\hline
+$S.nextlist$ & Daftar jump yang harus menuju instruksi setelah statement $S$. \\
+\hline
+\end{tabularx}
+\caption{List dalam backpatching}
+\label{tab:list-backpatching}
+\end{table}
+
+Operasi pendukung:
+\begin{itemize}
+    \item \texttt{makelist(i)}: membuat list berisi instruksi $i$.
+    \item \texttt{merge(p1,p2)}: menggabungkan dua list.
+    \item \texttt{backpatch(p,i)}: mengisi target semua instruksi dalam list $p$ dengan label $i$.
+\end{itemize}
+
+Untuk produksi boolean:
+\[
+    B \rightarrow B_1\ ||\ M\ B_2,
+\]
+instruksi pada $B_1.falselist$ di-backpatch ke $M.instr$, yaitu posisi awal evaluasi $B_2$. Truelist hasilnya adalah gabungan $B_1.truelist$ dan $B_2.truelist$.
+
+\subsubsection{Kaitan dengan Contoh Soal UAS}
+
+\begin{jawab}[Inti Konsep.]
+Sumber UAS menekankan kemampuan membaca dan mengubah representasi IR, terutama postfix, quadruple, triple, serta optimasi sederhana dari kode antara menuju assembly.
+\end{jawab}
+
+Berdasarkan inventaris sumber, UAS 2425 memuat beberapa pola aplikasi Intermediate Code:
+\begin{itemize}
+    \item Membaca control flow seperti while loop dalam bentuk postfix, quadruple, dan triple.
+    \item Memahami bahwa triple merujuk hasil instruksi sebelumnya dengan nomor baris seperti \texttt{(1)}.
+    \item Mengubah 3AC atau quadruple menjadi assembly single accumulator seperti \texttt{LDA}, \texttt{ADD}, dan \texttt{STO}.
+    \item Mengenali optimasi sederhana seperti dead code elimination, unreachable code, dan constant folding.
+\end{itemize}
+
+Artinya, penguasaan materi tidak cukup berhenti pada definisi IR. Mahasiswa perlu dapat melakukan translasi kecil secara manual dan membaca tabel representasi kode antara.
+
+\subsubsection{Optimasi dan Deteksi pada Intermediate Code}
+
+\begin{jawab}[Inti Konsep.]
+IR membuat compiler dapat melakukan deteksi kesalahan dan optimasi sebelum masuk ke detail mesin target. Contohnya adalah deteksi variabel belum diinisialisasi, loop-invariant code motion, frequency reduction, strength reduction, dan loop unrolling.
+\end{jawab}
+
+Karena IR menampilkan aliran data dan aliran kontrol secara eksplisit, compiler dapat menganalisis fakta program lebih mudah daripada pada source code mentah. Analisis ini dapat dipakai untuk memperingatkan kesalahan atau memperbaiki efisiensi kode.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Teknik} & \textbf{Makna pada IR} \\
+\hline
+Uninitialized variable detection & Mendeteksi penggunaan variabel sebelum ada definisi yang pasti mencapai titik penggunaan. Berkaitan dengan reaching definitions. \\
+\hline
+Constant folding & Mengevaluasi ekspresi konstanta saat compile-time, misalnya $2+3$ menjadi $5$ atau $x*1$ menjadi $x$. \\
+\hline
+Common subexpression elimination & Menggunakan kembali hasil ekspresi yang sudah dihitung jika operandnya belum berubah, misalnya menyimpan $a+b$ ke temporary lalu memakai temporary tersebut pada penggunaan berikutnya. \\
+\hline
+Loop-invariant code motion & Memindahkan ekspresi yang nilainya tidak berubah di dalam loop ke sebelum loop. \\
+\hline
+Frequency reduction / code motion & Mengurangi frekuensi eksekusi instruksi mahal dengan memindahkannya ke lokasi yang dieksekusi lebih jarang. \\
+\hline
+Strength reduction & Mengganti operasi mahal dengan operasi lebih murah, misalnya perkalian indeks loop menjadi penjumlahan berulang. \\
+\hline
+Loop unrolling & Menggandakan body loop beberapa kali untuk mengurangi overhead branch dan membuka peluang optimasi lain. \\
+\hline
+Dead code dan unreachable code elimination & Menghapus instruksi yang hasilnya tidak pernah dipakai atau block yang tidak mungkin dieksekusi, misalnya cabang \texttt{if false}. \\
+\hline
+\end{tabularx}
+\caption{Optimasi dan deteksi berbasis intermediate code}
+\label{tab:optimasi-ir-tambahan}
+\end{table}
+
+Optimasi ini harus menjaga semantik program. Misalnya loop-invariant code motion hanya aman jika ekspresi benar-benar tidak berubah di seluruh iterasi dan pemindahannya tidak mengubah efek samping atau penanganan error.
+
+Subtopik ini menghubungkan Intermediate Code dengan materi Compiler bagian data-flow analysis. IR adalah objek yang dianalisis, sedangkan reaching definitions, available expressions, dan live variables adalah teknik untuk membuktikan kapan transformasi aman.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Rumus Offset Array}
+
+\begin{jawab}[Makna Rumus.]
+Rumus offset array menghitung jarak memori elemen array dari base address. Rumus ini dipakai saat menerjemahkan akses array ke intermediate code.
+\end{jawab}
+
+\begin{equation}
+    offset(i)=(i-low)w
+    \label{eq:offset-array-ir}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $i$: indeks elemen yang diakses.
+    \item $low$: indeks bawah array.
+    \item $w$: lebar satu elemen array dalam byte atau word.
+\end{itemize}
+
+Jika indeks array dimulai dari 0, rumus menyederhana menjadi $offset(i)=iw$.
+
+\subsubsection{Pseudocode Pembuatan Three-Address Code Ekspresi}
+
+\begin{jawab}[Tujuan Algoritma.]
+Algoritma ini menerjemahkan expression tree menjadi urutan three-address code dengan temporary variables. Setiap operator menghasilkan satu instruksi 3AC.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode translasi ekspresi ke three-address code}, label={lst:expr-to-3ac}]
+function genExpr(node):
+    if node adalah identifier atau konstanta:
+        return node.place
+
+    left = genExpr(node.left)
+    right = genExpr(node.right)
+    temp = newtemp()
+    emit(temp = left op(node) right)
+    return temp
+\end{lstlisting}
+
+Algoritma ini bersifat postorder: anak kiri dan kanan diterjemahkan lebih dulu, lalu operator parent menghasilkan temporary baru.
+
+\subsubsection{Pseudocode Konstruksi Tabel Quadruple}
+
+\begin{jawab}[Tujuan Algoritma.]
+Pseudocode ini menunjukkan bagaimana instruksi 3AC disimpan sebagai quadruple. Setiap instruksi dipetakan ke field operator, argumen, dan hasil.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode emit quadruple}, label={lst:emit-quadruple}]
+function emitBinary(result, arg1, op, arg2):
+    quad.op = op
+    quad.arg1 = arg1
+    quad.arg2 = arg2
+    quad.result = result
+    append quad to instructionList
+\end{lstlisting}
+
+Untuk instruksi unari atau jump, sebagian field dapat kosong. Misalnya \texttt{goto L} dapat disimpan dengan \texttt{op = goto} dan \texttt{result = L}.
+
+\subsubsection{Pseudocode Backpatching}
+
+\begin{jawab}[Tujuan Algoritma.]
+Pseudocode backpatching mengisi label tujuan pada instruksi jump yang sebelumnya belum lengkap. Teknik ini menjaga translasi control flow tetap bisa dilakukan satu pass.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode operasi dasar backpatching}, label={lst:backpatching}]
+function makelist(i):
+    return list berisi i
+
+function merge(p1, p2):
+    return konkatenasi p1 dan p2
+
+function backpatch(p, target):
+    for setiap instruksi i dalam p:
+        instruction[i].target = target
+\end{lstlisting}
+
+Backpatching penting untuk boolean short-circuit dan statement bercabang karena target jump sering baru diketahui setelah bagian program berikutnya selesai diproses.

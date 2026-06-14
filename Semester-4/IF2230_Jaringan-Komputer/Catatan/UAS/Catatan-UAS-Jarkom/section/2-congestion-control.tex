@@ -1,0 +1,488 @@
+\section{Congestion Control}
+
+Congestion Control membahas bagaimana jaringan mengatur laju pengiriman agar router, switch, dan link tidak kewalahan oleh paket yang terlalu banyak. Materi ini berdiri di atas Transport Layer: TCP menggunakan ACK, timeout, duplicate ACK, dan window untuk memperkirakan kondisi jaringan, lalu menyesuaikan laju pengiriman.
+
+Fokus belajar utama adalah membedakan flow control dan congestion control, memahami fairness serta resource allocation, menguasai algoritma TCP seperti AIMD, Slow Start, Fast Retransmit, dan Fast Recovery, lalu melihat bagaimana router dan QoS membantu aplikasi real-time yang tidak cukup dilayani oleh best-effort Internet.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Konsep Dasar Alokasi Sumber Daya dan Congestion
+    \begin{enumerate}
+        \item \pwajib Bandwidth, buffer, packet contention, queue overflow, dan packet drop
+        \item \pwajib Bottleneck router dan congestion collapse
+        \item \pwajib Flow dan model packet-switched connectionless network
+        \item \ppaham Taksonomi router-centric/host-centric, reservation-based/feedback-based, window-based/rate-based
+    \end{enumerate}
+    \item \pwajib Kriteria Evaluasi
+    \begin{enumerate}
+        \item \pwajib Throughput, delay, dan power
+        \item \pwajib Jain's Fairness Index
+        \item \ppaham Max-min fairness\textsuperscript{\dag}
+    \end{enumerate}
+    \item \pwajib Disiplin Antrean Router
+    \begin{enumerate}
+        \item \pwajib Scheduling discipline dan drop policy
+        \item \pwajib FIFO dan tail drop
+        \item \pwajib Fair Queuing dan timestamp finish time
+        \item \ppaham Weighted Fair Queuing
+    \end{enumerate}
+    \item \pwajib TCP Congestion Control
+    \begin{enumerate}
+        \item \pwajib CongestionWindow, AdvertisedWindow, MaxWindow, dan EffectiveWindow
+        \item \pwajib Self-clocking dan loss sebagai sinyal congestion
+        \item \pwajib AIMD: additive increase dan multiplicative decrease
+        \item \pwajib Slow Start dan ssthresh/CongestionThreshold
+        \item \pwajib Fast Retransmit dan Fast Recovery
+        \item \ppaham TCP Tahoe dan TCP Reno
+    \end{enumerate}
+    \item \pwajib Congestion Avoidance Lanjutan
+    \begin{enumerate}
+        \item \ppaham DECbit
+        \item \pwajib RED: AvgLen, threshold, dan drop probability
+        \item \ppaham TCP Vegas
+        \item \ppaham ECN\textsuperscript{\dag}
+    \end{enumerate}
+    \item \pwajib Quality of Service
+    \begin{enumerate}
+        \item \pwajib Application requirements: elastic, real-time, tolerant, intolerant, adaptive
+        \item \pwajib IntServ/RSVP: Flowspec, TSpec, RSpec, token bucket, admission control, PATH/RESV, soft state
+        \item \pwajib DiffServ: PHB, EF, AF, Weighted RED/RIO
+        \item \ppaham Equation-based congestion control
+        \item \ppaham Leaky bucket\textsuperscript{\dag}
+    \end{enumerate}
+    \item \pwajib Relasi Lintas Materi
+    \begin{enumerate}
+        \item \pwajib Flow control vs congestion control
+        \item \pwajib Transport Layer dan TCP
+        \item \ppaham Application Layer, UDP multimedia, QoS
+        \item \pwajib Wireless loss vs congestion loss
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Konsep Dasar Alokasi Sumber Daya dan Congestion}
+\begin{jawab}[Inti Konsep.]
+Congestion terjadi ketika terlalu banyak paket bersaing memakai sumber daya jaringan yang terbatas, terutama bandwidth link dan buffer router. Konsep ini penting karena tanpa kontrol, packet drop memicu retransmission yang justru dapat membuat jaringan mengalami congestion collapse.
+\end{jawab}
+
+Motivasi utama congestion control adalah sifat jaringan packet-switched yang digunakan bersama oleh banyak flow. Setiap host mungkin merasa link lokalnya masih mampu mengirim cepat, tetapi paket dari banyak host dapat bertemu di satu router yang sama dan berebut link keluaran yang lebih lambat. Titik semacam ini disebut **bottleneck router**, yaitu router atau link yang menjadi pembatas kapasitas jalur.
+
+Secara formal, **resource allocation** adalah proses pembagian sumber daya jaringan kepada permintaan aplikasi yang saling bersaing. Sumber daya utama adalah **bandwidth**, yaitu laju transmisi link, dan **buffer**, yaitu memori antrean pada router/switch. **Congestion** adalah keadaan ketika laju kedatangan paket ke suatu router melebihi laju layanan keluarannya sehingga antrean tumbuh, buffer penuh, lalu paket harus dibuang.
+
+Mekanisme dasar terjadinya congestion:
+\begin{enumerate}
+    \item Banyak host mengirim paket ke jaringan packet-switched.
+    \item Paket dari beberapa flow bertemu di router yang memiliki link keluaran sama.
+    \item Jika laju kedatangan lebih tinggi daripada laju transmisi, router memasukkan paket ke buffer.
+    \item Jika buffer penuh, terjadi **queue overflow**.
+    \item Router melakukan **packet drop**.
+    \item Host TCP mendeteksi loss melalui timeout atau duplicate ACK, lalu menurunkan laju; jika tidak ada kontrol, retransmission dapat memperparah congestion.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Istilah} & \textbf{Definisi atau Peran} \\
+\hline
+Bandwidth & Kapasitas laju data pada link jaringan. \\
+\hline
+Buffer & Memori router/switch untuk menampung paket yang menunggu dikirim. \\
+\hline
+Flow & Rangkaian paket antara pasangan sumber-tujuan, dapat dipandang host-to-host atau process-to-process. \\
+\hline
+Packet contention & Persaingan banyak paket untuk link keluaran yang sama. \\
+\hline
+Queue overflow & Kondisi saat buffer router penuh. \\
+\hline
+Bottleneck router & Router atau link yang menjadi titik penyempitan utama jalur. \\
+\hline
+Congestion collapse & Kondisi ketika throughput efektif jatuh drastis karena loss dan retransmission saling memperparah. \\
+\hline
+\end{tabularx}
+\caption{Istilah dasar congestion dan resource allocation}
+\label{tab:congestion-basic-terms}
+\end{table}
+
+Pendekatan congestion control dapat diklasifikasikan menjadi beberapa dimensi. **Router-centric** berarti router aktif menjadwalkan, membuang, atau menandai paket. **Host-centric** berarti end host menyesuaikan laju dari sinyal yang diamati. **Reservation-based** meminta kapasitas sebelum mengirim, sedangkan **feedback-based** mengirim dulu lalu menyesuaikan dari sinyal eksplisit atau implisit. **Window-based** membatasi data in flight, sedangkan **rate-based** membatasi laju bit per detik.
+
+Konsep ini menjadi dasar semua subtopik berikut. Queuing discipline mengatur router saat congestion mulai muncul; TCP congestion control mengatur host; QoS mencoba memberi jaminan layanan untuk flow tertentu.
+
+\subsubsection{Kriteria Evaluasi}
+\begin{jawab}[Inti Konsep.]
+Kriteria evaluasi congestion control mengukur apakah alokasi sumber daya efektif dan adil. Efektivitas menyeimbangkan throughput tinggi dan delay rendah, sedangkan fairness memastikan flow yang bersaing tidak saling memonopoli bandwidth.
+\end{jawab}
+
+Congestion control tidak cukup hanya membuat jaringan tidak macet. Jika algoritma terlalu konservatif, throughput rendah. Jika terlalu agresif, delay antrean naik dan packet drop meningkat. Karena itu, sumber memakai dua sudut pandang: **effective resource allocation** dan **fair resource allocation**.
+
+Metrik efektivitas yang disebut sumber adalah **power**, yaitu keseimbangan antara throughput dan delay. Bentuk umum:
+\[
+    \text{Power} = \frac{\text{Throughput}^{\alpha}}{\text{Delay}}, \qquad 0 < \alpha \leq 1
+\]
+Jika $\alpha=1$, bentuknya menjadi throughput dibagi delay. Throughput terlalu tinggi dengan delay sangat besar tidak ideal; delay rendah dengan throughput hampir nol juga tidak ideal.
+
+Fairness diukur dengan **Jain's Fairness Index**:
+\[
+    f(x_1,x_2,\ldots,x_n)
+    =
+    \frac{\left(\sum_{i=1}^{n}x_i\right)^2}
+    {n\sum_{i=1}^{n}x_i^2}
+\]
+dengan:
+\begin{itemize}
+    \item $x_i$: throughput yang diterima flow ke-$i$.
+    \item $n$: jumlah flow.
+\end{itemize}
+Nilainya berada antara 0 dan 1. Nilai 1 berarti alokasi sangat adil, yaitu semua flow mendapat throughput yang sama.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Max-min fairness ditambahkan dari silabus/topik standar congestion control. Prinsipnya: alokasi dianggap max-min fair jika tidak ada flow yang dapat dinaikkan lajunya tanpa menurunkan flow lain yang sudah memiliki laju sama atau lebih kecil. Konsep ini berguna untuk memahami fairness saat flow memiliki bottleneck berbeda dan tidak selalu dapat dibagi rata secara global.
+\end{cmt}
+
+Kriteria evaluasi ini berkaitan langsung dengan Fair Queuing, AIMD, dan QoS. Fair Queuing mencoba menegakkan fairness di router, AIMD mencoba membuat TCP stabil dan adil antar-koneksi, sedangkan QoS sengaja memberi alokasi berbeda ketika aplikasi memiliki kebutuhan layanan berbeda.
+
+\subsubsection{Disiplin Antrean Router}
+\begin{jawab}[Inti Konsep.]
+Disiplin antrean adalah mekanisme router untuk menentukan paket mana yang dikirim berikutnya dan paket mana yang dibuang saat buffer penuh. Konsep ini penting karena router adalah titik tempat contention benar-benar terjadi.
+\end{jawab}
+
+Motivasi queuing discipline adalah buffer router terbatas. Jika router hanya memakai antrean sederhana, flow agresif dapat memonopoli buffer dan bandwidth. Router perlu **scheduling discipline** untuk memilih urutan transmisi dan **drop policy** untuk memilih paket yang dibuang ketika buffer penuh.
+
+Jenis utama yang perlu dipahami:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Disiplin} & \textbf{Definisi atau Peran} \\
+\hline
+FIFO & First-In First-Out; paket pertama datang dikirim pertama. \\
+\hline
+Tail drop & Paket baru dibuang jika tiba saat buffer sudah penuh. \\
+\hline
+Priority Queuing & Paket dibagi ke kelas prioritas; antrean prioritas tinggi dilayani lebih dahulu. \\
+\hline
+Fair Queuing & Router membuat antrean per-flow agar flow agresif tidak mendominasi flow lain. \\
+\hline
+Weighted Fair Queuing & Fair Queuing dengan bobot sehingga flow/kelas tertentu mendapat proporsi bandwidth lebih besar. \\
+\hline
+\end{tabularx}
+\caption{Jenis disiplin antrean router}
+\label{tab:queuing-disciplines}
+\end{table}
+
+Fair Queuing idealnya melakukan **bit-by-bit round-robin**, yaitu setiap flow dilayani satu bit bergiliran. Karena router nyata tidak dapat menginterupsi paket di tengah transmisi, FQ mensimulasikan waktu selesai teoritis setiap paket:
+\[
+    F_i = \max(F_{i-1}, A_i) + P_i
+\]
+dengan:
+\begin{itemize}
+    \item $F_i$: finish time teoritis paket ke-$i$ pada flow tersebut.
+    \item $F_{i-1}$: finish time paket sebelumnya pada flow yang sama.
+    \item $A_i$: arrival time paket ke-$i$.
+    \item $P_i$: panjang paket ke-$i$.
+\end{itemize}
+Router lalu memilih paket dengan $F_i$ terkecil untuk dikirim berikutnya.
+
+Weighted Fair Queuing memberi bobot pada flow. Jika suatu kelas diberi bobot lebih besar, ia dapat memperoleh proporsi bandwidth yang lebih besar. Ini menjadi dasar teknis untuk QoS, khususnya layanan premium seperti Expedited Forwarding.
+
+Queuing discipline menghubungkan router-centric control dengan TCP. TCP end-host tetap penting, tetapi router dapat mencegah flow UDP atau flow tidak patuh mengambil seluruh kapasitas.
+
+\subsubsection{TCP Congestion Control}
+\begin{jawab}[Inti Konsep.]
+TCP Congestion Control membatasi jumlah data yang boleh berada di jaringan dengan CongestionWindow. Algoritma seperti AIMD, Slow Start, Fast Retransmit, dan Fast Recovery membuat TCP dapat memanfaatkan bandwidth tanpa terus-menerus menyebabkan congestion collapse.
+\end{jawab}
+
+Sebelum mekanisme ini diperkenalkan, host TCP mengirim secepat AdvertisedWindow penerima mengizinkan. Jika router bottleneck membuang paket, host melakukan retransmission, lalu beban jaringan makin berat. TCP Congestion Control menambahkan batas dari sisi jaringan: **CongestionWindow (cwnd)**.
+
+Batas aktual pengiriman TCP:
+\[
+    \text{MaxWindow} =
+    \min(\text{CongestionWindow}, \text{AdvertisedWindow})
+\]
+\[
+    \text{EffectiveWindow} =
+    \text{MaxWindow} - (\text{LastByteSent}-\text{LastByteAcked})
+\]
+AdvertisedWindow melindungi receiver, sedangkan CongestionWindow melindungi jaringan.
+
+Prinsip pentingnya adalah **self-clocking**. ACK yang kembali ke sender dianggap sebagai tanda bahwa sebagian data sudah keluar dari jaringan, sehingga sender boleh memasukkan data baru. TCP juga menganggap packet loss sebagai sinyal congestion karena pada jaringan kabel, loss lebih sering berasal dari queue overflow daripada bit error.
+
+Mekanisme utama:
+\begin{enumerate}
+    \item **Multiplicative Decrease**: saat loss/timeout, cwnd dipotong, umumnya menjadi setengah, tetapi tidak di bawah 1 MSS.
+    \item **Additive Increase**: saat ACK terus sukses, cwnd dinaikkan perlahan, kira-kira 1 MSS per RTT.
+    \item **Slow Start**: koneksi baru mulai dari cwnd kecil lalu tumbuh eksponensial, menggandakan cwnd tiap RTT sampai mencapai ssthresh.
+    \item **Fast Retransmit**: tiga duplicate ACK menjadi sinyal kuat paket hilang, sehingga sender retransmit tanpa menunggu timeout.
+    \item **Fast Recovery**: setelah Fast Retransmit, cwnd tidak dijatuhkan ke 1 MSS, tetapi dipotong sebagian dan lanjut tumbuh linier.
+\end{enumerate}
+
+Kenaikan additive per ACK:
+\[
+    \text{Increment}
+    =
+    \text{MSS}\times\frac{\text{MSS}}{\text{CongestionWindow}}
+\]
+\[
+    \text{CongestionWindow}
+    \leftarrow
+    \text{CongestionWindow}+\text{Increment}
+\]
+
+Pseudocode kenaikan cwnd dari sumber:
+\begin{lstlisting}[caption={Pseudocode kenaikan CongestionWindow}, label={lst:cwnd-increase}]
+cw = state.CongestionWindow
+incr = state.maxseg        # MSS
+
+if cw > state.CongestionThreshold:
+    incr = incr * incr / cw
+
+state.CongestionWindow = min(cw + incr, TCP_MAXWIN)
+\end{lstlisting}
+
+Varian historis:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Varian} & \textbf{Perilaku Penting} \\
+\hline
+TCP Tahoe & Menggunakan Slow Start, AIMD, Fast Retransmit; saat loss, cwnd kembali ke 1 MSS. \\
+\hline
+TCP Reno & Menambahkan Fast Recovery sehingga setelah tiga duplicate ACK cwnd tidak jatuh penuh ke 1 MSS. \\
+\hline
+\end{tabularx}
+\caption{Perbandingan TCP Tahoe dan TCP Reno}
+\label{tab:tahoe-reno}
+\end{table}
+
+TCP congestion control berkaitan langsung dengan fairness. AIMD menghasilkan pola kenaikan linier dan penurunan multiplikatif yang secara teoritis mendorong flow TCP yang berbagi bottleneck menuju pembagian kapasitas yang stabil.
+
+\subsubsection{Congestion Avoidance Lanjutan}
+\begin{jawab}[Inti Konsep.]
+Congestion avoidance mencoba memberi sinyal sebelum router benar-benar penuh dan mulai membuang banyak paket. Konsep ini penting karena TCP klasik sering bereaksi setelah loss terjadi, padahal loss berarti jaringan sudah melewati titik sehatnya.
+\end{jawab}
+
+Motivasi congestion avoidance adalah TCP Reno/Tahoe bersifat reaktif: cwnd dinaikkan sampai jaringan memberi sinyal loss. Alternatif lanjutan mencoba mendeteksi antrean yang mulai tumbuh dan memberi sinyal dini.
+
+**DECbit** adalah pendekatan eksplisit. Router menghitung rata-rata panjang antrean. Jika rata-rata antrean melewati ambang, router menandai congestion bit pada header paket. Host melihat persentase paket bertanda dalam satu window: jika kurang dari 50 persen, window dinaikkan; jika 50 persen atau lebih, window dikalikan 0.875.
+
+**Random Early Detection (RED)** adalah pendekatan router-centric yang sengaja membuang sebagian paket sebelum buffer penuh. Router menghitung rata-rata antrean:
+\[
+    \text{AvgLen} =
+    (1-\text{Weight})\times \text{AvgLen}
+    + \text{Weight}\times \text{SampleLen}
+\]
+Jika $\text{AvgLen}\leq \text{MinThreshold}$, paket diterima. Jika $\text{AvgLen}\geq \text{MaxThreshold}$, paket dibuang. Jika berada di antara keduanya, paket dibuang dengan probabilitas:
+\[
+    \text{TempP} =
+    \text{MaxP}
+    \times
+    \frac{\text{AvgLen}-\text{MinThreshold}}
+    {\text{MaxThreshold}-\text{MinThreshold}}
+\]
+\[
+    P =
+    \frac{\text{TempP}}{1-\text{count}\times\text{TempP}}
+\]
+dengan $\text{count}$ adalah jumlah paket yang lolos sejak drop acak terakhir.
+
+**TCP Vegas** adalah pendekatan source-based. Host mengamati RTT, membandingkan laju yang diharapkan dengan laju aktual:
+\[
+    \text{ExpectedRate} =
+    \frac{\text{CongestionWindow}}{\text{BaseRTT}}
+\]
+\[
+    \text{ActualRate} =
+    \frac{\text{DataSent}}{\text{SampleRTT}}
+\]
+\[
+    \text{Diff} = \text{ExpectedRate}-\text{ActualRate}
+\]
+Jika Diff kecil di bawah $\alpha$, window dinaikkan. Jika Diff besar di atas $\beta$, window diturunkan. Intuisinya: kenaikan RTT menunjukkan antrean mulai terbentuk.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Explicit Congestion Notification (ECN) ditambahkan dari RFC 3168 sebagai mekanisme eksplisit modern. ECN memungkinkan router menandai paket sebagai mengalami congestion tanpa harus membuangnya, selama endpoint mendukung ECN. Ini memperhalus ide seperti DECbit: sinyal congestion dapat dikirim melalui marking, bukan hanya packet loss.
+\end{cmt}
+
+Congestion avoidance menghubungkan router dan host. RED dan ECN memberi sinyal dari jaringan; Vegas mencoba menyimpulkan sinyal dari RTT; TCP Reno/Tahoe bereaksi pada loss.
+
+\subsubsection{Quality of Service}
+\begin{jawab}[Inti Konsep.]
+Quality of Service (QoS) adalah kemampuan jaringan memberi tingkat layanan berbeda untuk flow atau kelas trafik tertentu. QoS penting karena aplikasi real-time tidak cukup hanya diberi layanan best-effort yang adil rata; mereka membutuhkan batas delay, jitter, loss, atau bandwidth.
+\end{jawab}
+
+Motivasi QoS berasal dari kebutuhan aplikasi. Transfer file adalah **elastic application**: makin banyak bandwidth makin baik, tetapi delay tidak harus ketat. VoIP, video conference, dan kontrol real-time membutuhkan **timeliness**. Paket yang datang terlambat pada audio/video sering tidak berguna walaupun akhirnya tiba.
+
+Klasifikasi kebutuhan aplikasi:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|}
+\hline
+\textbf{Kelas Aplikasi} & \textbf{Makna} \\
+\hline
+Elastic & Dapat menyesuaikan diri dengan bandwidth yang tersedia, misalnya file transfer. \\
+\hline
+Real-time & Sensitif terhadap waktu kedatangan paket. \\
+\hline
+Tolerant & Masih berfungsi meskipun ada loss atau delay terbatas. \\
+\hline
+Intolerant & Membutuhkan batas layanan ketat; loss/delay besar tidak dapat diterima. \\
+\hline
+Adaptive & Dapat menyesuaikan rate atau delay playback sesuai kondisi jaringan. \\
+\hline
+\end{tabularx}
+\caption{Kebutuhan aplikasi untuk QoS}
+\label{tab:qos-application-requirements}
+\end{table}
+
+**Integrated Services (IntServ)** memberi jaminan fine-grained per-flow. Aplikasi mengirim **Flowspec** yang terdiri dari **TSpec** dan **RSpec**. TSpec menjelaskan karakteristik trafik, sedangkan RSpec menjelaskan layanan yang diminta. Router menjalankan **admission control** untuk menentukan apakah flow baru dapat diterima tanpa merusak jaminan flow lama.
+
+TSpec dapat dinyatakan dengan **token bucket**:
+\begin{itemize}
+    \item $r$: token rate, jumlah token yang masuk per detik.
+    \item $B$: bucket depth, jumlah token maksimum yang dapat ditabung.
+\end{itemize}
+Mengirim 1 byte menghabiskan 1 token. Dalam jangka panjang, laju rata-rata tidak melebihi $r$, tetapi burst sementara masih bisa dilakukan sampai batas $B$.
+
+**RSVP** melakukan signaling reservasi. Pengirim mengirim PATH ke penerima; penerima mengirim RESV balik melalui router di jalur tersebut. State reservasi bersifat **soft state**, artinya akan hilang jika tidak diperbarui berkala.
+
+**Differentiated Services (DiffServ)** memberi layanan coarse-grained berbasis kelas. Router tidak menyimpan state per-flow; paket diberi markah kelas, lalu router menerapkan **Per-Hop Behavior (PHB)**. **Expedited Forwarding (EF)** ditujukan untuk layanan delay rendah seperti voice. **Assured Forwarding (AF)** memberi probabilitas perlakuan lebih baik dan sering memakai Weighted RED/RIO untuk membedakan paket in-profile dan out-of-profile.
+
+**Equation-based congestion control** memodelkan laju pengiriman agar aplikasi UDP multimedia tetap TCP-friendly:
+\[
+    \text{Rate} \propto \frac{1}{\text{RTT}\sqrt{\rho}}
+\]
+dengan $\rho$ adalah probabilitas packet loss. Intuisinya: jika RTT atau loss naik, rate harus turun.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Leaky bucket ditambahkan dari topik standar congestion control dan traffic shaping. Berbeda dari token bucket yang mengizinkan burst selama token tersedia, leaky bucket mengeluarkan paket pada laju relatif tetap sehingga trafik menjadi lebih halus. Konsep ini berguna untuk memahami rate-based shaping, tetapi pada sumber utama QoS lebih banyak ditekankan melalui token bucket.
+\end{cmt}
+
+QoS berkaitan dengan Application Layer karena pilihan layanan bergantung pada kebutuhan aplikasi. QoS juga berkaitan dengan UDP/RTP karena aplikasi real-time sering memilih UDP untuk menghindari delay retransmission TCP, tetapi tetap membutuhkan kontrol agar tidak merusak jaringan.
+
+\subsubsection{Relasi Lintas Materi}
+\begin{jawab}[Inti Konsep.]
+Congestion Control menghubungkan Transport Layer, router, aplikasi real-time, wireless, dan security. Relasi ini penting karena packet loss tidak selalu berarti hal yang sama di semua media, dan tidak semua aplikasi dapat dilayani dengan strategi TCP best-effort.
+\end{jawab}
+
+Dengan **Transport Layer**, congestion control adalah pelengkap flow control. Flow control membatasi sender berdasarkan kapasitas receiver melalui AdvertisedWindow. Congestion control membatasi sender berdasarkan kapasitas jaringan melalui CongestionWindow.
+
+Dengan **Application Layer**, congestion control menentukan apakah aplikasi harus memakai TCP, UDP dengan RTP, atau layanan QoS. Aplikasi real-time sering menghindari retransmission TCP, tetapi tetap memerlukan rate control atau QoS agar trafiknya tidak merusak jaringan.
+
+Dengan **Wireless Network**, loss dapat berasal dari bit error, path loss, atau interference. TCP yang menganggap loss sebagai congestion dapat salah menurunkan cwnd, sehingga throughput turun walaupun router tidak macet. ECN atau sinyal eksplisit dapat membantu membedakan congestion router dari loss non-congestion.
+
+Dengan **Network Security**, serangan availability seperti DDoS dan worm dapat membanjiri bandwidth serta buffer, menimbulkan congestion buatan. Karena itu, congestion control tidak menggantikan firewall atau filtering, tetapi dampaknya terasa langsung pada throughput dan delay jaringan.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Jain's Fairness Index}
+\begin{jawab}[Makna Rumus.]
+Jain's Fairness Index mengukur seberapa merata throughput antar-flow. Rumus ini digunakan untuk mengevaluasi apakah sebuah mekanisme congestion control atau queuing memberi pembagian bandwidth yang adil.
+\end{jawab}
+
+\begin{equation}
+    f(x_1,x_2,\ldots,x_n)
+    =
+    \frac{\left(\sum_{i=1}^{n}x_i\right)^2}
+    {n\sum_{i=1}^{n}x_i^2}
+    \label{eq:jain-fairness}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $x_i$: throughput flow ke-$i$.
+    \item $n$: jumlah flow yang dibandingkan.
+\end{itemize}
+
+\subsubsection{Fair Queuing Finish Time}
+\begin{jawab}[Makna Rumus.]
+Finish time Fair Queuing mensimulasikan bit-by-bit round-robin tanpa harus memotong paket menjadi bit fisik yang diselingi. Router mengirim paket dengan finish time teoritis terkecil.
+\end{jawab}
+
+\begin{equation}
+    F_i = \max(F_{i-1}, A_i) + P_i
+    \label{eq:fq-finish-time}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $F_i$: finish time paket ke-$i$.
+    \item $F_{i-1}$: finish time paket sebelumnya pada flow yang sama.
+    \item $A_i$: arrival time paket ke-$i$.
+    \item $P_i$: panjang paket ke-$i$.
+\end{itemize}
+
+\subsubsection{AIMD dan Slow Start}
+\begin{jawab}[Tujuan Algoritma.]
+AIMD menjaga TCP tetap stabil dan adil, sedangkan Slow Start mempercepat pencarian kapasitas awal. Keduanya mengatur CongestionWindow berdasarkan ACK dan loss.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode TCP congestion control ringkas}, label={lst:tcp-congestion}]
+on new_connection:
+    cwnd = 1 * MSS
+    ssthresh = large_value
+
+on ACK:
+    if cwnd < ssthresh:
+        # Slow Start: exponential growth
+        cwnd = cwnd + MSS
+    else:
+        # Congestion Avoidance: additive increase
+        cwnd = cwnd + MSS * (MSS / cwnd)
+
+on timeout:
+    ssthresh = cwnd / 2
+    cwnd = 1 * MSS
+
+on three_duplicate_ACKs:
+    retransmit_missing_segment()
+    ssthresh = cwnd / 2
+    cwnd = ssthresh      # Reno-style fast recovery intuition
+\end{lstlisting}
+
+\subsubsection{RED Average Queue Length dan Drop Probability}
+\begin{jawab}[Makna Rumus.]
+RED memakai rata-rata antrean untuk memberi sinyal dini sebelum buffer penuh. Probabilitas drop naik saat AvgLen bergerak dari MinThreshold menuju MaxThreshold.
+\end{jawab}
+
+\begin{equation}
+    \text{AvgLen}
+    =
+    (1-\text{Weight})\text{AvgLen}
+    + \text{Weight}\text{SampleLen}
+    \label{eq:red-avglen}
+\end{equation}
+
+\begin{equation}
+    \text{TempP}
+    =
+    \text{MaxP}
+    \frac{\text{AvgLen}-\text{MinThreshold}}
+    {\text{MaxThreshold}-\text{MinThreshold}}
+    \label{eq:red-tempp}
+\end{equation}
+
+\begin{equation}
+    P =
+    \frac{\text{TempP}}{1-\text{count}\text{TempP}}
+    \label{eq:red-p}
+\end{equation}
+
+\subsubsection{Token Bucket}
+\begin{jawab}[Makna Rumus.]
+Token bucket membatasi laju rata-rata trafik tetapi tetap mengizinkan burst sementara. Rumus ini digunakan dalam TSpec pada IntServ untuk menyatakan karakteristik trafik flow.
+\end{jawab}
+
+\begin{equation}
+    \text{BytesSent}(T) \leq rT + B
+    \label{eq:token-bucket}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $r$: token rate atau laju rata-rata jangka panjang.
+    \item $B$: bucket depth atau burst maksimum.
+    \item $T$: interval waktu observasi.
+\end{itemize}

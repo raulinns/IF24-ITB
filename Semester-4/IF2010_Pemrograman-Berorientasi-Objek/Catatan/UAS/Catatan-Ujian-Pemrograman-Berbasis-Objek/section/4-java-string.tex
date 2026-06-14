@@ -1,0 +1,277 @@
+\section{Java String}
+
+Java String membahas cara Java merepresentasikan teks melalui class \texttt{String} dan class pendukung seperti \texttt{StringBuilder}, \texttt{StringBuffer}, \texttt{Character}, dan API regular expression. Materi ini penting karena \texttt{String} terlihat sederhana, tetapi memiliki banyak detail yang sering menjadi sumber bug: immutability, string pool, perbedaan \texttt{==} dan \texttt{equals}, biaya concatenation, encoding Unicode, dan operasi parsing.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini disusun menggunakan pengetahuan umum Java karena query NotebookLM sebelumnya tidak mengembalikan materi Java dasar yang relevan. Pembahasan diarahkan pada konsep yang lazim muncul dalam evaluasi OOP dan pemrograman Java.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Karakteristik \texttt{String} \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item \texttt{String} adalah object immutable.
+        \item Literal string disimpan di string pool.
+        \item \texttt{String} adalah reference type, bukan primitive type.
+    \end{enumerate}
+    \item Perbandingan string \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item \texttt{==} membandingkan reference.
+        \item \texttt{equals} membandingkan isi.
+        \item \texttt{equalsIgnoreCase}, \texttt{compareTo}, dan \texttt{compareToIgnoreCase}.
+    \end{enumerate}
+    \item Operasi dasar \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item \texttt{length}, \texttt{charAt}, \texttt{substring}, \texttt{indexOf}, \texttt{contains}.
+        \item \texttt{trim}, \texttt{strip}, \texttt{toLowerCase}, \texttt{toUpperCase}.
+        \item \texttt{split}, \texttt{join}, \texttt{replace}, \texttt{matches}.
+    \end{enumerate}
+    \item Mutability dan performa
+    \begin{enumerate}
+        \item Concatenation berulang dapat mahal.
+        \item \texttt{StringBuilder} untuk konstruksi string mutable non-thread-safe.
+        \item \texttt{StringBuffer} untuk varian synchronized.
+    \end{enumerate}
+    \item Parsing dan formatting
+    \begin{enumerate}
+        \item Konversi string ke number dan sebaliknya.
+        \item \texttt{String.format} dan formatted string.
+        \item Risiko \texttt{NumberFormatException}.
+    \end{enumerate}
+    \item Unicode dan character
+    \begin{enumerate}
+        \item \texttt{char} adalah unit UTF-16, bukan selalu satu karakter manusia.
+        \item Code point dapat membutuhkan surrogate pair.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+\texttt{String} penting karena hampir semua program memproses teks: input pengguna, file, log, query, pesan error, konfigurasi, dan data dari API. Memahami immutability dan comparison adalah syarat untuk menulis Java yang benar.
+\end{jawab}
+
+Kesalahan paling umum adalah memakai \texttt{==} untuk membandingkan isi string. Kadang hasilnya tampak benar karena string literal berada di pool, tetapi program menjadi salah saat string berasal dari input, file, atau hasil konstruksi runtime. Kesalahan lain adalah membuat string panjang dengan concatenation dalam loop, padahal setiap perubahan menghasilkan object baru karena \texttt{String} immutable.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+String berkaitan dengan Exception melalui parsing yang dapat gagal, dengan Collection karena string sering disimpan dan diproses dalam list/map, dengan Stream API untuk transformasi teks, dan dengan Reflection karena nama class/method sering direpresentasikan sebagai string. Immutability \texttt{String} juga menjadi contoh penting untuk desain object yang aman.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Immutability String}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{String} bersifat immutable: setelah object string dibuat, isi teksnya tidak dapat diubah. Operasi seperti \texttt{replace} atau \texttt{toUpperCase} menghasilkan string baru.
+\end{jawab}
+
+Immutability membuat \texttt{String} aman dibagikan, cocok sebagai key \texttt{Map}, dan aman digunakan di string pool. Namun, immutability juga berarti operasi yang tampak mengubah string sebenarnya membuat object baru.
+
+\begin{lstlisting}[language=Java, caption={Operasi String menghasilkan object baru}, label={lst:string-immutable}]
+String name = "java";
+String upper = name.toUpperCase();
+
+System.out.println(name);  // java
+System.out.println(upper); // JAVA
+\end{lstlisting}
+
+\subsubsection{String Pool dan Perbandingan}
+
+\begin{jawab}[Inti Konsep.]
+String literal disimpan di string pool sehingga literal yang sama dapat berbagi object. Namun, perbandingan isi string tetap harus memakai \texttt{equals}, bukan \texttt{==}.
+\end{jawab}
+
+\texttt{==} membandingkan apakah dua reference menunjuk object yang sama. \texttt{equals} membandingkan isi teks. String pool membuat beberapa kasus \texttt{==} tampak berhasil, tetapi itu bukan aturan pembandingan isi.
+
+\begin{lstlisting}[language=Java, caption={Perbedaan == dan equals pada String}, label={lst:string-equals}]
+String a = "ITB";
+String b = "ITB";
+String c = new String("ITB");
+
+System.out.println(a == b);      // true, literal dari pool.
+System.out.println(a == c);      // false, object berbeda.
+System.out.println(a.equals(c)); // true, isi sama.
+\end{lstlisting}
+
+Untuk menghindari \texttt{NullPointerException}, jika nilai pembanding berupa konstanta, letakkan konstanta di kiri:
+
+\begin{lstlisting}[language=Java, caption={Null-safe equals dengan konstanta}, label={lst:null-safe-string-equals}]
+String role = getRole();
+
+if ("ADMIN".equals(role)) {
+    System.out.println("Akses admin");
+}
+\end{lstlisting}
+
+\subsubsection{Operasi String yang Sering Dipakai}
+
+\begin{jawab}[Inti Konsep.]
+Operasi string dasar digunakan untuk memeriksa, mengambil, membersihkan, memecah, mengganti, dan menggabungkan teks. Setiap method harus dipahami dari input, output, dan apakah ia memakai regex.
+\end{jawab}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Method} & \textbf{Makna} \\
+\hline
+\texttt{length()} & Mengembalikan jumlah unit \texttt{char} UTF-16. \\
+\hline
+\texttt{charAt(i)} & Mengambil karakter pada indeks ke-\texttt{i}. \\
+\hline
+\texttt{substring(a,b)} & Mengambil bagian string dari indeks \texttt{a} inklusif sampai \texttt{b} eksklusif. \\
+\hline
+\texttt{contains(s)} & Mengecek apakah substring ada. \\
+\hline
+\texttt{indexOf(s)} & Mengembalikan indeks pertama substring atau -1 jika tidak ada. \\
+\hline
+\texttt{strip()} & Menghapus whitespace Unicode di awal dan akhir. \\
+\hline
+\texttt{split(regex)} & Memecah string berdasarkan regular expression. \\
+\hline
+\texttt{replace(a,b)} & Mengganti literal character sequence. \\
+\hline
+\end{tabularx}
+\caption{Operasi penting pada String}
+\label{tab:operasi-string}
+\end{table}
+
+\begin{lstlisting}[language=Java, caption={Contoh operasi dasar String}, label={lst:string-basic-ops}]
+String raw = "  IF2010,PBO,Java  ";
+String cleaned = raw.strip();
+String[] parts = cleaned.split(",");
+
+System.out.println(parts[0]); // IF2010
+System.out.println(cleaned.contains("Java")); // true
+\end{lstlisting}
+
+\subsubsection{StringBuilder dan StringBuffer}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{StringBuilder} menyediakan buffer teks mutable untuk membangun string secara efisien. Gunakan ketika string dibentuk bertahap, terutama dalam loop.
+\end{jawab}
+
+Karena \texttt{String} immutable, concatenation berulang dapat menghasilkan banyak object sementara. Compiler dapat mengoptimalkan concatenation sederhana, tetapi untuk loop yang membangun teks bertahap, \texttt{StringBuilder} lebih jelas dan efisien.
+
+\begin{lstlisting}[language=Java, caption={Membangun string dengan StringBuilder}, label={lst:stringbuilder}]
+List<String> names = List.of("Ayu", "Budi", "Citra");
+
+StringBuilder builder = new StringBuilder();
+for (String name : names) {
+    builder.append("- ").append(name).append(System.lineSeparator());
+}
+
+String result = builder.toString();
+\end{lstlisting}
+
+\texttt{StringBuffer} mirip \texttt{StringBuilder}, tetapi method-nya synchronized. Dalam kode modern, \texttt{StringBuilder} lebih sering dipakai untuk konteks single-thread karena lebih ringan.
+
+\subsubsection{Parsing, Formatting, dan Regex}
+
+\begin{jawab}[Inti Konsep.]
+Parsing mengubah string menjadi tipe lain; formatting mengubah data menjadi string. Keduanya harus menangani kemungkinan format input tidak valid.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Parsing dan formatting String}, label={lst:string-parsing-formatting}]
+String input = "13524044";
+int nim = Integer.parseInt(input);
+
+String message = String.format("NIM: %08d", nim);
+System.out.println(message);
+\end{lstlisting}
+
+Jika parsing menerima teks yang bukan integer valid, Java melempar exception format angka. Karena itu, parsing input eksternal harus divalidasi atau ditangani dengan exception.
+
+Method \texttt{split} dan \texttt{matches} memakai regular expression. Ini penting karena karakter seperti titik \texttt{.} bermakna khusus pada regex. Untuk memecah berdasarkan titik literal, gunakan \texttt{"\textbackslash\textbackslash."}.
+
+\subsubsection{Unicode dan \texttt{char}}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{char} Java adalah unit UTF-16, bukan selalu satu karakter manusia. Beberapa karakter Unicode membutuhkan dua \texttt{char} yang disebut surrogate pair.
+\end{jawab}
+
+Untuk banyak kebutuhan ujian dasar, \texttt{length} dan \texttt{charAt} cukup. Namun, secara konseptual penting memahami bahwa \texttt{length()} mengembalikan jumlah unit UTF-16, bukan jumlah grapheme yang dilihat manusia.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+\texttt{String} & Class immutable untuk teks. \\
+\hline
+String pool & Area penyimpanan literal string agar literal yang sama dapat berbagi object. \\
+\hline
+\texttt{equals} & Method untuk membandingkan isi string. \\
+\hline
+\texttt{==} & Operator untuk membandingkan reference, bukan isi object. \\
+\hline
+\texttt{StringBuilder} & Buffer mutable untuk membangun string secara efisien. \\
+\hline
+\texttt{StringBuffer} & Versi synchronized dari \texttt{StringBuilder}. \\
+\hline
+Regex & Pola teks yang dipakai oleh method seperti \texttt{split} dan \texttt{matches}. \\
+\hline
+UTF-16 & Representasi internal \texttt{char} Java. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java String}
+\label{tab:komponen-kunci-java-string}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Memilih Operasi String}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu menentukan kapan memakai \texttt{String}, \texttt{StringBuilder}, \texttt{equals}, parsing, atau regex.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode pemilihan operasi String}, label={lst:string-decision}]
+Input: Kebutuhan pemrosesan teks
+Output: API String yang sesuai
+
+1. Jika membandingkan isi:
+      gunakan equals atau equalsIgnoreCase.
+2. Jika membandingkan urutan leksikografis:
+      gunakan compareTo atau compareToIgnoreCase.
+3. Jika membangun teks dalam loop:
+      gunakan StringBuilder.
+4. Jika memecah teks berdasarkan pola:
+      gunakan split dengan regex yang benar.
+5. Jika mengubah teks ke angka:
+      gunakan parseInt/parseLong/parseDouble dan tangani format invalid.
+6. Jika input dapat null:
+      validasi null sebelum memanggil method.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan immutability \texttt{String}.
+    \item[$\square$] Saya dapat membedakan \texttt{==} dan \texttt{equals}.
+    \item[$\square$] Saya dapat menjelaskan string pool.
+    \item[$\square$] Saya dapat memakai operasi dasar seperti \texttt{substring}, \texttt{indexOf}, \texttt{split}, dan \texttt{replace}.
+    \item[$\square$] Saya dapat memakai \texttt{StringBuilder} untuk concatenation dalam loop.
+    \item[$\square$] Saya dapat menjelaskan risiko parsing dan \texttt{NumberFormatException}.
+    \item[$\square$] Saya memahami bahwa \texttt{char} bukan selalu satu karakter manusia.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Immutability, string pool, \texttt{==} vs \texttt{equals}, operasi dasar, \texttt{StringBuilder}, parsing. \\
+\hline
+\textbf{Cukup Paham Konsep} & Regex pada \texttt{split}, Unicode, \texttt{StringBuffer}, formatting. \\
+\hline
+\textbf{Sudah Dikuasai} & Materi ini termasuk kelompok 1 sampai 10 yang pernah diuji, tetapi tetap rawan kesalahan detail sintaks. \\
+\hline
+\end{tabularx}

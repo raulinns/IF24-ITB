@@ -1,0 +1,328 @@
+\section{Relational Algebra \& Calculus}
+
+Relational Algebra dan Relational Calculus adalah bahasa kueri formal yang menjadi fondasi matematis SQL. Aljabar relasional bersifat prosedural: ia menjelaskan langkah operasi untuk memperoleh hasil. Kalkulus relasional bersifat deklaratif: ia menjelaskan kondisi data yang diinginkan tanpa menentukan langkah eksekusi.
+
+Fokus utama untuk ujian adalah menguasai operator dasar aljabar relasional, memahami komposisi ekspresi, menerjemahkan kebutuhan query ke notasi formal, memahami division untuk query ``untuk semua'', serta memahami hubungan kalkulus dengan SQL subquery seperti \texttt{some}, \texttt{all}, dan \texttt{exists}.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Bahasa kueri relasional formal
+    \begin{enumerate}
+        \item \pwajib Procedural/imperative
+        \item \pwajib Declarative/non-procedural
+        \item \ppaham Functional
+    \end{enumerate}
+    \item \pwajib Relational algebra dasar
+    \begin{enumerate}
+        \item \pwajib Closure property
+        \item \pwajib Basic expression
+        \item \pwajib Selection, projection, union, set difference, Cartesian product, rename
+        \item \pwajib Union compatibility
+    \end{enumerate}
+    \item \pwajib Operator tambahan
+    \begin{enumerate}
+        \item \pwajib Intersection
+        \item \pwajib Theta join, equijoin, natural join
+        \item \pwajib Outer join
+        \item \ppaham Assignment
+        \item \pwajib Division
+    \end{enumerate}
+    \item \pwajib Extended relational algebra
+    \begin{enumerate}
+        \item \pwajib Generalized projection
+        \item \pwajib Aggregation dan grouping
+        \item \pwajib Null values
+        \item \ppaham Multiset relational algebra
+    \end{enumerate}
+    \item \pwajib Relational calculus
+    \begin{enumerate}
+        \item \pwajib Tuple Relational Calculus (TRC)
+        \item \pwajib Domain Relational Calculus (DRC)
+        \item \pwajib Quantifier \(\exists\) dan \(\forall\)
+        \item \pwajib Safety/domain independence
+    \end{enumerate}
+    \item \pwajib Hubungan dengan SQL
+    \begin{enumerate}
+        \item \pwajib \texttt{some}, \texttt{all}, dan \texttt{exists}
+        \item \pwajib Relational completeness
+        \item \pwajib Algebra sebagai model evaluasi dan calculus sebagai model deklaratif
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Bahasa Kueri Relasional Formal}
+
+\begin{jawab}[Inti Konsep.]
+Bahasa kueri relasional formal adalah bahasa matematis untuk menyatakan query pada relasi. Aljabar relasional menjelaskan bagaimana data dihitung, sedangkan kalkulus relasional menjelaskan data apa yang memenuhi kondisi tertentu.
+\end{jawab}
+
+Motivasi bahasa formal adalah memberi dasar teoretis bagi bahasa praktis seperti SQL. Dengan bahasa formal, kita dapat mendefinisikan arti query secara presisi, membuktikan ekuivalensi query, dan memahami optimasi query.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Kategori} & \textbf{Makna} \\
+\hline
+Procedural / imperative & Pengguna menyebut langkah untuk memperoleh data. Contoh: relational algebra. \\
+\hline
+Declarative / non-procedural & Pengguna menyebut kondisi data yang diinginkan. Contoh: tuple dan domain relational calculus. \\
+\hline
+Functional & Query dipandang sebagai fungsi matematis dari input relasi ke output relasi. \\
+\hline
+\end{tabularx}
+\caption{Kategori bahasa kueri formal}
+\label{tab:formal-query-language}
+\end{table}
+
+SQL mengambil gaya deklaratif dari kalkulus, tetapi DBMS mengeksekusinya dengan rencana operasi yang mirip aljabar relasional.
+
+\subsubsection{Relational Algebra Dasar}
+
+\begin{jawab}[Inti Konsep.]
+Relational algebra adalah bahasa prosedural yang memakai operator pada relasi. Setiap operator menerima satu atau dua relasi dan menghasilkan relasi baru, sehingga ekspresi dapat dikomposisi.
+\end{jawab}
+
+\textbf{Closure property} berarti hasil setiap operasi aljabar relasional selalu berupa relasi. Karena output adalah relasi, hasil operasi dapat menjadi input operasi berikutnya.
+
+\textbf{Basic expression} dapat berupa relasi aktual dalam database atau relasi konstan. Dari ekspresi dasar ini, operator membentuk ekspresi yang lebih kompleks.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.16\textwidth}|L{0.18\textwidth}|X|}
+\hline
+\textbf{Operator} & \textbf{Notasi} & \textbf{Makna} \\
+\hline
+Selection & \(\sigma_p(r)\) & Memilih tuple dalam \(r\) yang memenuhi predikat \(p\). \\
+\hline
+Projection & \(\Pi_{A_1,\ldots,A_k}(r)\) & Memilih atribut tertentu dan menghapus duplikasi dalam model set. \\
+\hline
+Union & \(r \cup s\) & Menggabungkan tuple dari \(r\) atau \(s\). Relasi harus union-compatible. \\
+\hline
+Set difference & \(r-s\) & Mengambil tuple yang ada di \(r\) tetapi tidak ada di \(s\). \\
+\hline
+Cartesian product & \(r \times s\) & Menggabungkan setiap tuple \(r\) dengan setiap tuple \(s\). \\
+\hline
+Rename & \(\rho_x(E)\) & Memberi nama baru pada hasil ekspresi \(E\). \\
+\hline
+\end{tabularx}
+\caption{Enam operator dasar relational algebra}
+\label{tab:basic-ra-operators}
+\end{table}
+
+Union compatibility mensyaratkan dua relasi memiliki arity sama dan domain atribut yang bersesuaian kompatibel. Tanpa syarat ini, operasi himpunan seperti union, intersection, dan difference tidak bermakna.
+
+Contoh komposisi:
+\[
+    \Pi_{name}(\sigma_{dept\_name = ``Physics''}(instructor))
+\]
+Ekspresi ini memilih instructor dari departemen Physics, lalu memproyeksikan atribut \texttt{name}.
+
+\subsubsection{Operator Tambahan}
+
+\begin{jawab}[Inti Konsep.]
+Operator tambahan seperti intersection, join, outer join, assignment, dan division tidak selalu menambah kekuatan ekspresif, tetapi membuat query umum jauh lebih ringkas. Operator ini penting karena banyak query nyata lebih mudah ditulis sebagai join atau division daripada kombinasi operator dasar mentah.
+\end{jawab}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.18\textwidth}|L{0.18\textwidth}|X|}
+\hline
+\textbf{Operator} & \textbf{Notasi} & \textbf{Makna} \\
+\hline
+Intersection & \(r \cap s\) & Tuple yang muncul di \(r\) dan \(s\); dapat ditulis \(r-(r-s)\). \\
+\hline
+Theta join & \(r \bowtie_{\theta} s\) & Join dengan predikat \(\theta\); setara \(\sigma_{\theta}(r \times s)\). \\
+\hline
+Equijoin & \(r \bowtie_{A=B} s\) & Theta join dengan predikat kesamaan. \\
+\hline
+Natural join & \(r \bowtie s\) & Join otomatis pada atribut bernama sama dan menghapus kolom ganda. \\
+\hline
+Outer join & \textit{left}, \textit{right}, \textit{full outer join} & Join yang mempertahankan tuple tidak cocok dengan mengisi nilai null. \\
+\hline
+Assignment & \(\leftarrow\) & Menyimpan hasil ekspresi ke variabel sementara. \\
+\hline
+Division & \(r \div s\) & Menjawab query ``untuk semua'', misalnya mahasiswa yang mengambil semua course Biology. \\
+\hline
+\end{tabularx}
+\caption{Operator tambahan relational algebra}
+\label{tab:additional-ra-operators}
+\end{table}
+
+Natural join bersifat komutatif dan asosiatif dalam kondisi atribut yang sesuai:
+\[
+    r \bowtie s = s \bowtie r
+\]
+\[
+    (r \bowtie s) \bowtie t = r \bowtie (s \bowtie t)
+\]
+
+Outer join penting ketika tuple tanpa pasangan tidak boleh hilang. Misalnya left outer join mempertahankan semua tuple relasi kiri, lalu mengisi atribut relasi kanan dengan null jika tidak ada kecocokan.
+
+\subsubsection{Division}
+
+\begin{jawab}[Inti Konsep.]
+Division adalah operator untuk query yang membutuhkan pemenuhan terhadap semua nilai dalam relasi pembagi. Operator ini penting karena banyak pertanyaan database berbentuk ``temukan X yang berhubungan dengan semua Y''.
+\end{jawab}
+
+Definisi formal: diberikan \(r(R)\) dan \(s(S)\) dengan \(S \subseteq R\). Hasil \(r \div s\) adalah relasi terbesar \(t\) dengan skema \(R-S\) sedemikian sehingga:
+\begin{equation}
+    t \times s \subseteq r
+    \label{eq:division-definition}
+\end{equation}
+
+Contoh sumber: cari mahasiswa yang mengambil semua course yang ditawarkan departemen Biology.
+\[
+    r(ID,course\_id)=\Pi_{ID,course\_id}(takes)
+\]
+\[
+    s(course\_id)=\Pi_{course\_id}(\sigma_{dept\_name=``Biology''}(course))
+\]
+Maka \(r \div s\) menghasilkan ID mahasiswa yang mengambil seluruh course Biology.
+
+Dekomposisi division ke operator dasar:
+\begin{align}
+    T_1 &= \Pi_{R-S}(r) \\
+    T_2 &= \Pi_{R-S}((T_1 \times s)-r) \\
+    r \div s &= T_1 - T_2
+\end{align}
+
+Maknanya: \(T_1\) adalah semua kandidat. \(T_1 \times s\) adalah semua pasangan yang seharusnya ada jika kandidat memenuhi semua syarat. Setelah dikurangi \(r\), terlihat pasangan yang gagal. Kandidat gagal dibuang dari \(T_1\).
+
+\subsubsection{Extended Relational Algebra}
+
+\begin{jawab}[Inti Konsep.]
+Extended relational algebra menambahkan operasi praktis seperti generalized projection, aggregation, grouping, null handling, dan multiset semantics. Konsep ini penting karena SQL dunia nyata membutuhkan perhitungan aritmatika, agregasi, dan duplikasi yang tidak seluruhnya nyaman dalam aljabar set murni.
+\end{jawab}
+
+\textbf{Generalized projection} mengizinkan ekspresi aritmatika pada daftar proyeksi:
+\[
+    \Pi_{F_1,F_2,\ldots,F_n}(E)
+\]
+dengan \(F_i\) adalah ekspresi aritmatika. Contoh: \(\Pi_{ID,name,salary/12}(instructor)\) untuk menampilkan gaji bulanan.
+
+\textbf{Aggregation dan grouping} menghitung fungsi statistik seperti \(\mathrm{avg}\), \(\mathrm{min}\), \(\mathrm{max}\), \(\mathrm{sum}\), dan \(\mathrm{count}\). Contoh rata-rata gaji per departemen:
+\[
+    dept\_name\; \mathcal{G}_{avg(salary)}(instructor)
+\]
+
+\textbf{Null values} menyatakan unknown atau nilai tidak eksis. Operasi aritmatika dengan null menghasilkan null. Fungsi agregasi umumnya mengabaikan null, tetapi untuk grouping dan eliminasi duplikasi, dua null dapat diperlakukan sebagai nilai yang sama.
+
+\textbf{Multiset relational algebra} memodelkan SQL yang mempertahankan duplikasi. Aturan umum:
+\begin{itemize}
+    \item Selection mempertahankan jumlah salinan tuple yang lolos.
+    \item Projection menghasilkan tuple untuk setiap tuple input, termasuk duplikasi.
+    \item Cartesian product menghasilkan \(m \times n\) salinan jika tuple kiri memiliki \(m\) salinan dan tuple kanan memiliki \(n\) salinan.
+    \item Union menghasilkan \(m+n\), intersection menghasilkan \(\min(m,n)\), difference menghasilkan \(\max(0,m-n)\).
+\end{itemize}
+
+\subsubsection{Relational Calculus}
+
+\begin{jawab}[Inti Konsep.]
+Relational calculus adalah bahasa kueri deklaratif berbasis logika predikat. TRC memakai variabel tuple, sedangkan DRC memakai variabel domain; keduanya menyatakan kondisi hasil, bukan langkah eksekusi.
+\end{jawab}
+
+Tuple Relational Calculus (TRC) memiliki bentuk:
+\begin{equation}
+    \{t \mid P(t)\}
+    \label{eq:trc}
+\end{equation}
+yang berarti himpunan tuple \(t\) sehingga predikat \(P(t)\) benar.
+
+Contoh:
+\[
+    \{t \mid t \in instructor \land t[salary] > 80000\}
+\]
+
+Domain Relational Calculus (DRC) memiliki bentuk:
+\begin{equation}
+    \{\langle x_1,x_2,\ldots,x_n\rangle \mid P(x_1,x_2,\ldots,x_n)\}
+    \label{eq:drc}
+\end{equation}
+yang berarti hasil dibentuk dari variabel domain individual, bukan tuple utuh.
+
+Contoh:
+\[
+    \{\langle i,n,d,s\rangle \mid \langle i,n,d,s\rangle \in instructor \land s > 80000\}
+\]
+
+Kalkulus memakai quantifier \(\exists\) dan \(\forall\). \(\exists x\) berarti ada setidaknya satu nilai \(x\) yang memenuhi predikat. \(\forall x\) berarti semua nilai \(x\) dalam domain relevan memenuhi predikat.
+
+\subsubsection{Safety, SQL Quantifier, dan Relational Completeness}
+
+\begin{jawab}[Inti Konsep.]
+Ekspresi kalkulus harus aman agar hasilnya terbatas dan dapat dihitung. SQL mengadopsi gagasan quantifier melalui \texttt{some}, \texttt{all}, dan \texttt{exists}; bahasa dikatakan relationally complete jika mampu mengekspresikan semua query kalkulus relasional yang aman.
+\end{jawab}
+
+Safety atau domain independence diperlukan karena kalkulus dapat menulis ekspresi yang menghasilkan relasi tak hingga. Contoh tidak aman:
+\[
+    \{t \mid \neg(t \in r)\}
+\]
+Ekspresi ini berarti semua tuple di semesta yang bukan anggota \(r\), sehingga hasilnya tidak terbatas.
+
+Operator SQL terkait quantifier:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.18\textwidth}|X|}
+\hline
+\textbf{Operator} & \textbf{Makna Logis} \\
+\hline
+\texttt{some} & \(F <comp> some\; r \Leftrightarrow \exists t \in r\) sehingga \(F <comp> t\). \\
+\hline
+\texttt{all} & \(F <comp> all\; r \Leftrightarrow \forall t \in r,\; F <comp> t\). \\
+\hline
+\texttt{exists} & \(\texttt{exists } r \Leftrightarrow r \neq \emptyset\). \\
+\hline
+\end{tabularx}
+\caption{Quantifier kalkulus dalam SQL}
+\label{tab:sql-quantifier}
+\end{table}
+
+Catatan penting dari sumber: \texttt{= some} ekuivalen dengan \texttt{in}, tetapi \texttt{<> some} tidak ekuivalen dengan \texttt{not in}. Sebaliknya, \texttt{<> all} ekuivalen dengan \texttt{not in}.
+
+Relational completeness menyatakan kemampuan bahasa mengekspresikan semua query yang dapat ditulis dalam kalkulus relasional aman. Aljabar relasional, TRC, dan DRC secara teori memiliki kekuatan ekspresif yang setara untuk query relasional aman.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Division}
+
+\begin{jawab}[Tujuan Algoritma.]
+Algoritma division menemukan kandidat yang berhubungan dengan semua nilai dalam relasi pembagi. Ini adalah pola query ``untuk semua''.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode division relational algebra}, label={lst:division-ra}]
+Input: r(R), s(S) with S subset of R
+Output: r_div_s on schema R - S
+
+T1 := project R-S from r
+T2 := project R-S from ((T1 cross s) - r)
+result := T1 - T2
+return result
+\end{lstlisting}
+
+\subsubsection{Selection dan Projection}
+
+\begin{jawab}[Makna Rumus.]
+Selection memilih baris berdasarkan predikat, sedangkan projection memilih kolom tertentu. Keduanya adalah operator paling dasar untuk membentuk query.
+\end{jawab}
+
+\begin{equation}
+    \sigma_p(r)=\{t \mid t \in r \land p(t)\}
+    \label{eq:selection-formula}
+\end{equation}
+
+\begin{equation}
+    \Pi_{A_1,\ldots,A_k}(r)
+    \label{eq:projection-formula}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item \(p\): predikat seleksi.
+    \item \(r\): relasi input.
+    \item \(A_1,\ldots,A_k\): atribut yang dipertahankan.
+\end{itemize}

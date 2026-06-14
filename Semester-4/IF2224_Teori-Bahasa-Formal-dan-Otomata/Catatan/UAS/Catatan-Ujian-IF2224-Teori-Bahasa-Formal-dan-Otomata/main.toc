@@ -1,0 +1,199 @@
+\contentsline {section}{\numberline {1}Informasi Ujian}{1}{section.1}%
+\contentsline {section}{\numberline {2}Capaian Pembelajaran Mata Kuliah (CPMK)}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Tabel Keterpenuhan CPMK}{1}{subsection.2.1}%
+\contentsline {section}{\numberline {3}Daftar Materi yang Diujikan}{1}{section.3}%
+\contentsline {section}{\numberline {4}Outline Keseluruhan Materi}{1}{section.4}%
+\contentsline {subsection}{\numberline {4.1}PDA, termasuk konversi CFG}{1}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}CYK}{2}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Mesin Turing}{2}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Compiler}{2}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Recursive Descent Parser}{2}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}LL(1) Parser}{2}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Intermediate Code}{3}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}Interpreter dan Virtual Machine}{3}{subsection.4.8}%
+\contentsline {section}{\numberline {5}PDA}{4}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Outline Fundamental Konsep Materi}{4}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Penjelasan Konsep}{5}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}PDA sebagai $\epsilon $-NFA dengan Stack}{5}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Definisi Formal 7-Tuple}{5}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Fungsi Transisi dan Operasi Stack}{6}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}Diagram Transisi dan Label $a,X/\gamma $}{7}{subsubsection.5.2.4}%
+\contentsline {subsubsection}{\numberline {5.2.5}Instantaneous Description $(q,w,\gamma )$}{7}{subsubsection.5.2.5}%
+\contentsline {subsubsection}{\numberline {5.2.6}Relasi $\vdash $ dan $\vdash ^*$}{7}{subsubsection.5.2.6}%
+\contentsline {subsubsection}{\numberline {5.2.7}Sifat Validitas ID}{8}{subsubsection.5.2.7}%
+\contentsline {subsubsection}{\numberline {5.2.8}Acceptance by Final State}{8}{subsubsection.5.2.8}%
+\contentsline {subsubsection}{\numberline {5.2.9}Acceptance by Empty Stack}{9}{subsubsection.5.2.9}%
+\contentsline {subsubsection}{\numberline {5.2.10}Ekuivalensi Mode Penerimaan}{9}{subsubsection.5.2.10}%
+\contentsline {subsubsection}{\numberline {5.2.11}Konversi CFG ke PDA}{10}{subsubsection.5.2.11}%
+\contentsline {subsubsection}{\numberline {5.2.12}Mengapa $N(P_G)=L(G)$}{10}{subsubsection.5.2.12}%
+\contentsline {subsubsection}{\numberline {5.2.13}Konversi PDA ke CFG}{11}{subsubsection.5.2.13}%
+\contentsline {subsubsection}{\numberline {5.2.14}Pertumbuhan Ukuran Grammar pada Konversi PDA ke CFG}{12}{subsubsection.5.2.14}%
+\contentsline {subsubsection}{\numberline {5.2.15}Derivasi Leftmost/Rightmost dan Parse Tree}{13}{subsubsection.5.2.15}%
+\contentsline {subsubsection}{\numberline {5.2.16}Deterministic Pushdown Automata}{14}{subsubsection.5.2.16}%
+\contentsline {subsubsection}{\numberline {5.2.17}Prefix Property dan Unambiguous CFG}{14}{subsubsection.5.2.17}%
+\contentsline {subsubsection}{\numberline {5.2.18}Closure Properties CFL via PDA}{15}{subsubsection.5.2.18}%
+\contentsline {subsection}{\numberline {5.3}Algoritma dan Rumus Penting}{16}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Fungsi Transisi PDA}{16}{subsubsection.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.2}Langkah ID PDA}{16}{subsubsection.5.3.2}%
+\contentsline {subsubsection}{\numberline {5.3.3}Mode Penerimaan PDA}{16}{subsubsection.5.3.3}%
+\contentsline {subsubsection}{\numberline {5.3.4}Pseudocode Simulasi PDA Nondeterministik}{17}{subsubsection.5.3.4}%
+\contentsline {section}{\numberline {6}CYK}{18}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Outline Fundamental Konsep Materi}{18}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Penjelasan Konsep}{19}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {6.2.1}Membership Problem untuk CFL}{19}{subsubsection.6.2.1}%
+\contentsline {subsubsection}{\numberline {6.2.2}Kelemahan Pendekatan Naif}{19}{subsubsection.6.2.2}%
+\contentsline {subsubsection}{\numberline {6.2.3}CYK sebagai Dynamic Programming}{20}{subsubsection.6.2.3}%
+\contentsline {subsubsection}{\numberline {6.2.4}Dependensi terhadap Chomsky Normal Form}{20}{subsubsection.6.2.4}%
+\contentsline {subsubsection}{\numberline {6.2.5}Clean-Up Grammar Menuju CNF}{21}{subsubsection.6.2.5}%
+\contentsline {subsubsection}{\numberline {6.2.6}Struktur Tabel $X_{ij}$}{22}{subsubsection.6.2.6}%
+\contentsline {subsubsection}{\numberline {6.2.7}Langkah Basis}{22}{subsubsection.6.2.7}%
+\contentsline {subsubsection}{\numberline {6.2.8}Langkah Induksi}{23}{subsubsection.6.2.8}%
+\contentsline {subsubsection}{\numberline {6.2.9}Acceptance Condition}{23}{subsubsection.6.2.9}%
+\contentsline {subsubsection}{\numberline {6.2.10}Kompleksitas CYK}{23}{subsubsection.6.2.10}%
+\contentsline {subsubsection}{\numberline {6.2.11}Contoh Simulasi dengan \texttt {baaba}}{24}{subsubsection.6.2.11}%
+\contentsline {subsubsection}{\numberline {6.2.12}CYK dan Decidability CFL}{25}{subsubsection.6.2.12}%
+\contentsline {subsection}{\numberline {6.3}Algoritma dan Rumus Penting}{25}{subsection.6.3}%
+\contentsline {subsubsection}{\numberline {6.3.1}Definisi Sel $X_{ij}$}{25}{subsubsection.6.3.1}%
+\contentsline {subsubsection}{\numberline {6.3.2}Basis dan Induksi CYK}{25}{subsubsection.6.3.2}%
+\contentsline {subsubsection}{\numberline {6.3.3}Pseudocode CYK}{26}{subsubsection.6.3.3}%
+\contentsline {section}{\numberline {7}Mesin Turing}{27}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Outline Fundamental Konsep Materi}{27}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Penjelasan Konsep}{28}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Motivasi Batas Komputasi}{28}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}Church-Turing Thesis}{29}{subsubsection.7.2.2}%
+\contentsline {subsubsection}{\numberline {7.2.3}Definisi Formal 7-Tuple}{29}{subsubsection.7.2.3}%
+\contentsline {subsubsection}{\numberline {7.2.4}Fungsi Transisi}{30}{subsubsection.7.2.4}%
+\contentsline {subsubsection}{\numberline {7.2.5}Instantaneous Description $\alpha q\beta $}{30}{subsubsection.7.2.5}%
+\contentsline {subsubsection}{\numberline {7.2.6}Aturan Gerak Kanan dan Kiri}{30}{subsubsection.7.2.6}%
+\contentsline {subsubsection}{\numberline {7.2.7}Trace Eksekusi untuk $0^n1^n$}{31}{subsubsection.7.2.7}%
+\contentsline {subsubsection}{\numberline {7.2.8}Acceptance by Final State}{32}{subsubsection.7.2.8}%
+\contentsline {subsubsection}{\numberline {7.2.9}Acceptance by Halting}{33}{subsubsection.7.2.9}%
+\contentsline {subsubsection}{\numberline {7.2.10}Mesin Turing sebagai Transducer}{33}{subsubsection.7.2.10}%
+\contentsline {subsubsection}{\numberline {7.2.11}Mesin Turing sebagai Enumerator}{34}{subsubsection.7.2.11}%
+\contentsline {subsubsection}{\numberline {7.2.12}Recursively Enumerable dan Recursive Language}{34}{subsubsection.7.2.12}%
+\contentsline {subsubsection}{\numberline {7.2.13}Teknik Pemrograman Mesin Turing}{35}{subsubsection.7.2.13}%
+\contentsline {subsubsection}{\numberline {7.2.14}Multitape dan Nondeterministic TM}{36}{subsubsection.7.2.14}%
+\contentsline {subsubsection}{\numberline {7.2.15}Multi-Head, Two-Way, dan Off-Line TM}{36}{subsubsection.7.2.15}%
+\contentsline {subsubsection}{\numberline {7.2.16}Restricted TM}{36}{subsubsection.7.2.16}%
+\contentsline {subsubsection}{\numberline {7.2.17}Hubungan dengan Komputer Riil}{37}{subsubsection.7.2.17}%
+\contentsline {subsubsection}{\numberline {7.2.18}Encoding Mesin Turing}{37}{subsubsection.7.2.18}%
+\contentsline {subsubsection}{\numberline {7.2.19}Diagonalization Language}{38}{subsubsection.7.2.19}%
+\contentsline {subsubsection}{\numberline {7.2.20}Universal Language}{38}{subsubsection.7.2.20}%
+\contentsline {subsubsection}{\numberline {7.2.21}Post Correspondence Problem}{38}{subsubsection.7.2.21}%
+\contentsline {subsubsection}{\numberline {7.2.22}Reduction}{39}{subsubsection.7.2.22}%
+\contentsline {subsubsection}{\numberline {7.2.23}Rice's Theorem}{39}{subsubsection.7.2.23}%
+\contentsline {subsection}{\numberline {7.3}Algoritma dan Rumus Penting}{40}{subsection.7.3}%
+\contentsline {subsubsection}{\numberline {7.3.1}Fungsi Transisi Mesin Turing}{40}{subsubsection.7.3.1}%
+\contentsline {subsubsection}{\numberline {7.3.2}Bahasa yang Diterima dan Dihentikan}{40}{subsubsection.7.3.2}%
+\contentsline {subsubsection}{\numberline {7.3.3}Pseudocode Universal Turing Machine}{40}{subsubsection.7.3.3}%
+\contentsline {section}{\numberline {8}Compiler}{42}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Outline Fundamental Konsep Materi}{42}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Penjelasan Konsep}{43}{subsection.8.2}%
+\contentsline {subsubsection}{\numberline {8.2.1}Tujuan Desain Bahasa dan Compilability}{43}{subsubsection.8.2.1}%
+\contentsline {subsubsection}{\numberline {8.2.2}Compiler, Interpreter, dan Virtual Machine}{43}{subsubsection.8.2.2}%
+\contentsline {subsubsection}{\numberline {8.2.3}Language-Processing System}{44}{subsubsection.8.2.3}%
+\contentsline {subsubsection}{\numberline {8.2.4}Bootstrapping dan Translator Tools}{44}{subsubsection.8.2.4}%
+\contentsline {subsubsection}{\numberline {8.2.5}Front End dan Back End}{45}{subsubsection.8.2.5}%
+\contentsline {subsubsection}{\numberline {8.2.6}Fase-Fase Compiler}{46}{subsubsection.8.2.6}%
+\contentsline {subsubsection}{\numberline {8.2.7}Symbol Table}{46}{subsubsection.8.2.7}%
+\contentsline {subsubsection}{\numberline {8.2.8}Error Handling dalam Pipeline Compiler}{47}{subsubsection.8.2.8}%
+\contentsline {subsubsection}{\numberline {8.2.9}Lexeme, Pattern, dan Token}{48}{subsubsection.8.2.9}%
+\contentsline {subsubsection}{\numberline {8.2.10}Input Buffering dan Sentinel}{48}{subsubsection.8.2.10}%
+\contentsline {subsubsection}{\numberline {8.2.11}Regular Expression dan Transition Diagram}{48}{subsubsection.8.2.11}%
+\contentsline {subsubsection}{\numberline {8.2.12}Lex/Flex dan Longest Prefix}{49}{subsubsection.8.2.12}%
+\contentsline {subsubsection}{\numberline {8.2.13}Syntax Analysis sebagai Konteks CFG}{49}{subsubsection.8.2.13}%
+\contentsline {subsubsection}{\numberline {8.2.14}Bottom-Up Parsing, LR Parser, dan Yacc}{49}{subsubsection.8.2.14}%
+\contentsline {subsubsection}{\numberline {8.2.15}Semantic Analysis, SDD, dan SDT}{50}{subsubsection.8.2.15}%
+\contentsline {subsubsection}{\numberline {8.2.16}Type Checking, Coercion, dan Overloading}{50}{subsubsection.8.2.16}%
+\contentsline {subsubsection}{\numberline {8.2.17}Runtime Environment}{51}{subsubsection.8.2.17}%
+\contentsline {subsubsection}{\numberline {8.2.18}Activation Record}{51}{subsubsection.8.2.18}%
+\contentsline {subsubsection}{\numberline {8.2.19}Heap dan Garbage Collection}{52}{subsubsection.8.2.19}%
+\contentsline {subsubsection}{\numberline {8.2.20}Basic Block dan Flow Graph}{52}{subsubsection.8.2.20}%
+\contentsline {subsubsection}{\numberline {8.2.21}Register dan Address Descriptor}{52}{subsubsection.8.2.21}%
+\contentsline {subsubsection}{\numberline {8.2.22}Instruction Selection, Register Allocation, dan Peephole Optimization}{53}{subsubsection.8.2.22}%
+\contentsline {subsubsection}{\numberline {8.2.23}Data-Flow Analysis dan Gen-Kill}{53}{subsubsection.8.2.23}%
+\contentsline {subsubsection}{\numberline {8.2.24}Reaching Definitions}{54}{subsubsection.8.2.24}%
+\contentsline {subsubsection}{\numberline {8.2.25}Available Expressions}{54}{subsubsection.8.2.25}%
+\contentsline {subsubsection}{\numberline {8.2.26}Live Variables}{55}{subsubsection.8.2.26}%
+\contentsline {subsection}{\numberline {8.3}Algoritma dan Rumus Penting}{55}{subsection.8.3}%
+\contentsline {subsubsection}{\numberline {8.3.1}Gen-Kill Transfer Function}{55}{subsubsection.8.3.1}%
+\contentsline {subsubsection}{\numberline {8.3.2}Pseudocode Iterative Data-Flow Analysis}{55}{subsubsection.8.3.2}%
+\contentsline {section}{\numberline {9}Recursive Descent Parser}{57}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Outline Fundamental Konsep Materi}{57}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Penjelasan Konsep}{58}{subsection.9.2}%
+\contentsline {subsubsection}{\numberline {9.2.1}Top-Down Parsing}{58}{subsubsection.9.2.1}%
+\contentsline {subsubsection}{\numberline {9.2.2}Definisi Recursive Descent Parser}{59}{subsubsection.9.2.2}%
+\contentsline {subsubsection}{\numberline {9.2.3}Token, Lookahead, dan Pointer Input}{59}{subsubsection.9.2.3}%
+\contentsline {subsubsection}{\numberline {9.2.4}Algoritma Prosedur Nonterminal}{59}{subsubsection.9.2.4}%
+\contentsline {subsubsection}{\numberline {9.2.5}Brute-Force Parsing dan Recursive Parsing}{60}{subsubsection.9.2.5}%
+\contentsline {subsubsection}{\numberline {9.2.6}Terminal Matching}{60}{subsubsection.9.2.6}%
+\contentsline {subsubsection}{\numberline {9.2.7}Backtracking}{61}{subsubsection.9.2.7}%
+\contentsline {subsubsection}{\numberline {9.2.8}Contoh Fungsi \texttt {E} dan \texttt {T}}{61}{subsubsection.9.2.8}%
+\contentsline {subsubsection}{\numberline {9.2.9}Left Recursion}{62}{subsubsection.9.2.9}%
+\contentsline {subsubsection}{\numberline {9.2.10}Eliminasi Left Recursion}{62}{subsubsection.9.2.10}%
+\contentsline {subsubsection}{\numberline {9.2.11}Left Factoring}{63}{subsubsection.9.2.11}%
+\contentsline {subsubsection}{\numberline {9.2.12}Predictive Parsing}{64}{subsubsection.9.2.12}%
+\contentsline {subsubsection}{\numberline {9.2.13}Recursive Descent untuk Syntax-Directed Translation}{64}{subsubsection.9.2.13}%
+\contentsline {subsection}{\numberline {9.3}Algoritma dan Rumus Penting}{65}{subsection.9.3}%
+\contentsline {subsubsection}{\numberline {9.3.1}Skema Umum Fungsi Nonterminal}{65}{subsubsection.9.3.1}%
+\contentsline {subsubsection}{\numberline {9.3.2}Eliminasi Left Recursion}{65}{subsubsection.9.3.2}%
+\contentsline {subsubsection}{\numberline {9.3.3}Left Factoring}{66}{subsubsection.9.3.3}%
+\contentsline {section}{\numberline {10}LL(1) Parser}{67}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Outline Fundamental Konsep Materi}{67}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Penjelasan Konsep}{68}{subsection.10.2}%
+\contentsline {subsubsection}{\numberline {10.2.1}Definisi LL(1)}{68}{subsubsection.10.2.1}%
+\contentsline {subsubsection}{\numberline {10.2.2}Hubungan dengan Top-Down Parsing}{68}{subsubsection.10.2.2}%
+\contentsline {subsubsection}{\numberline {10.2.3}FIRST Set}{69}{subsubsection.10.2.3}%
+\contentsline {subsubsection}{\numberline {10.2.4}FOLLOW Set}{69}{subsubsection.10.2.4}%
+\contentsline {subsubsection}{\numberline {10.2.5}Tabel Parsing LL(1)}{70}{subsubsection.10.2.5}%
+\contentsline {subsubsection}{\numberline {10.2.6}Kondisi Grammar LL(1)}{71}{subsubsection.10.2.6}%
+\contentsline {subsubsection}{\numberline {10.2.7}Algoritma Nonrecursive Predictive Parsing}{72}{subsubsection.10.2.7}%
+\contentsline {subsubsection}{\numberline {10.2.8}Transformasi Grammar untuk LL(1)}{72}{subsubsection.10.2.8}%
+\contentsline {subsubsection}{\numberline {10.2.9}Error Handling dan Error Recovery}{73}{subsubsection.10.2.9}%
+\contentsline {subsubsection}{\numberline {10.2.10}\texttt {synch} Entries dan Phrase-Level Recovery}{74}{subsubsection.10.2.10}%
+\contentsline {subsection}{\numberline {10.3}Algoritma dan Rumus Penting}{74}{subsection.10.3}%
+\contentsline {subsubsection}{\numberline {10.3.1}Rumus FIRST}{74}{subsubsection.10.3.1}%
+\contentsline {subsubsection}{\numberline {10.3.2}Rumus FOLLOW}{75}{subsubsection.10.3.2}%
+\contentsline {subsubsection}{\numberline {10.3.3}Algoritma Konstruksi Tabel LL(1)}{75}{subsubsection.10.3.3}%
+\contentsline {subsubsection}{\numberline {10.3.4}Algoritma Nonrecursive Predictive Parser}{75}{subsubsection.10.3.4}%
+\contentsline {subsubsection}{\numberline {10.3.5}Trace Parsing \texttt {int * int}}{76}{subsubsection.10.3.5}%
+\contentsline {section}{\numberline {11}Intermediate Code}{77}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Outline Fundamental Konsep Materi}{77}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Penjelasan Konsep}{78}{subsection.11.2}%
+\contentsline {subsubsection}{\numberline {11.2.1}Motivasi Intermediate Representation}{78}{subsubsection.11.2.1}%
+\contentsline {subsubsection}{\numberline {11.2.2}Posisi IR dalam Pipeline Compiler}{78}{subsubsection.11.2.2}%
+\contentsline {subsubsection}{\numberline {11.2.3}Syntax Tree dan DAG}{79}{subsubsection.11.2.3}%
+\contentsline {subsubsection}{\numberline {11.2.4}Value-Number dan Hash Node pada DAG}{79}{subsubsection.11.2.4}%
+\contentsline {subsubsection}{\numberline {11.2.5}Postfix Notation sebagai Intermediate Code}{80}{subsubsection.11.2.5}%
+\contentsline {subsubsection}{\numberline {11.2.6}Three-Address Code}{81}{subsubsection.11.2.6}%
+\contentsline {subsubsection}{\numberline {11.2.7}Quadruples, Triples, dan Indirect Triples}{82}{subsubsection.11.2.7}%
+\contentsline {subsubsection}{\numberline {11.2.8}Translasi Ekspresi, Array, dan Pointer}{82}{subsubsection.11.2.8}%
+\contentsline {subsubsection}{\numberline {11.2.9}Boolean dan Control Flow}{83}{subsubsection.11.2.9}%
+\contentsline {subsubsection}{\numberline {11.2.10}Backpatching}{83}{subsubsection.11.2.10}%
+\contentsline {subsubsection}{\numberline {11.2.11}Kaitan dengan Contoh Soal UAS}{84}{subsubsection.11.2.11}%
+\contentsline {subsubsection}{\numberline {11.2.12}Optimasi dan Deteksi pada Intermediate Code}{84}{subsubsection.11.2.12}%
+\contentsline {subsection}{\numberline {11.3}Algoritma dan Rumus Penting}{85}{subsection.11.3}%
+\contentsline {subsubsection}{\numberline {11.3.1}Rumus Offset Array}{85}{subsubsection.11.3.1}%
+\contentsline {subsubsection}{\numberline {11.3.2}Pseudocode Pembuatan Three-Address Code Ekspresi}{86}{subsubsection.11.3.2}%
+\contentsline {subsubsection}{\numberline {11.3.3}Pseudocode Konstruksi Tabel Quadruple}{86}{subsubsection.11.3.3}%
+\contentsline {subsubsection}{\numberline {11.3.4}Pseudocode Backpatching}{86}{subsubsection.11.3.4}%
+\contentsline {section}{\numberline {12}Interpreter dan Virtual Machine}{87}{section.12}%
+\contentsline {subsection}{\numberline {12.1}Outline Fundamental Konsep Materi}{87}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}Penjelasan Konsep}{88}{subsection.12.2}%
+\contentsline {subsubsection}{\numberline {12.2.1}Compiler, Interpreter, VM, Bytecode, dan JIT}{88}{subsubsection.12.2.1}%
+\contentsline {subsubsection}{\numberline {12.2.2}HotSpot, Client Compiler, dan Server Compiler}{89}{subsubsection.12.2.2}%
+\contentsline {subsubsection}{\numberline {12.2.3}Motivasi Model Hibrida Compiler dan VM}{89}{subsubsection.12.2.3}%
+\contentsline {subsubsection}{\numberline {12.2.4}Posisi Interpreter dan VM dalam Language-Processing System}{90}{subsubsection.12.2.4}%
+\contentsline {subsubsection}{\numberline {12.2.5}Stack-Based VM}{90}{subsubsection.12.2.5}%
+\contentsline {subsubsection}{\numberline {12.2.6}Register-Based VM}{90}{subsubsection.12.2.6}%
+\contentsline {subsubsection}{\numberline {12.2.7}Instruction Set dan Bytecode}{91}{subsubsection.12.2.7}%
+\contentsline {subsubsection}{\numberline {12.2.8}Runtime Memory Model}{91}{subsubsection.12.2.8}%
+\contentsline {subsubsection}{\numberline {12.2.9}Siklus Fetch-Decode-Execute}{92}{subsubsection.12.2.9}%
+\contentsline {subsubsection}{\numberline {12.2.10}Optimasi Interpreter VM}{92}{subsubsection.12.2.10}%
+\contentsline {subsubsection}{\numberline {12.2.11}Garbage Collection}{93}{subsubsection.12.2.11}%
+\contentsline {subsubsection}{\numberline {12.2.12}Relasi VM dengan Intermediate Code dan Code Generation}{93}{subsubsection.12.2.12}%
+\contentsline {subsubsection}{\numberline {12.2.13}Kaitan dengan Contoh UAS}{94}{subsubsection.12.2.13}%
+\contentsline {subsection}{\numberline {12.3}Algoritma dan Rumus Penting}{94}{subsection.12.3}%
+\contentsline {subsubsection}{\numberline {12.3.1}Pseudocode Interpreter Loop}{94}{subsubsection.12.3.1}%
+\contentsline {subsubsection}{\numberline {12.3.2}Pseudocode Eksekusi Instruksi Stack}{95}{subsubsection.12.3.2}%
+\contentsline {subsubsection}{\numberline {12.3.3}Pseudocode Mark-and-Sweep}{95}{subsubsection.12.3.3}%

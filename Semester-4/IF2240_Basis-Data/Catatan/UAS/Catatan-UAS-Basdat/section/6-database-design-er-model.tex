@@ -1,0 +1,410 @@
+\section{Database Design using E-R Model}
+
+Database Design using E-R Model membahas cara menerjemahkan kebutuhan dunia nyata ke dalam rancangan konseptual database. E-R model memungkinkan perancang mendefinisikan entitas, atribut, relasi, constraint, dan fitur lanjutan seperti specialization dan aggregation sebelum rancangan direduksi menjadi skema relasional.
+
+Fokus utama untuk ujian adalah memahami fase desain database, komponen dasar E-R, cardinality dan participation, weak entity, notasi E-R diagram, fitur extended E-R, isu desain, serta reduksi E-R ke skema relasional.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Fase desain basis data
+    \begin{enumerate}
+        \item \pwajib Requirement/initial phase
+        \item \pwajib Conceptual design
+        \item \pwajib Logical design
+        \item \ppaham Physical design
+    \end{enumerate}
+    \item \pwajib Komponen dasar E-R model
+    \begin{enumerate}
+        \item \pwajib Entity dan entity set
+        \item \pwajib Strong entity dan weak entity
+        \item \pwajib Attributes
+        \item \pwajib Relationship dan relationship set
+    \end{enumerate}
+    \item \pwajib Constraints dalam E-R
+    \begin{enumerate}
+        \item \pwajib Mapping cardinality
+        \item \pwajib Total dan partial participation
+        \item \pwajib Keys
+        \item \pwajib Identifying relationship dan partial key
+    \end{enumerate}
+    \item \pwajib Representasi visual
+    \begin{enumerate}
+        \item \pwajib E-R diagram notation
+        \item \ppaham UML class diagram
+    \end{enumerate}
+    \item \pwajib Extended E-R
+    \begin{enumerate}
+        \item \pwajib Specialization dan generalization
+        \item \pwajib Inheritance
+        \item \pwajib Disjoint/overlapping dan total/partial specialization
+        \item \pwajib Aggregation
+    \end{enumerate}
+    \item \pwajib Reduksi E-R ke skema relasional
+    \begin{enumerate}
+        \item \pwajib Strong entity
+        \item \pwajib Weak entity
+        \item \pwajib Relationship set
+        \item \pwajib Multivalued attribute
+        \item \ppaham Specialization dan aggregation
+    \end{enumerate}
+    \item \ppaham Isu desain dan hubungan normalisasi
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Fase Desain Basis Data}
+
+\begin{jawab}[Inti Konsep.]
+Desain basis data mengubah kebutuhan pengguna menjadi struktur database operasional melalui fase kebutuhan, konseptual, logis, dan fisik. Konsep ini penting karena kesalahan pada fase awal dapat menghasilkan skema relasional yang redundan atau sulit diimplementasikan.
+\end{jawab}
+
+Motivasi fase desain adalah memisahkan pemahaman kebutuhan dari detail implementasi. Pengguna domain memahami aturan dunia nyata, tetapi belum tentu memahami tabel, key, indeks, atau SQL. Perancang perlu menerjemahkan kebutuhan tersebut secara bertahap.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Fase} & \textbf{Tujuan} \\
+\hline
+Initial / requirement phase & Mengkarakterisasi kebutuhan data calon pengguna melalui interaksi dengan pakar domain dan pengguna. \\
+\hline
+Conceptual design & Menerjemahkan kebutuhan ke skema konseptual, sering menggunakan E-R model. \\
+\hline
+Logical design & Memetakan skema konseptual ke model implementasi, biasanya skema relasional. \\
+\hline
+Physical design & Menentukan struktur penyimpanan fisik, indeks, dan optimasi performa. \\
+\hline
+\end{tabularx}
+\caption{Fase desain basis data}
+\label{tab:database-design-phases}
+\end{table}
+
+Fase ini berhubungan dengan semua materi desain. E-R model bekerja pada conceptual design; reduksi E-R bekerja pada logical design; indexing dan tuning berada pada physical design.
+
+\subsubsection{Entity, Attribute, dan Relationship}
+
+\begin{jawab}[Inti Konsep.]
+E-R model merepresentasikan dunia nyata sebagai entity, attribute, dan relationship. Konsep ini penting karena perancang perlu menangkap objek, properti, dan asosiasi dunia nyata sebelum membuat tabel.
+\end{jawab}
+
+\textbf{Entity} adalah objek dunia nyata yang dapat dibedakan dari objek lain. \textbf{Entity set} adalah kumpulan entity bertipe sama. Contoh: \texttt{student}, \texttt{instructor}, dan \texttt{course}.
+
+\textbf{Attribute} mendeskripsikan entity. Klasifikasinya:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Jenis Atribut} & \textbf{Definisi dan Contoh} \\
+\hline
+Simple & Tidak dapat dipecah lagi, misalnya \texttt{ID}. \\
+\hline
+Composite & Dapat dipecah menjadi sub-atribut, misalnya nama lengkap menjadi nama depan dan nama belakang. \\
+\hline
+Single-valued & Memiliki satu nilai untuk satu entity, misalnya nomor KTP. \\
+\hline
+Multivalued & Dapat memiliki banyak nilai, misalnya nomor telepon. \\
+\hline
+Derived & Dihitung dari atribut lain, misalnya umur dari tanggal lahir. \\
+\hline
+\end{tabularx}
+\caption{Klasifikasi atribut E-R}
+\label{tab:er-attribute-types}
+\end{table}
+
+\textbf{Relationship} adalah asosiasi antar entity. \textbf{Relationship set} adalah kumpulan relationship bertipe sama. Relationship dapat memiliki \textbf{descriptive attributes}; contoh sumber menyebut relasi \texttt{takes} antara student dan section dapat memiliki atribut \texttt{grade}.
+
+Relationship memiliki \textbf{degree}, yaitu jumlah entity set yang berpartisipasi. Relationship biner melibatkan dua entity set. Relationship n-ary melibatkan lebih dari dua. Recursive relationship terjadi ketika entity set berelasi dengan dirinya sendiri; role diperlukan untuk membedakan peran masing-masing partisipan.
+
+\subsubsection{Cardinality, Participation, dan Keys}
+
+\begin{jawab}[Inti Konsep.]
+Cardinality, participation, dan keys adalah constraint pada E-R model. Mereka penting karena menentukan berapa banyak entity dapat berhubungan, apakah partisipasi wajib, dan bagaimana entity atau relationship diidentifikasi.
+\end{jawab}
+
+Mapping cardinality untuk relationship biner:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Cardinality} & \textbf{Makna} \\
+\hline
+One-to-one & Satu entity A berasosiasi paling banyak dengan satu entity B, dan sebaliknya. \\
+\hline
+One-to-many & Satu entity A dapat berasosiasi dengan banyak entity B. \\
+\hline
+Many-to-one & Banyak entity A dapat berasosiasi dengan satu entity B. \\
+\hline
+Many-to-many & Banyak entity A dapat berasosiasi dengan banyak entity B, dan sebaliknya. \\
+\hline
+\end{tabularx}
+\caption{Mapping cardinality}
+\label{tab:er-cardinality}
+\end{table}
+
+\textbf{Total participation} berarti setiap entity dalam entity set wajib berpartisipasi dalam relationship. \textbf{Partial participation} berarti hanya sebagian entity yang berpartisipasi.
+
+Keys dalam E-R:
+\begin{itemize}
+    \item \textbf{Superkey}: atribut yang mengidentifikasi entity secara unik.
+    \item \textbf{Candidate key}: superkey minimal.
+    \item \textbf{Primary key}: candidate key yang dipilih sebagai identifikasi utama.
+    \item \textbf{Key relationship set}: biasanya dibentuk dari gabungan primary key entity set yang berpartisipasi, ditambah pertimbangan cardinality.
+\end{itemize}
+
+Constraint E-R akan memengaruhi reduksi ke skema relasional. Misalnya many-to-many biasanya menjadi tabel baru, sedangkan many-to-one sering dapat direpresentasikan dengan foreign key pada sisi many.
+
+\subsubsection{Strong Entity, Weak Entity, dan Identifying Relationship}
+
+\begin{jawab}[Inti Konsep.]
+Strong entity memiliki primary key sendiri, sedangkan weak entity tidak dapat diidentifikasi tanpa entity penopang. Konsep ini penting karena tidak semua objek dunia nyata memiliki identitas mandiri.
+\end{jawab}
+
+\textbf{Strong entity set} memiliki atribut yang cukup untuk membentuk primary key. \textbf{Weak entity set} tidak memiliki atribut cukup untuk membentuk primary key mandiri, sehingga bergantung pada identifying strong entity.
+
+Komponen weak entity:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Komponen} & \textbf{Peran} \\
+\hline
+Identifying strong entity & Entity kuat yang memberi identitas pada weak entity. \\
+\hline
+Identifying relationship & Relationship yang menghubungkan weak entity dengan entity penopangnya. \\
+\hline
+Partial key / discriminator & Atribut weak entity yang membedakan weak entity dalam satu entity penopang yang sama. \\
+\hline
+\end{tabularx}
+\caption{Komponen weak entity}
+\label{tab:weak-entity}
+\end{table}
+
+Primary key weak entity dibentuk dari primary key strong entity penopang ditambah discriminator weak entity. Saat direduksi ke relasional, tabel weak entity memuat atribut lokalnya serta primary key dari strong entity sebagai foreign key sekaligus bagian primary key.
+
+\subsubsection{E-R Diagram dan UML Class Diagram}
+
+\begin{jawab}[Inti Konsep.]
+E-R diagram adalah representasi visual entity, relationship, attribute, key, dan constraint. UML class diagram dapat digunakan sebagai alternatif visual untuk pemodelan data, terutama ketika sistem juga dimodelkan secara object-oriented.
+\end{jawab}
+
+Notasi E-R:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Notasi} & \textbf{Makna} \\
+\hline
+Rectangle & Entity set. \\
+\hline
+Diamond & Relationship set. \\
+\hline
+Oval & Attribute. \\
+\hline
+Underline solid & Primary key. \\
+\hline
+Double oval & Multivalued attribute. \\
+\hline
+Dashed oval & Derived attribute. \\
+\hline
+Double line & Total participation. \\
+\hline
+Double diamond & Identifying relationship. \\
+\hline
+ISA triangle & Specialization/generalization. \\
+\hline
+\end{tabularx}
+\caption{Notasi dasar E-R diagram}
+\label{tab:er-notation}
+\end{table}
+
+UML class diagram merepresentasikan entity sebagai class dengan atribut dan methods di dalam kotak bertingkat. Visibility dapat ditandai dengan \texttt{+}, \texttt{-}, dan \texttt{\#}. Relationship digambar dengan garis dan diberi multiplicity seperti \texttt{0..1} atau \texttt{0..*}.
+
+\subsubsection{Specialization, Generalization, dan Inheritance}
+
+\begin{jawab}[Inti Konsep.]
+Specialization memecah entity set umum menjadi subkelas yang lebih spesifik, sedangkan generalization menggabungkan beberapa entity set serupa menjadi superclass. Inheritance membuat subkelas mewarisi atribut dan relationship superclass.
+\end{jawab}
+
+Motivasi fitur ini adalah beberapa entity memiliki atribut umum sekaligus atribut khusus. Contoh: \texttt{Person} dapat dispesialisasi menjadi \texttt{Student} dan \texttt{Employee}. Keduanya mewarisi atribut umum seperti nama, tetapi memiliki atribut khusus seperti total SKS atau salary.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|}
+\hline
+\textbf{Konsep} & \textbf{Makna} \\
+\hline
+Specialization & Top-down: superclass dipecah menjadi subclass. \\
+\hline
+Generalization & Bottom-up: beberapa entity set digabung menjadi superclass. \\
+\hline
+Inheritance & Subclass mewarisi atribut dan relationship superclass. \\
+\hline
+Disjoint & Satu entity hanya boleh berada pada satu subclass. \\
+\hline
+Overlapping & Satu entity dapat berada pada beberapa subclass. \\
+\hline
+Total specialization & Setiap entity superclass harus masuk minimal satu subclass. \\
+\hline
+Partial specialization & Entity boleh hanya berada di superclass. \\
+\hline
+\end{tabularx}
+\caption{Fitur specialization dan generalization}
+\label{tab:specialization-generalization}
+\end{table}
+
+Saat direduksi ke relasional, salah satu metode adalah membuat tabel untuk superclass dan tabel untuk setiap subclass. Tabel subclass memuat primary key superclass ditambah atribut lokal subclass. Kelemahannya, untuk melihat data lengkap subclass, sering diperlukan join dengan tabel superclass.
+
+\subsubsection{Aggregation}
+
+\begin{jawab}[Inti Konsep.]
+Aggregation adalah abstraksi yang memperlakukan relationship beserta entity pembentuknya sebagai entity tingkat tinggi. Konsep ini penting ketika kita perlu membuat relationship between relationships tanpa membuat relationship n-ary yang terlalu rumit.
+\end{jawab}
+
+Motivasi aggregation adalah ada situasi ketika suatu relationship sendiri perlu berpartisipasi dalam relationship lain. Contoh sumber: student dibimbing instructor pada project membentuk relationship \texttt{proj\_guide}. Kombinasi ini kemudian dievaluasi oleh \texttt{evaluation}. Daripada membuat relationship besar yang mencampur semua entity, \texttt{proj\_guide} diagregasi menjadi unit abstrak yang dapat dihubungkan ke \texttt{evaluation}.
+
+Mekanismenya:
+\begin{enumerate}
+    \item Identifikasi relationship yang secara konseptual menjadi objek pembahasan baru.
+    \item Bungkus relationship dan entity pembentuknya sebagai agregasi.
+    \item Hubungkan agregasi tersebut ke entity atau relationship lain.
+    \item Saat reduksi relasional, buat skema yang memuat key relationship agregat dan key entity terkait.
+\end{enumerate}
+
+Aggregation membantu menjaga model tetap terbaca ketika hubungan antar fakta menjadi bertingkat.
+
+\subsubsection{Design Issues dalam E-R Model}
+
+\begin{jawab}[Inti Konsep.]
+Design issues adalah keputusan pemodelan yang menentukan apakah suatu konsep sebaiknya menjadi entity, attribute, relationship, binary relationship, atau ternary relationship. Keputusan ini penting karena pemodelan yang salah dapat menciptakan redundansi dan masalah normalisasi.
+\end{jawab}
+
+Isu utama:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|}
+\hline
+\textbf{Isu} & \textbf{Pertanyaan Desain} \\
+\hline
+Entity vs attribute & Apakah suatu konsep cukup menjadi atribut, atau perlu menjadi entity tersendiri karena memiliki atribut/relasi sendiri? \\
+\hline
+Entity vs relationship & Apakah suatu kejadian adalah hubungan antar entity, atau objek yang perlu diidentifikasi sebagai entity? \\
+\hline
+Binary vs ternary & Apakah relasi tiga arah dapat dipecah menjadi relasi biner tanpa kehilangan makna? \\
+\hline
+\end{tabularx}
+\caption{Isu desain E-R}
+\label{tab:er-design-issues}
+\end{table}
+
+Contoh sumber: menaruh \texttt{department\_name} sebagai atribut murni pada \texttt{student} dapat buruk jika sebenarnya department adalah entity yang memiliki atribut dan hubungan sendiri. Lebih baik membuat relationship \texttt{stud\_dept}.
+
+Isu desain ini berhubungan langsung dengan normalisasi. Jika konsep yang seharusnya entity hanya dijadikan atribut, FD non-key dapat muncul dan membuat tabel hasil reduksi melanggar BCNF atau 3NF.
+
+\subsubsection{Reduksi E-R ke Skema Relasional}
+
+\begin{jawab}[Inti Konsep.]
+Reduksi E-R ke skema relasional adalah proses menerjemahkan entity, relationship, attribute, dan constraint menjadi tabel, key, dan foreign key. Konsep ini penting karena E-R model adalah desain konseptual, sedangkan DBMS relasional membutuhkan skema tabel.
+\end{jawab}
+
+Aturan umum:
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|}
+\hline
+\textbf{Komponen E-R} & \textbf{Reduksi ke Relasional} \\
+\hline
+Strong entity set & Menjadi tabel dengan atribut entity; primary key sama dengan primary key entity. \\
+\hline
+Weak entity set & Menjadi tabel berisi atribut lokal, discriminator, dan primary key strong entity penopang. \\
+\hline
+Many-to-many relationship & Menjadi tabel baru berisi gabungan primary key entity partisipan dan atribut deskriptif relationship. \\
+\hline
+Multivalued attribute & Menjadi tabel baru berisi primary key entity asal dan atribut multivalue. \\
+\hline
+Specialization & Salah satu metode: tabel superclass ditambah tabel masing-masing subclass dengan key superclass dan atribut lokal. \\
+\hline
+Aggregation & Direduksi dengan key relationship agregat, key entity terkait, dan atribut deskriptif tambahan. \\
+\hline
+\end{tabularx}
+\caption{Aturan reduksi E-R ke relasional}
+\label{tab:er-reduction}
+\end{table}
+
+Pseudocode reduksi sederhana:
+\begin{lstlisting}[caption={Pseudocode reduksi E-R ke skema relasional}, label={lst:er-reduction}]
+Input: E-R diagram
+Output: relational schemas
+
+for each strong entity set E do
+    create relation E with all simple attributes
+    set primary key from E
+for each weak entity set W do
+    create relation W with local attributes
+    add primary key of identifying strong entity
+    primary key := owner key union discriminator
+for each many-to-many relationship R do
+    create relation R
+    add primary keys of participating entity sets
+    add descriptive attributes of R
+for each multivalued attribute A of entity E do
+    create relation (E_key, A)
+\end{lstlisting}
+
+\subsubsection{Hubungan E-R Model dengan Normalisasi}
+
+\begin{jawab}[Inti Konsep.]
+E-R model yang dirancang dengan baik biasanya menghasilkan skema relasional yang tidak membutuhkan banyak normalisasi tambahan. Sebaliknya, E-R model yang buruk dapat menghasilkan FD non-key dan anomali pada tabel.
+\end{jawab}
+
+Contoh sumber: jika entity \texttt{employee} menyimpan \texttt{department\_name} dan \texttt{building} sebagai atribut biasa, muncul FD \(\texttt{department\_name} \rightarrow \texttt{building}\). Jika \texttt{department\_name} bukan key employee, maka tabel hasilnya berpotensi melanggar BCNF/3NF.
+
+Mekanisme masalah:
+\begin{enumerate}
+    \item Perancang gagal mengenali \texttt{department} sebagai entity tersendiri.
+    \item Atribut department ditumpuk dalam entity \texttt{employee}.
+    \item FD antar atribut non-key muncul.
+    \item Tabel hasil reduksi mengandung redundansi.
+    \item Normalisasi perlu memecah tabel tersebut.
+\end{enumerate}
+
+Jadi, E-R design dan relational database design saling melengkapi. E-R design mencegah kesalahan konseptual; normalisasi memeriksa kualitas skema relasional secara formal.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Key Weak Entity}
+
+\begin{jawab}[Makna Rumus.]
+Primary key weak entity dibentuk dari key strong entity penopang dan partial key weak entity. Rumus ini digunakan saat mereduksi weak entity ke tabel relasional.
+\end{jawab}
+
+\begin{equation}
+    PK(W) = PK(E_{owner}) \cup Discriminator(W)
+    \label{eq:weak-entity-key}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item \(W\): weak entity set.
+    \item \(E_{owner}\): identifying strong entity set.
+    \item \(Discriminator(W)\): partial key weak entity.
+\end{itemize}
+
+\subsubsection{Skema Relationship Set Many-to-Many}
+
+\begin{jawab}[Makna Rumus.]
+Relationship many-to-many direduksi menjadi tabel yang memuat key semua entity partisipan dan atribut deskriptif relationship.
+\end{jawab}
+
+\begin{equation}
+    R_{rel} = PK(E_1) \cup PK(E_2) \cup \cdots \cup PK(E_n) \cup Attr(R)
+    \label{eq:relationship-reduction}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item \(R_{rel}\): skema relasi hasil reduksi relationship set.
+    \item \(E_i\): entity set yang berpartisipasi.
+    \item \(Attr(R)\): atribut deskriptif pada relationship.
+\end{itemize}

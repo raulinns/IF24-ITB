@@ -1,0 +1,257 @@
+\section{Relational Model}
+
+Relational Model adalah model logis utama dalam DBMS relasional. Model ini merepresentasikan data sebagai relasi atau tabel berbasis himpunan, dengan atribut sebagai kolom dan tuple sebagai baris. Kekuatan model relasional terletak pada kesederhanaan struktur tabel dan fondasi matematis yang memungkinkan query formal, constraint, dan normalisasi didefinisikan secara presisi.
+
+Fokus utama untuk ujian adalah memahami anatomi relasi, domain dan nilai atomik, makna \texttt{NULL}, schema-instance, key, foreign key, schema diagram, view, dan hubungan model relasional dengan SQL serta relational database design.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Konsep dasar relasi
+    \begin{enumerate}
+        \item \pwajib Relation sebagai tabel berbasis set
+        \item \pwajib Attribute/column
+        \item \pwajib Tuple/row
+        \item \pwajib Sifat unordered dan tanpa tuple duplikat
+    \end{enumerate}
+    \item \pwajib Domain, atomic value, dan \texttt{NULL}
+    \begin{enumerate}
+        \item \pwajib Domain
+        \item \pwajib Atomic value dan 1NF
+        \item \pwajib Tiga makna \texttt{NULL}
+        \item \pwajib Aturan \texttt{NULL != NULL}
+    \end{enumerate}
+    \item \pwajib Schema dan instance
+    \begin{enumerate}
+        \item \pwajib Relation schema \(R(A_1,\ldots,A_n)\)
+        \item \pwajib Database schema
+        \item \pwajib Relation/database instance
+    \end{enumerate}
+    \item \pwajib Keys
+    \begin{enumerate}
+        \item \pwajib Superkey
+        \item \pwajib Candidate key
+        \item \pwajib Primary key
+        \item \pwajib Foreign key
+    \end{enumerate}
+    \item \ppaham Representasi dan penerapan
+    \begin{enumerate}
+        \item \ppaham Schema diagram
+        \item \ppaham View sebagai tabel virtual
+    \end{enumerate}
+    \item \pwajib Hubungan dengan materi lain
+    \begin{enumerate}
+        \item \pwajib Relational algebra dan calculus
+        \item \pwajib SQL
+        \item \pwajib Normalisasi dan relational database design
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Relation, Attribute, dan Tuple}
+
+\begin{jawab}[Inti Konsep.]
+Relasi adalah tabel logis berbasis teori himpunan; atribut adalah kolom bernama; tuple adalah baris data dalam relasi. Konsep ini penting karena seluruh operasi relasional, SQL, dan normalisasi beroperasi pada struktur dasar ini.
+\end{jawab}
+
+Motivasi relational model adalah menyediakan representasi data yang sederhana tetapi kuat secara matematis. Daripada menyimpan data sebagai struktur pointer yang harus dinavigasi manual, model relasional menyimpan data sebagai tabel dan menyediakan operasi berbasis nilai.
+
+Secara formal, relasi adalah himpunan tuple. Karena relasi dipandang sebagai himpunan, urutan tuple tidak penting dan tuple duplikat tidak diperbolehkan dalam model matematis murni. Dalam implementasi SQL, hasil query dapat mempertahankan duplikasi karena SQL menggunakan semantik multiset, tetapi konsep teoritis relasi tetap berbasis set.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Istilah} & \textbf{Definisi dan Contoh} \\
+\hline
+\textbf{Relation} & Tabel logis bernama unik. Contoh: \texttt{instructor}. \\
+\hline
+\textbf{Attribute} & Kolom bernama dalam relasi. Contoh: \texttt{ID}, \texttt{name}, \texttt{dept\_name}, \texttt{salary}. \\
+\hline
+\textbf{Tuple} & Baris data dalam relasi. Contoh: \((22222, Einstein, Physics, 95000)\). \\
+\hline
+\textbf{Arity} & Jumlah atribut dalam relasi. \\
+\hline
+\end{tabularx}
+\caption{Anatomi dasar relasi}
+\label{tab:relation-anatomy}
+\end{table}
+
+Relasi menjadi input dan output operator aljabar relasional. Karena setiap operasi menghasilkan relasi baru, operator dapat dikomposisi menjadi ekspresi query yang kompleks.
+
+\subsubsection{Domain, Atomic Values, dan Null Values}
+
+\begin{jawab}[Inti Konsep.]
+Domain adalah himpunan nilai yang diizinkan untuk sebuah atribut, nilai atomik adalah nilai yang tidak perlu dipecah lagi, dan \texttt{NULL} menyatakan nilai yang tidak diketahui, tidak tersedia, atau tidak berlaku. Konsep ini penting karena validitas tuple bergantung pada nilai atribut yang sesuai domain dan dapat dievaluasi secara logis.
+\end{jawab}
+
+Motivasi domain adalah mencegah atribut menerima nilai sembarang. Atribut \texttt{salary} seharusnya menerima angka, bukan gambar; atribut \texttt{dept\_name} seharusnya menerima nama departemen yang sah.
+
+Secara formal, jika atribut \(A_i\) memiliki domain \(D_i\), maka nilai tuple pada atribut tersebut harus berada dalam \(D_i\):
+\begin{equation}
+    t[A_i] \in D_i
+    \label{eq:domain-relational}
+\end{equation}
+
+\textbf{Atomic value} berarti nilai atribut tidak dapat atau tidak perlu dipecah lagi oleh model relasional. Satu nomor akun dapat dianggap atomik; satu sel berisi daftar banyak nomor akun tidak atomik. Syarat domain atomik ini menjadi dasar First Normal Form (1NF).
+
+\textbf{Null value} adalah nilai khusus yang dapat muncul pada domain untuk menyatakan ketiadaan nilai biasa. Sumber menjelaskan tiga makna null:
+\begin{enumerate}
+    \item \textbf{Value unknown}: nilai ada tetapi belum diketahui.
+    \item \textbf{Value exists but is not available}: nilai ada tetapi belum tersedia.
+    \item \textbf{Attribute does not apply}: atribut tidak berlaku untuk tuple tersebut.
+\end{enumerate}
+
+Aturan penting:
+\begin{equation}
+    \texttt{NULL} \neq \texttt{NULL}
+    \label{eq:null-not-equal}
+\end{equation}
+Maknanya, dua null tidak boleh dianggap mewakili nilai biasa yang sama. Ketidakpastian ini menyebabkan komplikasi pada operasi perbandingan, constraint, agregasi, dan logika SQL.
+
+\subsubsection{Schema dan Instance}
+
+\begin{jawab}[Inti Konsep.]
+Schema adalah struktur logis relasi atau database, sedangkan instance adalah isi aktual pada satu titik waktu. Perbedaan ini penting karena struktur database relatif stabil, tetapi data berubah setiap saat.
+\end{jawab}
+
+Relation schema dinotasikan:
+\begin{equation}
+    R(A_1,A_2,\ldots,A_n)
+    \label{eq:relation-schema-relmodel}
+\end{equation}
+dengan \(R\) sebagai nama relasi dan \(A_1,\ldots,A_n\) sebagai atribut. Contoh:
+\[
+    instructor(ID, name, dept\_name, salary)
+\]
+
+\textbf{Database schema} adalah kumpulan seluruh relation schema dalam database. Misalnya database universitas dapat memiliki schema untuk \texttt{student}, \texttt{instructor}, \texttt{course}, \texttt{department}, \texttt{takes}, dan \texttt{teaches}.
+
+\textbf{Instance} adalah isi aktual dari relasi atau database pada satu waktu. Jika schema adalah desain tabel, instance adalah baris-baris aktual yang sedang tersimpan.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Konsep} & \textbf{Makna} \\
+\hline
+Relation schema & Struktur satu relasi. \\
+\hline
+Database schema & Struktur keseluruhan database. \\
+\hline
+Relation instance & Isi aktual satu relasi pada satu waktu. \\
+\hline
+Database instance & Isi aktual seluruh database pada satu waktu. \\
+\hline
+\end{tabularx}
+\caption{Schema dan instance dalam relational model}
+\label{tab:schema-instance-relmodel}
+\end{table}
+
+Konsep schema-instance dipakai terus dalam SQL. Perintah DDL mengubah schema; perintah DML mengubah instance.
+
+\subsubsection{Keys}
+
+\begin{jawab}[Inti Konsep.]
+Key adalah himpunan atribut yang digunakan untuk mengidentifikasi tuple dan menghubungkan relasi. Konsep ini penting karena tanpa key, tuple sulit dibedakan dan relasi antar tabel tidak dapat dijaga secara aman.
+\end{jawab}
+
+Motivasi key adalah identitas dan referensi. Dalam tabel mahasiswa, setiap mahasiswa harus dapat diidentifikasi secara unik. Dalam tabel pengambilan mata kuliah, nilai mahasiswa harus merujuk mahasiswa yang benar-benar ada.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Jenis Key} & \textbf{Definisi} \\
+\hline
+\textbf{Superkey} & Himpunan atribut \(K\) yang cukup untuk mengidentifikasi tuple secara unik. Secara FD: \(K \rightarrow R\). \\
+\hline
+\textbf{Candidate key} & Superkey minimal; tidak ada subset sejati dari \(K\) yang masih superkey. \\
+\hline
+\textbf{Primary key} & Candidate key yang dipilih sebagai identifikasi utama tuple. \\
+\hline
+\textbf{Foreign key} & Atribut pada relasi yang merujuk primary key atau candidate key pada relasi lain. \\
+\hline
+\end{tabularx}
+\caption{Jenis key dalam relational model}
+\label{tab:key-types-relmodel}
+\end{table}
+
+Kondisi superkey:
+\begin{equation}
+    \forall t_1,t_2 \in r,\; t_1[K]=t_2[K] \Rightarrow t_1=t_2
+    \label{eq:superkey-condition}
+\end{equation}
+
+Foreign key menghubungkan relasi. Jika \texttt{course.dept\_name} adalah foreign key ke \texttt{department.dept\_name}, maka setiap nilai \texttt{dept\_name} pada \texttt{course} harus ada pada \texttt{department}, kecuali null diizinkan.
+
+Key berhubungan langsung dengan integrity constraints: primary key mendukung entity integrity, foreign key mendukung referential integrity, dan candidate key/superkey menjadi dasar functional dependency pada normalisasi.
+
+\subsubsection{Schema Diagram dan View}
+
+\begin{jawab}[Inti Konsep.]
+Schema diagram adalah representasi visual skema relasional, sedangkan view adalah tabel virtual yang didefinisikan dari query. Keduanya penting untuk memahami struktur database dan menyajikan subset data yang relevan tanpa mengubah tabel dasar.
+\end{jawab}
+
+Schema diagram menggambarkan relasi sebagai kotak berisi atribut. Primary key biasanya digarisbawahi, dan foreign key digambarkan dengan anak panah menuju key relasi yang dirujuk. Diagram ini membantu pembaca melihat struktur dan hubungan antar tabel secara cepat.
+
+View adalah relasi virtual. Ia tidak harus menyimpan data fisik seperti tabel dasar, tetapi dapat didefinisikan sebagai hasil query. View berguna untuk:
+\begin{enumerate}
+    \item Menyembunyikan atribut yang tidak relevan atau sensitif.
+    \item Menyederhanakan query kompleks.
+    \item Menyajikan derived attribute atau data turunan.
+    \item Memberi tampilan berbeda untuk pengguna berbeda.
+\end{enumerate}
+
+View berhubungan dengan level abstraksi view pada pengantar DBMS dan dengan SQL melalui perintah \texttt{create view}.
+
+\subsubsection{Hubungan Relational Model dengan Materi Lain}
+
+\begin{jawab}[Inti Konsep.]
+Relational model menjadi dasar formal bagi relational algebra, SQL, integrity constraints, dan normalisasi. Hampir semua materi setelah model data memakai relasi sebagai struktur input dan output.
+\end{jawab}
+
+Hubungan dengan \textbf{Relational Algebra}: operator seperti selection, projection, union, set difference, Cartesian product, dan rename menerima relasi sebagai input dan menghasilkan relasi sebagai output.
+
+Hubungan dengan \textbf{SQL}: SQL adalah bahasa praktis untuk mendefinisikan schema relasional, memanipulasi instance, mendeklarasikan key, dan menulis query.
+
+Hubungan dengan \textbf{Relational Database Design}: normalisasi menganalisis schema relasional menggunakan functional dependency. Tujuannya adalah mengurangi redundansi dan penggunaan null yang tidak perlu.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Relation Schema}
+
+\begin{jawab}[Makna Rumus.]
+Relation schema menyatakan struktur sebuah relasi sebagai nama relasi dan daftar atributnya. Rumus ini digunakan untuk mendefinisikan tabel secara logis sebelum diisi tuple.
+\end{jawab}
+
+\begin{equation}
+    R(A_1,A_2,\ldots,A_n)
+    \label{eq:relation-schema-final}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item \(R\): nama relasi.
+    \item \(A_i\): atribut ke-\(i\).
+    \item \(n\): arity atau jumlah atribut relasi.
+\end{itemize}
+
+\subsubsection{Kondisi Superkey}
+
+\begin{jawab}[Makna Rumus.]
+Kondisi superkey menyatakan bahwa dua tuple berbeda tidak boleh memiliki nilai yang sama pada atribut key. Rumus ini menjadi dasar primary key dan candidate key.
+\end{jawab}
+
+\begin{equation}
+    K \text{ superkey untuk } R \iff K \rightarrow R
+    \label{eq:key-fd}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item \(K\): himpunan atribut key.
+    \item \(R\): seluruh atribut dalam relasi.
+    \item \(K \rightarrow R\): \(K\) menentukan semua atribut \(R\).
+\end{itemize}

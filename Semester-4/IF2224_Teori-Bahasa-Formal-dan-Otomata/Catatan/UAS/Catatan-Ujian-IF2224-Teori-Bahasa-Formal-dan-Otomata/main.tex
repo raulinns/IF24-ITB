@@ -1,0 +1,172 @@
+% arara: pdflatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{graphicx}
+\input{preamble.sty}
+
+\title{%
+    \vspace{-2cm}
+    \textbf{\LARGE Catatan Ujian Akhir Semester} \\[0.25em]
+    \Large IF2224 Teori Bahasa Formal dan Otomata \\[0.25em]
+    \normalsize Semester 4 Tahun 2025/2026 \\[2em]
+}
+
+\author{%
+    Narendra Dharma Wistara M. \\[0.25em]
+    13524044 \\[2.5em]
+    Program Studi Teknik Informatika \\[0.25em]
+    Sekolah Teknik Elektro dan Informatika \\[0.25em]
+    Institut Teknologi Bandung \\[0.25em]
+}
+
+\begin{document}
+\pagenumbering{gobble}
+\begin{titlepage}
+    \maketitle
+    \thispagestyle{empty}
+\end{titlepage}
+
+\clearpage
+
+\pagenumbering{roman}
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic}
+
+\section{Informasi Ujian}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Jenis Ujian} & UAS \\
+\hline
+\textbf{Nama Mata Kuliah} & IF2224 Teori Bahasa Formal dan Otomata \\
+\hline
+\textbf{Tanggal Ujian} & Kamis, 11 Juni 2026 \\
+\hline
+\end{tabularx}
+\caption{Informasi ujian}
+\label{tab:informasi-ujian}
+\end{table}
+
+\section{Capaian Pembelajaran Mata Kuliah (CPMK)}
+
+\begin{enumerate}
+    \item Menjelaskan konsep, notasi dan penerapan konsep teori automaton dan bahasa formal seperti deterministik, non-deterministik, dan penerapannya dalam compiler, hierarki automaton, dan teori bahasa formal terkait dengan batasan kompleksitas dari permasalahan praktik.
+    \item Merancang automaton (finite automaton, push down automaton, turing machine) untuk permasalahan tertentu
+\end{enumerate}
+
+\subsection{Tabel Keterpenuhan CPMK}
+
+\begin{table}[H]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{|L{0.16\textwidth}|*{8}{>{\centering\arraybackslash}X|}}
+\hline
+\textbf{CPMK} & \textbf{PDA} & \textbf{CYK} & \textbf{TM} & \textbf{Comp.} & \textbf{RD} & \textbf{LL(1)} & \textbf{IR} & \textbf{VM} \\
+\hline
+CPMK 1 & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\hline
+CPMK 2 & \checkmark & & \checkmark & & \checkmark & \checkmark & & \\
+\hline
+\end{tabularx}
+\caption{Keterpenuhan CPMK per materi yang dibahas}
+\label{tab:keterpenuhan-cpmk}
+\end{table}
+
+\section{Daftar Materi yang Diujikan}
+
+\begin{enumerate}
+    \item PDA, termasuk konversi CFG
+    \item CYK
+    \item Mesin Turing
+    \item Compiler
+    \item Recursive Descent Parser
+    \item LL(1) Parser
+    \item Intermediate Code
+    \item Interpreter dan Virtual Machine
+\end{enumerate}
+
+\section{Outline Keseluruhan Materi}
+
+Bagian ini menyajikan peta belajar ringkas untuk seluruh materi yang diujikan.
+Penjelasan mendalam tersedia pada section masing-masing materi yang sudah disusun.
+
+\subsection{PDA, termasuk konversi CFG}
+\begin{itemize}
+    \item Memahami PDA sebagai finite automaton nondeterministik yang dilengkapi stack.
+    \item Menguasai definisi formal, fungsi transisi, instantaneous description, dan dua mode penerimaan.
+    \item Menguasai konstruksi ekuivalensi CFG ke PDA dan PDA ke CFG.
+    \item Berlatih derivasi leftmost/rightmost, parse tree, dan walkthrough konversi CFG/PDA bertipe UAS.
+    \item Memahami peran DPDA, prefix property, closure properties CFL via PDA, dan batas determinisme pada CFL.
+\end{itemize}
+
+\subsection{CYK}
+\begin{itemize}
+    \item Membership problem untuk CFL dan kebutuhan Chomsky Normal Form.
+    \item Clean-up grammar menuju CNF: nullable, unit pairs, generating, dan reachable symbols.
+    \item Tabel segitiga CYK, basis, langkah induksi, dan kondisi $S \in X_{1n}$.
+    \item Kompleksitas waktu $O(n^3)$ dan ruang $O(n^2)$.
+\end{itemize}
+
+\subsection{Mesin Turing}
+\begin{itemize}
+    \item Model komputasi umum, definisi formal, fungsi transisi, dan instantaneous description.
+    \item Trace eksekusi TM pada input konkret dan strategi mark-scan untuk bahasa seimbang.
+    \item Acceptance, halting, transducer, enumerator, recursive language, recursively enumerable language, teorema komplemen RE, dan undecidability.
+    \item Encoding, universal language, reduction, PCP, dan Rice's Theorem.
+    \item Varian TM serta ekuivalensinya dengan model dasar.
+\end{itemize}
+
+\subsection{Compiler}
+\begin{itemize}
+    \item Sistem pemrosesan bahasa, fase front end, middle end, dan back end.
+    \item Lexical analysis, parsing, bottom-up LR/Yacc, semantic analysis, symbol table, error handling, intermediate representation, runtime environment, code generation, dan optimization.
+    \item Instruction selection, register allocation, peephole optimization, dan single accumulator code generation.
+\end{itemize}
+
+\subsection{Recursive Descent Parser}
+\begin{itemize}
+    \item Top-down parsing sebagai leftmost derivation.
+    \item Satu prosedur per nonterminal, backtracking, left recursion, left factoring, dan hubungan dengan SDT.
+\end{itemize}
+
+\subsection{LL(1) Parser}
+\begin{itemize}
+    \item FIRST, FOLLOW, tabel parsing prediktif, dan kondisi grammar LL(1).
+    \item Algoritma nonrecursive predictive parsing berbasis stack, \texttt{synch} entries, dan phrase-level error recovery.
+\end{itemize}
+
+\subsection{Intermediate Code}
+\begin{itemize}
+    \item Tujuan IR sebagai jembatan front end dan back end.
+    \item AST, DAG dengan value-number, postfix notation, three-address code, quadruples, triples, BZ/BR, control-flow translation, backpatching, dan optimasi IR.
+    \item Constant folding, common subexpression elimination, dead code, unreachable code, dan optimasi loop.
+\end{itemize}
+
+\subsection{Interpreter dan Virtual Machine}
+\begin{itemize}
+    \item Perbandingan compiler, interpreter, bytecode, VM, dan JIT.
+    \item Stack-based VM, runtime memory model, garbage collection, HotSpot JIT, dan relasi VM dengan code generation.
+\end{itemize}
+
+\newpage
+\input{section/1-pda.tex}
+\newpage
+\input{section/2-cyk.tex}
+\newpage
+\input{section/3-mesin-turing.tex}
+\newpage
+\input{section/4-compiler.tex}
+\newpage
+\input{section/5-recursive-descent-parser.tex}
+\newpage
+\input{section/6-ll1-parser.tex}
+\newpage
+\input{section/7-intermediate-code.tex}
+\newpage
+\input{section/8-interpreter-dan-virtual-machine.tex}
+
+\end{document}

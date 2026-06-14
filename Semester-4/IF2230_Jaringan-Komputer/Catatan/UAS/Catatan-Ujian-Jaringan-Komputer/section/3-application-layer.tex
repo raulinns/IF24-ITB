@@ -1,0 +1,193 @@
+\section{Application Layer}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Posisi Application Layer: aplikasi berjalan di user space pada end hosts dan berkomunikasi melalui proses client/server.
+    \item Kebutuhan layanan aplikasi: toleransi data loss, timing, bandwidth, dan pilihan TCP, UDP, atau RTP.
+    \item Socket API, port, dan well-known services.
+    \item Arsitektur aplikasi: client-server, peer-to-peer, hybrid, dan overlay networks.
+    \item DNS: fungsi, hierarki, resolver, query iteratif/rekursif, caching, TTL, dan resource records.
+    \item HTTP: URL, object, request-response, statelessness, persistent/nonpersistent connection, pipelining, cookies, web cache, conditional GET.
+    \item Email: user agent, mail server, SMTP, RFC 822, MIME, POP3, IMAP, webmail, dan DNS MX.
+    \item Protokol lanjutan: FTP, RTP/RTCP, SIP, SDP, H.323, SNMP, CDN, SOAP/REST, Gnutella, BitTorrent, dan RON.
+\end{enumerate}
+
+\begin{cmt}{Audit Kelengkapan Materi}{}
+Verifikasi sumber menambahkan anatomi response HTTP, ETag dan If-None-Match, interpretasi output \texttt{nslookup}, SDP, H.323, operasi SNMP TRAP dan GETNEXT, Routing Overlay Network, serta studi kasus pemilihan TCP/UDP untuk chatting dan VoIP.
+\end{cmt}
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\begin{jawab}[Inti Application Layer]
+Application Layer adalah lapisan tempat aplikasi jaringan berjalan sebagai proses pada end hosts. Proses client menginisiasi komunikasi, sedangkan proses server menunggu dihubungi. Aplikasi memakai socket API sebagai pintu menuju layanan Transport Layer.
+\end{jawab}
+
+Aplikasi memiliki kebutuhan layanan yang berbeda. Transfer file dan email menuntut data loss mendekati nol. Audio/video real-time lebih toleran terhadap sedikit loss tetapi sensitif terhadap delay dan jitter. Aplikasi multimedia memerlukan bandwidth minimum, sedangkan aplikasi elastis seperti web browsing dapat memakai bandwidth yang tersedia.
+
+TCP menyediakan reliable byte stream dan connection-oriented service. UDP menyediakan datagram tanpa jaminan. RTP berjalan di atas UDP untuk media real-time dengan sequence number dan timestamp.
+
+\subsubsection*{Arsitektur Aplikasi}
+
+Pada client-server, server selalu aktif, memiliki alamat tetap, dan melayani banyak client yang datang dinamis. Pada P2P, tidak ada server pusat yang selalu aktif; peer saling berkomunikasi langsung, skalabel, tetapi lebih sulit dikelola. Arsitektur hybrid menggabungkan keduanya, misalnya pencarian nama/status melalui server pusat tetapi transfer data antar-peer.
+
+Overlay network adalah jaringan logis di atas jaringan fisik. Node overlay dapat membangun tunnel dan mengambil keputusan routing tingkat aplikasi. Contohnya P2P, CDN, dan RON.
+
+\subsubsection*{DNS}
+
+DNS adalah basis data hierarkis terdistribusi dan protokol aplikasi untuk menerjemahkan hostname menjadi alamat IP. Fungsi tambahan DNS meliputi host aliasing, mail server aliasing, dan load distribution.
+
+Hierarki DNS terdiri dari root servers, Top-Level Domain servers, authoritative servers, dan local name server atau resolver. Root mengetahui lokasi TLD; TLD mengurus domain seperti \texttt{.com}, \texttt{.edu}, atau \texttt{.id}; authoritative server menyimpan record sah organisasi; resolver lokal menjadi proksi awal klien.
+
+Pada iterative query, server yang ditanya memberi rujukan ke server berikutnya. Pada recursive query, server yang ditanya menyelesaikan pencarian penuh atas nama klien. Recursive query lebih berat untuk server hulu, sehingga tidak selalu diterima.
+
+Resource Record memiliki format konseptual:
+
+\[
+(\text{Name}, \text{TTL}, \text{Class}, \text{Type}, \text{Value})
+\]
+
+Tipe penting:
+
+\begin{itemize}
+    \item \textbf{A}: hostname ke IPv4.
+    \item \textbf{AAAA}: hostname ke IPv6.
+    \item \textbf{CNAME}: alias ke canonical name.
+    \item \textbf{NS}: domain ke authoritative name server.
+    \item \textbf{MX}: domain ke mail server.
+    \item \textbf{PTR}: IP ke hostname untuk reverse lookup.
+\end{itemize}
+
+Caching menurunkan beban query. TTL menentukan berapa lama record cache dianggap valid. Pada output \texttt{nslookup}, \textit{Default Server} adalah resolver lokal yang dipakai klien. \textit{Non-authoritative answer} berarti jawaban berasal dari cache resolver, bukan langsung dari authoritative server domain tujuan.
+
+\subsubsection*{HTTP dan Web}
+
+Halaman web terdiri dari base HTML dan object seperti gambar, script, audio, atau file lain. Setiap object dialamati oleh URL yang memuat hostname dan path. HTTP berjalan di atas TCP port 80 dan memakai pola request-response. HTTP bersifat stateless: server tidak menyimpan riwayat request klien sebagai bagian inti protokol.
+
+Pada nonpersistent HTTP, satu koneksi TCP dibuka untuk setiap object. Waktu respons dasar per object adalah:
+
+\[
+\text{Total Time}=2\times \text{RTT}+\text{File Transmission Time}
+\]
+
+Satu RTT dipakai untuk TCP connection setup, satu RTT lagi untuk request HTTP sampai byte awal response datang. Pada persistent HTTP/1.1, koneksi TCP dipertahankan dan dapat memakai pipelining sehingga banyak object dapat diminta tanpa membuka koneksi baru untuk masing-masing object.
+
+Metode request yang disebut sumber meliputi \texttt{GET}, \texttt{POST}, \texttt{PUT}, dan \texttt{DELETE}. Status code dikelompokkan sebagai 1xx informasi, 2xx sukses seperti \texttt{200 OK}, 3xx redirect/cache seperti \texttt{301 Moved Permanently} dan \texttt{304 Not Modified}, 4xx error client seperti \texttt{404 Not Found}, dan 5xx error server.
+
+Anatomi response HTTP terdiri dari status line, header, baris kosong, lalu body. Contoh header yang disebut sumber meliputi server, content type, dan content length. Body umumnya berisi dokumen atau object, misalnya HTML.
+
+Cookies memberi state di atas HTTP yang stateless. Mekanismenya melibatkan header \texttt{Set-Cookie}, header \texttt{Cookie} pada request berikutnya, file cookie di browser, dan database backend server.
+
+Web cache atau proxy bertindak sebagai client dan server sekaligus. Conditional GET menjaga cache tetap segar. Klien dapat mengirim \texttt{If-Modified-Since} atau validasi berbasis \texttt{ETag} dengan \texttt{If-None-Match}. Jika object belum berubah, server membalas \texttt{304 Not Modified} tanpa mengirim body object.
+
+\subsubsection*{Email}
+
+Sistem email terdiri dari user agent, mail server, mailbox, message queue, dan protokol. SMTP adalah protokol push yang berjalan di atas TCP port 25. SMTP dipakai untuk mengirim email dari pengirim ke mail server atau antar-mail server. Dialog SMTP memiliki fase seperti handshaking, transfer pesan, dan closure, dengan perintah seperti \texttt{HELO}, \texttt{MAIL FROM}, \texttt{RCPT TO}, \texttt{DATA}, dan \texttt{QUIT}.
+
+RFC 822 mendefinisikan format pesan email: header seperti \texttt{To}, \texttt{From}, dan \texttt{Subject}, baris kosong, lalu body. SMTP awalnya terbatas pada 7-bit ASCII. MIME memperluas email agar dapat membawa attachment atau konten non-ASCII melalui tipe konten dan encoding seperti base64.
+
+SMTP hanya mendorong email. Untuk membaca email dari mailbox, client memakai mail access protocol. POP3 berfokus pada otorisasi, pengunduhan, dan mode download-and-delete atau keep; ia relatif stateless antar-sesi. IMAP menyimpan pesan dan folder di server, memelihara flags seperti Seen, Answered, atau Deleted, dan lebih cocok untuk banyak perangkat. Webmail memakai HTTP/HTTPS dengan state melalui cookies dan server-side storage.
+
+DNS mendukung email melalui MX record. MX memungkinkan domain email menunjuk mail server resmi tanpa mengubah alamat email pengguna.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{itemize}
+    \item \textbf{Client process}: proses yang memulai komunikasi.
+    \item \textbf{Server process}: proses yang menunggu permintaan.
+    \item \textbf{Socket}: API antara aplikasi dan transport.
+    \item \textbf{Well-known port}: port layanan umum seperti 80 untuk HTTP dan 25 untuk SMTP.
+    \item \textbf{DNS resolver}: local name server yang menjadi proksi query klien.
+    \item \textbf{TTL}: umur cache DNS.
+    \item \textbf{HTTP statelessness}: server tidak menyimpan state request sebelumnya sebagai bagian protokol inti.
+    \item \textbf{Cookie}: mekanisme state pada HTTP.
+    \item \textbf{SMTP}: push email.
+    \item \textbf{POP3/IMAP}: pull atau sinkronisasi akses mailbox.
+    \item \textbf{CDN}: surrogate servers yang didekatkan ke klien.
+    \item \textbf{RTP/RTCP}: pengiriman dan kontrol media real-time.
+\end{itemize}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection*{Resolusi DNS Iteratif}
+
+\begin{lstlisting}[language={},caption={Resolusi DNS iteratif}]
+client asks local resolver for www.example.com
+resolver asks root server
+root replies with TLD server referral
+resolver asks TLD server
+TLD replies with authoritative server referral
+resolver asks authoritative server
+authoritative server replies with resource record
+resolver caches answer according to TTL
+resolver returns IP address to client
+\end{lstlisting}
+
+\subsubsection*{HTTP Nonpersistent}
+
+\[
+\text{Response Time per Object}=2\times \text{RTT}+\text{Transmission Time}
+\]
+
+Jika satu halaman memiliki banyak object dan tiap object memakai koneksi TCP terpisah, biaya handshake dan slow start berulang dapat menjadi dominan. Persistent HTTP mengurangi biaya ini dengan mempertahankan koneksi TCP.
+
+\subsubsection*{Conditional GET}
+
+\begin{lstlisting}[language={},caption={Conditional GET berbasis waktu dan ETag}]
+client cache has object
+client sends GET with If-Modified-Since or If-None-Match
+if origin object is unchanged:
+    server replies 304 Not Modified without object body
+else:
+    server replies 200 OK with new object body
+\end{lstlisting}
+
+\subsubsection*{SMTP}
+
+\begin{lstlisting}[language={},caption={Urutan konseptual SMTP}]
+client connects to mail server on TCP port 25
+HELO sender-domain
+MAIL FROM:<sender@example.com>
+RCPT TO:<receiver@example.net>
+DATA
+message headers and body
+.
+QUIT
+\end{lstlisting}
+
+\subsubsection*{CDN DNS Redirection}
+
+\begin{lstlisting}[language={},caption={Mekanisme CDN dengan DNS redirection}]
+user requests content hostname
+DNS follows CNAME toward CDN-controlled name
+CDN DNS estimates client location and server load
+CDN DNS returns IP of nearby or lightly loaded surrogate server
+client fetches content from surrogate server
+\end{lstlisting}
+
+\subsection{Hubungan dengan Materi Lain}
+
+\begin{itemize}
+    \item \textbf{Transport Layer}: aplikasi memilih TCP, UDP, atau RTP berdasarkan kebutuhan reliability, delay, dan bandwidth.
+    \item \textbf{Congestion Control}: persistent HTTP membantu menjaga TCP window dan menghindari slow start berulang; aplikasi real-time sering menghindari TCP karena retransmission menambah delay.
+    \item \textbf{Wireless Network}: loss dan delay pada wireless memengaruhi aplikasi real-time, web, dan layanan yang sensitif terhadap jitter.
+    \item \textbf{Network Security}: aplikasi memakai TLS/SSL untuk confidentiality, integrity, dan authentication; DNS, HTTP, email, dan manajemen jaringan memiliki permukaan serangan masing-masing.
+\end{itemize}
+
+\begin{cmt}{Bagian yang Terbatas di Sumber}{}
+CDN pada slide diberi catatan untuk dibaca sendiri sehingga rincian utamanya diambil dari buku sumber dalam NotebookLM. Format header RTP/RTCP, detail SDP/H.323, dan Routing Overlay Network juga tidak sedalam DNS, HTTP, dan email.
+\end{cmt}
+
+\subsection{Checklist Pemahaman}
+
+\begin{itemize}
+    \item Dapat membedakan client-server, P2P, hybrid, dan overlay network.
+    \item Dapat menjelaskan kebutuhan data loss, timing, dan bandwidth untuk aplikasi.
+    \item Dapat menjelaskan alur DNS iteratif dan recursive.
+    \item Dapat membaca arti A, AAAA, CNAME, NS, MX, PTR, TTL, dan cache DNS.
+    \item Dapat menghitung biaya dasar nonpersistent HTTP dengan RTT.
+    \item Dapat menjelaskan persistent HTTP, pipelining, cookies, web cache, ETag, dan conditional GET.
+    \item Dapat menjelaskan SMTP, RFC 822, MIME, POP3, IMAP, webmail, dan MX record.
+    \item Dapat memilih TCP atau UDP untuk chat, file transfer, DNS, VoIP, dan streaming.
+    \item Dapat menjelaskan peran RTP/RTCP, SIP, SDP, H.323, SNMP, CDN, SOAP/REST, Gnutella, BitTorrent, dan RON secara konseptual.
+\end{itemize}

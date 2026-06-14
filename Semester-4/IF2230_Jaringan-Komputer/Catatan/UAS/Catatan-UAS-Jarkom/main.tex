@@ -1,0 +1,153 @@
+% arara: pdflatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{graphicx}
+\input{preamble.sty}
+
+\title{%
+    \vspace{-2cm}
+    \textbf{\LARGE Catatan Ujian Akhir Semester} \\[0.25em]
+    \Large IF2230 Jaringan Komputer \\[0.25em]
+    \normalsize Semester 4 Tahun 2025/2026 \\[2em]
+}
+
+\author{%
+    Narendra Dharma Wistara M. \\[0.25em]
+    13524044 \\[2.5em]
+    Program Studi Teknik Informatika \\[0.25em]
+    Sekolah Teknik Elektro dan Informatika \\[0.25em]
+    Institut Teknologi Bandung \\[0.25em]
+}
+
+\begin{document}
+\pagenumbering{gobble}
+\begin{titlepage}
+    \maketitle
+    \thispagestyle{empty}
+\end{titlepage}
+
+\clearpage
+
+\pagenumbering{roman}
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic}
+
+\section{Informasi Ujian}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Jenis Ujian} & UAS \\
+\hline
+\textbf{Nama Mata Kuliah} & IF2230 Jaringan Komputer \\
+\hline
+\textbf{Tanggal Ujian} & Senin, 8 Juni 2026 \\
+\hline
+\end{tabularx}
+\caption{Informasi ujian}
+\label{tab:informasi-ujian}
+\end{table}
+
+\section{Capaian Pembelajaran Mata Kuliah (CPMK)}
+
+\begin{enumerate}
+    \item CPMK1. Menyebutkan struktur tipikal layer arsitektur network
+    \item CPMK2. Menjelaskan prinsip dasar medium access layer
+    \item CPMK3. Menjelaskan prinsip switched networks dan reliable message delivery
+    \item CPMK4. Menjelaskan prinsip routing dan packet forwarding pada jaringan ip
+    \item CPMK5. Mengkonfigurasi lan dan jaringan ip
+    \item CPMK6. Mengimplementasikan aplikasi jaringan/aplikasi client server sederhana
+\end{enumerate}
+
+\subsection{Tabel Keterpenuhan CPMK}
+
+\begin{table}[H]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{|L{0.17\textwidth}|*{5}{>{\centering\arraybackslash}X|}}
+\hline
+\textbf{CPMK} & \textbf{Transport} & \textbf{Congestion} & \textbf{Application} & \textbf{Wireless} & \textbf{Security} \\
+\hline
+CPMK1 & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\hline
+CPMK2 & & & & \checkmark & \\
+\hline
+CPMK3 & \checkmark & \checkmark & & & \checkmark \\
+\hline
+CPMK4 & & \checkmark & & \checkmark & \checkmark \\
+\hline
+CPMK5 & & & \checkmark & \checkmark & \checkmark \\
+\hline
+CPMK6 & \checkmark & & \checkmark & & \checkmark \\
+\hline
+\end{tabularx}
+\caption{Keterpenuhan CPMK per materi yang dibahas}
+\label{tab:keterpenuhan-cpmk}
+\end{table}
+
+\section{Daftar Materi yang Diujikan}
+
+\begin{enumerate}
+    \item Transport Layer
+    \item Congestion Control
+    \item Application Layer
+    \item Wireless Network
+    \item Network Security
+\end{enumerate}
+
+\section{Outline Keseluruhan Materi}
+
+Bagian ini menyajikan peta belajar ringkas untuk seluruh materi yang diujikan.
+Penjelasan mendalam tersedia pada section masing-masing materi yang sudah disusun.
+
+\subsection{Transport Layer}
+\begin{itemize}
+    \item Komunikasi logis process-to-process di atas layanan host-to-host IP.
+    \item UDP sebagai simple demultiplexer dan TCP sebagai reliable byte stream.
+    \item Socket API, port, segment, checksum, sequence number, ACK, sliding window, flow control, dan adaptive retransmission.
+    \item RPC, RTP/RTCP, SCTP, TCP high-speed extensions, QUIC sebagai tambahan pengetahuan umum, serta relasi dengan aplikasi, congestion, wireless, dan security.
+\end{itemize}
+
+\subsection{Congestion Control}
+\begin{itemize}
+    \item Resource allocation, bottleneck, congestion collapse, fairness, dan power.
+    \item FIFO, tail drop, Fair Queuing, Weighted Fair Queuing, AIMD, Slow Start, Fast Retransmit, Fast Recovery, Tahoe, dan Reno.
+    \item DECbit, RED, TCP Vegas, ECN, QoS, IntServ/RSVP, DiffServ, dan equation-based congestion control.
+\end{itemize}
+
+\subsection{Application Layer}
+\begin{itemize}
+    \item Arsitektur client-server, peer-to-peer, hybrid, socket, port, dan kebutuhan layanan aplikasi.
+    \item DNS, HTTP, email, FTP, SNMP, CDN, overlay, web services, P2P, dan multimedia signaling.
+    \item Relasi aplikasi dengan TCP/UDP, DNS MX, HTTP persistent connection, TLS, dan routing tingkat aplikasi.
+\end{itemize}
+
+\subsection{Wireless Network}
+\begin{itemize}
+    \item Wireless host, base station, wireless link, infrastructure/ad hoc mode, handoff, dan taksonomi single/multi-hop.
+    \item WLAN/Wi-Fi, Bluetooth, 802.11, cellular, path loss, interference, multipath, CSMA/CA, RTS/CTS, association, dan mobility.
+    \item Wireless security, TCP over wireless, Mobile IP, MANET routing, dan fitur efisiensi 802.11ax.
+\end{itemize}
+
+\subsection{Network Security}
+\begin{itemize}
+    \item Authentication, confidentiality, integrity, availability, dan model ancaman Alice-Bob-Mallory.
+    \item Kerentanan IP/TCP/aplikasi, symmetric cipher, public-key cipher, hash, MAC, PKI, certificate, nonce, challenge-response, Diffie-Hellman, Kerberos.
+    \item PGP, SSH, TLS, IPsec, wireless security, firewall, NAT, filtering, malware, botnet, DDoS, dan DNSSEC.
+\end{itemize}
+
+\newpage
+\input{section/1-transport-layer.tex}
+\newpage
+\input{section/2-congestion-control.tex}
+\newpage
+\input{section/3-application-layer.tex}
+\newpage
+\input{section/4-wireless-network.tex}
+\newpage
+\input{section/5-network-security.tex}
+
+\end{document}

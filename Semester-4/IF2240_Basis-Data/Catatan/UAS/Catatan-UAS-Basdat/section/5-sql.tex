@@ -1,0 +1,418 @@
+\section{SQL (Structured Query Language)}
+
+SQL adalah bahasa standar untuk mendefinisikan, mengambil, memanipulasi, mengamankan, dan mengontrol transaksi pada database relasional. SQL menghubungkan teori model relasional dengan praktik DBMS: struktur tabel dibuat dengan DDL, data diambil dan dimodifikasi dengan DML, constraint ditegakkan dengan deklarasi skema, dan query deklaratif diterjemahkan DBMS menjadi rencana eksekusi.
+
+Fokus utama untuk ujian adalah menguasai struktur query \texttt{select-from-where}, DDL dan constraint, \texttt{NULL} dan three-valued logic, agregasi, grouping, subquery, joins, views, modifikasi data, authorization, transactions, dan hubungan SQL dengan relational algebra/calculus.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Query mendalam NotebookLM untuk SQL beberapa kali terpotong. Bagian ini disusun dari hasil query SQL bagian 1 yang lengkap, outline SQL NotebookLM yang sudah disetujui, dan pengetahuan umum untuk melengkapi bagian yang terpotong. Pelengkap umum yang tidak eksplisit di hasil query dibungkus dalam environment \texttt{cmt}.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Latar belakang dan bagian SQL
+    \begin{enumerate}
+        \item \ppaham SEQUEL, System R, ANSI/ISO
+        \item \pwajib DDL, DML, view definition, transaction control, embedded/dynamic SQL, authorization
+    \end{enumerate}
+    \item \pwajib DDL dan constraints
+    \begin{enumerate}
+        \item \pwajib \texttt{create table}, \texttt{drop table}, \texttt{alter table}
+        \item \pwajib Tipe data \texttt{char}, \texttt{varchar}, \texttt{numeric}
+        \item \pwajib \texttt{primary key}, \texttt{foreign key}, \texttt{not null}, \texttt{unique}, \texttt{check}
+    \end{enumerate}
+    \item \pwajib Query dasar DML
+    \begin{enumerate}
+        \item \pwajib \texttt{select-from-where}
+        \item \pwajib \texttt{distinct/all}, alias \texttt{as}, predicates, \texttt{between}, tuple comparison
+        \item \pwajib \texttt{order by}
+        \item \pwajib String matching dengan \texttt{like}
+    \end{enumerate}
+    \item \pwajib \texttt{NULL} dan logika SQL
+    \begin{enumerate}
+        \item \pwajib Three-valued logic
+        \item \pwajib \texttt{case} dan \texttt{coalesce}
+    \end{enumerate}
+    \item \pwajib Query menengah
+    \begin{enumerate}
+        \item \pwajib Set operations
+        \item \pwajib Aggregate functions, \texttt{group by}, \texttt{having}
+        \item \pwajib Nested subqueries
+        \item \pwajib Join expressions
+        \item \pwajib Views
+        \item \pwajib \texttt{insert}, \texttt{delete}, \texttt{update}
+    \end{enumerate}
+    \item \ppaham SQL lanjutan
+    \begin{enumerate}
+        \item \ppaham Authorization dan roles
+        \item \ppaham Transactions
+        \item \ppaham JDBC/ODBC, stored procedure, trigger, prepared statement
+        \item \ppaham Recursive query, window/ranking, cube, rollup
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Latar Belakang dan Bagian SQL}
+
+\begin{jawab}[Inti Konsep.]
+SQL adalah bahasa komprehensif untuk database relasional, bukan hanya bahasa query. Ia mencakup definisi skema, manipulasi data, view, transaksi, embedding ke bahasa pemrograman, dan authorization.
+\end{jawab}
+
+SQL berawal dari bahasa SEQUEL yang dikembangkan IBM pada proyek System R di San Jose Research Laboratory. Namanya kemudian menjadi SQL. Standarisasi ANSI/ISO menghasilkan versi seperti SQL-86, SQL-89, SQL-92, SQL:1999, dan SQL:2003.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Bagian SQL} & \textbf{Peran} \\
+\hline
+DDL & Mendefinisikan dan memodifikasi schema, tabel, tipe data, dan constraint. \\
+\hline
+DML & Mengambil, menyisipkan, menghapus, dan memperbarui tuple. \\
+\hline
+View definition & Mendefinisikan tabel virtual berbasis query. \\
+\hline
+Transaction control & Mengatur commit dan rollback transaksi. \\
+\hline
+Embedded/dynamic SQL & Menyisipkan SQL ke bahasa pemrograman umum. \\
+\hline
+Authorization & Mengatur hak akses pengguna terhadap relasi dan view. \\
+\hline
+\end{tabularx}
+\caption{Bagian utama SQL}
+\label{tab:sql-parts}
+\end{table}
+
+SQL berhubungan dengan relational algebra karena \texttt{select}, \texttt{from}, dan \texttt{where} berkorelasi dengan projection, Cartesian product/join, dan selection. SQL juga berhubungan dengan relational calculus karena pengguna mendeklarasikan hasil yang diinginkan, bukan algoritma fisiknya.
+
+\subsubsection{DDL dan Constraints}
+
+\begin{jawab}[Inti Konsep.]
+DDL digunakan untuk mendefinisikan struktur database: tabel, atribut, tipe data, dan constraint. Konsep ini penting karena kualitas data tidak hanya ditentukan oleh query, tetapi oleh aturan yang tertanam pada schema.
+\end{jawab}
+
+Perintah DDL utama:
+\begin{lstlisting}[language=SQL, caption={Contoh DDL SQL}, label={lst:sql-ddl}]
+create table instructor (
+    ID varchar(5),
+    name varchar(20) not null,
+    dept_name varchar(20),
+    salary numeric(8,2),
+    primary key (ID),
+    foreign key (dept_name) references department,
+    check (salary > 29000)
+);
+
+alter table instructor add office varchar(10);
+drop table instructor;
+\end{lstlisting}
+
+\texttt{create table} membuat schema relasi. \texttt{drop table} menghapus data sekaligus definisi schema. \texttt{alter table} memodifikasi schema; ketika atribut baru ditambahkan, nilai awalnya dapat menjadi null.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Tipe/Constraint} & \textbf{Makna} \\
+\hline
+\texttt{char(n)} & String panjang tetap. \\
+\hline
+\texttt{varchar(n)} & String panjang bervariasi sampai \(n\). \\
+\hline
+\texttt{numeric(p,d)} & Angka dengan total \(p\) digit dan \(d\) digit di belakang desimal. \\
+\hline
+\texttt{primary key} & Unik dan non-null. \\
+\hline
+\texttt{foreign key} & Merujuk key pada relasi lain. \\
+\hline
+\texttt{not null} & Melarang nilai null pada atribut. \\
+\hline
+\texttt{unique} & Memaksa nilai unik, tetapi dapat memperbolehkan null tergantung DBMS. \\
+\hline
+\texttt{check(P)} & Memaksa tuple memenuhi predikat \(P\). \\
+\hline
+\end{tabularx}
+\caption{Tipe data dan constraint SQL}
+\label{tab:sql-types-constraints}
+\end{table}
+
+DDL berkaitan langsung dengan integrity constraints. Primary key menerapkan entity integrity; foreign key menerapkan referential integrity; check dan not null menerapkan domain atau attribute constraints.
+
+\subsubsection{Query Dasar Select-From-Where}
+
+\begin{jawab}[Inti Konsep.]
+Struktur dasar query SQL adalah \texttt{select-from-where}: \texttt{select} memilih atribut, \texttt{from} memilih relasi sumber, dan \texttt{where} memfilter tuple. Pola ini penting karena menjadi bentuk dasar hampir semua query SQL.
+\end{jawab}
+
+Bentuk umum:
+\begin{lstlisting}[language=SQL, caption={Struktur dasar query SQL}, label={lst:sql-basic-query}]
+select A1, A2, ..., An
+from r1, r2, ..., rm
+where P;
+\end{lstlisting}
+
+Hubungan dengan aljabar relasional:
+\[
+    \Pi_{A_1,\ldots,A_n}(\sigma_P(r_1 \times r_2 \times \cdots \times r_m))
+\]
+
+Fitur penting:
+\begin{itemize}
+    \item \texttt{distinct}: menghapus duplikasi hasil.
+    \item \texttt{all}: mempertahankan duplikasi secara eksplisit.
+    \item \texttt{as}: memberi alias atribut atau tabel.
+    \item \texttt{between}: predikat rentang.
+    \item Tuple comparison: membandingkan beberapa atribut sekaligus.
+    \item \texttt{order by}: mengurutkan hasil, default \texttt{asc}, dapat memakai \texttt{desc}.
+\end{itemize}
+
+Contoh:
+\begin{lstlisting}[language=SQL, caption={Contoh query dasar}, label={lst:sql-basic-example}]
+select distinct name
+from instructor
+where salary between 90000 and 100000
+order by name asc;
+\end{lstlisting}
+
+String matching memakai \texttt{like}. Karakter \texttt{\%} mencocokkan substring bebas, sedangkan \texttt{\_} mencocokkan tepat satu karakter.
+
+\subsubsection{\texttt{NULL} dan Three-Valued Logic}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{NULL} menyatakan nilai yang tidak diketahui, tidak tersedia, atau tidak berlaku. SQL memakai three-valued logic karena perbandingan dengan null tidak menghasilkan true atau false, melainkan unknown.
+\end{jawab}
+
+Motivasi three-valued logic adalah nilai tidak diketahui tidak boleh diperlakukan sebagai nilai biasa. Jika \texttt{salary} bernilai null, predikat \texttt{salary > 50000} tidak dapat dipastikan benar atau salah.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Ekspresi} & \textbf{Hasil} \\
+\hline
+\texttt{true and unknown} & \texttt{unknown} \\
+\hline
+\texttt{false and unknown} & \texttt{false} \\
+\hline
+\texttt{unknown or true} & \texttt{true} \\
+\hline
+\texttt{unknown or false} & \texttt{unknown} \\
+\hline
+\end{tabularx}
+\caption{Contoh three-valued logic}
+\label{tab:sql-three-valued}
+\end{table}
+
+Klausa \texttt{where} hanya mempertahankan tuple yang predikatnya true. Jika hasilnya unknown, tuple tidak dipilih.
+
+\texttt{case} dan \texttt{coalesce} membantu menangani null:
+\begin{lstlisting}[language=SQL, caption={Case dan coalesce}, label={lst:sql-case-coalesce}]
+select case
+           when sum(credits) is not null then sum(credits)
+           else 0
+       end as total_credits
+from takes;
+
+select coalesce(sum(credits), 0) as total_credits
+from takes;
+\end{lstlisting}
+
+\subsubsection{Set Operations, Aggregation, dan Grouping}
+
+\begin{jawab}[Inti Konsep.]
+Set operations menggabungkan hasil beberapa query, sedangkan aggregation dan grouping merangkum banyak tuple menjadi nilai statistik. Konsep ini penting karena SQL sering dipakai untuk laporan, rekap, dan analisis data.
+\end{jawab}
+
+Set operations mencakup \texttt{union}, \texttt{intersect}, dan \texttt{except}. Operasi ini berhubungan langsung dengan \(\cup\), \(\cap\), dan \(-\) pada aljabar relasional.
+
+Aggregate functions:
+\begin{itemize}
+    \item \texttt{avg}: rata-rata.
+    \item \texttt{min}: nilai minimum.
+    \item \texttt{max}: nilai maksimum.
+    \item \texttt{sum}: jumlah.
+    \item \texttt{count}: jumlah tuple atau nilai.
+\end{itemize}
+
+Contoh:
+\begin{lstlisting}[language=SQL, caption={Aggregation dan grouping}, label={lst:sql-grouping}]
+select dept_name, avg(salary) as avg_salary
+from instructor
+group by dept_name
+having avg(salary) > 70000;
+\end{lstlisting}
+
+\texttt{where} memfilter tuple sebelum grouping, sedangkan \texttt{having} memfilter grup setelah agregasi.
+
+\subsubsection{Nested Subqueries}
+
+\begin{jawab}[Inti Konsep.]
+Nested subquery adalah query yang berada di dalam query lain. Konsep ini penting karena SQL dapat menyatakan kondisi berbasis himpunan seperti membership, comparison, existence, dan query ``untuk semua''.
+\end{jawab}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Bentuk} & \textbf{Makna} \\
+\hline
+\texttt{in/not in} & Mengecek apakah nilai ada atau tidak ada dalam hasil subquery. \\
+\hline
+\texttt{some/all} & Membandingkan nilai dengan sebagian atau seluruh hasil subquery. \\
+\hline
+\texttt{exists/not exists} & Mengecek apakah hasil subquery kosong atau tidak. \\
+\hline
+\texttt{unique} & Mengecek apakah hasil subquery tidak memiliki duplikasi. \\
+\hline
+Correlated subquery & Subquery yang merujuk variabel dari query luar. \\
+\hline
+Scalar subquery & Subquery yang harus mengembalikan tepat satu nilai. \\
+\hline
+\end{tabularx}
+\caption{Jenis nested subquery}
+\label{tab:sql-subqueries}
+\end{table}
+
+Contoh \texttt{exists}:
+\begin{lstlisting}[language=SQL, caption={Contoh correlated subquery}, label={lst:sql-correlated}]
+select S.ID, S.name
+from student as S
+where exists (
+    select *
+    from takes as T
+    where T.ID = S.ID
+);
+\end{lstlisting}
+
+Pola division dalam SQL sering memakai double \texttt{not exists}. Gagasannya: pilih kandidat yang tidak memiliki item wajib yang belum dipenuhi.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Pola umum query ``X yang memenuhi semua Y'' dalam SQL adalah: tidak ada \(Y\) yang tidak dipenuhi oleh \(X\). Ini sesuai logika \(\forall y\,P(x,y)\) yang dapat ditulis sebagai \(\neg \exists y\,\neg P(x,y)\). Dalam SQL, bentuk ini sering memakai nested \texttt{not exists}.
+\end{cmt}
+
+\subsubsection{Join Expressions dan Views}
+
+\begin{jawab}[Inti Konsep.]
+Join expressions menggabungkan tabel berdasarkan kondisi keterhubungan, sedangkan view menyimpan definisi query sebagai tabel virtual. Keduanya penting untuk menyederhanakan query kompleks dan mengelola abstraksi skema.
+\end{jawab}
+
+Jenis join:
+\begin{itemize}
+    \item \texttt{inner join}: hanya tuple yang cocok.
+    \item \texttt{natural join}: otomatis mencocokkan atribut bernama sama.
+    \item \texttt{left outer join}: mempertahankan semua tuple kiri.
+    \item \texttt{right outer join}: mempertahankan semua tuple kanan.
+    \item \texttt{full outer join}: mempertahankan tuple dari kedua sisi.
+\end{itemize}
+
+Contoh:
+\begin{lstlisting}[language=SQL, caption={Join expression}, label={lst:sql-join}]
+select I.name, D.building
+from instructor as I
+join department as D
+  on I.dept_name = D.dept_name;
+\end{lstlisting}
+
+View:
+\begin{lstlisting}[language=SQL, caption={Create view}, label={lst:sql-view}]
+create view physics_instructors as
+select ID, name
+from instructor
+where dept_name = 'Physics';
+\end{lstlisting}
+
+View berguna untuk keamanan dan abstraksi, tetapi tidak semua view dapat diperbarui. View sederhana dari satu tabel tanpa agregasi, \texttt{distinct}, atau \texttt{group by} lebih mungkin updatable; view kompleks biasanya tidak.
+
+\subsubsection{Modifikasi Data, Authorization, dan Transaction}
+
+\begin{jawab}[Inti Konsep.]
+SQL tidak hanya mengambil data, tetapi juga memodifikasi data, mengatur hak akses, dan mengontrol transaksi. Konsep ini penting karena database harus mendukung operasi nyata dengan keamanan dan atomicity.
+\end{jawab}
+
+Modifikasi data:
+\begin{lstlisting}[language=SQL, caption={Insert delete update}, label={lst:sql-modification}]
+insert into instructor (ID, name, dept_name, salary)
+values ('99999', 'Ada', 'Comp. Sci.', 90000);
+
+delete from instructor
+where ID = '99999';
+
+update instructor
+set salary = salary * 1.05
+where dept_name = 'Comp. Sci.';
+\end{lstlisting}
+
+Authorization:
+\begin{lstlisting}[language=SQL, caption={Grant dan revoke}, label={lst:sql-auth}]
+grant select on instructor to analyst;
+revoke select on instructor from analyst;
+\end{lstlisting}
+
+Transaction control:
+\begin{lstlisting}[language=SQL, caption={Commit dan rollback}, label={lst:sql-transaction}]
+begin transaction;
+update account set balance = balance - 100 where account_id = 'A';
+update account set balance = balance + 100 where account_id = 'B';
+commit;
+-- atau rollback jika gagal
+\end{lstlisting}
+
+Transaction berhubungan dengan atomicity: dua update transfer harus dianggap satu unit kerja. Jika salah satu gagal, seluruh transaksi harus dibatalkan.
+
+\subsubsection{SQL Lanjutan}
+
+\begin{jawab}[Inti Konsep.]
+SQL lanjutan memperluas SQL untuk integrasi aplikasi, keamanan, logika prosedural, dan analitik. Konsep ini penting karena database modern tidak hanya menyimpan data, tetapi juga menjadi bagian dari aplikasi dan sistem analitik.
+\end{jawab}
+
+Topik lanjutan mencakup embedded/dynamic SQL, JDBC, ODBC, stored procedures, functions, triggers, prepared statements, recursive query, window functions, ranking, \texttt{cube}, dan \texttt{rollup}.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+\textbf{Prepared statement} membantu mencegah SQL injection karena nilai parameter dikirim terpisah dari teks SQL, bukan digabung sebagai string mentah. SQL injection terjadi ketika input pengguna disisipkan langsung ke query sehingga dapat mengubah struktur query.
+\end{cmt}
+
+Analitik SQL seperti window function, ranking, \texttt{cube}, dan \texttt{rollup} berhubungan dengan data warehouse dan OLAP. Stored procedures dan triggers berhubungan dengan integrity constraints dan aturan bisnis.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Urutan Logis Query SQL}
+
+\begin{jawab}[Tujuan Algoritma.]
+Urutan logis ini membantu memahami bahwa SQL tidak dievaluasi dari atas ke bawah seperti teksnya. \texttt{from} dan \texttt{where} secara konseptual diproses sebelum \texttt{select}.
+\end{jawab}
+
+\begin{lstlisting}[caption={Urutan logis query SQL}, label={lst:sql-logical-order}]
+Input: SQL query
+Output: result relation
+
+1. FROM: determine source relations and joins
+2. WHERE: filter tuples
+3. GROUP BY: form groups
+4. HAVING: filter groups
+5. SELECT: compute output attributes
+6. DISTINCT: remove duplicates if requested
+7. ORDER BY: sort final output
+\end{lstlisting}
+
+\subsubsection{SQL dan Aljabar Relasional}
+
+\begin{jawab}[Makna Rumus.]
+Rumus ini menunjukkan padanan query dasar SQL dengan aljabar relasional: \texttt{where} menjadi selection, \texttt{select} menjadi projection, dan \texttt{from} menjadi product atau join.
+\end{jawab}
+
+\begin{equation}
+    \texttt{select } A \texttt{ from } R \texttt{ where } P
+    \quad \equiv \quad
+    \Pi_A(\sigma_P(R))
+    \label{eq:sql-ra-basic}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item \(A\): daftar atribut hasil.
+    \item \(R\): relasi atau hasil join sumber.
+    \item \(P\): predikat filter.
+\end{itemize}

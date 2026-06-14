@@ -1,0 +1,214 @@
+% arara: pdflatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{graphicx}
+\input{preamble.sty}
+
+\title{%
+    \vspace{-2cm}
+    \textbf{\LARGE Catatan Ujian Akhir Semester} \\[0.25em]
+    \Large IF2010 Pemrograman Berbasis Objek \\[0.25em]
+    \normalsize Semester 4 Tahun 2025/2026 \\[2em]
+}
+
+\author{%
+    Narendra Dharma Wistara M. \\[0.25em]
+    13524044 \\[2.5em]
+    Program Studi Teknik Informatika \\[0.25em]
+    Sekolah Teknik Elektro dan Informatika \\[0.25em]
+    Institut Teknologi Bandung \\[0.25em]
+}
+
+\begin{document}
+\pagenumbering{gobble}
+\begin{titlepage}
+    \maketitle
+    \thispagestyle{empty}
+\end{titlepage}
+
+\clearpage
+
+\pagenumbering{roman}
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic}
+
+\section{Informasi Ujian}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Jenis Ujian} & UAS \\
+\hline
+\textbf{Nama Mata Kuliah} & IF2010 Pemrograman Berbasis Objek \\
+\hline
+\textbf{Tanggal Ujian} & Kamis, 4 Juni 2026 \\
+\hline
+\textbf{Waktu Tersisa} & 18 jam \\
+\hline
+\end{tabularx}
+\caption{Informasi ujian}
+\label{tab:informasi-ujian}
+\end{table}
+
+\subsection{Capaian Pembelajaran Mata Kuliah}
+
+Tidak disebutkan dalam perkuliahan
+
+\subsection{Keterpenuhan CPMK terhadap Materi yang Dibahas}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.36\textwidth}|L{0.22\textwidth}|X|}
+\hline
+\textbf{CPMK} & \textbf{Materi yang Dibahas} & \textbf{Keterpenuhan} \\
+\hline
+Tidak disebutkan dalam perkuliahan & Seluruh materi UAS yang telah disusun, yaitu Prinsip OOP SOLID sampai Design Pattern & Tidak dapat dipetakan secara formal karena CPMK tidak disebutkan dalam perkuliahan. Materi tetap disusun berdasarkan daftar materi UAS dan sumber utama apabila tersedia, lalu dilengkapi pengetahuan umum yang ditandai. \\
+\hline
+\end{tabularx}
+\caption{Keterpenuhan CPMK terhadap materi yang telah disusun}
+\label{tab:keterpenuhan-cpmk}
+\end{table}
+
+\begin{cmt}{Keterbatasan Sumber CPMK}{}
+CPMK disalin sesuai isian yang tersedia, yaitu ``Tidak disebutkan dalam perkuliahan''. Karena tidak ada CPMK formal, hubungan materi dengan CPMK tidak dibuat sebagai klaim capaian resmi, melainkan hanya sebagai peta belajar berdasarkan daftar materi UAS.
+\end{cmt}
+
+\section{Daftar Materi yang Diujikan}
+
+\begin{enumerate}
+    \item Prinsip OOP SOLID
+    \item Pengenalan Bahasa Java
+    \item Padanan Java - C++
+    \item Java String
+    \item Java Inheritance
+    \item Java Interface
+    \item Java Generics
+    \item Java Generics Wildcard
+    \item Java Collection
+    \item Java Stream API
+    \item Java Exception
+    \item Java Assertion
+    \item Java Multithreading
+    \item Java Reflection
+    \item Design Pattern
+\end{enumerate}
+
+\section{Outline Keseluruhan Materi}
+
+Bagian ini menyajikan peta belajar ringkas untuk seluruh materi yang diujikan. Penjelasan mendalam tersedia pada section masing-masing materi yang sudah disusun.
+
+\subsection{Prinsip OOP SOLID}
+\begin{itemize}
+    \item Memahami masalah desain buruk: \textit{rigidity}, \textit{fragility}, dan \textit{immobility}.
+    \item Menguasai lima prinsip SOLID: SRP, OCP, LSP, ISP, dan DIP.
+    \item Mampu membaca cuplikan kode Java, mengidentifikasi pelanggaran prinsip, dan mengusulkan refactoring berbasis abstraksi.
+    \item Memahami hubungan SOLID dengan package principles, coupling, stability, dan abstraction.
+\end{itemize}
+
+\subsection{Pengenalan Bahasa Java}
+\begin{itemize}
+    \item Sintaks dasar Java, struktur program, tipe data, class, object, method, dan akses modifier.
+    \item Perbedaan model kompilasi Java dengan bahasa lain melalui bytecode dan JVM.
+\end{itemize}
+
+\subsection{Padanan Java - C++}
+\begin{itemize}
+    \item Perbandingan class, inheritance, pointer/reference, memory management, generic/template, dan exception.
+    \item Batasan Java seperti single inheritance untuk class dan penggunaan interface untuk multiple typing.
+\end{itemize}
+
+\subsection{Java String}
+\begin{itemize}
+    \item Sifat immutable, string pool, operasi pembandingan, dan penggunaan \texttt{StringBuilder}.
+\end{itemize}
+
+\subsection{Java Inheritance}
+\begin{itemize}
+    \item Relasi \textit{is-a}, overriding, constructor chaining, polymorphism, dan risiko desain hierarki yang salah.
+\end{itemize}
+
+\subsection{Java Interface}
+\begin{itemize}
+    \item Kontrak perilaku, implementasi banyak interface, default method, static method, dan hubungan dengan DIP/ISP.
+\end{itemize}
+
+\subsection{Java Generics}
+\begin{itemize}
+    \item Type parameter, type safety, generic class, generic method, bounded type parameter, dan type erasure.
+\end{itemize}
+
+\subsection{Java Generics Wildcard}
+\begin{itemize}
+    \item Wildcard \texttt{?}, upper bounded wildcard, lower bounded wildcard, dan prinsip PECS.
+\end{itemize}
+
+\subsection{Java Collection}
+\begin{itemize}
+    \item Struktur \texttt{List}, \texttt{Set}, \texttt{Map}, iterator, ordering, hashing, dan pemilihan collection.
+\end{itemize}
+
+\subsection{Java Stream API}
+\begin{itemize}
+    \item Pipeline stream, intermediate operation, terminal operation, lazy evaluation, dan operasi transformasi data.
+\end{itemize}
+
+\subsection{Java Exception}
+\begin{itemize}
+    \item Checked exception, unchecked exception, \texttt{try-catch-finally}, \texttt{throw}, \texttt{throws}, dan desain error handling.
+\end{itemize}
+
+\subsection{Java Assertion}
+\begin{itemize}
+    \item Penggunaan \texttt{assert} untuk memeriksa asumsi internal program selama debugging.
+\end{itemize}
+
+\subsection{Java Multithreading}
+\begin{itemize}
+    \item Thread, runnable task, race condition, synchronization, executor, dan koordinasi eksekusi paralel.
+\end{itemize}
+
+\subsection{Java Reflection}
+\begin{itemize}
+    \item Inspeksi metadata class saat runtime, pemanggilan method dinamis, dan risiko terhadap enkapsulasi.
+\end{itemize}
+
+\subsection{Design Pattern}
+\begin{itemize}
+    \item Pola desain umum sebagai solusi berulang untuk masalah desain OOP, serta hubungannya dengan SOLID.
+\end{itemize}
+
+\newpage
+\input{section/1-solid-oop-principle.tex}
+\newpage
+\input{section/2-pengenalan-bahasa-java.tex}
+\newpage
+\input{section/3-padanan-java-cpp.tex}
+\newpage
+\input{section/4-java-string.tex}
+\newpage
+\input{section/5-java-inheritance.tex}
+\newpage
+\input{section/6-java-interface.tex}
+\newpage
+\input{section/7-java-generics.tex}
+\newpage
+\input{section/8-java-generics-wildcard.tex}
+\newpage
+\input{section/9-java-collection.tex}
+\newpage
+\input{section/10-java-stream-api.tex}
+\newpage
+\input{section/11-java-exception.tex}
+\newpage
+\input{section/12-java-assertion.tex}
+\newpage
+\input{section/13-java-multithreading.tex}
+\newpage
+\input{section/14-java-reflection.tex}
+\newpage
+\input{section/15-design-pattern.tex}
+
+\end{document}

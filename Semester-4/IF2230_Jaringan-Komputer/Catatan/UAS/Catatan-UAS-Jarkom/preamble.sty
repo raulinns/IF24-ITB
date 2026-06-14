@@ -1,0 +1,102 @@
+\usepackage[a4paper, top=0.7in, bottom=0.7in, left=0.8in, right=0.8in, headheight=16pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage[unicode]{hyperref}
+\usepackage{titling}
+
+\setcounter{tocdepth}{3}
+\emergencystretch=2em
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\renewcommand{\contentsname}{Daftar Isi}
+\renewcommand{\figurename}{Gambar}
+\captionsetup[table]{name=Tabel}
+\renewcommand{\refname}{Referensi}
+
+\hypersetup{
+    colorlinks=true,
+    linktoc=all,
+    linkcolor=black,
+    citecolor=MidnightBlue,
+    urlcolor=MidnightBlue,
+    bookmarksnumbered=true
+}
+
+\definecolor{boxpurple}{HTML}{4B3F72}
+\definecolor{boxgreen}{HTML}{2F6B4F}
+\definecolor{boxblue}{HTML}{28527A}
+\definecolor{boxred}{HTML}{8B2F3C}
+\definecolor{codebg}{HTML}{FAFAFA}
+\definecolor{codetext}{HTML}{24292F}
+\definecolor{codecomment}{HTML}{6A737D}
+\definecolor{codekeyword}{HTML}{A626A4}
+\definecolor{codestring}{HTML}{22863A}
+
+\lstdefinestyle{notes}{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize\color{codetext},
+    keywordstyle=\bfseries\color{codekeyword},
+    commentstyle=\itshape\color{codecomment},
+    stringstyle=\color{codestring},
+    numbers=left,
+    numberstyle=\tiny\color{codecomment},
+    numbersep=6pt,
+    frame=single,
+    rulecolor=\color{black!12},
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4
+}
+\lstset{style=notes}
+
+\newcounter{hitung}
+
+\newtcolorbox{jawab}[1][Jawaban.]{
+   breakable,
+   enhanced,
+   colback=boxpurple!7,
+   colframe=boxpurple!85!black,
+   coltitle=white,
+   fonttitle=\bfseries,
+   title={#1},
+   arc=2mm,
+   boxrule=0.6pt
+}
+
+\newtcbtheorem[use counter=hitung, number within=section]{cmt}{Komentar}
+  {breakable, enhanced, colback=boxgreen!7, colframe=boxgreen!85!black,
+   coltitle=white, fonttitle=\bfseries, arc=2mm, boxrule=0.6pt}{cmt}
+
+\newtcbtheorem[use counter=hitung, number within=section]{thm}{Teorema}
+  {breakable, enhanced, colback=boxred!7, colframe=boxred!85!black,
+   coltitle=white, fonttitle=\bfseries, arc=2mm, boxrule=0.6pt}{thm}
+
+\newtcbtheorem[use counter=hitung, number within=section]{definition}{Definisi}
+  {breakable, enhanced, colback=boxblue!7, colframe=boxblue!85!black,
+   coltitle=white, fonttitle=\bfseries, arc=2mm, boxrule=0.6pt}{def}
+
+% Prioritas belajar -- digunakan pada \subsection{Outline Fundamental Konsep Materi}
+\newcommand{\pwajib}{\colorbox{red!18}{\textcolor{red!75!black}{\textbf{\scriptsize WAJIB}}}\;}
+\newcommand{\ppaham}{\colorbox{yellow!55}{\textcolor{yellow!65!black}{\textbf{\scriptsize PAHAM}}}\;}
+\newcommand{\pkuasai}{\colorbox{green!22}{\textcolor{green!60!black}{\textbf{\scriptsize KUASAI}}}\;}
+
+\pretitle{\begin{center}}
+\posttitle{\par\vspace{0.8cm}\includegraphics[width=0.42\textwidth]{figures/itb.png}\par\vspace{1cm}\end{center}}
+\preauthor{\begin{center}\large}
+\postauthor{\par\end{center}}
+\predate{\begin{center}}
+\postdate{\par\end{center}}

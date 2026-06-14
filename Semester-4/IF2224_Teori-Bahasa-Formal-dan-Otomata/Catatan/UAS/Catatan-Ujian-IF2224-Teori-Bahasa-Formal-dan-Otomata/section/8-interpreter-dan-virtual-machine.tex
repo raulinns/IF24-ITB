@@ -1,0 +1,451 @@
+\section{Interpreter dan Virtual Machine}
+
+Interpreter dan Virtual Machine (VM) membahas cara program dieksekusi setelah melewati analisis bahasa. Jika compiler tradisional menerjemahkan program sumber menjadi kode target sebelum dijalankan, interpreter dan VM mengeksekusi representasi program secara langsung atau melalui bytecode. Materi ini menutup rangkaian compiler: dari source code, token, syntax tree, intermediate code, sampai model eksekusi runtime.
+
+Fokus belajar untuk ujian adalah membedakan compiler, interpreter, VM, bytecode, dan JIT; memahami arsitektur stack-based VM; membaca model memori runtime; serta menghubungkan bytecode dengan intermediate code dan code generation.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Definisi dasar
+    \begin{enumerate}
+        \item \pwajib Compiler
+        \item \pwajib Interpreter
+        \item \pwajib Virtual Machine
+        \item \pwajib Bytecode
+        \item \pwajib JIT compiler
+        \item \ppaham HotSpot client dan server compiler
+    \end{enumerate}
+    \item \pwajib Motivasi model hibrida compiler dan VM
+    \begin{enumerate}
+        \item \pwajib Portabilitas bytecode
+        \item \pwajib Penyederhanaan back end compiler
+        \item \ppaham Verifikasi dan profiling runtime
+    \end{enumerate}
+    \item \pwajib Posisi dalam language-processing system
+    \begin{enumerate}
+        \item \pwajib Source code ke bytecode
+        \item \pwajib VM sebagai mesin target abstrak
+        \item \pwajib Eksekusi interpretif atau JIT
+    \end{enumerate}
+    \item \pwajib Arsitektur VM
+    \begin{enumerate}
+        \item \pwajib Stack-based VM
+        \item \ppaham Register-based VM
+        \item \pwajib Instruction set dan opcode
+        \item \pwajib Bytecode strongly typed
+    \end{enumerate}
+    \item \pwajib Runtime memory model
+    \begin{enumerate}
+        \item \pwajib Code area
+        \item \pwajib Stack
+        \item \pwajib Activation record atau stack frame
+        \item \pwajib Operand stack
+        \item \pwajib Local variables
+        \item \pwajib Heap
+    \end{enumerate}
+    \item \pwajib Siklus fetch-decode-execute
+    \begin{enumerate}
+        \item \pwajib Program counter
+        \item \pwajib Decode opcode
+        \item \pwajib Execute dan update state
+    \end{enumerate}
+    \item \ppaham Optimasi interpreter VM
+    \begin{enumerate}
+        \item \ppaham Threaded code
+        \item \ppaham Top-of-stack caching
+        \item \ppaham Super-instructions
+    \end{enumerate}
+    \item \pwajib Garbage collection
+    \begin{enumerate}
+        \item \pwajib Root set
+        \item \pwajib Reachability
+        \item \ppaham Mark-and-sweep
+        \item \ppaham Reference counting
+    \end{enumerate}
+    \item \pwajib Relasi dengan intermediate code dan code generation
+    \item \ppaham Kaitan dengan contoh UAS
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Compiler, Interpreter, VM, Bytecode, dan JIT}
+
+\begin{jawab}[Inti Konsep.]
+Compiler menerjemahkan program sebelum eksekusi, interpreter mengeksekusi program secara langsung, dan VM mengeksekusi bytecode sebagai mesin abstrak. JIT compiler mempercepat VM dengan mengompilasi bytecode menjadi native code saat runtime.
+\end{jawab}
+
+Materi ini perlu dimulai dari pemisahan istilah karena semuanya sama-sama berhubungan dengan penerjemahan program, tetapi titik kerjanya berbeda.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Istilah} & \textbf{Definisi atau Peran} \\
+\hline
+Compiler & Membaca program sumber dan menerjemahkannya menjadi program target yang ekuivalen sebelum dijalankan. \\
+\hline
+Interpreter & Mengeksekusi operasi program secara langsung tanpa menghasilkan object code eksternal sebagai output utama. \\
+\hline
+Virtual Machine & Software interpreter khusus yang bertindak seperti CPU abstrak untuk mengeksekusi instruksi perantara. \\
+\hline
+Bytecode & Bentuk intermediate representation level rendah yang menjadi input VM; opcode sering berukuran satu byte. \\
+\hline
+JIT compiler & Compiler runtime yang menerjemahkan bytecode menjadi instruksi mesin native saat program berjalan. \\
+\hline
+\end{tabularx}
+\caption{Perbandingan istilah dasar eksekusi program}
+\label{tab:istilah-interpreter-vm}
+\end{table}
+
+Compiler tradisional unggul dalam performa karena kode target sudah dihasilkan sebelum runtime. Interpreter unggul dalam fleksibilitas dan diagnostik karena eksekusi mengikuti struktur program secara langsung. VM mengambil jalan tengah: program dikompilasi ke bytecode portabel, lalu bytecode dieksekusi oleh VM.
+
+\subsubsection{HotSpot, Client Compiler, dan Server Compiler}
+
+\begin{jawab}[Inti Konsep.]
+HotSpot adalah pendekatan JIT yang mengamati bagian program yang sering dieksekusi lalu mengompilasinya menjadi native code. Client compiler menekankan waktu startup cepat, sedangkan server compiler menekankan optimasi lebih agresif untuk program berjalan lama.
+\end{jawab}
+
+Interpreter VM dapat langsung menjalankan bytecode, tetapi mengeksekusi semua instruksi secara interpretif sering lambat. JIT memperbaikinya dengan profiling runtime: VM menghitung method atau loop mana yang menjadi **hot spot**, yaitu bagian yang sering dijalankan dan layak dikompilasi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Mode JIT} & \textbf{Karakteristik} \\
+\hline
+Client compiler & Menghasilkan native code lebih cepat dengan optimasi lebih ringan; cocok untuk startup cepat dan aplikasi interaktif. \\
+\hline
+Server compiler & Menghabiskan waktu kompilasi lebih banyak untuk optimasi agresif; cocok untuk program yang berjalan lama. \\
+\hline
+HotSpot profiling & Menggunakan data runtime untuk memilih bagian kode yang paling menguntungkan jika dikompilasi. \\
+\hline
+\end{tabularx}
+\caption{Model HotSpot JIT pada VM}
+\label{tab:hotspot-jit}
+\end{table}
+
+JIT berbasis HotSpot berbeda dari ahead-of-time compiler karena keputusan optimasinya didasarkan pada perilaku aktual saat program berjalan. Misalnya VM dapat melihat cabang mana yang sering dipilih, method mana yang sering dipanggil, atau tipe objek apa yang dominan.
+
+\begin{cmt}{Catatan: Tradeoff JIT}{}
+JIT tidak selalu langsung lebih cepat sejak awal. Ada biaya profiling dan kompilasi runtime. Keuntungannya muncul ketika kode yang dikompilasi dipakai cukup sering sehingga penghematan eksekusi lebih besar daripada biaya kompilasinya.
+\end{cmt}
+
+Konsep HotSpot menghubungkan VM dengan optimasi compiler. Perbedaannya, optimizer JIT bekerja dengan informasi runtime yang tidak tersedia pada compiler statis biasa.
+
+\subsubsection{Motivasi Model Hibrida Compiler dan VM}
+
+\begin{jawab}[Inti Konsep.]
+Model hibrida compiler dan VM mengompilasi source code ke bytecode portabel, lalu mengeksekusinya di VM. Tujuannya adalah menggabungkan portabilitas interpreter dengan performa yang dapat ditingkatkan melalui JIT.
+\end{jawab}
+
+Bahasa seperti Java dan C\# memakai model hibrida. Source code tidak langsung diterjemahkan ke instruksi mesin tertentu, melainkan ke bytecode. Bytecode yang sama dapat berjalan pada sistem operasi dan hardware berbeda selama tersedia VM yang kompatibel.
+
+Keuntungan model ini:
+\begin{enumerate}
+    \item Portabilitas: satu bytecode dapat dijalankan di banyak platform.
+    \item Back end compiler lebih sederhana: compiler menargetkan mesin abstrak, bukan banyak CPU nyata.
+    \item VM dapat memverifikasi bytecode sebelum eksekusi untuk meningkatkan keamanan.
+    \item VM dapat melakukan profiling runtime dan memilih bagian panas untuk dikompilasi JIT.
+\end{enumerate}
+
+Tradeoff-nya adalah overhead runtime. Jika bytecode hanya diinterpretasi, performanya biasanya lebih rendah daripada native code. JIT mengurangi overhead ini dengan menerjemahkan bagian yang sering dieksekusi menjadi kode mesin.
+
+\subsubsection{Posisi Interpreter dan VM dalam Language-Processing System}
+
+\begin{jawab}[Inti Konsep.]
+Dalam sistem pemrosesan bahasa, compiler front end menghasilkan bytecode atau IR level rendah, lalu VM berperan sebagai mesin target abstrak yang mengeksekusi representasi tersebut.
+\end{jawab}
+
+Alur model VM dapat ditulis:
+\[
+    \text{Source Code}
+    \rightarrow \text{Compiler Front End}
+    \rightarrow \text{Bytecode}
+    \rightarrow \text{Virtual Machine}
+    \rightarrow \text{Output}.
+\]
+
+Front end tetap melakukan lexical analysis, syntax analysis, semantic analysis, dan intermediate code generation. Perbedaannya, code generator tidak harus menghasilkan assembly mesin nyata; ia dapat menghasilkan bytecode untuk VM.
+
+VM berada pada sisi runtime. Ia membaca bytecode, mengelola memori, menjalankan instruksi, menangani call stack, dan berinteraksi dengan layanan sistem seperti I/O atau thread melalui abstraksi yang disediakan runtime.
+
+\subsubsection{Stack-Based VM}
+
+\begin{jawab}[Inti Konsep.]
+Stack-based VM mengeksekusi instruksi dengan operand stack. Operand tidak ditulis eksplisit sebagai register pada setiap instruksi; instruksi mengambil nilai dari puncak stack dan mendorong hasil kembali ke stack.
+\end{jawab}
+
+Pada stack-based VM, komputasi seperti $a+b$ biasanya dilakukan dengan urutan:
+\[
+    \texttt{load a},\quad \texttt{load b},\quad \texttt{add}.
+\]
+Instruksi \texttt{load} mendorong nilai ke operand stack. Instruksi \texttt{add} mengambil dua nilai teratas, menjumlahkannya, lalu mendorong hasil.
+
+Keuntungan stack-based VM adalah instruction format sederhana. Compiler tidak perlu memilih register virtual untuk setiap operasi karena lokasi operand implisit berada di stack. JVM adalah contoh penting stack-based VM.
+
+Kelemahannya, operasi stack sering menghasilkan lebih banyak instruksi dan akses memori dibanding register-based VM. Karena itu, VM modern memakai optimasi seperti top-of-stack caching untuk menyimpan beberapa elemen puncak stack pada register CPU nyata.
+
+\subsubsection{Register-Based VM}
+
+\begin{jawab}[Inti Konsep.]
+Register-based VM memakai register virtual sebagai tempat operand dan hasil. Instruksinya lebih mirip CPU nyata karena operand ditulis eksplisit.
+\end{jawab}
+
+Dalam register-based VM, operasi penjumlahan dapat ditulis seperti:
+\[
+    \texttt{add r3, r1, r2}
+\]
+yang berarti $r3=r1+r2$. Operand dan result terlihat langsung pada instruksi.
+
+Perbandingan singkat:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|X|}
+\hline
+\textbf{Model} & \textbf{Kelebihan} & \textbf{Keterbatasan} \\
+\hline
+Stack-based VM & Instruksi sederhana; compiler bytecode lebih mudah karena operand implisit. & Dapat menghasilkan lebih banyak push/pop dan akses stack. \\
+\hline
+Register-based VM & Lebih dekat ke CPU nyata; instruksi dapat lebih padat secara jumlah langkah. & Compiler harus mengelola register virtual dan format instruksi lebih kompleks. \\
+\hline
+\end{tabularx}
+\caption{Perbandingan stack-based dan register-based VM}
+\label{tab:stack-register-vm}
+\end{table}
+
+Sumber menyebut Dalvik VM sebagai contoh register-based VM, sedangkan JVM sebagai contoh stack-based VM.
+
+\subsubsection{Instruction Set dan Bytecode}
+
+\begin{jawab}[Inti Konsep.]
+Instruction set VM adalah kumpulan opcode yang dipahami VM. Bytecode menyimpan opcode dan operand ringkas sebagai bahasa mesin untuk mesin virtual.
+\end{jawab}
+
+Opcode adalah kode operasi, misalnya load, add, branch, call, atau return. Pada bytecode, opcode sering direpresentasikan sebagai angka 1 byte. Karena itu ada batas praktis jumlah opcode dasar, tetapi VM dapat memakai operand tambahan setelah opcode.
+
+Pada JVM, banyak instruksi bersifat typed. Contohnya:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Instruksi} & \textbf{Makna} \\
+\hline
+\texttt{iload\_0} & Memuat local variable integer indeks 0 ke operand stack. \\
+\hline
+\texttt{iconst\_1} & Mendorong konstanta integer 1 ke operand stack. \\
+\hline
+\texttt{iadd} & Mengambil dua integer dari stack, menjumlahkan, lalu mendorong hasil. \\
+\hline
+\texttt{fadd} & Operasi penjumlahan untuk floating-point. \\
+\hline
+\texttt{imul} & Mengalikan dua integer pada puncak stack. \\
+\hline
+\texttt{if\_icmpgt} & Branch jika perbandingan dua integer memenuhi kondisi greater-than. \\
+\hline
+\texttt{invokevirtual} & Memanggil method virtual. \\
+\hline
+\texttt{ireturn} & Mengembalikan nilai integer ke pemanggil. \\
+\hline
+\end{tabularx}
+\caption{Contoh instruksi bytecode JVM}
+\label{tab:instruksi-bytecode-jvm}
+\end{table}
+
+Typed instruction membantu verifikasi bytecode karena VM dapat memeriksa apakah operasi integer, floating-point, object reference, dan return value digunakan secara konsisten.
+
+\subsubsection{Runtime Memory Model}
+
+\begin{jawab}[Inti Konsep.]
+VM membagi memori runtime menjadi code area, stack, heap, dan frame. Pembagian ini memungkinkan eksekusi fungsi, penyimpanan objek, dan evaluasi instruksi bytecode berjalan terstruktur.
+\end{jawab}
+
+Model memori runtime yang relevan:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Area} & \textbf{Peran} \\
+\hline
+Code area & Menyimpan bytecode atau instruksi yang akan dieksekusi. \\
+\hline
+Stack & Menyimpan frame untuk pemanggilan fungsi atau method. \\
+\hline
+Activation record / frame & Unit data untuk satu pemanggilan method; berisi locals, operand stack, status mesin tersimpan, dan return value. \\
+\hline
+Operand stack & Stack internal dalam frame yang dipakai instruksi stack-based VM untuk operand sementara. \\
+\hline
+Local variables & Slot dalam frame untuk argumen dan variabel lokal method. \\
+\hline
+Heap & Area dinamis untuk objek yang umur hidupnya dapat melampaui satu pemanggilan fungsi. \\
+\hline
+\end{tabularx}
+\caption{Komponen runtime memory model VM}
+\label{tab:runtime-memory-vm}
+\end{table}
+
+Setiap pemanggilan method membuat frame baru. Ketika method selesai, frame di-pop dari stack dan kontrol kembali ke pemanggil. Namun objek yang dibuat di heap tidak otomatis hilang saat frame dihapus; objek hanya dapat dibebaskan jika tidak lagi reachable.
+
+\subsubsection{Siklus Fetch-Decode-Execute}
+
+\begin{jawab}[Inti Konsep.]
+Interpreter VM menjalankan bytecode dengan siklus fetch-decode-execute. VM mengambil instruksi dari program counter, mendekode opcode, menjalankan aksi, lalu memperbarui state runtime.
+\end{jawab}
+
+Siklus dasarnya:
+\begin{enumerate}
+    \item \textbf{Fetch}: ambil opcode pada posisi program counter (\texttt{pc}).
+    \item \textbf{Decode}: tentukan instruksi apa yang direpresentasikan opcode, sering memakai \texttt{switch/case}.
+    \item \textbf{Execute}: jalankan operasi, misalnya push, pop, add, branch, call, atau return.
+    \item \textbf{Update}: perbarui \texttt{pc}, operand stack, locals, heap, atau call stack sesuai instruksi.
+\end{enumerate}
+
+Overhead utama interpreter berasal dari pengulangan decode dan dispatch instruksi. Setiap instruksi bytecode memerlukan cabang kontrol di interpreter sebelum kerja sebenarnya dilakukan. Pada CPU nyata, pola branch tidak langsung seperti ini dapat menyebabkan pipeline stalls.
+
+\subsubsection{Optimasi Interpreter VM}
+
+\begin{jawab}[Inti Konsep.]
+Optimasi interpreter VM berusaha mengurangi overhead dispatch dan akses stack. Teknik yang disebut sumber mencakup threaded code, top-of-stack caching, dan super-instructions.
+\end{jawab}
+
+**Threaded code** mengurangi biaya loop dispatch. Alih-alih selalu kembali ke loop utama untuk memilih instruksi berikutnya, implementasi dapat melompat langsung ke handler instruksi berikutnya.
+
+**Top-of-stack caching** menyimpan beberapa elemen puncak operand stack di register CPU nyata. Karena stack-based VM sering membaca dan menulis puncak stack, caching ini mengurangi akses memori.
+
+**Super-instructions** menggabungkan beberapa bytecode yang sering muncul berurutan menjadi satu instruksi gabungan. Misalnya pola multiply lalu add dapat digabung sebagai instruksi konseptual \texttt{madd}. Dengan begitu jumlah dispatch berkurang.
+
+Super-instructions dapat dibedakan menjadi dua. Static super-instruction ditentukan sebelum eksekusi, misalnya VM menyediakan handler khusus untuk pola bytecode umum. Dynamic super-instruction dibentuk berdasarkan profil runtime atau basic block yang benar-benar sering muncul pada program yang sedang berjalan. Keduanya mengejar tujuan yang sama: mengurangi jumlah dispatch interpreter tanpa mengubah hasil eksekusi bytecode.
+
+Optimasi ini tidak mengubah semantik bytecode. Tujuannya murni meningkatkan performa interpreter.
+
+\subsubsection{Garbage Collection}
+
+\begin{jawab}[Inti Konsep.]
+Garbage collection membebaskan objek heap yang tidak lagi reachable. VM memulai dari root set, menelusuri referensi yang masih hidup, lalu menganggap objek lain sebagai sampah.
+\end{jawab}
+
+Stack frame dapat dihapus otomatis ketika fungsi selesai, tetapi heap berbeda. Objek heap dapat tetap dibutuhkan setelah fungsi pembuatnya selesai, selama masih ada referensi dari tempat lain. Karena itu VM perlu menentukan objek mana yang masih dapat dicapai.
+
+**Root set** mencakup referensi dari register, static/class data, dan stack frame aktif. Dari root set, GC menelusuri graf referensi ke objek heap. Objek yang tercapai disebut reachable dan harus dipertahankan. Objek yang tidak tercapai dapat dibebaskan.
+
+Dua teknik yang disebut sumber:
+\begin{itemize}
+    \item \textbf{Mark-and-sweep}: tandai objek reachable, lalu sweep objek yang tidak ditandai.
+    \item \textbf{Reference counting}: simpan jumlah referensi ke setiap objek, lalu bebaskan ketika hitungan menjadi nol.
+\end{itemize}
+
+Garbage collection membuat manajemen memori lebih aman untuk programmer, tetapi menambah pekerjaan runtime pada VM.
+
+\subsubsection{Relasi VM dengan Intermediate Code dan Code Generation}
+
+\begin{jawab}[Inti Konsep.]
+Bytecode VM adalah bentuk intermediate representation yang cukup rendah untuk dieksekusi. Code generator dapat menargetkan bytecode, sementara JIT kemudian menargetkan mesin fisik.
+\end{jawab}
+
+Pada compiler tradisional, code generation menghasilkan assembly atau machine code. Pada sistem berbasis VM, code generation menghasilkan bytecode untuk mesin abstrak. Jadi VM dapat dipahami sebagai target machine dari compiler.
+
+Relasinya dengan Intermediate Code:
+\begin{itemize}
+    \item AST dan 3AC adalah IR yang dipakai untuk analisis dan optimasi.
+    \item Bytecode adalah IR linear level rendah yang dirancang untuk dieksekusi VM.
+    \item Stack-based bytecode mirip evaluasi postfix: operand di-push sampai operator muncul, lalu operator melakukan pop dan push hasil.
+\end{itemize}
+
+JIT compiler berada setelah bytecode. Ia membaca bytecode, melakukan optimasi yang bergantung pada mesin dan profil runtime, lalu menghasilkan native code. Dengan kata lain, JIT memindahkan sebagian pekerjaan back end ke runtime.
+
+\subsubsection{Kaitan dengan Contoh UAS}
+
+\begin{jawab}[Inti Konsep.]
+Sumber UAS mengaitkan VM dengan kemampuan membaca eksekusi stack, postfix, branch, dan assembly sederhana. Ini berarti materi VM sering muncul tidak sebagai definisi saja, tetapi sebagai trace eksekusi.
+\end{jawab}
+
+Pola yang relevan untuk UAS:
+\begin{itemize}
+    \item Evaluasi postfix menyerupai stack-based VM: operand di-push, operator mem-pop operand dan mem-push hasil.
+    \item Instruksi branch seperti \texttt{BZ} dan \texttt{BR} berhubungan dengan eksekusi control flow pada interpreter.
+    \item Translasi ke single accumulator assembly seperti \texttt{LDA}, \texttt{ADD}, \texttt{MUL}, dan \texttt{STO} melatih pemetaan IR atau bytecode ke operasi mesin sederhana.
+\end{itemize}
+
+Karena itu, saat belajar VM, fokuskan perhatian pada perubahan state: isi operand stack, program counter, frame aktif, dan efek tiap instruksi.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Pseudocode Interpreter Loop}
+
+\begin{jawab}[Tujuan Algoritma.]
+Interpreter loop menunjukkan cara VM mengeksekusi bytecode. Setiap iterasi mengambil opcode, memilih handler, menjalankan aksi, dan memperbarui program counter.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode fetch-decode-execute VM}, label={lst:vm-interpreter-loop}]
+pc = entryPoint
+while true:
+    opcode = code[pc]
+    pc = pc + 1
+
+    switch opcode:
+        case ICONST:
+            value = readOperand(code, pc)
+            pc = pc + 1
+            operandStack.push(value)
+
+        case IADD:
+            b = operandStack.pop()
+            a = operandStack.pop()
+            operandStack.push(a + b)
+
+        case GOTO:
+            target = readOperand(code, pc)
+            pc = target
+
+        case RETURN:
+            return operandStack.pop()
+\end{lstlisting}
+
+Pseudocode ini menyederhanakan banyak detail, tetapi memuat ide utama VM: bytecode adalah data, dan interpreter adalah program yang membaca data tersebut sebagai instruksi.
+
+\subsubsection{Pseudocode Eksekusi Instruksi Stack}
+
+\begin{jawab}[Tujuan Algoritma.]
+Pseudocode ini memperlihatkan pola umum stack-based VM: operand diambil dari puncak stack, operasi dijalankan, lalu hasil didorong kembali.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pola instruksi aritmetika stack-based VM}, label={lst:stack-vm-op}]
+function executeBinaryOp(op):
+    right = operandStack.pop()
+    left = operandStack.pop()
+    result = apply(op, left, right)
+    operandStack.push(result)
+\end{lstlisting}
+
+Instruksi seperti \texttt{iadd}, \texttt{imul}, dan \texttt{isub} mengikuti pola ini. Perbedaannya hanya pada operasi yang diberikan ke fungsi \texttt{apply}.
+
+\subsubsection{Pseudocode Mark-and-Sweep}
+
+\begin{jawab}[Tujuan Algoritma.]
+Mark-and-sweep membebaskan objek heap yang tidak reachable. Algoritma terdiri dari fase mark untuk menandai objek hidup dan fase sweep untuk membebaskan objek mati.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode garbage collection mark-and-sweep}, label={lst:mark-sweep}]
+function collectGarbage():
+    for each object in heap:
+        object.marked = false
+
+    for each root in rootSet:
+        mark(root)
+
+    for each object in heap:
+        if object.marked == false:
+            free(object)
+
+function mark(object):
+    if object == null or object.marked:
+        return
+    object.marked = true
+    for each reference child in object.fields:
+        mark(child)
+\end{lstlisting}
+
+Root set biasanya mencakup referensi dari stack frame aktif, static data, dan register atau state runtime VM.

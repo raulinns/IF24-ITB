@@ -1,0 +1,406 @@
+\section{String Matching}
+
+String Matching membahas pencarian kemunculan suatu pola (\textit{pattern}) di dalam teks. Secara formal, diberikan teks $T$ sepanjang $n$ dan pattern $P$ sepanjang $m$, persoalan string matching mencari indeks $i$ sedemikian sehingga substring $T[i..i+m-1]$ sama dengan $P[0..m-1]$. Materi ini penting karena memperlihatkan bagaimana informasi dari pattern dapat dipakai untuk menghindari perbandingan karakter yang berulang.
+
+Fokus UAS adalah kemampuan menjalankan algoritma secara manual: menghitung preprocessing KMP dan Boyer-Moore, menggambarkan proses pencocokan karakter demi karakter, menghitung jumlah perbandingan, dan menjelaskan algoritma mana yang lebih efisien untuk pasangan teks-pattern tertentu.
+
+\begin{cmt}{Keterbatasan Sumber Utama}{}
+NotebookLM yang diberikan dapat diakses, tetapi jawaban yang diperoleh untuk String Matching hanya memuat outline global: Brute Force, KMP dengan fungsi pinggiran, Boyer-Moore dengan \textit{last occurrence function}, dan kompleksitas Brute Force serta KMP. Detail prosedural seperti cara menulis tabel perbandingan, aturan hitung operasi karakter, dan edge case dilengkapi menggunakan pengetahuan umum yang relevan serta pola soal UAS 2022--2025.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Model persoalan string matching
+    \begin{enumerate}
+        \item Teks $T$ sepanjang $n$.
+        \item Pattern $P$ sepanjang $m$.
+        \item Alfabet karakter.
+        \item Indeks awal kecocokan.
+        \item Kemunculan pertama, semua kemunculan, dan kasus tidak ditemukan.
+    \end{enumerate}
+
+    \item Terminologi string
+    \begin{enumerate}
+        \item Prefix: awalan suatu string.
+        \item Suffix: akhiran suatu string.
+        \item Proper prefix dan proper suffix.
+        \item Border: prefix yang sekaligus suffix.
+        \item Shift atau pergeseran pattern.
+        \item Perbandingan karakter sebagai satuan operasi manual.
+    \end{enumerate}
+
+    \item Algoritma Brute Force
+    \begin{enumerate}
+        \item Mencoba pattern pada setiap posisi teks.
+        \item Mencocokkan karakter kiri ke kanan.
+        \item Menggeser pattern satu posisi setelah mismatch.
+        \item Kasus terburuk $O(mn)$.
+    \end{enumerate}
+
+    \item Algoritma Knuth-Morris-Pratt (KMP)
+    \begin{enumerate}
+        \item Preprocessing pattern.
+        \item Fungsi pinggiran atau border function $b(k)$.
+        \item Pergeseran berdasarkan prefix-suffix pattern.
+        \item Kompleksitas $O(m+n)$.
+    \end{enumerate}
+
+    \item Algoritma Boyer-Moore
+    \begin{enumerate}
+        \item \textit{Looking-glass technique}: perbandingan dari kanan pattern.
+        \item \textit{Character-jump technique}: lompatan berdasarkan karakter mismatch.
+        \item \textit{Last occurrence function} $L(x)$.
+        \item Pergeseran $\max(1,j-L(x))$.
+    \end{enumerate}
+
+    \item Pola pengerjaan UAS
+    \begin{enumerate}
+        \item Membuat tabel border function KMP.
+        \item Membuat tabel last occurrence Boyer-Moore.
+        \item Menggambar alignment pattern terhadap teks.
+        \item Menghitung jumlah perbandingan karakter.
+        \item Membandingkan algoritma berdasarkan data soal, bukan hafalan umum.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+String matching adalah dasar dari banyak sistem pencarian teks. Editor teks memakai string matching untuk fitur \textit{find}. Mesin pencari, sistem indeks dokumen, bioinformatika, deteksi pola DNA, analisis log, dan pemrosesan bahasa alami juga membutuhkan gagasan yang sama: menemukan pola dalam rangkaian simbol. Dalam konteks Strategi Algoritma, string matching memperlihatkan bahwa perbaikan algoritma tidak selalu berasal dari struktur data besar; kadang perbaikan besar muncul dari memanfaatkan struktur internal input, yaitu prefix, suffix, dan posisi kemunculan karakter dalam pattern.
+
+\begin{cmt}{Relevansi Praktis}{}
+Sumber utama menyebut aplikasi string matching pada editor teks, web search engine, analisis citra, dan bioinformatika. Catatan ini menambahkan penjelasan praktis secara umum, tetapi tetap membatasi pembahasan teknis pada algoritma yang diuji: Brute Force, KMP, dan Boyer-Moore.
+\end{cmt}
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+String Matching menjadi dasar bagi String Matching with Regex. Pada string matching biasa, pattern adalah string literal yang harus cocok persis. Pada regex, pattern menjadi bahasa pola yang dapat menyatakan pilihan karakter, pengulangan, batas kata, dan struktur yang lebih fleksibel. Secara konseptual, keduanya sama-sama membahas pencocokan pola terhadap teks, tetapi regex memperluas bentuk pattern.
+
+Materi ini juga berhubungan dengan analisis kompleksitas pada Teori P/NP/NPC dalam arti lebih umum: kita tidak hanya ingin algoritma benar, tetapi juga ingin tahu jumlah operasi yang dilakukan. Soal UAS string matching hampir selalu meminta jumlah perbandingan karakter, sehingga kompleksitas bukan konsep abstrak, melainkan langsung terlihat pada tabel pencocokan.
+
+\subsection{Pola Soal UAS Sebelumnya dan Prioritas}
+
+\begin{cmt}{Pola dari Soal 2022--2025}{}
+String matching muncul konsisten pada dokumen soal yang diperiksa. Soal 2022 meminta pemilihan metode yang lebih baik, proses pencocokan, dan jumlah perbandingan. Solusi 2023 meminta contoh kasus KMP sama buruknya dengan Brute Force dan penelusuran Boyer-Moore. Soal 2024 meminta tabel border function KMP, tabel last occurrence Boyer-Moore, ilustrasi langkah, dan total operasi. Soal 2025 memakai konteks DNA dan meminta KMP, Boyer-Moore, serta algoritma dengan perbandingan paling sedikit.
+\end{cmt}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.23\textwidth}|X|X|}
+\hline
+\textbf{Pola Soal} & \textbf{Yang Biasanya Diminta} & \textbf{Kemampuan Wajib} \\
+\hline
+KMP pada DNA atau string pendek & Hitung fungsi pinggiran, lalu gambarkan pencocokan sampai ditemukan atau gagal. & Menentukan border setiap prefix pattern dan melakukan fallback tanpa mengulang perbandingan yang tidak perlu. \\
+\hline
+Boyer-Moore & Hitung last occurrence, cocokkan dari kanan, lalu hitung jumlah perbandingan. & Menentukan $L(x)$, posisi mismatch $j$, dan pergeseran $\max(1,j-L(x))$. \\
+\hline
+Perbandingan algoritma & Menjawab algoritma mana yang lebih baik untuk teks-pattern tertentu. & Menilai berdasarkan jumlah perbandingan aktual, bukan sekadar klaim bahwa satu algoritma selalu lebih baik. \\
+\hline
+Brute Force versus KMP & Memberi contoh atau menghitung kasus ketika perbandingan sama banyak. & Memahami bahwa KMP unggul karena preprocessing, tetapi pada input tertentu jumlah perbandingannya dapat sama dengan Brute Force. \\
+\hline
+\end{tabularx}
+\caption{Pola soal UAS String Matching}
+\label{tab:pola-soal-string-matching}
+\end{table}
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Definisi Teks, Pattern, dan Indeks Kecocokan}
+
+\begin{jawab}[Inti Konsep.]
+String matching mencari posisi di dalam teks tempat seluruh karakter pattern cocok secara berurutan.
+\end{jawab}
+
+Misalkan $T=T[0]T[1]\ldots T[n-1]$ dan $P=P[0]P[1]\ldots P[m-1]$. Pattern muncul pada posisi $i$ jika untuk semua $j$ dengan $0\le j<m$, berlaku $T[i+j]=P[j]$. Posisi $i$ yang mungkin hanya dari $0$ sampai $n-m$. Jika $m>n$, pattern tidak mungkin muncul karena pattern lebih panjang daripada teks.
+
+Pada pengerjaan manual, setiap perbandingan karakter harus dihitung satu per satu. Jika pada suatu alignment pattern terjadi mismatch pada perbandingan pertama, tetap dihitung satu operasi perbandingan. Jika seluruh $m$ karakter cocok, jumlah operasi pada alignment tersebut adalah $m$.
+
+\subsubsection{Prefix, Suffix, dan Border}
+
+\begin{jawab}[Inti Konsep.]
+Border adalah substring yang menjadi prefix sekaligus suffix; KMP memakai border untuk menentukan seberapa jauh pattern dapat digeser tanpa kehilangan kemungkinan match.
+\end{jawab}
+
+Prefix adalah awalan string. Suffix adalah akhiran string. Misalnya untuk string \texttt{ABABA}, prefix-nya mencakup \texttt{A}, \texttt{AB}, \texttt{ABA}, dan seterusnya; suffix-nya mencakup \texttt{A}, \texttt{BA}, \texttt{ABA}, dan seterusnya. Border adalah prefix yang juga suffix, biasanya tidak termasuk seluruh string itu sendiri jika yang dimaksud adalah proper border.
+
+KMP memanfaatkan border karena saat sebagian pattern sudah cocok lalu terjadi mismatch, bagian yang sudah cocok tidak perlu dibandingkan dari awal. Jika suffix dari bagian yang cocok sama dengan prefix pattern, maka prefix tersebut dapat dipertahankan sebagai kecocokan awal pada alignment berikutnya.
+
+\subsubsection{Brute Force}
+
+\begin{jawab}[Inti Konsep.]
+Brute Force mencoba semua posisi awal yang mungkin dan mencocokkan pattern dari kiri ke kanan.
+\end{jawab}
+
+Brute Force adalah algoritma paling langsung. Pada setiap posisi $i$ dalam teks, algoritma membandingkan $P[0]$ dengan $T[i]$, lalu $P[1]$ dengan $T[i+1]$, dan seterusnya sampai terjadi mismatch atau seluruh pattern cocok. Jika mismatch terjadi, pattern digeser satu posisi ke kanan.
+
+Kelebihan Brute Force adalah mudah dipahami dan tidak memerlukan preprocessing. Kekurangannya, algoritma ini dapat membandingkan ulang karakter teks yang sebenarnya sudah diketahui. Kasus buruk muncul ketika pattern hampir selalu cocok panjang di banyak posisi, lalu gagal di karakter terakhir.
+
+\subsubsection{Knuth-Morris-Pratt}
+
+\begin{jawab}[Inti Konsep.]
+KMP mencocokkan dari kiri ke kanan seperti Brute Force, tetapi saat mismatch terjadi, pattern tidak selalu kembali ke awal karena ada informasi border.
+\end{jawab}
+
+KMP memiliki dua fase. Fase pertama adalah preprocessing pattern untuk menghitung fungsi pinggiran $b(k)$. Fase kedua adalah pencocokan teks menggunakan fungsi tersebut. Nilai $b(k)$ menyatakan panjang border terbesar untuk prefix pattern yang berakhir di indeks $k$. Jika telah cocok $j$ karakter dan mismatch terjadi, KMP tidak menggeser satu per satu, tetapi mengatur ulang $j$ ke nilai border yang sesuai.
+
+Kesalahan umum pada KMP adalah menghitung border terhadap teks. Border function hanya dihitung dari pattern, bukan dari teks. Teks baru digunakan pada fase pencocokan.
+
+\subsubsection{Boyer-Moore}
+
+\begin{jawab}[Inti Konsep.]
+Boyer-Moore mencocokkan pattern dari kanan ke kiri dan dapat melompat lebih jauh saat karakter mismatch tidak cocok dengan struktur pattern.
+\end{jawab}
+
+Versi yang biasa diuji pada IF2221 menekankan \textit{looking-glass technique} dan \textit{character-jump technique}. \textit{Looking-glass} berarti perbandingan dimulai dari karakter paling kanan pattern. Jika terjadi mismatch, algoritma melihat karakter teks yang menyebabkan mismatch, lalu memakai \textit{last occurrence function} untuk menentukan pergeseran.
+
+Jika karakter mismatch tidak muncul di pattern, pattern dapat digeser melewati karakter tersebut. Jika karakter mismatch muncul di pattern, pattern digeser agar kemunculan terakhir karakter itu sejajar dengan posisi mismatch. Jika perhitungan menghasilkan pergeseran nol atau negatif, gunakan pergeseran minimum satu posisi.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+$T$ & Teks tempat pattern dicari. \\
+\hline
+$P$ & Pattern yang dicari di dalam teks. \\
+\hline
+$n$ & Panjang teks. \\
+\hline
+$m$ & Panjang pattern. \\
+\hline
+Alignment & Posisi pattern relatif terhadap teks saat pencocokan dilakukan. \\
+\hline
+Prefix & Awalan string. Dipakai untuk memahami border KMP. \\
+\hline
+Suffix & Akhiran string. Dipakai untuk memahami border KMP. \\
+\hline
+Border & Prefix yang juga suffix pada substring pattern. \\
+\hline
+$b(k)$ & Fungsi pinggiran KMP untuk prefix pattern yang berakhir pada indeks $k$. \\
+\hline
+$L(x)$ & Indeks kemunculan terakhir karakter $x$ di pattern pada Boyer-Moore, atau $-1$ jika tidak muncul. \\
+\hline
+Jumlah perbandingan & Banyaknya operasi membandingkan satu karakter teks dengan satu karakter pattern. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi String Matching}
+\label{tab:komponen-kunci-string-matching}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Brute Force String Matching}
+
+\begin{jawab}[Tujuan Algoritma.]
+Brute Force mengembalikan indeks awal kemunculan pattern atau $-1$ jika pattern tidak ditemukan.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode Brute Force String Matching}, label={lst:brute-string-matching}]
+Input: text T with length n, pattern P with length m
+Output: first index where P occurs in T, or -1
+
+for i = 0 to n - m:
+    j = 0
+    while j < m and T[i + j] == P[j]:
+        j = j + 1
+    if j == m:
+        return i
+return -1
+\end{lstlisting}
+
+Posisi awal yang diperiksa adalah:
+\begin{equation}
+    0 \le i \le n-m
+    \label{eq:sm-brute-position}
+\end{equation}
+
+Kasus terburuk jumlah perbandingan Brute Force:
+\begin{equation}
+    C_{\text{brute}}=m(n-m+1)=O(mn)
+    \label{eq:sm-brute-comparison}
+\end{equation}
+
+dengan $n-m+1$ adalah jumlah alignment yang mungkin dan $m$ adalah jumlah karakter pattern yang dapat dibandingkan pada setiap alignment.
+
+\subsubsection{Fungsi Pinggiran KMP}
+
+\begin{jawab}[Makna Rumus.]
+Fungsi pinggiran menyimpan panjang border terbesar sehingga KMP tahu ke mana harus mundur saat mismatch.
+\end{jawab}
+
+\begin{equation}
+    b(k)=\max\{r \mid P[0..r-1]=P[k-r+1..k]\}
+    \label{eq:sm-kmp-border}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $k$: indeks terakhir prefix pattern yang sedang dianalisis.
+    \item $r$: panjang border.
+    \item $P[0..r-1]$: prefix sepanjang $r$.
+    \item $P[k-r+1..k]$: suffix sepanjang $r$ dari $P[0..k]$.
+\end{itemize}
+
+Saat mismatch terjadi setelah $j$ karakter pattern cocok, fallback KMP dapat ditulis:
+\begin{equation}
+    j \leftarrow b(j-1)
+    \label{eq:sm-kmp-fallback}
+\end{equation}
+
+Kompleksitas total KMP:
+\begin{equation}
+    T_{\text{KMP}}(n,m)=O(m+n)
+    \label{eq:sm-kmp-complexity}
+\end{equation}
+
+\subsubsection{Pseudocode KMP}
+
+\begin{jawab}[Tujuan Algoritma.]
+KMP mencari pattern dengan memanfaatkan border sehingga karakter teks tidak perlu dibandingkan mundur berulang kali.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode KMP}, label={lst:kmp-string-matching}]
+Input: text T with length n, pattern P with length m
+Output: first index where P occurs in T, or -1
+
+b = compute_border_function(P)
+i = 0        # index in T
+j = 0        # index in P
+
+while i < n:
+    if T[i] == P[j]:
+        i = i + 1
+        j = j + 1
+        if j == m:
+            return i - m
+    else:
+        if j > 0:
+            j = b[j - 1]
+        else:
+            i = i + 1
+
+return -1
+\end{lstlisting}
+
+Untuk menghitung jumlah perbandingan pada KMP, setiap eksekusi pemeriksaan \texttt{T[i] == P[j]} dihitung satu kali. Perubahan $j$ karena border bukan perbandingan karakter baru.
+
+\subsubsection{Last Occurrence Boyer-Moore}
+
+\begin{jawab}[Makna Rumus.]
+Last occurrence menyimpan posisi paling kanan suatu karakter di pattern agar Boyer-Moore dapat melompat saat mismatch.
+\end{jawab}
+
+\begin{equation}
+    L(x)=
+    \begin{cases}
+    \max\{i \mid P[i]=x\}, & \text{jika } x \text{ muncul di } P,\\
+    -1, & \text{jika } x \text{ tidak muncul di } P.
+    \end{cases}
+    \label{eq:sm-bm-last-occurrence}
+\end{equation}
+
+Jika mismatch terjadi pada posisi pattern $j$ terhadap karakter teks $x$, pergeseran \textit{character-jump} adalah:
+\begin{equation}
+    \operatorname{shift}=\max(1,\; j-L(x))
+    \label{eq:sm-bm-shift}
+\end{equation}
+
+\subsubsection{Pseudocode Boyer-Moore dengan Character-Jump}
+
+\begin{jawab}[Tujuan Algoritma.]
+Boyer-Moore mencari pattern dari kanan ke kiri dan memakai last occurrence untuk menentukan lompatan pattern.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode Boyer-Moore dengan character-jump}, label={lst:boyer-moore-string-matching}]
+Input: text T with length n, pattern P with length m
+Output: first index where P occurs in T, or -1
+
+L = last_occurrence_table(P)
+i = m - 1       # index in T aligned with last char of P
+j = m - 1       # index in P
+
+while i < n:
+    if T[i] == P[j]:
+        if j == 0:
+            return i
+        i = i - 1
+        j = j - 1
+    else:
+        x = T[i]
+        shift = m - min(j, 1 + L[x])
+        i = i + shift
+        j = m - 1
+
+return -1
+\end{lstlisting}
+
+Pada jawaban manual, lebih aman menuliskan alignment pattern dan menghitung langsung perbandingan dari kanan ke kiri. Setelah mismatch, gunakan rumus shift yang diajarkan atau yang dinyatakan di soal. Jika rumus dalam salindia memakai notasi berbeda, pertahankan makna yang sama: sejajarkan kemunculan terakhir karakter mismatch di pattern atau geser melewati karakter itu jika tidak muncul.
+
+\subsection{Cara Menjawab Soal Manual}
+
+\subsubsection{Format Jawaban KMP}
+
+\begin{enumerate}
+    \item Tulis teks $T$ dan pattern $P$ dengan indeks.
+    \item Hitung tabel border function $b(k)$ untuk setiap indeks pattern.
+    \item Mulai pencocokan dari kiri pattern.
+    \item Setiap kali cocok, lanjut ke karakter berikutnya.
+    \item Setiap kali mismatch, hitung fallback menggunakan $b(j-1)$.
+    \item Hitung satu operasi untuk setiap perbandingan karakter.
+    \item Jika pattern ditemukan, tulis indeks awal, jumlah perbandingan, dan alignment akhir.
+\end{enumerate}
+
+\subsubsection{Format Jawaban Boyer-Moore}
+
+\begin{enumerate}
+    \item Tulis tabel $L(x)$ untuk semua karakter yang relevan, terutama karakter dalam pattern dan karakter mismatch pada teks.
+    \item Letakkan pattern di bawah teks pada alignment awal.
+    \item Bandingkan dari karakter paling kanan pattern.
+    \item Jika mismatch pada pattern indeks $j$ dengan karakter teks $x$, hitung shift.
+    \item Geser pattern dan ulangi.
+    \item Hitung satu operasi untuk setiap perbandingan karakter.
+    \item Jika pattern ditemukan, tulis indeks awal, jumlah perbandingan, dan alignment akhir.
+\end{enumerate}
+
+\subsection{Kesalahan Umum dan Edge Case}
+
+\begin{itemize}
+    \item \textbf{Menghitung border dari teks}: border function KMP hanya berasal dari pattern.
+    \item \textbf{Menghitung jumlah shift sebagai jumlah perbandingan}: yang dihitung adalah perbandingan karakter, bukan jumlah pergeseran pattern.
+    \item \textbf{Boyer-Moore dibandingkan dari kiri}: versi Boyer-Moore pada materi ini memakai perbandingan dari kanan pattern.
+    \item \textbf{Lupa karakter yang tidak muncul}: pada Boyer-Moore, jika $x$ tidak muncul dalam pattern, $L(x)=-1$.
+    \item \textbf{Menganggap KMP selalu lebih sedikit perbandingan dari Brute Force}: KMP memiliki jaminan kompleksitas linear, tetapi pada instance tertentu jumlah perbandingan aktual dapat sama.
+    \item \textbf{Mengabaikan indeks}: kesalahan indeks menyebabkan border, shift, dan jumlah perbandingan menjadi salah.
+    \item \textbf{Pattern lebih panjang dari teks}: hasil langsung tidak ditemukan.
+\end{itemize}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+\begin{itemize}
+    \item[$\square$] Saya dapat mendefinisikan teks, pattern, indeks kecocokan, prefix, suffix, dan border.
+    \item[$\square$] Saya dapat menelusuri Brute Force dan menghitung jumlah perbandingan karakternya.
+    \item[$\square$] Saya dapat menghitung fungsi pinggiran KMP untuk pattern yang diberikan.
+    \item[$\square$] Saya dapat menjalankan KMP sampai pattern ditemukan atau teks habis.
+    \item[$\square$] Saya dapat menghitung last occurrence function Boyer-Moore.
+    \item[$\square$] Saya dapat menjalankan Boyer-Moore dari kanan ke kiri dan menentukan shift saat mismatch.
+    \item[$\square$] Saya dapat membandingkan Brute Force, KMP, dan Boyer-Moore berdasarkan jumlah perbandingan pada instance soal.
+    \item[$\square$] Saya dapat menjelaskan hubungan String Matching dengan Regex.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Tabel border function KMP, tabel last occurrence Boyer-Moore, proses pencocokan karakter demi karakter, jumlah perbandingan, dan perbandingan hasil algoritma. \\
+\hline
+\textbf{Cukup Paham Konsep} & Kompleksitas Brute Force, KMP, dan Boyer-Moore; aplikasi pada editor teks, search engine, analisis citra, dan bioinformatika. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan. \\
+\hline
+\end{tabularx}

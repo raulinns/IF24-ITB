@@ -1,0 +1,261 @@
+\section{Java Stream API}
+
+Java Stream API adalah API untuk memproses rangkaian data secara deklaratif melalui pipeline operasi. Stream bukan struktur data; stream adalah aliran elemen dari sumber seperti collection, array, file, atau generator. Stream membantu menulis transformasi data seperti filter, map, sort, group, dan reduce dengan gaya yang lebih ringkas dan komposisional.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini disusun berdasarkan pengetahuan umum Java. Fokus pembahasan adalah konsep pipeline, lazy evaluation, intermediate-terminal operation, functional interface, dan contoh dunia nyata yang sering muncul.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Konsep stream \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Stream adalah pipeline pemrosesan data, bukan penyimpanan data.
+        \item Sumber stream dapat berupa collection, array, file, atau generator.
+    \end{enumerate}
+    \item Pipeline stream \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Source.
+        \item Intermediate operations.
+        \item Terminal operation.
+    \end{enumerate}
+    \item Intermediate operation \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item \texttt{filter}, \texttt{map}, \texttt{flatMap}, \texttt{sorted}, \texttt{distinct}, \texttt{limit}, \texttt{skip}.
+        \item Bersifat lazy.
+    \end{enumerate}
+    \item Terminal operation
+    \begin{enumerate}
+        \item \texttt{collect}, \texttt{toList}, \texttt{forEach}, \texttt{reduce}, \texttt{count}, \texttt{anyMatch}.
+        \item Menjalankan pipeline dan mengonsumsi stream.
+    \end{enumerate}
+    \item Functional interface dan lambda
+    \begin{enumerate}
+        \item \texttt{Predicate}, \texttt{Function}, \texttt{Consumer}, \texttt{Comparator}, \texttt{BinaryOperator}.
+    \end{enumerate}
+    \item Reduce dan collect
+    \begin{enumerate}
+        \item Reduction menjadi satu nilai.
+        \item Collector untuk list, set, map, grouping, dan joining.
+    \end{enumerate}
+    \item Parallel stream
+    \begin{enumerate}
+        \item Potensi percepatan.
+        \item Risiko side effect, ordering, dan overhead.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Stream API penting karena banyak tugas pemrosesan collection lebih mudah dibaca sebagai transformasi pipeline: pilih data, ubah bentuk data, kelompokkan, lalu hasilkan output.
+\end{jawab}
+
+Stream mendukung gaya deklaratif: programmer menyatakan apa yang ingin dilakukan, bukan detail loop-nya. Namun, stream bukan pengganti semua loop. Jika operasi memiliki banyak state mutasi, side effect kompleks, atau membutuhkan kontrol alur yang rumit, loop biasa bisa lebih jelas.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Stream bergantung pada Collection, Generics, Interface, Lambda, dan Functional Interface. Exception menjadi relevan karena lambda pada stream tidak mudah melempar checked exception. Multithreading muncul pada parallel stream. Design Pattern dapat dikaitkan dengan pipeline dan strategy.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Pipeline Stream}
+
+\begin{jawab}[Inti Konsep.]
+Pipeline stream terdiri atas source, nol atau lebih intermediate operation, dan satu terminal operation. Intermediate operation lazy; terminal operation memicu eksekusi.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Pipeline Stream dasar}, label={lst:stream-pipeline}]
+List<String> names = List.of("Ayu", "Budi", "Citra", "Andi");
+
+List<String> result = names.stream()
+    .filter(name -> name.startsWith("A"))
+    .map(String::toUpperCase)
+    .sorted()
+    .toList();
+
+System.out.println(result); // [ANDI, AYU]
+\end{lstlisting}
+
+Pipeline tersebut membaca data dari list, memilih nama yang diawali A, mengubah ke huruf besar, mengurutkan, lalu menghasilkan list baru.
+
+\subsubsection{Lazy Evaluation}
+
+\begin{jawab}[Inti Konsep.]
+Intermediate operation pada stream tidak langsung berjalan. Operasi baru dieksekusi ketika terminal operation dipanggil.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Lazy evaluation pada stream}, label={lst:stream-lazy}]
+Stream<String> stream = names.stream()
+    .filter(name -> {
+        System.out.println("filter " + name);
+        return name.startsWith("A");
+    });
+
+// Belum ada output karena belum ada terminal operation.
+long count = stream.count(); // Baru pipeline berjalan.
+\end{lstlisting}
+
+Lazy evaluation memungkinkan optimisasi seperti short-circuit. Misalnya, \texttt{findFirst} tidak perlu memproses semua elemen jika hasil sudah ditemukan.
+
+\subsubsection{Map vs FlatMap}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{map} mengubah setiap elemen menjadi satu elemen lain. \texttt{flatMap} mengubah setiap elemen menjadi stream lalu meratakannya menjadi satu stream.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={map dan flatMap}, label={lst:map-flatmap}]
+List<String> sentences = List.of("Java Stream", "OOP UAS");
+
+List<String> words = sentences.stream()
+    .flatMap(sentence -> Arrays.stream(sentence.split(" ")))
+    .map(String::toLowerCase)
+    .toList();
+
+System.out.println(words); // [java, stream, oop, uas]
+\end{lstlisting}
+
+\subsubsection{Reduce}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{reduce} menggabungkan banyak elemen menjadi satu nilai menggunakan accumulator. Operasi ini cocok untuk sum, product, min, max, atau penggabungan custom.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Reduce untuk menjumlahkan nilai}, label={lst:stream-reduce}]
+int total = List.of(1, 2, 3, 4).stream()
+    .reduce(0, (a, b) -> a + b);
+
+System.out.println(total); // 10
+\end{lstlisting}
+
+Accumulator pada reduce sebaiknya associative, terutama jika stream paralel. Jangan mengubah external mutable state dari dalam lambda reduce.
+
+\subsubsection{Collect dan Grouping}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{collect} mengumpulkan hasil stream ke struktur data atau bentuk agregat. Collector umum adalah \texttt{toList}, \texttt{toSet}, \texttt{toMap}, \texttt{groupingBy}, dan \texttt{joining}.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Grouping dengan Collectors}, label={lst:stream-grouping}]
+record Student(String name, String className, int score) { }
+
+Map<String, List<Student>> byClass = students.stream()
+    .collect(Collectors.groupingBy(Student::className));
+
+Map<String, Double> averageByClass = students.stream()
+    .collect(Collectors.groupingBy(
+        Student::className,
+        Collectors.averagingInt(Student::score)
+    ));
+\end{lstlisting}
+
+\subsubsection{Side Effect dan Parallel Stream}
+
+\begin{jawab}[Inti Konsep.]
+Stream paling aman ketika operasi lambdanya stateless dan tidak memiliki side effect. Parallel stream hanya aman dan berguna jika operasi dapat diparalelkan tanpa konflik state.
+\end{jawab}
+
+Contoh buruk:
+
+\begin{lstlisting}[language=Java, caption={Side effect buruk pada stream}, label={lst:stream-side-effect-bad}]
+List<String> result = new ArrayList<>();
+names.parallelStream()
+    .filter(name -> name.startsWith("A"))
+    .forEach(result::add); // Tidak aman tanpa sinkronisasi.
+\end{lstlisting}
+
+Gunakan collector:
+
+\begin{lstlisting}[language=Java, caption={Menghindari side effect dengan collector}, label={lst:stream-side-effect-good}]
+List<String> result = names.parallelStream()
+    .filter(name -> name.startsWith("A"))
+    .toList();
+\end{lstlisting}
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+Stream & Pipeline pemrosesan elemen. \\
+\hline
+Source & Asal elemen stream seperti collection atau array. \\
+\hline
+Intermediate operation & Operasi lazy yang menghasilkan stream baru. \\
+\hline
+Terminal operation & Operasi yang mengeksekusi dan mengonsumsi stream. \\
+\hline
+\texttt{filter} & Memilih elemen berdasarkan predicate. \\
+\hline
+\texttt{map} & Mengubah elemen. \\
+\hline
+\texttt{flatMap} & Mengubah elemen menjadi stream lalu meratakan. \\
+\hline
+\texttt{reduce} & Menggabungkan elemen menjadi satu nilai. \\
+\hline
+\texttt{collect} & Mengumpulkan hasil stream. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java Stream API}
+\label{tab:komponen-kunci-java-stream}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Template Pipeline Stream}
+
+\begin{jawab}[Tujuan Algoritma.]
+Template ini membantu menyusun stream dari kebutuhan pemrosesan data.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode desain pipeline stream}, label={lst:stream-template}]
+Input: Collection data dan tujuan transformasi
+Output: Hasil pemrosesan
+
+1. Tentukan source stream.
+2. Jika perlu menyaring data:
+      gunakan filter.
+3. Jika perlu mengubah bentuk elemen:
+      gunakan map.
+4. Jika setiap elemen menghasilkan banyak elemen:
+      gunakan flatMap.
+5. Jika perlu mengurutkan atau menghapus duplikat:
+      gunakan sorted atau distinct.
+6. Pilih terminal operation:
+      toList untuk list baru,
+      collect untuk grouping/map,
+      reduce untuk satu nilai,
+      anyMatch/allMatch untuk predicate global.
+7. Hindari side effect pada lambda.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan stream sebagai pipeline, bukan struktur data.
+    \item[$\square$] Saya dapat membedakan intermediate dan terminal operation.
+    \item[$\square$] Saya dapat menjelaskan lazy evaluation.
+    \item[$\square$] Saya dapat memakai \texttt{filter}, \texttt{map}, \texttt{flatMap}, \texttt{reduce}, dan \texttt{collect}.
+    \item[$\square$] Saya dapat memakai \texttt{Collectors.groupingBy}.
+    \item[$\square$] Saya dapat menjelaskan risiko side effect dan parallel stream.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Pipeline, lazy evaluation, intermediate-terminal operation, \texttt{filter}, \texttt{map}, \texttt{flatMap}, \texttt{reduce}, \texttt{collect}. \\
+\hline
+\textbf{Cukup Paham Konsep} & Parallel stream, side effect, short-circuit operation, collector lanjutan. \\
+\hline
+\textbf{Sudah Dikuasai} & Termasuk materi yang pernah diuji, tetapi perlu pemahaman kuat karena sering keluar dalam soal implementasi ringkas. \\
+\hline
+\end{tabularx}

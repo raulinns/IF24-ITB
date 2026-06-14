@@ -1,0 +1,200 @@
+\section{String Matching with Regex}
+
+String Matching with Regex membahas pencocokan string menggunakan regular expression, yaitu notasi standar untuk mendeskripsikan pola barisan karakter. Fokus UAS adalah memahami notasi dasar regex, character class, quantifier, boundary matcher, dan penggunaan dasar regex di Python.
+
+\subsection{Outline Fundamental Konsep Materi}
+\begin{enumerate}
+    \item Definisi regex
+    \begin{enumerate}
+        \item Pattern berbasis notasi
+        \item Exact matching vs regex matching
+    \end{enumerate}
+    \item Notasi dasar
+    \begin{enumerate}
+        \item Character class
+        \item Range
+        \item Negasi
+        \item Titik dan escape
+    \end{enumerate}
+    \item Quantifier dan boundary
+    \begin{enumerate}
+        \item \texttt{?}, \texttt{*}, \texttt{+}, dan bentuk jumlah tertentu
+        \item \texttt{\^{}} untuk awal, \texttt{\$} untuk akhir, dan \texttt{\textbackslash b} untuk batas kata
+    \end{enumerate}
+    \item Regex di Python
+    \begin{enumerate}
+        \item \texttt{re.compile}
+        \item \texttt{search}
+        \item \texttt{match}
+        \item \texttt{findall}
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+\subsubsection{Mengapa Materi Ini Penting}
+Regex penting karena banyak kebutuhan pencarian teks tidak cukup diselesaikan dengan exact matching. Regex memungkinkan pola seperti huruf kapital diikuti huruf kecil, digit sejumlah tertentu, alamat email, atau nomor telepon dinyatakan secara ringkas.
+
+\subsubsection{Implementasi Dasar}
+Implementasi dasar regex di Python dilakukan dengan membuat pattern, lalu menerapkannya pada string menggunakan \texttt{search}, \texttt{match}, atau \texttt{findall}.
+
+\subsubsection{Relevansi dengan Industri Saat Ini}
+\begin{cmt}{Keterbatasan Sumber}{}
+Sumber utama menampilkan contoh email, nomor telepon, dan ELIZA-like chatbot berbasis pattern matching. Catatan ini tidak menambahkan contoh di luar sumber tersebut.
+\end{cmt}
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+Regex melanjutkan String Matching. Perbedaannya, pattern tidak harus literal, tetapi dapat berupa aturan yang mencakup banyak kemungkinan string.
+
+\subsection{Pola Soal UAS Sebelumnya dan Prioritas}
+
+\begin{cmt}{Pola dari Soal 2022--2025}{}
+Regex muncul pada semua sumber soal yang diperiksa. Bentuknya bergeser antara membaca regex yang diberikan, menentukan substring/kata yang cocok, menulis regex dari spesifikasi format, dan pada 2024 mengubah finite automata menjadi regex.
+\end{cmt}
+
+Prioritas utama adalah character class, negasi, quantifier, boundary, escape karakter khusus, dan hasil \texttt{findall}. Pada 2022, soal meminta menjelaskan pola \texttt{[\textbackslash w\textbackslash s]+ly\textbackslash b} dan hasil \texttt{re.findall}. Pada solusi 2023, soal meminta semua string yang cocok dengan \texttt{[A-Za-z]\{2\}\textbackslash d\{4\}}. Pada 2024, soal meminta regex dari finite automata dan menentukan kata yang cocok dengan regex \texttt{m[ae]n?[dsk]*[jtiudf]}. Pada 2025, soal meminta menulis regex untuk nama file gambar, nomor telepon, dan menentukan string yang cocok untuk regex dengan negasi.
+
+\begin{itemize}
+    \item \textbf{Pola konstruksi}: tulis regex dari spesifikasi format file, nomor telepon, atau pola sederhana lain.
+    \item \textbf{Pola evaluasi}: tentukan substring atau kata yang cocok dengan regex yang diberikan.
+    \item \textbf{Pola notasi}: jelaskan arti character class, negasi, quantifier, boundary, dan escape.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|L{0.28\textwidth}|}
+\hline
+\textbf{Permasalahan yang Sering Muncul} & \textbf{Yang Biasanya Diminta} & \textbf{Fungsi/Komponen Wajib Dipahami} \\
+\hline
+Membuat regex dari spesifikasi & Menulis pola untuk nama file, nomor telepon, kode, atau format teks sederhana. & Character class, range, quantifier, escape \texttt{\textbackslash}, anchor \texttt{\^{}} dan \texttt{\$}. \\
+\hline
+Mengevaluasi regex pada daftar kata/teks & Menentukan kata atau substring yang cocok dengan regex yang diberikan. & \texttt{[]}, \texttt{[\^{}]}, \texttt{?}, \texttt{*}, \texttt{+}, \texttt{\{m\}}, \texttt{\{m,n\}}. \\
+\hline
+Regex di Python & Menjelaskan hasil \texttt{re.findall} atau perbedaan cara pencarian. & \texttt{findall}, \texttt{search}, \texttt{match}, boundary \texttt{\textbackslash b}, whitespace \texttt{\textbackslash s}. \\
+\hline
+\end{tabularx}
+\caption{Permasalahan dan fungsi penting pada Regex}
+\label{tab:pola-fungsi-regex}
+\end{table}
+
+\subsubsection{Formula Eksplisit yang Perlu Dikuasai}
+
+\begin{jawab}[Inti Formula.]
+Regex tidak memakai rumus numerik seperti DP atau B\&B, tetapi memakai aturan pembentukan bahasa. Formula yang perlu dikuasai adalah makna operator regex terhadap himpunan string yang dicocokkan.
+\end{jawab}
+
+Character class:
+\begin{align}
+    \mathcal{L}([abc]) &\equiv \{a,b,c\}, \label{eq:regex-class}\\
+    \mathcal{L}([a\text{-}z]) &\equiv \{a,b,c,\ldots,z\}, \label{eq:regex-range}\\
+    \mathcal{L}(\text{negasi }[abc]) &\equiv \Sigma \setminus \{a,b,c\}. \label{eq:regex-negation}
+\end{align}
+
+Quantifier:
+\begin{align}
+    R? &\equiv \epsilon \cup R, \label{eq:regex-question}\\
+    R* &\equiv \bigcup_{k=0}^{\infty} R^k, \label{eq:regex-star}\\
+    R+ &\equiv \bigcup_{k=1}^{\infty} R^k, \label{eq:regex-plus}\\
+    R\{m\} &\equiv R^m, \label{eq:regex-exact-repeat}\\
+    R\{m,n\} &\equiv \bigcup_{k=m}^{n} R^k. \label{eq:regex-range-repeat}
+\end{align}
+
+Boundary matcher:
+\begin{itemize}
+    \item \texttt{\^{}}: cocok hanya pada awal string atau awal baris.
+    \item \texttt{\$}: cocok hanya pada akhir string atau akhir baris.
+    \item \texttt{\textbackslash b}: cocok pada batas kata.
+\end{itemize}
+
+Contoh pola file gambar yang sering muncul:
+\begin{center}
+\texttt{\textbackslash w+\textbackslash .(gif|png|jpg|jpeg)}
+\end{center}
+Contoh pola nomor telepon \texttt{+62-022-27204}:
+\begin{center}
+\texttt{\textbackslash +\textbackslash d\{2\}-\textbackslash d\{3\}-\textbackslash d\{5\}}
+\end{center}
+
+\subsection{Penjelasan Konsep Fundamental}
+\subsubsection{Definisi Regex}
+\begin{jawab}[Inti Konsep.]
+Regular expression adalah notasi standar yang mendeskripsikan pola berupa urutan karakter atau string.
+\end{jawab}
+
+Regex digunakan untuk string matching yang lebih fleksibel daripada pencocokan persis. Pattern seperti \texttt{[A-Z][a-z]*} dapat menyatakan kata yang diawali huruf kapital dan diikuti nol atau banyak huruf kecil.
+
+\subsubsection{Character Class}
+\begin{jawab}[Inti Konsep.]
+Character class menyatakan himpunan karakter yang boleh muncul pada satu posisi pattern.
+\end{jawab}
+
+Contoh \texttt{[abc]} cocok dengan karakter \texttt{a}, \texttt{b}, atau \texttt{c}. Range seperti \texttt{[a-z]} cocok dengan huruf kecil dari \texttt{a} sampai \texttt{z}. Negasi seperti \texttt{[\^{}abc]} cocok dengan karakter selain \texttt{a}, \texttt{b}, dan \texttt{c}.
+
+\subsubsection{Quantifier dan Boundary Matcher}
+\begin{jawab}[Inti Konsep.]
+Quantifier mengatur jumlah kemunculan pola, sedangkan boundary matcher mengatur posisi kemunculan pola.
+\end{jawab}
+
+Tanda \texttt{?} menyatakan pola boleh ada atau tidak. Tanda \texttt{*} menyatakan nol atau banyak kemunculan. Titik \texttt{.} menyatakan sembarang karakter, sedangkan titik literal perlu ditulis dengan escape. Boundary matcher seperti \texttt{\^{}} dan \texttt{\$} membatasi posisi awal dan akhir.
+
+\subsection{Komponen Kunci Penting}
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+\texttt{[abc]} & Simple class: cocok dengan \texttt{a}, \texttt{b}, atau \texttt{c}. \\
+\hline
+\texttt{[a-z]} & Range karakter. \\
+\hline
+\texttt{[\^{}abc]} & Negasi character class. \\
+\hline
+\texttt{.} & Metacharacter untuk sembarang karakter. \\
+\hline
+\texttt{?}, \texttt{*}, \texttt{+} & Quantifier untuk jumlah kemunculan pola. \\
+\hline
+\texttt{\textbackslash d} & Digit character. \\
+\hline
+\texttt{\textbackslash b} & Batas kata. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi String Matching with Regex}
+\label{tab:komponen-kunci-regex}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+\subsubsection{Penggunaan Dasar Regex di Python}
+\begin{jawab}[Tujuan Algoritma.]
+Contoh ini memperlihatkan alur dasar membuat pattern dan mencari semua kecocokan yang tidak saling tumpang tindih.
+\end{jawab}
+
+\begin{lstlisting}[language=Python, caption={Penggunaan dasar regex di Python}, label={lst:regex-python}]
+import re
+
+pattern = re.compile(r"\d{4}")
+hasil = pattern.findall("Tahun 2024 dan 2026")
+print(hasil)
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+\subsubsection{Submateri yang Telah Dibahas}
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan regex sebagai notasi pattern.
+    \item[$\square$] Saya dapat membedakan exact matching dan regex matching.
+    \item[$\square$] Saya dapat menggunakan character class, range, negasi, dan quantifier.
+    \item[$\square$] Saya dapat menjelaskan fungsi \texttt{re.compile}, \texttt{search}, \texttt{match}, dan \texttt{findall}.
+    \item[$\square$] Saya dapat merancang regex sederhana dari spesifikasi format teks.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Character class, range, negasi, quantifier, boundary matcher, dan fungsi dasar Python regex. \\
+\hline
+\textbf{Cukup Paham Konsep} & Contoh email, nomor telepon, dan ELIZA-like chatbot. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan. \\
+\hline
+\end{tabularx}

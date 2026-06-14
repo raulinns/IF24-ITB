@@ -1,0 +1,277 @@
+\section{Model Data}
+
+Model Data membahas cara mendeskripsikan data, hubungan antar data, makna data, dan batasan konsistensi sebelum database benar-benar diimplementasikan. Materi ini penting karena desain database tidak dimulai dari SQL, tetapi dari pemahaman konseptual tentang informasi apa yang perlu disimpan dan bagaimana informasi itu saling berhubungan.
+
+Fokus utama untuk ujian adalah memahami tujuan pemodelan data, level conceptual-logical-physical, jenis-jenis model data, serta bagaimana E-R model menjadi rancangan konseptual yang kemudian diterjemahkan ke model relasional.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Konsep dasar model data
+    \begin{enumerate}
+        \item \pwajib Definisi model data
+        \item \pwajib Tujuan pemodelan data
+        \item \pwajib Prosedur identifikasi grup data dan konten detail
+    \end{enumerate}
+    \item \pwajib Level pemodelan data
+    \begin{enumerate}
+        \item \pwajib Conceptual data model
+        \item \pwajib Logical data model
+        \item \pwajib Physical data model
+    \end{enumerate}
+    \item \pwajib Kategori model data
+    \begin{enumerate}
+        \item \pwajib Entity-Relationship Model
+        \item \pwajib Relational Model
+        \item \ppaham Semi-structured Data Model
+        \item \ppaham Object-Based Data Model
+        \item \ppaham Network Model
+        \item \ppaham Hierarchical Model
+    \end{enumerate}
+    \item \pwajib Hubungan antar model
+    \begin{enumerate}
+        \item \pwajib E-R model sebagai desain konseptual
+        \item \pwajib Relational model sebagai desain logis
+        \item \pwajib Reduksi E-R ke skema relasional
+        \item \ppaham Perluasan relasional oleh semi-structured dan object-based model
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Konsep Dasar Model Data}
+
+\begin{jawab}[Inti Konsep.]
+Model data adalah sekumpulan alat konseptual untuk mendeskripsikan data, relasi antar data, semantik data, dan batasan konsistensinya. Konsep ini penting karena database harus dirancang berdasarkan makna informasi organisasi, bukan hanya berdasarkan tabel yang kebetulan mudah dibuat.
+\end{jawab}
+
+Motivasi pemodelan data adalah mengoptimalkan cara informasi disimpan dan digunakan. Organisasi memiliki banyak objek dan peristiwa: mahasiswa mengambil mata kuliah, instructor mengajar course, departemen menawarkan program, pelanggan melakukan transaksi. Model data membantu menentukan objek mana yang perlu direpresentasikan, hubungan apa yang penting, dan aturan apa yang harus dijaga.
+
+Mekanisme dasar pemodelan data:
+\begin{enumerate}
+    \item Identifikasi grup data utama yang relevan dengan organisasi.
+    \item Definisikan konten rinci atau atribut dari tiap grup.
+    \item Tentukan hubungan antar grup data.
+    \item Tentukan batasan konsistensi, seperti key, cardinality, atau participation.
+    \item Terjemahkan model konseptual ke struktur logis yang dapat diimplementasikan.
+\end{enumerate}
+
+Dengan prosedur ini, pemodelan data menjadi jembatan antara kebutuhan pengguna dan schema database. Tanpa pemodelan, desain tabel mudah menjadi ad hoc dan rentan redundansi.
+
+\subsubsection{Level Pemodelan Data}
+
+\begin{jawab}[Inti Konsep.]
+Pemodelan data bergerak dari conceptual model yang independen teknologi, ke logical model yang siap diterjemahkan menjadi struktur database, lalu physical model yang memperhatikan penyimpanan dan performa. Pemisahan level ini penting agar kebutuhan bisnis tidak tercampur terlalu awal dengan detail implementasi.
+\end{jawab}
+
+Motivasi level pemodelan adalah separation of concerns. Pada awal desain, pengguna domain perlu mendiskusikan makna data tanpa terganggu detail indeks, blok disk, atau sintaks SQL. Setelah makna data jelas, perancang baru menentukan struktur logis dan fisik.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Level} & \textbf{Definisi dan Peran} \\
+\hline
+\textbf{Conceptual data model} & Spesifikasi tingkat tinggi yang independen dari teknologi. Dipakai untuk memahami kebutuhan awal, misalnya E-R diagram. \\
+\hline
+\textbf{Logical data model} & Struktur logis yang siap diimplementasikan ke database, misalnya skema relasi, tabel, kolom, dan key. \\
+\hline
+\textbf{Physical data model} & Organisasi data pada sistem penyimpanan aktual, termasuk struktur akses, indeks, dan pertimbangan performa. \\
+\hline
+\end{tabularx}
+\caption{Level pemodelan data}
+\label{tab:data-modeling-levels}
+\end{table}
+
+Contoh alur: kebutuhan ``mahasiswa mengambil mata kuliah'' pertama dimodelkan sebagai entity \texttt{Student}, entity \texttt{Course}, dan relationship \texttt{Takes}. Setelah itu, logical model menerjemahkannya menjadi tabel \texttt{student}, \texttt{course}, dan \texttt{takes}. Physical model kemudian menentukan indeks pada \texttt{student.ID} atau \texttt{takes.course\_id}.
+
+Level ini berhubungan dengan data abstraction pada pengantar database: conceptual/logical/physical modeling membantu merancang struktur pada level yang tepat.
+
+\subsubsection{Entity-Relationship Model}
+
+\begin{jawab}[Inti Konsep.]
+Entity-Relationship Model adalah model konseptual tingkat tinggi yang merepresentasikan dunia nyata sebagai entitas, atribut, dan relasi. Model ini penting karena membantu pengguna dan perancang menyepakati makna data sebelum data diterjemahkan menjadi tabel.
+\end{jawab}
+
+Motivasi E-R model adalah kebutuhan menangkap semantik dunia nyata secara visual dan mudah didiskusikan. Pengguna domain sering lebih mudah memahami diagram entitas dan hubungan daripada schema SQL.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Komponen} & \textbf{Definisi} \\
+\hline
+\textbf{Entity} & Objek dunia nyata yang dapat dibedakan dari objek lain, misalnya student, instructor, course. \\
+\hline
+\textbf{Attribute} & Properti yang mendeskripsikan entity, misalnya \texttt{ID}, \texttt{name}, \texttt{salary}. \\
+\hline
+\textbf{Relationship} & Asosiasi antar entity, misalnya instructor menjadi advisor dari student. \\
+\hline
+\textbf{Key} & Atribut atau himpunan atribut yang mengidentifikasi entity secara unik. \\
+\hline
+\textbf{Cardinality} & Batas jumlah keterhubungan antar entity, seperti one-to-one, one-to-many, atau many-to-many. \\
+\hline
+\textbf{Participation} & Menyatakan apakah semua entity wajib berpartisipasi dalam relationship atau hanya sebagian. \\
+\hline
+\end{tabularx}
+\caption{Komponen dasar E-R model}
+\label{tab:er-basic-modeldata}
+\end{table}
+
+Contoh dari sumber adalah diagram konseptual universitas dengan entity seperti \texttt{instructor}, \texttt{student}, dan relationship \texttt{advisor}. E-R model ini nantinya direduksi ke skema relasional agar dapat diimplementasikan dalam SQL.
+
+\subsubsection{Relational Model}
+
+\begin{jawab}[Inti Konsep.]
+Relational model mendeskripsikan data sebagai sekumpulan tabel dengan atribut bernama dan tuple sebagai baris data. Model ini penting karena menjadi model logis utama DBMS relasional dan dasar bagi SQL, aljabar relasional, serta normalisasi.
+\end{jawab}
+
+Motivasi relational model adalah menyediakan struktur logis yang sederhana, matematis, dan dapat dimanipulasi dengan bahasa formal. Setelah E-R model menangkap kebutuhan konseptual, relational model membuatnya siap diimplementasikan sebagai tabel.
+
+Skema relasi ditulis:
+\begin{equation}
+    R(A_1,A_2,\ldots,A_n)
+    \label{eq:modeldata-relation-schema}
+\end{equation}
+dengan \(R\) nama relasi dan \(A_i\) atribut. Contoh dari sumber:
+\[
+    instructor(ID, name, dept\_name, salary)
+\]
+Satu tuple aktual dapat berisi nilai seperti \((22222, Einstein, Physics, 95000)\).
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Istilah} & \textbf{Makna} \\
+\hline
+Relation & Tabel secara logis. \\
+\hline
+Attribute & Kolom bernama dalam relasi. \\
+\hline
+Tuple & Baris data dalam relasi. \\
+\hline
+Domain & Himpunan nilai yang sah untuk atribut. \\
+\hline
+Schema & Struktur relasi. \\
+\hline
+Instance & Isi aktual relasi pada satu waktu. \\
+\hline
+\end{tabularx}
+\caption{Istilah dasar relational model}
+\label{tab:relational-basic-modeldata}
+\end{table}
+
+Relational model berhubungan langsung dengan relational database design. Setelah tabel terbentuk, FD dan normalisasi dipakai untuk mengevaluasi apakah struktur tabel tersebut bebas anomali.
+
+\subsubsection{Semi-Structured dan Object-Based Data Model}
+
+\begin{jawab}[Inti Konsep.]
+Semi-structured data model memberi fleksibilitas ketika data sejenis tidak selalu memiliki atribut yang sama, sedangkan object-based data model menggabungkan data dan operasi dalam konsep objek. Keduanya penting sebagai perluasan ketika model relasional yang kaku tidak cukup ekspresif.
+\end{jawab}
+
+Motivasi semi-structured model adalah banyak data modern tidak rapi seperti tabel. Dokumen JSON atau XML dapat memiliki field berbeda antar item. Model relasional mewajibkan tuple dalam satu tabel mengikuti atribut yang sama, sedangkan model semi-structured lebih fleksibel.
+
+Contoh semi-structured data:
+\begin{lstlisting}[caption={Contoh data semi-terstruktur JSON}, label={lst:semi-structured-json}]
+{
+  "student_id": "13524044",
+  "name": "Narendra",
+  "contacts": {
+    "email": "student@example.com"
+  }
+}
+\end{lstlisting}
+
+Object-based data model mengadaptasi paradigma object-oriented. Data dan operasi dibungkus ke dalam objek. Ketika digabung dengan relasional, object-relational model dapat menambahkan inheritance, subtype, dan tipe data kompleks.
+
+Hubungannya dengan relational model adalah sebagai perluasan. Relational model tetap kuat untuk data terstruktur dan query formal, tetapi semi-structured dan object-based model membantu menangani variasi struktur dan objek kompleks.
+
+\subsubsection{Network dan Hierarchical Model}
+
+\begin{jawab}[Inti Konsep.]
+Network model dan hierarchical model adalah model klasik berbasis record dan link. Keduanya penting secara historis karena menunjukkan pendekatan sebelum relational model menjadi dominan.
+\end{jawab}
+
+Network model merepresentasikan data sebagai struktur graf. Record types digambarkan sebagai kotak, sedangkan links menghubungkan record types. Karakteristik pentingnya adalah child dapat memiliki banyak parent, sehingga mendukung relasi many-to-many, many-to-one, dan one-to-one.
+
+Hierarchical model mirip network model, tetapi strukturnya dibatasi menjadi pohon berakar. Setiap child hanya memiliki satu parent. Struktur ini sederhana, tetapi kurang fleksibel untuk relasi many-to-many.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|X|}
+\hline
+\textbf{Aspek} & \textbf{Network Model} & \textbf{Hierarchical Model} \\
+\hline
+Struktur & Graf dengan record types dan links. & Pohon berakar. \\
+\hline
+Parent child & Child dapat memiliki banyak parent. & Child hanya memiliki satu parent. \\
+\hline
+Kardinalitas & Mendukung many-to-many, many-to-one, one-to-one. & Lebih cocok untuk one-to-many bertingkat. \\
+\hline
+Fleksibilitas & Lebih fleksibel, tetapi navigasi kompleks. & Lebih sederhana, tetapi kaku. \\
+\hline
+\end{tabularx}
+\caption{Network model dan hierarchical model}
+\label{tab:network-hierarchical}
+\end{table}
+
+Keduanya berhubungan dengan relational model sebagai pembanding. Relational model menghindari navigasi pointer eksplisit dan menyediakan query berbasis nilai serta operasi relasional.
+
+\subsubsection{Hubungan Antar Model}
+
+\begin{jawab}[Inti Konsep.]
+Model data saling berhubungan sebagai tahapan dan alternatif representasi. Dalam desain database relasional, E-R model biasanya dipakai untuk desain konseptual, lalu direduksi menjadi relational model untuk implementasi logis.
+\end{jawab}
+
+Mekanisme transisi umum:
+\begin{enumerate}
+    \item Kebutuhan pengguna dianalisis.
+    \item E-R model menangkap entity, relationship, attribute, key, cardinality, dan participation.
+    \item E-R diagram direduksi menjadi skema relasional.
+    \item SQL dipakai untuk mendefinisikan tabel, key, dan constraint.
+    \item Normalisasi mengevaluasi kualitas skema relasional.
+\end{enumerate}
+
+Semi-structured dan object-based model tidak selalu menggantikan relational model, tetapi memperluas pilihan ketika data tidak cocok dengan tabel kaku. Network dan hierarchical model membantu memahami sejarah model data dan keterbatasan struktur navigasional.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Pemodelan Data}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu mengubah kebutuhan informasi organisasi menjadi struktur data yang dapat dirancang lebih lanjut.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode pemodelan data awal}, label={lst:data-modeling-procedure}]
+Input: organizational information requirements
+Output: conceptual data model
+
+identify main data groups
+for each data group do
+    define detailed attributes and meanings
+identify relationships among data groups
+define keys and consistency constraints
+validate model with stakeholders
+prepare logical design from conceptual model
+\end{lstlisting}
+
+\subsubsection{Transisi E-R ke Relasional}
+
+\begin{jawab}[Makna Prosedur.]
+Transisi ini menjelaskan posisi E-R dan relational model dalam desain database: E-R menangkap makna, relational model menyiapkan implementasi.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode transisi model konseptual ke logis}, label={lst:er-to-relational-highlevel}]
+Input: E-R diagram
+Output: relational schemas
+
+for each entity set do
+    create a relation schema with its attributes
+    choose primary key
+for each relationship set do
+    map the relationship according to cardinality
+    add foreign keys or create a new relation as needed
+for each constraint do
+    translate it into keys, foreign keys, or checks when possible
+\end{lstlisting}

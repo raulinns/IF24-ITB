@@ -1,0 +1,423 @@
+\section{Teori P, NP, NPC}
+
+Teori P, NP, dan NP-Complete membahas klasifikasi persoalan keputusan berdasarkan efisiensi penyelesaian, efisiensi verifikasi, dan hubungan reduksi antar persoalan. Materi ini menjawab pertanyaan: apakah suatu persoalan dapat diselesaikan dalam waktu polinomial, apakah solusi yang diberikan dapat diverifikasi dalam waktu polinomial, dan apakah persoalan tersebut sesukar seluruh persoalan di NP.
+
+Fokus UAS biasanya berbentuk benar/salah atau pilihan ganda konseptual. Karena itu, yang paling penting adalah definisi yang presisi: P bukan sekadar ``mudah'', NP bukan ``tidak polinomial'', NP-Complete harus berada di NP sekaligus NP-Hard, dan NP-Hard tidak harus berada di NP.
+
+\begin{cmt}{Keterbatasan Sumber Utama}{}
+NotebookLM yang diberikan dapat diakses, tetapi jawaban yang diperoleh untuk Teori P, NP, NPC hanya memuat outline global: polynomial-time, tractable, undecidable, deterministic/non-deterministic algorithm, P, NP, NP-Complete, NP-Hard, reduksi polinomial, SAT, TSP decision problem, dan hubungan dengan materi lain. Detail klasifikasi contoh, jebakan benar/salah, dan konsekuensi diagram Venn dilengkapi menggunakan pengetahuan umum yang relevan serta pola soal UAS 2022--2025.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Persoalan dan kompleksitas
+    \begin{enumerate}
+        \item Persoalan keputusan.
+        \item Persoalan optimisasi.
+        \item Ukuran masukan.
+        \item Kompleksitas waktu.
+        \item Polynomial-time dan nonpolynomial-time.
+    \end{enumerate}
+
+    \item Keterpecahan persoalan
+    \begin{enumerate}
+        \item Tractable.
+        \item Intractable.
+        \item Decidable.
+        \item Undecidable.
+        \item Halting problem.
+    \end{enumerate}
+
+    \item Model algoritma
+    \begin{enumerate}
+        \item Algoritma deterministik.
+        \item Algoritma non-deterministik.
+        \item Tahap menerka.
+        \item Tahap verifikasi.
+        \item Sertifikat solusi.
+    \end{enumerate}
+
+    \item Kelas kompleksitas
+    \begin{enumerate}
+        \item P.
+        \item NP.
+        \item NP-Complete (NPC).
+        \item NP-Hard.
+        \item Relasi $P\subseteq NP$.
+    \end{enumerate}
+
+    \item Reduksi dan pembuktian NPC
+    \begin{enumerate}
+        \item Reduksi polinomial.
+        \item $A\le_p B$.
+        \item Syarat $X\in NP$.
+        \item Syarat semua persoalan NP dapat direduksi ke $X$.
+        \item SAT sebagai persoalan NPC dasar.
+    \end{enumerate}
+
+    \item Contoh penting untuk ujian
+    \begin{enumerate}
+        \item SAT.
+        \item Hamiltonian Circuit.
+        \item TSP decision problem.
+        \item Clique decision problem.
+        \item Euler circuit.
+        \item Minimum spanning tree.
+        \item Halting problem.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+Materi ini penting karena strategi algoritma tidak hanya membahas cara menyelesaikan persoalan, tetapi juga batas realistis penyelesaiannya. Jika sebuah persoalan berada di P, kita dapat mencari algoritma polinomial yang eksak. Jika sebuah persoalan NP-Complete, kita perlu sadar bahwa algoritma polinomial eksak untuk semua instance belum diketahui; pendekatan seperti backtracking, Branch and Bound, heuristik, aproksimasi, atau DP pada varian terbatas menjadi relevan.
+
+\begin{cmt}{Relevansi Praktis}{}
+Dalam praktik, klasifikasi P/NP/NPC membantu memilih pendekatan: algoritma eksak polinomial untuk persoalan tractable, optimisasi dengan pruning untuk instance kecil, heuristik atau aproksimasi untuk instance besar, dan reformulasi persoalan jika model awal terlalu sulit.
+\end{cmt}
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Backtracking, Branch and Bound, dan Program Dinamis sering dipakai pada persoalan yang ruang kemungkinannya besar. Teori P/NP/NPC menjelaskan mengapa strategi seperti pruning, bound, heuristic search, atau tabel DP dibutuhkan. Contohnya, Hamiltonian Circuit dan TSP decision problem terkait dengan NPC, sedangkan TSP optimisasi terkait NP-Hard. Knapsack juga memiliki varian yang sering dibahas dalam konteks NP-Complete/NP-Hard, walaupun DP dapat menyelesaikan versi tertentu dalam waktu pseudo-polinomial.
+
+\subsection{Pola Soal UAS Sebelumnya dan Prioritas}
+
+\begin{cmt}{Pola dari Soal 2022--2025}{}
+Teori P, NP, dan NPC muncul pada semua sumber soal yang diperiksa. Soal 2022 berbentuk pilihan ganda tentang tractable, algoritma non-deterministik, tahap pembuktian NPC, contoh bukan NPC, asumsi $P\ne NP$, dan diagram Venn. Solusi 2023 berisi benar/salah untuk Menara Hanoi, FFT, Halting Problem, dan Post Correspondence Problem. Soal 2024 berisi benar/salah tentang eigen, MST, SAT, P subset NP, dan P versus NP. Soal 2025 berisi pilihan ganda tentang Euler circuit, contoh NP, tahap pembuktian NPC, dampak algoritma polinomial untuk persoalan NPC, Halting Problem, dan diagram Venn.
+\end{cmt}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.23\textwidth}|X|X|}
+\hline
+\textbf{Pola Soal} & \textbf{Yang Biasanya Diminta} & \textbf{Kemampuan Wajib} \\
+\hline
+Klasifikasi persoalan & Menentukan apakah persoalan termasuk P, NP, NPC, NP-Hard, intractable, atau undecidable. & Mengingat definisi dan contoh kanonik. \\
+\hline
+Benar/salah definisi & Menilai pernyataan tentang P, NP, verifikasi, deterministik, dan non-deterministik. & Tidak tertukar antara menyelesaikan dan memverifikasi. \\
+\hline
+Pembuktian NPC & Menjawab tahap/syarat membuktikan suatu persoalan NP-Complete. & Menyebut $X\in NP$ dan reduksi dari persoalan NPC/NP yang diketahui. \\
+\hline
+Konsekuensi $P=NP$ & Menentukan implikasi jika satu persoalan NPC memiliki algoritma polinomial. & Memahami bahwa satu NPC di P membuat semua NP berada di P. \\
+\hline
+Diagram Venn & Memilih diagram hubungan P, NP, dan NPC. & Memahami $P\subseteq NP$, NPC subset NP, dan skenario jika $P=NP$. \\
+\hline
+\end{tabularx}
+\caption{Pola soal UAS Teori P, NP, NPC}
+\label{tab:pola-soal-p-np-npc}
+\end{table}
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Persoalan Keputusan dan Persoalan Optimisasi}
+
+\begin{jawab}[Inti Konsep.]
+Kelas P, NP, dan NPC secara formal membahas persoalan keputusan, yaitu persoalan dengan jawaban ya atau tidak.
+\end{jawab}
+
+Persoalan optimisasi mencari nilai terbaik, misalnya jarak terpendek atau profit maksimum. Persoalan keputusan hanya menanyakan apakah ada solusi yang memenuhi batas tertentu. Contoh TSP optimisasi: ``berapakah tur terpendek?'' Contoh TSP decision problem: ``apakah ada tur dengan panjang paling banyak $K$?'' Versi keputusan inilah yang dibahas dalam kelas NP dan NP-Complete.
+
+Perbedaan ini sering menjadi jebakan. TSP optimisasi biasanya dikaitkan dengan NP-Hard, sedangkan TSP decision problem berada di NP-Complete.
+
+\subsubsection{Polynomial-time, Tractable, dan Intractable}
+
+\begin{jawab}[Inti Konsep.]
+Polynomial-time berarti waktu algoritma dibatasi oleh polinom terhadap ukuran masukan; persoalan yang memiliki algoritma polinomial dianggap tractable.
+\end{jawab}
+
+Contoh waktu polinomial adalah $O(1)$, $O(n)$, $O(n\log n)$, $O(n^2)$, dan $O(n^3)$. Contoh nonpolinomial adalah $O(2^n)$, $O(n!)$, dan sejenisnya. Secara praktis, polynomial-time dipakai sebagai batas antara persoalan yang dianggap dapat ditangani efisien dan yang tidak.
+
+Intractable berarti tidak dapat diselesaikan dalam waktu polinomial, atau sejauh diketahui tidak memiliki algoritma polinomial untuk penyelesaian eksak umum. Namun, intractable berbeda dari undecidable. Intractable masih dapat diputuskan oleh algoritma, hanya saja membutuhkan waktu yang sangat besar untuk instance besar.
+
+\subsubsection{Decidable dan Undecidable}
+
+\begin{jawab}[Inti Konsep.]
+Decidable berarti ada algoritma yang selalu berhenti dan memberi jawaban benar; undecidable berarti tidak ada algoritma umum yang selalu memutuskan jawaban.
+\end{jawab}
+
+Halting Problem adalah contoh undecidable: diberikan program dan input, tentukan apakah program tersebut akan berhenti. Tidak ada algoritma umum yang selalu dapat menjawab benar untuk semua program-input. Karena undecidable tidak memiliki algoritma pemutus umum, ia tidak sekadar ``sangat lambat''; persoalannya berbeda dari intractable.
+
+\subsubsection{Algoritma Deterministik dan Non-deterministik}
+
+\begin{jawab}[Inti Konsep.]
+Algoritma deterministik memiliki langkah berikutnya yang pasti, sedangkan model non-deterministik dapat dipahami sebagai menebak sertifikat solusi lalu memverifikasinya.
+\end{jawab}
+
+Dalam materi NP, non-deterministik tidak berarti acak. Model yang penting untuk ujian adalah dua tahap:
+\begin{enumerate}
+    \item \textbf{Guessing}: menerka sertifikat solusi.
+    \item \textbf{Verification}: memeriksa sertifikat secara deterministik dalam waktu polinomial.
+\end{enumerate}
+
+Sebuah persoalan berada di NP jika setiap jawaban ``ya'' memiliki sertifikat yang dapat diverifikasi dalam waktu polinomial. Ini tidak berarti solusi dapat ditemukan dalam waktu polinomial oleh algoritma deterministik.
+
+\subsubsection{Kelas P}
+
+\begin{jawab}[Inti Konsep.]
+P adalah kelas persoalan keputusan yang dapat diselesaikan oleh algoritma deterministik dalam waktu polinomial.
+\end{jawab}
+
+Jika suatu persoalan berada di P, maka ada algoritma yang dapat menentukan jawaban ya/tidak secara efisien. Contoh yang sering muncul di pola soal adalah Minimum Spanning Tree dan Euler Circuit. Keduanya memiliki algoritma polinomial, sehingga versi keputusannya berada di P. Karena setiap solusi yang dapat diselesaikan cepat juga dapat diverifikasi cepat, setiap persoalan P juga berada di NP.
+
+\subsubsection{Kelas NP}
+
+\begin{jawab}[Inti Konsep.]
+NP adalah kelas persoalan keputusan yang solusi ``ya''-nya dapat diverifikasi dalam waktu polinomial.
+\end{jawab}
+
+Contohnya Hamiltonian Circuit: jika seseorang memberi urutan simpul sebagai sertifikat, kita dapat memeriksa dalam waktu polinomial apakah urutan itu melewati setiap simpul tepat sekali dan kembali ke awal. TSP decision problem juga berada di NP: sertifikatnya adalah tur, dan verifikasinya memeriksa validitas tur serta apakah total bobot tidak melebihi batas.
+
+Pernyataan ``NP berarti non-polynomial'' adalah salah. NP berarti \textit{nondeterministic polynomial}, yaitu terkait verifikasi polinomial dalam model non-deterministik.
+
+\subsubsection{NP-Complete}
+
+\begin{jawab}[Inti Konsep.]
+NP-Complete adalah persoalan di NP yang setidaknya sesukar semua persoalan lain di NP.
+\end{jawab}
+
+Sebuah persoalan $X$ termasuk NP-Complete jika memenuhi dua syarat:
+\begin{enumerate}
+    \item $X\in NP$.
+    \item Untuk setiap persoalan $Y\in NP$, berlaku $Y\le_p X$.
+\end{enumerate}
+
+Dalam praktik pembuktian, kita tidak mereduksi semua $Y$ satu per satu. Kita mengambil persoalan yang sudah diketahui NP-Complete, misalnya SAT atau Hamiltonian Circuit, lalu mereduksinya ke persoalan $X$ dalam waktu polinomial. Jika $A$ sudah NP-Complete dan $A\le_p X$, maka $X$ setidaknya sesukar $A$.
+
+\subsubsection{NP-Hard}
+
+\begin{jawab}[Inti Konsep.]
+NP-Hard adalah kelas persoalan yang setidaknya sesukar semua persoalan NP, tetapi tidak harus berada di NP.
+\end{jawab}
+
+Setiap persoalan NP-Complete adalah NP-Hard, tetapi tidak semua NP-Hard adalah NP-Complete. Persoalan NP-Hard dapat berupa persoalan optimisasi, bukan keputusan, atau bahkan tidak decidable. Karena itu, untuk menyebut suatu persoalan NP-Complete, kita harus memastikan persoalan tersebut berada di NP. Untuk NP-Hard, syarat berada di NP tidak diperlukan.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+Persoalan keputusan & Persoalan dengan jawaban ya/tidak; objek formal utama kelas P, NP, dan NPC. \\
+\hline
+Polynomial-time & Waktu algoritma dibatasi fungsi polinom ukuran input. \\
+\hline
+Tractable & Dapat diselesaikan dalam waktu polinomial. \\
+\hline
+Intractable & Tidak dapat diselesaikan dalam waktu polinomial untuk penyelesaian eksak umum. \\
+\hline
+Undecidable & Tidak ada algoritma umum yang selalu berhenti dan menjawab benar. \\
+\hline
+P & Persoalan keputusan yang dapat diselesaikan dalam waktu polinomial. \\
+\hline
+NP & Persoalan keputusan yang sertifikat solusi ``ya''-nya dapat diverifikasi dalam waktu polinomial. \\
+\hline
+NPC & Persoalan yang berada di NP dan semua persoalan NP dapat direduksi kepadanya. \\
+\hline
+NP-Hard & Persoalan yang semua persoalan NP dapat direduksi kepadanya, tidak harus berada di NP. \\
+\hline
+Reduksi polinomial & Transformasi instance persoalan satu ke persoalan lain dalam waktu polinomial. \\
+\hline
+Sertifikat & Bukti kandidat jawaban ``ya'' yang dapat diverifikasi. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Teori P, NP, NPC}
+\label{tab:komponen-kunci-p-np-npc}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Kelas P}
+
+\begin{jawab}[Makna Rumus.]
+Definisi ini menyatakan bahwa P berisi persoalan keputusan yang dapat diputuskan secara deterministik dalam waktu polinomial.
+\end{jawab}
+
+\begin{equation}
+    P=\{L \mid L \text{ dapat diputuskan oleh algoritma deterministik dalam waktu polinomial}\}
+    \label{eq:class-p}
+\end{equation}
+
+\subsubsection{Kelas NP}
+
+\begin{jawab}[Makna Rumus.]
+Definisi ini menyatakan bahwa NP berisi persoalan yang jawaban ``ya''-nya memiliki sertifikat yang dapat diverifikasi cepat.
+\end{jawab}
+
+\begin{equation}
+    NP=\{L \mid \exists V \text{ polinomial},\; x\in L \iff \exists y,\; V(x,y)=1\}
+    \label{eq:class-np}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $x$: instance persoalan.
+    \item $y$: sertifikat solusi.
+    \item $V$: verifier deterministik waktu polinomial.
+\end{itemize}
+
+\subsubsection{Relasi P dan NP}
+
+\begin{jawab}[Makna Rumus.]
+Jika suatu persoalan dapat diselesaikan cepat, maka solusi yang diberikan juga dapat diverifikasi cepat.
+\end{jawab}
+
+\begin{equation}
+    P\subseteq NP
+    \label{eq:p-subset-np}
+\end{equation}
+
+Pertanyaan besar yang belum diketahui adalah apakah:
+\begin{equation}
+    P=NP \quad \text{atau} \quad P\ne NP
+    \label{eq:p-versus-np}
+\end{equation}
+
+\subsubsection{Reduksi Polinomial}
+
+\begin{jawab}[Makna Rumus.]
+Reduksi polinomial menunjukkan bahwa jika $B$ mudah diselesaikan, maka $A$ juga mudah diselesaikan melalui transformasi ke $B$.
+\end{jawab}
+
+\begin{equation}
+    A\le_p B
+    \iff
+    \exists f \text{ komputabel polinomial sehingga } x\in A \iff f(x)\in B
+    \label{eq:poly-reduction}
+\end{equation}
+
+Makna arah reduksi sangat penting. Jika $A\le_p B$, maka $B$ setidaknya sesukar $A$. Untuk membuktikan $B$ sulit, reduksi dilakukan dari persoalan sulit yang sudah dikenal menuju $B$.
+
+\subsubsection{Syarat NP-Complete dan NP-Hard}
+
+\begin{jawab}[Makna Rumus.]
+NP-Complete membutuhkan dua syarat: berada di NP dan NP-Hard.
+\end{jawab}
+
+\begin{equation}
+    X\in NPC
+    \iff
+    X\in NP \land \forall Y\in NP,\;Y\le_p X
+    \label{eq:npc-condition}
+\end{equation}
+
+\begin{equation}
+    X\in NP\text{-Hard}
+    \iff
+    \forall Y\in NP,\;Y\le_p X
+    \label{eq:np-hard-condition}
+\end{equation}
+
+Konsekuensi penting:
+\begin{equation}
+    \exists X\in NPC,\;X\in P \Rightarrow P=NP
+    \label{eq:npc-in-p-consequence}
+\end{equation}
+
+Artinya, jika satu saja persoalan NP-Complete ditemukan memiliki algoritma polinomial, maka seluruh persoalan di NP juga dapat diselesaikan dalam polinomial.
+
+\subsection{Contoh Klasifikasi yang Sering Muncul}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|L{0.18\textwidth}|X|}
+\hline
+\textbf{Persoalan} & \textbf{Klasifikasi Umum} & \textbf{Catatan Ujian} \\
+\hline
+Minimum Spanning Tree & P & Ada algoritma polinomial seperti Kruskal dan Prim. \\
+\hline
+Euler Circuit & P & Dapat diperiksa dengan derajat simpul dan keterhubungan dalam waktu polinomial. \\
+\hline
+Hamiltonian Circuit & NP-Complete & Sertifikatnya urutan simpul; verifikasi polinomial. \\
+\hline
+SAT & NP-Complete & Contoh dasar NPC yang sering menjadi titik awal reduksi. \\
+\hline
+TSP decision problem & NP-Complete & Pertanyaan ya/tidak: apakah ada tur dengan biaya paling banyak $K$. \\
+\hline
+TSP optimisasi & NP-Hard & Mencari tur minimum, bukan sekadar menjawab ya/tidak. \\
+\hline
+Clique decision problem & NP-Complete & Jika versi decision clique polinomial, maka $P=NP$. \\
+\hline
+Halting Problem & Undecidable & Tidak termasuk sekadar NPC; tidak ada algoritma umum yang selalu memutuskan. \\
+\hline
+GCD dua bilangan & P & Dapat diselesaikan dengan algoritma Euclid dalam waktu polinomial. \\
+\hline
+\end{tabularx}
+\caption{Contoh klasifikasi yang sering relevan pada soal}
+\label{tab:contoh-klasifikasi-p-np-npc}
+\end{table}
+
+\subsection{Jebakan Benar/Salah yang Perlu Diwaspadai}
+
+\begin{itemize}
+    \item \textbf{NP bukan non-polynomial}: NP berarti solusi dapat diverifikasi dalam waktu polinomial oleh model non-deterministik.
+    \item \textbf{P adalah subset NP}: karena jika persoalan dapat diselesaikan cepat, hasilnya juga dapat diverifikasi cepat.
+    \item \textbf{NPC tidak sama dengan NP}: NPC adalah bagian dari NP yang paling sulit.
+    \item \textbf{NP-Hard tidak harus berada di NP}: karena bisa berupa persoalan optimisasi atau bahkan undecidable.
+    \item \textbf{Undecidable berbeda dari intractable}: intractable masih decidable tetapi tidak efisien; undecidable tidak memiliki algoritma pemutus umum.
+    \item \textbf{Satu NPC di P membuat $P=NP$}: bukan hanya persoalan itu yang menjadi mudah, tetapi seluruh NP.
+    \item \textbf{Jika $P\ne NP$}: maka tidak ada persoalan NP-Complete yang berada di P.
+    \item \textbf{Verifikasi bukan pencarian}: mampu memeriksa sertifikat cepat tidak berarti mampu menemukan sertifikat cepat.
+\end{itemize}
+
+\subsection{Cara Menjawab Soal Manual}
+
+\subsubsection{Menentukan Apakah Persoalan Berada di NP}
+
+\begin{enumerate}
+    \item Pastikan persoalan adalah persoalan keputusan.
+    \item Tentukan bentuk sertifikat untuk jawaban ``ya''.
+    \item Jelaskan verifier deterministik.
+    \item Pastikan verifier berjalan dalam waktu polinomial terhadap ukuran input.
+\end{enumerate}
+
+\subsubsection{Membuktikan NP-Complete}
+
+\begin{enumerate}
+    \item Buktikan $X\in NP$ dengan sertifikat dan verifier polinomial.
+    \item Pilih persoalan $A$ yang sudah diketahui NP-Complete.
+    \item Tunjukkan reduksi polinomial $A\le_p X$.
+    \item Simpulkan $X$ NP-Hard dan karena $X\in NP$, maka $X$ NP-Complete.
+\end{enumerate}
+
+\subsubsection{Menganalisis Konsekuensi Algoritma Polinomial}
+
+Jika soal menyatakan ada algoritma polinomial untuk persoalan NP-Complete seperti SAT, Hamiltonian Circuit, Clique, atau TSP decision problem, maka konsekuensinya:
+\begin{itemize}
+    \item persoalan tersebut berada di P;
+    \item semua persoalan NP dapat direduksi ke persoalan tersebut;
+    \item semua persoalan NP juga berada di P;
+    \item maka $P=NP$.
+\end{itemize}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+\begin{itemize}
+    \item[$\square$] Saya dapat membedakan persoalan keputusan dan persoalan optimisasi.
+    \item[$\square$] Saya dapat membedakan polynomial-time dan nonpolynomial-time.
+    \item[$\square$] Saya dapat membedakan tractable, intractable, decidable, dan undecidable.
+    \item[$\square$] Saya dapat menjelaskan algoritma deterministik dan non-deterministik.
+    \item[$\square$] Saya dapat menjelaskan kelas P dan NP tanpa menyamakan NP dengan non-polynomial.
+    \item[$\square$] Saya dapat menjelaskan $P\subseteq NP$.
+    \item[$\square$] Saya dapat menjelaskan syarat NP-Complete dan NP-Hard.
+    \item[$\square$] Saya dapat menentukan arah reduksi polinomial yang benar.
+    \item[$\square$] Saya dapat menjelaskan konsekuensi jika satu persoalan NPC memiliki algoritma polinomial.
+    \item[$\square$] Saya dapat mengklasifikasikan contoh umum seperti SAT, Hamiltonian Circuit, TSP decision problem, MST, Euler Circuit, dan Halting Problem.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Definisi P, NP, NPC, NP-Hard, $P\subseteq NP$, reduksi polinomial, syarat pembuktian NPC, dan konsekuensi jika NPC berada di P. \\
+\hline
+\textbf{Cukup Paham Konsep} & SAT, TSP decision problem, Hamiltonian Circuit, Clique, Euler Circuit, MST, Halting Problem, tractable, intractable, dan undecidable. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan. \\
+\hline
+\end{tabularx}

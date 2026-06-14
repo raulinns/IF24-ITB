@@ -1,0 +1,192 @@
+% arara: pdflatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{graphicx}
+\input{preamble.sty}
+
+\title{%
+    \vspace{-2cm}
+    \textbf{\LARGE Catatan Ujian Akhir Semester} \\[0.25em]
+    \Large IF2221 Strategi Algoritma \\[0.25em]
+    \normalsize Semester 4 Tahun 2025/2026 \\[2em]
+}
+
+\author{%
+    Narendra Dharma Wistara M. \\[0.25em]
+    13524044 \\[2.5em]
+    Program Studi Teknik Informatika \\[0.25em]
+    Sekolah Teknik Elektro dan Informatika \\[0.25em]
+    Institut Teknologi Bandung \\[0.25em]
+}
+
+\begin{document}
+\pagenumbering{gobble}
+\begin{titlepage}
+    \maketitle
+    \thispagestyle{empty}
+\end{titlepage}
+
+\clearpage
+
+\pagenumbering{roman}
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic}
+
+\section{Informasi Ujian}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+        \hline
+        \textbf{Jenis Ujian} & Ujian Akhir Semester \\
+        \hline
+        \textbf{Nama Mata Kuliah} & IF2221 Strategi Algoritma \\
+        \hline
+        \textbf{Tanggal Ujian} & Rabu, 3 Juni 2026 \\
+        \hline
+    \end{tabularx}
+    \caption{Informasi ujian}
+    \label{tab:informasi-ujian}
+\end{table}
+
+\subsection{Capaian Pembelajaran Mata Kuliah (CPMK)}
+
+\begin{enumerate}
+    \item \textbf{CPMK1.} Menyusun solusi masalah komputasi dengan berbagai strategi algoritma,
+    bergantung pada karakteristik persoalan, kemudian mendesain algoritma
+    penyelesaian masalah
+
+    \item \textbf{CPMK2.} Mengimplementasikan desain algoritma menjadi sebuah program
+    aplikasi
+
+    \item \textbf{CPMK3.} Menulis makalah ilmiah yang berisi hasil studi dan implementasi
+    penyelesaian masalah dengan menggunakan berbagai strategi algoritma.
+
+    \item \textbf{CPMK4.} Menulis laporan penyelesaian masalah komputasi yang diberikan di dalam tugas
+
+    \item \textbf{CPMK5.} Mendemokan aplikasi untuk mendapatkan feedback
+\end{enumerate}
+
+\subsection{Tabel Hubungan CPMK dan Materi}
+
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabularx}{\textwidth}{|L{0.14\textwidth}|*{7}{>{\centering\arraybackslash}X|}}
+        \hline
+        \textbf{CPMK} & \textbf{BT} & \textbf{B\&B} & \textbf{RP} & \textbf{SM} & \textbf{Regex} & \textbf{PD} & \textbf{PNP} \\
+        \hline
+        CPMK1 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+        \hline
+        CPMK2 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ &  \\
+        \hline
+        CPMK3 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+        \hline
+        CPMK4 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+        \hline
+        CPMK5 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ &  \\
+        \hline
+    \end{tabularx}
+    \caption{Hubungan CPMK dengan materi yang dibahas}
+    \label{tab:hubungan-cpmk-materi}
+\end{table}
+
+\noindent
+Keterangan: BT = Backtracking, B\&B = Branch and Bound, RP = Route Planning,
+SM = String Matching, PD = Program Dinamis, PNP = Teori P, NP, NPC.
+
+\section{Daftar Materi yang Diujikan}
+
+\begin{enumerate}
+    \item Backtracking
+    \item Branch and Bound
+    \item Route Planning
+    \item String Matching
+    \item String Matching with Regex
+    \item Program Dinamis
+    \item Teori P, NP, NPC
+\end{enumerate}
+
+\section{Outline Keseluruhan Materi}
+
+Bagian ini menyajikan peta belajar ringkas untuk seluruh materi yang
+diujikan. Penjelasan mendalam untuk setiap materi tersedia pada
+bagian catatan materi masing-masing.
+
+\subsection{Backtracking}
+\begin{itemize}
+    \item Runut-balik sebagai perbaikan dari \textit{exhaustive
+        search} dengan pemangkasan simpul yang tidak mengarah ke solusi.
+    \item Pohon ruang status, simpul hidup, simpul-E, simpul mati,
+        fungsi pembangkit, dan fungsi pembatas.
+    \item Aplikasi: N-Ratu, \textit{sum of subsets}, pewarnaan graf,
+        sirkuit Hamilton, dan rute labirin.
+\end{itemize}
+
+\subsection{Branch and Bound}
+\begin{itemize}
+    \item Strategi optimisasi berbasis pohon ruang status,
+        \textit{best-first rule}, dan nilai batas.
+    \item Fungsi ongkos untuk memilih simpul hidup yang paling menjanjikan.
+    \item Aplikasi: 15-Puzzle, TSP, \textit{assignment problem}, dan
+        1/0 Knapsack.
+\end{itemize}
+
+\subsection{Route Planning}
+\begin{itemize}
+    \item Pencarian rute pada graf dari status awal menuju status tujuan.
+    \item \textit{Uninformed search}: BFS, DFS, DLS, IDS, UCS.
+    \item \textit{Informed search}: Greedy Best-First Search dan A*
+        dengan fungsi evaluasi.
+\end{itemize}
+
+\subsection{String Matching}
+\begin{itemize}
+    \item Pencarian lokasi kemunculan \textit{pattern} di dalam teks.
+    \item Algoritma Brute Force, Knuth-Morris-Pratt (KMP), dan Boyer-Moore.
+    \item Fungsi pinggiran KMP dan \textit{last occurrence function}
+        Boyer-Moore.
+\end{itemize}
+
+\subsection{String Matching with Regex}
+\begin{itemize}
+    \item Regular expression sebagai notasi pola string yang lebih
+        fleksibel daripada \textit{exact matching}.
+    \item Character class, range, negasi, metacharacter, quantifier,
+        dan boundary matcher.
+    \item Penggunaan dasar regex di Python melalui
+        \texttt{re.compile}, \texttt{search}, \texttt{match}, dan
+        \texttt{findall}.
+\end{itemize}
+
+\subsection{Program Dinamis}
+\begin{itemize}
+    \item Metode optimisasi berbasis tahap, status, keputusan,
+        prinsip optimalitas, dan memoisasi.
+    \item Pendekatan program dinamis maju dan mundur.
+    \item Aplikasi: lintasan terpendek, integer knapsack, coin
+        exchange, capital budgeting, dan TSP.
+\end{itemize}
+
+\subsection{Teori P, NP, NPC}
+\begin{itemize}
+    \item Klasifikasi persoalan berdasarkan keterpecahan dan kompleksitas waktu.
+    \item Polynomial-time, nonpolynomial-time, tractable,
+        intractable, undecidable, deterministik, dan non-deterministik.
+    \item Kelas P, NP, NP-Complete, NP-Hard, reduksi polinomial, SAT,
+        dan TSP decision problem.
+\end{itemize}
+
+\newpage
+
+\input{section/1-backtracking.tex}
+\input{section/2-branch-and-bound.tex}
+\input{section/3-route-planning.tex}
+\input{section/4-string-matching.tex}
+\input{section/5-string-matching-with-regex.tex}
+\input{section/6-program-dinamis.tex}
+\input{section/7-teori-p-np-npc.tex}
+
+\end{document}

@@ -1,0 +1,344 @@
+\section{Introduction to Database}
+
+Introduction to Database menjelaskan mengapa sistem basis data dibutuhkan, bagaimana DBMS menyembunyikan kompleksitas penyimpanan data, dan komponen apa saja yang membuat data dapat disimpan, diambil, diamankan, dan dimodifikasi secara konsisten. Materi ini adalah fondasi untuk semua materi berikutnya: model data, model relasional, SQL, desain E-R, normalisasi, integrity constraints, dan data warehouse.
+
+Fokus utama untuk ujian adalah memahami perbedaan data, database, dan DBMS; alasan DBMS lebih baik daripada file-processing system; level abstraksi data; schema-instance; data independence; bahasa basis data; serta komponen internal DBMS.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Konsep dasar data dan database
+    \begin{enumerate}
+        \item \pwajib Data
+        \item \pwajib Data terstruktur dan tidak terstruktur
+        \item \pwajib Basis data
+        \item \pwajib DBMS
+    \end{enumerate}
+    \item \pwajib Motivasi penggunaan DBMS
+    \begin{enumerate}
+        \item \pwajib Masalah file-processing system
+        \item \pwajib Peran DBMS dalam penyimpanan, akses, keamanan, recovery, dan konkurensi
+    \end{enumerate}
+    \item \pwajib Abstraksi data
+    \begin{enumerate}
+        \item \pwajib Physical level
+        \item \pwajib Logical level
+        \item \pwajib View level
+    \end{enumerate}
+    \item \pwajib Schema, instance, dan data independence
+    \begin{enumerate}
+        \item \pwajib Physical schema, logical schema, dan subschema/view
+        \item \pwajib Instance
+        \item \pwajib Physical data independence
+        \item \ppaham Logical data independence
+    \end{enumerate}
+    \item \pwajib Bahasa basis data
+    \begin{enumerate}
+        \item \pwajib Data Definition Language (DDL)
+        \item \pwajib Data Manipulation Language (DML)
+        \item \pwajib Procedural dan declarative query language
+        \item \ppaham Authorization dan transaction control
+    \end{enumerate}
+    \item \pwajib Komponen internal DBMS
+    \begin{enumerate}
+        \item \pwajib Storage manager
+        \item \pwajib Query processor
+        \item \pwajib Transaction manager
+    \end{enumerate}
+    \item \ppaham Arsitektur, pengguna, dan pengembangan database
+    \begin{enumerate}
+        \item \ppaham Centralized, client-server, parallel, dan distributed architecture
+        \item \ppaham Database users
+        \item \ppaham Data modeling, SDLC, dan prototyping/RAD
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Data, Database, dan DBMS}
+
+\begin{jawab}[Inti Konsep.]
+Data adalah representasi tersimpan dari objek dan peristiwa bermakna; database adalah kumpulan data yang terorganisir dan saling berhubungan secara logis; DBMS adalah sistem perangkat lunak untuk menyimpan, mengelola, dan mengakses database. Ketiga konsep ini penting karena seluruh mata kuliah Basis Data berangkat dari kebutuhan mengubah data mentah menjadi informasi yang dapat dipakai secara efisien dan aman.
+\end{jawab}
+
+Motivasi konsep ini adalah organisasi perlu menyimpan fakta tentang dunia nyata: mahasiswa, dosen, mata kuliah, departemen, transaksi, produk, dan sebagainya. Fakta tersebut tidak cukup hanya diletakkan sebagai file acak; ia perlu diorganisasi agar dapat dicari, diperbarui, diamankan, dan dibagikan ke banyak pengguna.
+
+\textbf{Data} adalah representasi tersimpan dari objek dan peristiwa yang memiliki makna. Sumber membedakan data menjadi \textbf{data terstruktur}, seperti angka, teks, dan tanggal, serta \textbf{data tidak terstruktur}, seperti gambar, video, dan dokumen.
+
+\textbf{Database} adalah sekumpulan data yang terorganisir dan saling berhubungan secara logis. Keterhubungan logis berarti data tidak berdiri sendiri: data mahasiswa berhubungan dengan pengambilan mata kuliah, data instructor berhubungan dengan department, dan data course berhubungan dengan section.
+
+\textbf{Database Management System} (DBMS) adalah kumpulan data yang saling berelasi beserta program untuk mengakses dan mengelola data tersebut. DBMS bertugas menyediakan cara yang nyaman dan efisien untuk menyimpan serta mengambil informasi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Konsep} & \textbf{Makna dan Contoh} \\
+\hline
+Data & Representasi objek/peristiwa bermakna. Contoh: \texttt{13524044}, \texttt{Basis Data}, \texttt{8 Juni 2026}. \\
+\hline
+Database & Kumpulan data terorganisir. Contoh: database universitas berisi student, instructor, course, dan department. \\
+\hline
+DBMS & Sistem untuk menyimpan, mengambil, mengamankan, dan mengelola database. Contoh fungsi: query, update, recovery, concurrency control. \\
+\hline
+\end{tabularx}
+\caption{Perbedaan data, database, dan DBMS}
+\label{tab:data-database-dbms}
+\end{table}
+
+Konsep ini menjadi prasyarat model data. Setelah memahami bahwa database menyimpan data yang terhubung, kita membutuhkan model data untuk mendeskripsikan struktur dan hubungan data tersebut.
+
+\subsubsection{Motivasi Penggunaan DBMS}
+
+\begin{jawab}[Inti Konsep.]
+DBMS digunakan karena file-processing system tradisional sulit menjaga konsistensi, efisiensi, keamanan, recovery, dan akses bersama. DBMS menyediakan mekanisme terpusat untuk mengelola data besar secara aman dan konsisten.
+\end{jawab}
+
+Sebelum DBMS, data sering disimpan dalam file terpisah yang dikelola masing-masing program aplikasi. Pendekatan ini disebut \textbf{file-processing system}. Masalahnya, setiap aplikasi dapat memiliki format file sendiri, aturan validasi sendiri, dan salinan data sendiri.
+
+Masalah utama file-processing system:
+\begin{enumerate}
+    \item \textbf{Redundansi data}: fakta yang sama disimpan di banyak file.
+    \item \textbf{Inkonsistensi data}: salinan data yang sama dapat memiliki nilai berbeda.
+    \item \textbf{Kesulitan akses}: query baru sering membutuhkan program baru.
+    \item \textbf{Isolasi data}: data tersebar dalam banyak file dan format.
+    \item \textbf{Masalah integritas}: aturan data harus diprogram manual di banyak aplikasi.
+    \item \textbf{Masalah atomicity}: operasi yang gagal di tengah dapat meninggalkan data setengah berubah.
+    \item \textbf{Masalah concurrent access}: banyak pengguna dapat mengubah data bersamaan dan menghasilkan anomali.
+    \item \textbf{Masalah keamanan}: sulit mengatur hak akses granular.
+\end{enumerate}
+
+DBMS mengatasi masalah tersebut dengan menyimpan data dalam sistem terpadu, menyediakan bahasa query, menegakkan constraint, mengatur transaksi, dan mengelola akses bersamaan.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|}
+\hline
+\textbf{Peran DBMS} & \textbf{Penjelasan} \\
+\hline
+Efisiensi penyimpanan dan akses & DBMS mengatur struktur penyimpanan, indeks, buffer, dan query execution. \\
+\hline
+Keamanan & DBMS membatasi pengguna berdasarkan authorization. \\
+\hline
+Recovery & DBMS menjaga database tetap konsisten meskipun terjadi crash. \\
+\hline
+Concurrency control & DBMS mengatur akses banyak pengguna agar transaksi tidak saling merusak. \\
+\hline
+Integrity enforcement & DBMS menolak data yang melanggar constraint. \\
+\hline
+\end{tabularx}
+\caption{Peran utama DBMS}
+\label{tab:peran-dbms}
+\end{table}
+
+Materi ini berhubungan dengan transaction management dan integrity constraints. Tanpa DBMS, atomicity, consistency, dan concurrency harus ditangani sendiri oleh aplikasi, yang rawan salah dan sulit diskalakan.
+
+\subsubsection{Abstraksi Data}
+
+\begin{jawab}[Inti Konsep.]
+Abstraksi data adalah cara DBMS menyembunyikan detail penyimpanan fisik agar pengguna dapat bekerja pada struktur logis atau tampilan yang relevan. Konsep ini penting karena pengguna tidak perlu memahami byte, blok disk, indeks, atau file layout untuk menulis query.
+\end{jawab}
+
+Motivasi abstraksi data adalah kompleksitas. Data sebenarnya tersimpan sebagai struktur rendah di media penyimpanan, tetapi pengguna biasanya berpikir dalam bentuk tabel, atribut, dan hubungan. DBMS memisahkan cara data disimpan dari cara data dipahami.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Level} & \textbf{Definisi dan Contoh} \\
+\hline
+\textbf{Physical level} & Level terendah; mendeskripsikan bagaimana data disimpan secara fisik, seperti blok disk, alokasi file, dan struktur indeks. \\
+\hline
+\textbf{Logical level} & Mendeskripsikan struktur logis keseluruhan database: tabel, atribut, tipe data, dan hubungan antar data. \\
+\hline
+\textbf{View level} & Level tertinggi; menampilkan sebagian database yang relevan untuk pengguna atau aplikasi tertentu. \\
+\hline
+\end{tabularx}
+\caption{Tiga level abstraksi data}
+\label{tab:data-abstraction-levels}
+\end{table}
+
+Mekanisme kerjanya:
+\begin{enumerate}
+    \item Storage manager menangani detail fisik.
+    \item Logical schema mendefinisikan struktur data yang dipakai query.
+    \item View menyajikan subset atau transformasi data untuk kebutuhan tertentu.
+    \item Pengguna berinteraksi dengan view atau schema logis tanpa perlu mengetahui detail fisik.
+\end{enumerate}
+
+Abstraksi data menjadi fondasi view di SQL dan data independence. Ketika pengguna menulis query pada tabel atau view, DBMS menerjemahkan query tersebut ke operasi fisik yang sesuai.
+
+\subsubsection{Schema, Instance, dan Data Independence}
+
+\begin{jawab}[Inti Konsep.]
+Schema adalah rancangan struktur database, sedangkan instance adalah isi aktual database pada satu titik waktu. Data independence adalah kemampuan mengubah satu level rancangan tanpa memaksa perubahan besar pada level lain.
+\end{jawab}
+
+Motivasi membedakan schema dan instance adalah struktur database relatif stabil, sementara isinya berubah terus-menerus. Tabel \texttt{student(ID, name, dept\_name, tot\_cred)} adalah schema; kumpulan mahasiswa aktual pada hari ini adalah instance.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Istilah} & \textbf{Definisi} \\
+\hline
+Physical schema & Deskripsi struktur fisik penyimpanan data. \\
+\hline
+Logical schema & Deskripsi struktur logis database secara keseluruhan. \\
+\hline
+Subschema/View & Deskripsi bagian database yang terlihat oleh pengguna atau aplikasi tertentu. \\
+\hline
+Instance & Isi aktual database pada satu titik waktu. \\
+\hline
+\end{tabularx}
+\caption{Schema dan instance}
+\label{tab:schema-instance}
+\end{table}
+
+Analogi sumber: schema seperti deklarasi tipe data dalam bahasa pemrograman, sedangkan instance seperti nilai variabel pada saat eksekusi. Tipe variabel relatif tetap; nilai variabel berubah-ubah.
+
+\textbf{Physical data independence} adalah kemampuan mengubah physical schema tanpa mengubah logical schema atau program aplikasi. Misalnya, menambah indeks untuk mempercepat query tidak seharusnya mengubah query aplikasi.
+
+\textbf{Logical data independence} adalah kemampuan mengubah logical schema tanpa mengubah view atau aplikasi. Ini lebih sulit dicapai karena perubahan struktur logis, seperti memecah tabel atau mengganti atribut, lebih dekat dengan cara aplikasi memahami data.
+
+Data independence berhubungan dengan desain skema dan SQL view. View dapat melindungi pengguna dari sebagian perubahan logis, sedangkan storage manager melindungi pengguna dari perubahan fisik.
+
+\subsubsection{Bahasa Basis Data}
+
+\begin{jawab}[Inti Konsep.]
+Bahasa basis data memungkinkan pengguna mendefinisikan struktur database dan memanipulasi datanya. DDL mendefinisikan schema, sedangkan DML mengambil, menyisipkan, menghapus, dan memperbarui data.
+\end{jawab}
+
+Motivasi bahasa basis data adalah pengguna membutuhkan cara formal untuk berkomunikasi dengan DBMS. Tanpa bahasa standar, setiap operasi data harus ditulis langsung sebagai program rendah yang mengakses file.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Bahasa/Fitur} & \textbf{Peran} \\
+\hline
+DDL & Mendefinisikan schema, domain, constraint, view, dan metadata. Hasil kompilasi DDL disimpan dalam data dictionary. \\
+\hline
+DML & Mengambil, menyisipkan, menghapus, dan memperbarui data. \\
+\hline
+Procedural DML & Pengguna menyebut data yang dicari dan cara mendapatkannya. \\
+\hline
+Declarative DML & Pengguna menyebut data yang diinginkan tanpa menentukan algoritma pencarian. SQL terutama bersifat deklaratif. \\
+\hline
+Authorization & Mengatur hak akses seperti read, insert, update, dan delete. \\
+\hline
+Transaction control & Menentukan awal, akhir, commit, dan rollback transaksi. \\
+\hline
+\end{tabularx}
+\caption{Bahasa dan fitur basis data}
+\label{tab:database-languages}
+\end{table}
+
+DDL berhubungan erat dengan integrity constraints karena constraint seperti domain, primary key, dan referential integrity didefinisikan pada schema. DML berhubungan erat dengan SQL dan relational algebra karena query harus diterjemahkan ke operasi yang dapat dievaluasi DBMS.
+
+\subsubsection{Komponen Internal DBMS}
+
+\begin{jawab}[Inti Konsep.]
+DBMS terdiri dari subsistem yang mengelola penyimpanan, pemrosesan query, dan transaksi. Komponen ini penting karena DBMS tidak hanya menyimpan data, tetapi juga menerjemahkan query, mengoptimasi eksekusi, menjaga keamanan, dan memulihkan database dari kegagalan.
+\end{jawab}
+
+Motivasi pembagian komponen adalah kompleksitas tugas DBMS. Menjalankan query SQL sederhana dapat melibatkan parsing, optimasi, pemilihan indeks, pembacaan disk, penggunaan buffer, pengecekan authorization, dan pencatatan transaksi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Komponen} & \textbf{Tugas Utama} \\
+\hline
+Storage manager & Menjadi antarmuka antara data fisik di disk dan query/program aplikasi. Mencakup file manager, buffer manager, authorization and integrity manager, data dictionary, dan indices. \\
+\hline
+Query processor & Memproses DDL dan DML. Mencakup DDL interpreter, DML compiler, query optimization, dan query evaluation engine. \\
+\hline
+Transaction manager & Menjaga database tetap konsisten meskipun ada crash dan akses bersamaan. Mencakup recovery dan concurrency-control manager. \\
+\hline
+\end{tabularx}
+\caption{Komponen internal DBMS}
+\label{tab:dbms-components}
+\end{table}
+
+Mekanisme query secara ringkas:
+\begin{enumerate}
+    \item Pengguna mengirim query.
+    \item Query processor menerjemahkan dan mengoptimasi query.
+    \item Storage manager mengambil data melalui file, indeks, dan buffer.
+    \item Authorization dan integrity manager memeriksa hak akses dan constraint.
+    \item Transaction manager memastikan eksekusi aman terhadap crash dan concurrency.
+\end{enumerate}
+
+Komponen ini menjelaskan mengapa SQL yang deklaratif bisa dijalankan tanpa pengguna menentukan algoritma. Pengguna menyatakan apa yang diinginkan; DBMS menentukan cara eksekusi fisiknya.
+
+\subsubsection{Arsitektur, Pengguna, dan Proses Pengembangan Database}
+
+\begin{jawab}[Inti Konsep.]
+Database dapat dibangun dalam berbagai arsitektur dan digunakan oleh berbagai jenis pengguna. Pemodelan data dan proses pengembangan seperti SDLC atau prototyping menentukan bagaimana kebutuhan organisasi diterjemahkan menjadi database yang dapat digunakan.
+\end{jawab}
+
+Arsitektur database menentukan lokasi penyimpanan dan pemrosesan. \textbf{Centralized architecture} menempatkan sistem pada satu mesin. \textbf{Client-server architecture} memisahkan client dan database server; pada two-tier, client berkomunikasi langsung dengan database server, sedangkan pada three-tier, application server menjadi perantara. \textbf{Parallel architecture} memakai banyak CPU/perangkat keras untuk memproses data besar lebih cepat. \textbf{Distributed architecture} menyebarkan data dan pemrosesan ke banyak mesin, bahkan lokasi geografis berbeda.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Pengguna} & \textbf{Cara Berinteraksi} \\
+\hline
+Naive/operational user & Menggunakan aplikasi siap pakai, misalnya clerk yang memproses transaksi. \\
+\hline
+Analyst/knowledge worker & Menjalankan query dan analisis untuk decision support. \\
+\hline
+Application programmer & Menulis program yang mengakses database. \\
+\hline
+Database Administrator (DBA) & Mengelola schema, authorization, tuning, backup, recovery, dan administrasi sistem. \\
+\hline
+\end{tabularx}
+\caption{Jenis pengguna database}
+\label{tab:database-users}
+\end{table}
+
+\textbf{Data modeling} adalah teknik untuk mengoptimalkan cara informasi disimpan dan digunakan organisasi. Mekanismenya dimulai dengan mengidentifikasi grup data utama, lalu mendefinisikan konten rinci dari tiap grup. E-R model menjadi alat konseptual utama untuk tahap ini.
+
+\textbf{System Development Life Cycle} (SDLC) adalah proses pengembangan yang detail dan terencana. Ia menghasilkan rancangan komprehensif, tetapi membutuhkan waktu panjang. \textbf{Prototyping/RAD} lebih cepat: pemodelan awal dilakukan secara kasar, database dibentuk pada prototype awal, lalu diperbaiki berulang berdasarkan implementasi dan feedback.
+
+Bagian ini berhubungan langsung dengan E-R model dan relational database design. Kebutuhan pengguna diterjemahkan ke model konseptual, direduksi ke skema relasional, lalu dinormalisasi agar bebas anomali.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Alur Query Deklaratif di DBMS}
+
+\begin{jawab}[Tujuan Algoritma.]
+Pseudocode ini merangkum bagaimana DBMS mengeksekusi query deklaratif: pengguna menyatakan hasil yang diinginkan, DBMS menentukan rencana fisiknya.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode alur pemrosesan query}, label={lst:query-processing-intro}]
+Input: declarative query Q
+Output: query result
+
+parse Q and validate syntax
+check authorization and relevant integrity constraints
+translate Q into logical query plan
+optimize logical plan into physical execution plan
+execute plan using storage manager, indexes, and buffers
+return result to user
+\end{lstlisting}
+
+\subsubsection{Relasi Schema dan Instance}
+
+\begin{jawab}[Makna Rumus.]
+Notasi ini membedakan struktur relasi dari isi aktualnya. Struktur relatif stabil, sedangkan isi relasi berubah dari waktu ke waktu.
+\end{jawab}
+
+\begin{equation}
+    R(A_1,A_2,\ldots,A_n)
+    \label{eq:intro-relation-schema}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item \(R\): nama skema relasi.
+    \item \(A_1,A_2,\ldots,A_n\): atribut pada relasi.
+    \item \(r(R)\): instance aktual yang berisi tuple-tuple pada satu titik waktu.
+\end{itemize}

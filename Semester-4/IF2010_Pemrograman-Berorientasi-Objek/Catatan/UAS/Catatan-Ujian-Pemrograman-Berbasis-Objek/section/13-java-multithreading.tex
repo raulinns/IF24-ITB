@@ -1,0 +1,285 @@
+\section{Java Multithreading}
+
+Java Multithreading membahas eksekusi beberapa thread dalam satu program. Thread memungkinkan program melakukan pekerjaan secara konkuren, misalnya menangani banyak request, menjalankan pekerjaan background, atau memproses data paralel. Namun, multithreading juga membawa risiko race condition, deadlock, visibility problem, dan bug nondeterministik yang sulit direproduksi.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini disusun menggunakan pengetahuan umum Java dan dibuat lebih mendalam karena materi multithreading disebut sebagai materi baru. Fokusnya adalah konsep fundamental, sintaks Java, dan risiko desain.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Konsep thread dan concurrency
+    \begin{enumerate}
+        \item Thread adalah alur eksekusi ringan dalam process.
+        \item Concurrency bukan selalu parallelism.
+        \item Scheduler menentukan kapan thread berjalan.
+    \end{enumerate}
+    \item Membuat task
+    \begin{enumerate}
+        \item \texttt{Thread}.
+        \item \texttt{Runnable}.
+        \item \texttt{Callable}.
+        \item \texttt{ExecutorService}.
+    \end{enumerate}
+    \item Shared state dan race condition
+    \begin{enumerate}
+        \item Data bersama dapat diakses bersamaan.
+        \item Operasi seperti increment tidak atomik.
+    \end{enumerate}
+    \item Sinkronisasi
+    \begin{enumerate}
+        \item \texttt{synchronized}.
+        \item Monitor lock.
+        \item \texttt{Lock}.
+        \item Atomic classes.
+    \end{enumerate}
+    \item Visibility dan Java Memory Model
+    \begin{enumerate}
+        \item Perubahan satu thread belum tentu terlihat thread lain tanpa mekanisme sinkronisasi.
+        \item \texttt{volatile}.
+    \end{enumerate}
+    \item Koordinasi thread
+    \begin{enumerate}
+        \item \texttt{join}.
+        \item \texttt{wait}/\texttt{notify}.
+        \item \texttt{Future}.
+    \end{enumerate}
+    \item Risiko
+    \begin{enumerate}
+        \item Deadlock.
+        \item Starvation.
+        \item Livelock.
+        \item Data race.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Multithreading penting karena aplikasi modern sering menangani banyak pekerjaan sekaligus. Namun, kebenaran program konkuren tidak cukup diuji dengan ``program tampak berjalan'', karena bug dapat muncul hanya pada interleaving tertentu.
+\end{jawab}
+
+Dalam Java, multithreading muncul di backend server, GUI, worker background, scheduled task, parallel processing, dan async IO. Untuk ujian, kemampuan utama adalah membaca kode yang memakai shared state dan menentukan apakah terjadi race condition atau perlu sinkronisasi.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Multithreading bergantung pada object, method, exception, collection, dan stream. Collection biasa seperti \texttt{ArrayList} tidak otomatis thread-safe. Exception pada thread harus ditangani di thread tersebut atau melalui \texttt{Future}. Stream memiliki parallel stream, tetapi side effect harus dihindari.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Thread, Runnable, dan Executor}
+
+\begin{jawab}[Inti Konsep.]
+Thread menjalankan task. Di Java modern, task biasanya dinyatakan sebagai \texttt{Runnable} atau \texttt{Callable}, lalu dijalankan oleh \texttt{ExecutorService}.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Membuat thread dengan Runnable}, label={lst:thread-runnable}]
+Runnable task = () -> {
+    System.out.println("Berjalan di " + Thread.currentThread().getName());
+};
+
+Thread thread = new Thread(task);
+thread.start();
+\end{lstlisting}
+
+Memanggil \texttt{start()} membuat thread baru. Memanggil \texttt{run()} langsung hanya menjalankan method biasa di thread saat ini.
+
+\begin{lstlisting}[language=Java, caption={ExecutorService untuk menjalankan task}, label={lst:executor-service}]
+ExecutorService executor = Executors.newFixedThreadPool(4);
+
+Future<Integer> future = executor.submit(() -> {
+    return 10 + 20;
+});
+
+Integer result = future.get();
+executor.shutdown();
+\end{lstlisting}
+
+\subsubsection{Race Condition}
+
+\begin{jawab}[Inti Konsep.]
+Race condition terjadi ketika hasil program bergantung pada urutan eksekusi thread yang tidak terkendali. Operasi terhadap shared mutable state harus dibuat aman.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Race condition pada increment}, label={lst:race-condition}]
+class Counter {
+    private int value = 0;
+
+    public void increment() {
+        value++; // Tidak atomik.
+    }
+
+    public int value() {
+        return value;
+    }
+}
+\end{lstlisting}
+
+\texttt{value++} terdiri dari baca nilai, tambah satu, lalu tulis kembali. Dua thread dapat membaca nilai sama dan menulis hasil sama, sehingga satu increment hilang.
+
+\subsubsection{\texttt{synchronized} dan Atomic}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{synchronized} memastikan hanya satu thread masuk critical section pada monitor yang sama dan juga memberi jaminan visibility. Atomic class menyediakan operasi atomik untuk kasus tertentu.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Counter thread-safe dengan synchronized}, label={lst:synchronized-counter}]
+class SafeCounter {
+    private int value = 0;
+
+    public synchronized void increment() {
+        value++;
+    }
+
+    public synchronized int value() {
+        return value;
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Java, caption={Counter thread-safe dengan AtomicInteger}, label={lst:atomic-counter}]
+class AtomicCounter {
+    private final AtomicInteger value = new AtomicInteger();
+
+    public void increment() {
+        value.incrementAndGet();
+    }
+
+    public int value() {
+        return value.get();
+    }
+}
+\end{lstlisting}
+
+\subsubsection{\texttt{volatile} dan Visibility}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{volatile} memastikan pembacaan variabel melihat nilai terbaru yang ditulis thread lain. Namun, \texttt{volatile} tidak membuat operasi gabungan seperti increment menjadi atomik.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={volatile untuk flag berhenti}, label={lst:volatile-flag}]
+class Worker implements Runnable {
+    private volatile boolean running = true;
+
+    public void stop() {
+        running = false;
+    }
+
+    @Override
+    public void run() {
+        while (running) {
+            doWork();
+        }
+    }
+
+    private void doWork() { }
+}
+\end{lstlisting}
+
+\subsubsection{Deadlock}
+
+\begin{jawab}[Inti Konsep.]
+Deadlock terjadi ketika dua atau lebih thread saling menunggu lock yang tidak akan pernah dilepas karena masing-masing memegang lock yang dibutuhkan thread lain.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pola deadlock konseptual}, label={lst:deadlock-pattern}]
+Thread 1:
+1. lock A
+2. menunggu lock B
+
+Thread 2:
+1. lock B
+2. menunggu lock A
+
+Hasil:
+Keduanya menunggu selamanya.
+\end{lstlisting}
+
+Cara mengurangi risiko deadlock adalah memakai urutan pengambilan lock yang konsisten, mengurangi shared mutable state, memakai timeout lock, atau memakai struktur concurrent yang sudah tersedia.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+\texttt{Thread} & Alur eksekusi konkuren. \\
+\hline
+\texttt{Runnable} & Task tanpa return value. \\
+\hline
+\texttt{Callable} & Task dengan return value dan dapat melempar exception. \\
+\hline
+\texttt{ExecutorService} & Pengelola eksekusi task berbasis thread pool. \\
+\hline
+\texttt{synchronized} & Mekanisme mutual exclusion dan visibility. \\
+\hline
+\texttt{volatile} & Visibility untuk variabel sederhana. \\
+\hline
+\texttt{AtomicInteger} & Operasi atomik untuk integer. \\
+\hline
+\texttt{Future} & Representasi hasil task asynchronous. \\
+\hline
+Race condition & Bug akibat urutan eksekusi thread yang tidak terkendali. \\
+\hline
+Deadlock & Kondisi thread saling menunggu lock selamanya. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java Multithreading}
+\label{tab:komponen-kunci-java-multithreading}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Mendeteksi Risiko Race Condition}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu membaca kode konkuren dan menentukan apakah shared state perlu dilindungi.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode deteksi race condition}, label={lst:race-detection}]
+Input: Kode yang dijalankan oleh beberapa thread
+Output: Risiko race condition dan mitigasi
+
+1. Identifikasi semua data yang dapat diakses lebih dari satu thread.
+2. Untuk setiap data:
+      periksa apakah data mutable.
+3. Jika data immutable:
+      risiko race rendah.
+4. Jika data mutable:
+      periksa apakah semua akses dilindungi mekanisme yang sama.
+5. Jika ada operasi read-modify-write tanpa sinkronisasi:
+      tandai race condition.
+6. Pilih mitigasi:
+      synchronized, Lock, atomic class, concurrent collection,
+      immutability, atau thread confinement.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat membedakan \texttt{start()} dan \texttt{run()}.
+    \item[$\square$] Saya dapat memakai \texttt{Runnable}, \texttt{Callable}, dan \texttt{ExecutorService}.
+    \item[$\square$] Saya dapat menjelaskan race condition.
+    \item[$\square$] Saya dapat memakai \texttt{synchronized} dan \texttt{AtomicInteger}.
+    \item[$\square$] Saya dapat menjelaskan \texttt{volatile}.
+    \item[$\square$] Saya dapat menjelaskan deadlock dan cara menguranginya.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Thread, Runnable, ExecutorService, race condition, synchronized, volatile, AtomicInteger, deadlock. \\
+\hline
+\textbf{Cukup Paham Konsep} & Future, Callable, visibility, thread pool, concurrent collection, parallel stream. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan; materi ini disebut sebagai materi baru sehingga harus diprioritaskan tinggi. \\
+\hline
+\end{tabularx}

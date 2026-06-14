@@ -1,0 +1,274 @@
+\section{Padanan Java - C++}
+
+Materi Padanan Java - C++ membantu memetakan konsep yang mungkin sudah dikenal dari C++ ke cara Java mengekspresikan konsep yang sama. Fokus utamanya bukan menghafal perbedaan sintaks, melainkan memahami perbedaan model bahasa: Java berjalan di JVM, memakai garbage collection, semua object diakses melalui reference, tidak memiliki pointer arithmetic, tidak memiliki multiple inheritance untuk class, dan menggunakan interface serta generics untuk banyak kebutuhan abstraksi.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini disusun terutama menggunakan pengetahuan umum Java dan C++ karena sumber NotebookLM yang berhasil diakses lebih dominan membahas SOLID. Penjelasan tetap diarahkan pada kebutuhan IF2010 PBO dan ditandai sebagai pelengkap umum.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Model eksekusi \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item C++ dikompilasi menjadi native binary; Java dikompilasi menjadi bytecode.
+        \item Java dijalankan oleh JVM dengan class loading, verification, JIT, dan garbage collection.
+    \end{enumerate}
+    \item Object dan reference \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item C++ membedakan value object, pointer, dan reference.
+        \item Java menggunakan reference untuk object; tipe primitif tetap menyimpan nilai.
+    \end{enumerate}
+    \item Memory management \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item C++ memakai RAII, destructor, \texttt{new}/\texttt{delete}, smart pointer.
+        \item Java memakai garbage collector dan tidak memiliki destructor deterministik.
+    \end{enumerate}
+    \item Class, inheritance, dan polymorphism \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Java: \texttt{extends} satu class dan \texttt{implements} banyak interface.
+        \item C++: multiple inheritance class dimungkinkan.
+        \item Java method instance virtual secara default kecuali \texttt{final}, \texttt{static}, atau \texttt{private}.
+    \end{enumerate}
+    \item Header, package, dan import
+    \begin{enumerate}
+        \item C++ memakai header dan \texttt{\#include}; Java memakai package dan import.
+        \item Import bukan copy-paste source, hanya resolusi nama tipe.
+    \end{enumerate}
+    \item Generics dan templates
+    \begin{enumerate}
+        \item C++ template bekerja saat kompilasi dan menghasilkan instansiasi tipe.
+        \item Java generics memakai type erasure untuk menjaga kompatibilitas bytecode.
+    \end{enumerate}
+    \item Exception dan resource management
+    \begin{enumerate}
+        \item Java memiliki checked dan unchecked exception.
+        \item Java memakai \texttt{try-with-resources}; C++ mengandalkan destructor RAII.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Perbandingan Java dan C++ penting karena banyak konsep OOP terlihat serupa di permukaan, tetapi memiliki konsekuensi desain dan runtime yang berbeda. Salah membawa kebiasaan C++ ke Java dapat menyebabkan desain Java yang tidak idiomatis.
+\end{jawab}
+
+Contoh kesalahan umum adalah mencari destructor Java untuk menutup file, padahal Java menyediakan \texttt{try-with-resources}. Kesalahan lain adalah mengira \texttt{import} bekerja seperti \texttt{\#include}, padahal import tidak menyisipkan source code. Perbedaan paling penting untuk OOP adalah inheritance: C++ memungkinkan sebuah class mewarisi beberapa class, sedangkan Java hanya mengizinkan satu superclass dan banyak interface. Karena itu, di Java abstraksi perilaku lebih sering dimodelkan dengan interface dan composition.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Materi ini menghubungkan Pengenalan Java dengan Inheritance, Interface, Generics, Exception, dan Design Pattern. Perbedaan Java-C++ menjelaskan mengapa Java Interface sangat penting untuk ISP dan DIP, mengapa Generics Java memiliki wildcard, dan mengapa resource management Java muncul pada materi Exception.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Model Kompilasi dan Eksekusi}
+
+\begin{jawab}[Inti Konsep.]
+C++ umumnya dikompilasi menjadi executable native, sedangkan Java dikompilasi menjadi bytecode yang dijalankan JVM. Perbedaan ini memengaruhi portabilitas, runtime checking, class loading, dan optimisasi.
+\end{jawab}
+
+Pada C++, compiler menghasilkan binary untuk arsitektur dan sistem operasi tertentu. Pada Java, \texttt{javac} menghasilkan file \texttt{.class}. File ini berisi bytecode yang dipahami JVM. Saat program berjalan, JVM memuat class, memverifikasi bytecode, mengelola memory, dan dapat melakukan Just-In-Time compilation untuk mengubah bagian bytecode yang sering dijalankan menjadi native code.
+
+\begin{lstlisting}[caption={Perbandingan alur build sederhana}, label={lst:java-cpp-build}]
+C++:
+1. g++ main.cpp -o app
+2. ./app
+
+Java:
+1. javac -d out Main.java
+2. java -cp out Main
+\end{lstlisting}
+
+\subsubsection{Object, Pointer, Reference, dan Nilai}
+
+\begin{jawab}[Inti Konsep.]
+Java tidak memiliki pointer arithmetic dan tidak mengekspos alamat memory. Object Java diakses melalui reference, sedangkan tipe primitif menyimpan nilai langsung.
+\end{jawab}
+
+Dalam C++, object dapat dibuat di stack, heap, sebagai pointer, atau sebagai reference. Di Java, object selalu dibuat dengan \texttt{new} atau factory dan diakses melalui reference. Variabel object tidak menyimpan object secara langsung, melainkan reference menuju object. Karena itu, assignment antarvariabel object menyalin reference, bukan menyalin isi object.
+
+\begin{lstlisting}[language=Java, caption={Assignment object Java menyalin reference}, label={lst:java-reference-copy}]
+class Box {
+    int value;
+}
+
+Box a = new Box();
+a.value = 10;
+
+Box b = a;
+b.value = 20;
+
+System.out.println(a.value); // 20
+\end{lstlisting}
+
+Padanan kasar di C++ adalah pointer atau reference, tetapi Java tidak mengizinkan operasi seperti menaikkan alamat, mengambil alamat dengan \texttt{\&}, atau melakukan \texttt{delete}. Ini membuat Java lebih aman dari kelas bug tertentu, tetapi programmer tetap harus memahami aliasing karena beberapa reference dapat menunjuk object yang sama.
+
+\subsubsection{Memory Management dan Resource Management}
+
+\begin{jawab}[Inti Konsep.]
+C++ mengandalkan lifetime object dan destructor deterministik, sedangkan Java mengandalkan garbage collector untuk memory dan \texttt{try-with-resources} untuk resource eksternal.
+\end{jawab}
+
+Garbage collector Java membersihkan object yang tidak lagi dapat dijangkau. Namun, garbage collector hanya mengelola memory heap, bukan resource eksternal secara deterministik. File, socket, database connection, dan lock harus ditutup secara eksplisit. Cara idiomatisnya adalah menggunakan \texttt{try-with-resources} pada object yang mengimplementasikan \texttt{AutoCloseable}.
+
+\begin{lstlisting}[language=Java, caption={Resource management Java dengan try-with-resources}, label={lst:try-with-resources-intro}]
+try (BufferedReader reader = Files.newBufferedReader(Path.of("data.txt"))) {
+    String line = reader.readLine();
+    System.out.println(line);
+} catch (IOException e) {
+    System.err.println("Gagal membaca file: " + e.getMessage());
+}
+\end{lstlisting}
+
+\subsubsection{Inheritance dan Interface}
+
+\begin{jawab}[Inti Konsep.]
+Java hanya mendukung single inheritance untuk class, tetapi mendukung multiple typing melalui banyak interface. Ini membuat interface menjadi alat utama untuk abstraksi perilaku.
+\end{jawab}
+
+Di Java, sebuah class hanya dapat \texttt{extends} satu superclass. Namun, class dapat \texttt{implements} banyak interface. Ini menghindari sebagian masalah diamond inheritance pada state dan implementasi class, sambil tetap memungkinkan object memiliki banyak peran.
+
+\begin{lstlisting}[language=Java, caption={Single class inheritance dan multiple interface implementation}, label={lst:java-extends-implements}]
+interface Printable {
+    void print();
+}
+
+interface Exportable {
+    byte[] export();
+}
+
+abstract class Document {
+    private final String title;
+
+    protected Document(String title) {
+        this.title = title;
+    }
+
+    public String title() {
+        return title;
+    }
+}
+
+class PdfDocument extends Document implements Printable, Exportable {
+    PdfDocument(String title) {
+        super(title);
+    }
+
+    @Override
+    public void print() { }
+
+    @Override
+    public byte[] export() {
+        return new byte[0];
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Header-Include vs Package-Import}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{\#include} pada C++ menyisipkan deklarasi dari header secara tekstual sebelum kompilasi, sedangkan \texttt{import} pada Java hanya membantu resolusi nama tipe.
+\end{jawab}
+
+Java tidak memerlukan header terpisah karena informasi tipe tersedia dari source atau bytecode class. Jika memakai \texttt{import java.util.List;}, compiler hanya mengetahui bahwa nama \texttt{List} mengacu pada \texttt{java.util.List}. Import wildcard seperti \texttt{import java.util.*;} hanya mengimpor tipe dalam package tersebut, bukan subpackage.
+
+\subsubsection{Generics Java dan Template C++}
+
+\begin{jawab}[Inti Konsep.]
+C++ template adalah mekanisme compile-time yang dapat menghasilkan kode berbeda untuk setiap tipe, sedangkan Java generics berfokus pada type safety dan umumnya dihapus menjadi raw type melalui type erasure.
+\end{jawab}
+
+Akibat type erasure, informasi tipe generic seperti \texttt{List<String>} tidak sepenuhnya tersedia pada runtime. Ini menjelaskan mengapa Java tidak mengizinkan \texttt{new T()} secara langsung dan mengapa array generic bermasalah.
+
+\begin{lstlisting}[language=Java, caption={Generic Java memberi type safety saat kompilasi}, label={lst:java-generics-preview}]
+List<String> names = new ArrayList<>();
+names.add("Narendra");
+
+String first = names.get(0); // Tidak perlu cast manual.
+// names.add(123);           // Compile-time error.
+\end{lstlisting}
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+Bytecode & Format hasil kompilasi Java yang dijalankan JVM. \\
+\hline
+Native binary & Hasil kompilasi C++ yang spesifik platform. \\
+\hline
+Reference Java & Pegangan menuju object tanpa pointer arithmetic. \\
+\hline
+Pointer C++ & Variabel yang menyimpan alamat memory dan dapat dimanipulasi. \\
+\hline
+Garbage collector & Pengelola memory otomatis untuk object Java yang tidak lagi reachable. \\
+\hline
+RAII & Idiom C++ yang mengikat resource pada lifetime object dan destructor. \\
+\hline
+Interface & Padanan Java untuk kontrak perilaku dan multiple typing. \\
+\hline
+Type erasure & Mekanisme implementasi generics Java yang menghapus tipe generic pada runtime. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam padanan Java dan C++}
+\label{tab:komponen-kunci-java-cpp}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Memetakan Konsep C++ ke Java}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu menerjemahkan desain C++ ke Java tanpa membawa idiom yang tidak cocok.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode pemetaan konsep C++ ke Java}, label={lst:pemetaan-cpp-java}]
+Input: Konsep atau kode C++ yang ingin ditulis dalam Java
+Output: Desain Java yang idiomatis
+
+1. Jika konsep memakai pointer:
+      gunakan reference object Java atau Optional jika nilai boleh tidak ada.
+2. Jika konsep memakai delete/destructor:
+      gunakan garbage collection untuk memory,
+      gunakan try-with-resources untuk resource eksternal.
+3. Jika konsep memakai multiple inheritance class:
+      pisahkan state ke satu superclass atau composition,
+      pisahkan perilaku ke beberapa interface.
+4. Jika konsep memakai template container:
+      gunakan Java generics dan pahami type erasure.
+5. Jika konsep memakai header/include:
+      gunakan package dan import.
+6. Jika konsep memakai operator overloading:
+      gunakan method bernama eksplisit karena Java tidak mendukung operator overloading umum.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat membedakan alur kompilasi C++ dan Java.
+    \item[$\square$] Saya dapat menjelaskan object reference Java dan perbedaannya dari pointer C++.
+    \item[$\square$] Saya dapat menjelaskan mengapa Java tidak memakai destructor untuk menutup file.
+    \item[$\square$] Saya dapat menerapkan \texttt{try-with-resources}.
+    \item[$\square$] Saya dapat membedakan \texttt{extends} dan \texttt{implements}.
+    \item[$\square$] Saya dapat menjelaskan perbedaan import Java dan include C++.
+    \item[$\square$] Saya dapat menjelaskan garis besar perbedaan generics Java dan template C++.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & JVM-bytecode vs native binary, reference vs pointer, garbage collection, \texttt{try-with-resources}, single inheritance Java, interface, package/import. \\
+\hline
+\textbf{Cukup Paham Konsep} & Type erasure, RAII, classpath, JIT, dan perbedaan template dengan generics. \\
+\hline
+\textbf{Sudah Dikuasai} & Materi ini termasuk kelompok 1 sampai 10 yang sudah pernah diuji, tetapi perlu diperdalam untuk menghindari transfer konsep C++ yang keliru ke Java. \\
+\hline
+\end{tabularx}

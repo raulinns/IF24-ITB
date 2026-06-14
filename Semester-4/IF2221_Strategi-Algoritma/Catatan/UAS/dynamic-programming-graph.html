@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dynamic Programming Shortest Path DAG</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #1f2933;
+      --muted: #637083;
+      --line: #d8dee7;
+      --accent: #2563eb;
+      --accent-dark: #1d4ed8;
+      --good: #15803d;
+      --warn: #b45309;
+      --bad: #b91c1c;
+      --shadow: 0 8px 22px rgba(31, 41, 51, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    header {
+      padding: 18px 24px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(20px, 2vw, 30px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .subhead {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(420px, 0.92fr) minmax(560px, 1.35fr);
+      gap: 16px;
+      padding: 16px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .section-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .body { padding: 16px; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button, select {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      min-height: 36px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    button.primary:hover { background: var(--accent-dark); }
+    button:disabled { cursor: not-allowed; opacity: 0.45; }
+    button:hover, select:hover { border-color: #9aa8b7; }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .matrix-wrap, .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      padding: 7px;
+      min-width: 72px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    th:last-child, td:last-child { border-right: 0; }
+    tr:last-child td { border-bottom: 0; }
+
+    th {
+      background: #edf2f7;
+      color: #243547;
+      font-weight: 800;
+    }
+
+    td:first-child, th:first-child {
+      min-width: 82px;
+      background: #f9fafb;
+      font-weight: 800;
+      text-align: left;
+    }
+
+    input.cell-input {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 5px;
+      text-align: center;
+      font: inherit;
+      color: var(--ink);
+      background: transparent;
+    }
+
+    input.cell-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    input.name-input {
+      text-align: left;
+      font-weight: 800;
+    }
+
+    .formula {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfd;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfd;
+      min-height: 78px;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 20px;
+      font-weight: 850;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .sim-panel {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+    }
+
+    .sim-controls {
+      display: grid;
+      grid-template-columns: auto auto auto auto auto 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .step-range {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .caption {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .frontier {
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      padding: 0 16px 12px;
+      border-bottom: 1px solid var(--line);
+      margin: 0 -16px 12px;
+    }
+
+    .tab {
+      min-height: 32px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .tab.active {
+      color: var(--accent-dark);
+      background: #dbeafe;
+      border-color: #93c5fd;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .graph-wrap {
+      overflow: auto;
+      min-height: 460px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
+
+    svg {
+      display: block;
+      min-width: 100%;
+      height: auto;
+    }
+
+    .edge {
+      stroke: #94a3b8;
+      stroke-width: 1.6;
+      fill: none;
+    }
+
+    .edge.active {
+      stroke: var(--accent);
+      stroke-width: 3;
+    }
+
+    .edge.best {
+      stroke: var(--good);
+      stroke-width: 3.2;
+    }
+
+    .edge.rejected {
+      stroke: #ef4444;
+      stroke-width: 2.2;
+      stroke-dasharray: 5 5;
+    }
+
+    .edge-label {
+      font-size: 12px;
+      fill: #334155;
+      font-weight: 800;
+      paint-order: stroke;
+      stroke: #fbfcfd;
+      stroke-width: 4px;
+    }
+
+    .node circle {
+      fill: #ffffff;
+      stroke: #64748b;
+      stroke-width: 1.5;
+    }
+
+    .node text {
+      font-size: 14px;
+      font-weight: 850;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      fill: var(--ink);
+    }
+
+    .node.source circle { fill: #dbeafe; stroke: var(--accent); stroke-width: 2.4; }
+    .node.target circle { fill: #dcfce7; stroke: var(--good); stroke-width: 2.4; }
+    .node.current circle { fill: #fef3c7; stroke: var(--warn); stroke-width: 3; }
+    .node.final circle { fill: #dcfce7; stroke: var(--good); stroke-width: 3; }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      max-height: 620px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfd;
+    }
+
+    .step.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+
+    .step-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+      font-weight: 850;
+      font-size: 13px;
+    }
+
+    .step-text {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .badge.good { background: #dcfce7; color: var(--good); }
+    .badge.warn { background: #fef3c7; color: var(--warn); }
+    .badge.bad { background: #fee2e2; color: var(--bad); }
+    .badge.neutral { background: #e5e7eb; color: #374151; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 18px;
+      height: 4px;
+      border-radius: 999px;
+      margin-right: 5px;
+      vertical-align: 2px;
+      background: #94a3b8;
+    }
+
+    .legend .active::before { background: var(--accent); }
+    .legend .best::before { background: var(--good); }
+    .legend .rejected::before { background: #ef4444; }
+
+    @media (max-width: 1050px) {
+      main { grid-template-columns: 1fr; }
+      header { position: static; }
+    }
+
+    @media (max-width: 680px) {
+      main { padding: 10px; }
+      header { padding: 14px; }
+      .summary, .control-grid { grid-template-columns: 1fr; }
+      .section-head { flex-direction: column; align-items: flex-start; }
+      .sim-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .step-range { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dynamic Programming Shortest Path pada Graf Berarah</h1>
+    <div class="subhead">Edit adjacency matrix, pilih sumber dan tujuan, lalu simulasikan pengisian tabel DP langkah demi langkah.</div>
+  </header>
+
+  <main>
+    <section>
+      <div class="section-head">
+        <h2>Adjacency Matrix</h2>
+        <div class="toolbar">
+          <button type="button" id="addNodeBtn">+ Simpul</button>
+          <button type="button" id="removeNodeBtn">- Simpul</button>
+          <button type="button" id="resetBtn">Reset</button>
+        </div>
+      </div>
+      <div class="body">
+        <div class="control-grid">
+          <label>
+            Sumber
+            <select id="sourceSelect"></select>
+          </label>
+          <label>
+            Tujuan
+            <select id="targetSelect"></select>
+          </label>
+        </div>
+
+        <div class="matrix-wrap">
+          <table id="matrixTable"></table>
+        </div>
+
+        <div class="formula">
+          Sel kosong berarti tidak ada sisi. Untuk graf berarah asiklik (DAG), rekurens DP maju:
+          <strong>dist[v] = min(dist[v], dist[u] + w(u,v))</strong>
+          untuk setiap sisi <strong>u -> v</strong> yang diproses sesuai urutan topologis.
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Simulasi DP</h2>
+        <div class="toolbar">
+          <button type="button" class="primary" id="runBtn">Hitung Ulang</button>
+        </div>
+      </div>
+      <div class="body">
+        <div class="sim-panel">
+          <div class="sim-controls">
+            <button type="button" id="firstBtn">Awal</button>
+            <button type="button" id="prevBtn">Prev</button>
+            <button type="button" class="primary" id="nextBtn">Next</button>
+            <button type="button" id="playBtn">Play</button>
+            <button type="button" id="lastBtn">Akhir</button>
+            <input type="range" id="stepRange" class="step-range" min="0" max="0" value="0">
+          </div>
+          <div class="caption" id="caption">Belum ada simulasi.</div>
+          <div class="frontier" id="orderLine">Urutan topologis: -</div>
+        </div>
+
+        <div class="summary">
+          <div class="metric">
+            <div class="metric-label">Jarak Terpendek</div>
+            <div class="metric-value" id="bestDistance">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Jalur Saat Ini</div>
+            <div class="metric-value" id="pathText">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Status</div>
+            <div class="metric-value" id="statusText">-</div>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button type="button" class="tab active" data-view="graphView">Graf</button>
+          <button type="button" class="tab" data-view="tableView">Tabel DP</button>
+          <button type="button" class="tab" data-view="stepsView">Langkah</button>
+        </div>
+
+        <div id="graphView" class="view active">
+          <div class="legend">
+            <span>Belum dipakai</span>
+            <span class="active">Sisi diproses</span>
+            <span class="best">Jalur terbaik akhir</span>
+            <span class="rejected">Tidak memperbaiki</span>
+          </div>
+          <div class="graph-wrap">
+            <svg id="graphSvg" width="900" height="520" aria-label="graf berarah"></svg>
+          </div>
+        </div>
+
+        <div id="tableView" class="view">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Simpul</th>
+                  <th>dist</th>
+                  <th>pred</th>
+                  <th>Keterangan</th>
+                </tr>
+              </thead>
+              <tbody id="dpRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="stepsView" class="view">
+          <div class="steps" id="steps"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const defaultNodes = ["A", "B", "C", "D", "E", "F"];
+    const defaultMatrix = [
+      ["", 4, 2, "", "", ""],
+      ["", "", 5, 10, "", ""],
+      ["", "", "", "", 3, ""],
+      ["", "", "", "", "", 11],
+      ["", "", "", 4, "", ""],
+      ["", "", "", "", "", ""]
+    ];
+
+    let state = cloneDefault();
+    let currentResult = null;
+    let currentStep = 0;
+    let playTimer = null;
+
+    const matrixTable = document.getElementById("matrixTable");
+    const sourceSelect = document.getElementById("sourceSelect");
+    const targetSelect = document.getElementById("targetSelect");
+    const graphSvg = document.getElementById("graphSvg");
+    const captionEl = document.getElementById("caption");
+    const orderLineEl = document.getElementById("orderLine");
+    const bestDistanceEl = document.getElementById("bestDistance");
+    const pathTextEl = document.getElementById("pathText");
+    const statusTextEl = document.getElementById("statusText");
+    const dpRows = document.getElementById("dpRows");
+    const stepsEl = document.getElementById("steps");
+    const firstBtn = document.getElementById("firstBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const playBtn = document.getElementById("playBtn");
+    const lastBtn = document.getElementById("lastBtn");
+    const stepRange = document.getElementById("stepRange");
+
+    function cloneDefault() {
+      return {
+        nodes: defaultNodes.slice(),
+        matrix: defaultMatrix.map(row => row.slice()),
+        source: 0,
+        target: 5
+      };
+    }
+
+    function renderMatrix() {
+      const head = ["<th>Dari \\ Ke</th>"].concat(state.nodes.map((name, i) => {
+        return `<th><input class="cell-input name-input" data-kind="name" data-i="${i}" value="${escapeHtml(name)}"></th>`;
+      })).join("");
+
+      const rows = state.nodes.map((name, i) => {
+        const cells = [`<td><input class="cell-input name-input" data-kind="name" data-i="${i}" value="${escapeHtml(name)}"></td>`];
+        for (let j = 0; j < state.nodes.length; j++) {
+          const disabled = i === j ? " disabled" : "";
+          cells.push(`<td><input class="cell-input" type="number" data-kind="weight" data-i="${i}" data-j="${j}" value="${state.matrix[i][j]}" placeholder="-"${disabled}></td>`);
+        }
+        return `<tr>${cells.join("")}</tr>`;
+      }).join("");
+
+      matrixTable.innerHTML = `<thead><tr>${head}</tr></thead><tbody>${rows}</tbody>`;
+      matrixTable.querySelectorAll("input").forEach(input => {
+        input.addEventListener("input", updateFromInputs);
+      });
+      renderSelects();
+    }
+
+    function renderSelects() {
+      const options = state.nodes.map((name, i) => `<option value="${i}">${escapeHtml(name)}</option>`).join("");
+      sourceSelect.innerHTML = options;
+      targetSelect.innerHTML = options;
+      sourceSelect.value = String(Math.min(state.source, state.nodes.length - 1));
+      targetSelect.value = String(Math.min(state.target, state.nodes.length - 1));
+    }
+
+    function updateFromInputs() {
+      matrixTable.querySelectorAll("input").forEach(input => {
+        const kind = input.dataset.kind;
+        const i = Number(input.dataset.i);
+        const j = Number(input.dataset.j);
+        if (kind === "name") {
+          state.nodes[i] = input.value || `N${i + 1}`;
+        }
+        if (kind === "weight" && i !== j) {
+          state.matrix[i][j] = input.value === "" ? "" : Number(input.value);
+        }
+      });
+      state.source = Number(sourceSelect.value);
+      state.target = Number(targetSelect.value);
+      renderSelects();
+    }
+
+    function addNode() {
+      stopPlay();
+      updateFromInputs();
+      const idx = state.nodes.length;
+      state.nodes.push(String.fromCharCode(65 + idx));
+      state.matrix.forEach(row => row.push(""));
+      state.matrix.push(state.nodes.map(() => ""));
+      renderMatrix();
+      runSimulation();
+    }
+
+    function removeNode() {
+      stopPlay();
+      updateFromInputs();
+      if (state.nodes.length <= 2) return;
+      state.nodes.pop();
+      state.matrix.pop();
+      state.matrix.forEach(row => row.pop());
+      state.source = Math.min(state.source, state.nodes.length - 1);
+      state.target = Math.min(state.target, state.nodes.length - 1);
+      renderMatrix();
+      runSimulation();
+    }
+
+    function resetData() {
+      stopPlay();
+      state = cloneDefault();
+      renderMatrix();
+      runSimulation();
+    }
+
+    function buildGraph() {
+      const edges = [];
+      for (let i = 0; i < state.nodes.length; i++) {
+        for (let j = 0; j < state.nodes.length; j++) {
+          const w = state.matrix[i][j];
+          if (i !== j && w !== "" && Number.isFinite(Number(w))) {
+            edges.push({ from: i, to: j, weight: Number(w) });
+          }
+        }
+      }
+      return { edges };
+    }
+
+    function topologicalOrder(n, edges) {
+      const indeg = Array(n).fill(0);
+      const adj = Array.from({ length: n }, () => []);
+      edges.forEach(edge => {
+        indeg[edge.to]++;
+        adj[edge.from].push(edge.to);
+      });
+      const queue = [];
+      indeg.forEach((deg, i) => { if (deg === 0) queue.push(i); });
+      const order = [];
+      while (queue.length) {
+        queue.sort((a, b) => state.nodes[a].localeCompare(state.nodes[b]));
+        const u = queue.shift();
+        order.push(u);
+        adj[u].forEach(v => {
+          indeg[v]--;
+          if (indeg[v] === 0) queue.push(v);
+        });
+      }
+      return order.length === n ? order : null;
+    }
+
+    function solveDP() {
+      const { edges } = buildGraph();
+      const n = state.nodes.length;
+      const order = topologicalOrder(n, edges);
+      const snapshots = [];
+      const steps = [];
+
+      if (!order) {
+        return { valid: false, reason: "Graf memiliki siklus. DP shortest path berbasis urutan topologis hanya valid untuk DAG.", order: [], snapshots: [], steps: [], edges };
+      }
+
+      const dist = Array(n).fill(Infinity);
+      const pred = Array(n).fill(null);
+      const source = state.source;
+      const target = state.target;
+      dist[source] = 0;
+
+      function snap(type, text, edge, accepted) {
+        const snapshot = {
+          type,
+          text,
+          edge,
+          accepted,
+          dist: dist.slice(),
+          pred: pred.slice(),
+          order: order.slice()
+        };
+        snapshots.push(snapshot);
+        steps.push({ type, text, edge, accepted, index: snapshots.length - 1 });
+      }
+
+      snap("start", `Basis: dist[${state.nodes[source]}] = 0, simpul lain = tidak hingga.`, null, null);
+
+      const edgeMap = new Map();
+      edges.forEach(edge => {
+        if (!edgeMap.has(edge.from)) edgeMap.set(edge.from, []);
+        edgeMap.get(edge.from).push(edge);
+      });
+
+      order.forEach(u => {
+        const outgoing = edgeMap.get(u) || [];
+        if (outgoing.length === 0) {
+          snap("skip", `${state.nodes[u]} tidak memiliki sisi keluar.`, null, null);
+        }
+        outgoing.forEach(edge => {
+          if (!Number.isFinite(dist[u])) {
+            snap("unreachable", `${state.nodes[u]} belum terjangkau, sehingga sisi ${state.nodes[u]} -> ${state.nodes[edge.to]} tidak dapat memperbaiki nilai.`, edge, false);
+            return;
+          }
+          const candidate = dist[u] + edge.weight;
+          if (candidate < dist[edge.to]) {
+            dist[edge.to] = candidate;
+            pred[edge.to] = u;
+            snap("relax", `Terima relaksasi ${state.nodes[u]} -> ${state.nodes[edge.to]}: ${candidate} lebih kecil dari nilai lama.`, edge, true);
+          } else {
+            snap("reject", `Tolak relaksasi ${state.nodes[u]} -> ${state.nodes[edge.to]}: kandidat ${candidate} tidak lebih kecil.`, edge, false);
+          }
+        });
+      });
+
+      snap("finish", Number.isFinite(dist[target])
+        ? `Selesai. Jarak terpendek ke ${state.nodes[target]} adalah ${dist[target]}.`
+        : `Selesai. ${state.nodes[target]} tidak terjangkau dari ${state.nodes[source]}.`, null, null);
+
+      return { valid: true, edges, order, snapshots, steps, finalDist: dist, finalPred: pred };
+    }
+
+    function runSimulation() {
+      stopPlay();
+      updateFromInputs();
+      currentResult = solveDP();
+      currentStep = 0;
+      stepRange.max = Math.max(0, currentResult.snapshots.length - 1);
+      stepRange.value = currentStep;
+      renderCurrent();
+    }
+
+    function renderCurrent() {
+      if (!currentResult || !currentResult.valid) {
+        renderInvalid();
+        return;
+      }
+      const snapshot = currentResult.snapshots[currentStep];
+      stepRange.value = currentStep;
+      updateButtons();
+      renderCaption(snapshot);
+      renderSummary(snapshot);
+      renderDpTable(snapshot);
+      renderSteps(snapshot);
+      renderGraph(snapshot);
+    }
+
+    function renderInvalid() {
+      stopPlay();
+      updateButtons();
+      captionEl.textContent = currentResult ? currentResult.reason : "Belum ada simulasi.";
+      orderLineEl.textContent = "Urutan topologis: tidak tersedia";
+      bestDistanceEl.textContent = "-";
+      pathTextEl.textContent = "-";
+      statusTextEl.textContent = "Tidak valid";
+      dpRows.innerHTML = "";
+      stepsEl.innerHTML = "";
+      renderGraph({ edge: null, accepted: null, dist: [], pred: [] });
+    }
+
+    function renderCaption(snapshot) {
+      captionEl.textContent = `Langkah ${currentStep} dari ${currentResult.snapshots.length - 1}. ${snapshot.text}`;
+      orderLineEl.textContent = `Urutan topologis: ${snapshot.order.map(i => state.nodes[i]).join(" -> ")}`;
+    }
+
+    function reconstructPath(pred, target, dist) {
+      if (!pred || !dist || !Number.isFinite(dist[target])) return [];
+      const path = [];
+      let cur = target;
+      const guard = new Set();
+      while (cur !== null && !guard.has(cur)) {
+        path.push(cur);
+        guard.add(cur);
+        cur = pred[cur];
+      }
+      return path.reverse();
+    }
+
+    function renderSummary(snapshot) {
+      const target = state.target;
+      const d = snapshot.dist[target];
+      bestDistanceEl.textContent = Number.isFinite(d) ? d : "∞";
+      const path = reconstructPath(snapshot.pred, target, snapshot.dist);
+      pathTextEl.textContent = path.length ? path.map(i => state.nodes[i]).join(" -> ") : "-";
+      statusTextEl.textContent = currentStep === currentResult.snapshots.length - 1 ? "Selesai" : "Berjalan";
+    }
+
+    function renderDpTable(snapshot) {
+      dpRows.innerHTML = state.nodes.map((node, i) => {
+        const distText = Number.isFinite(snapshot.dist[i]) ? snapshot.dist[i] : "∞";
+        const predText = snapshot.pred[i] === null ? "-" : state.nodes[snapshot.pred[i]];
+        const note = i === state.source ? "Sumber" : i === state.target ? "Tujuan" : "";
+        return `<tr>
+          <td>${escapeHtml(node)}</td>
+          <td>${distText}</td>
+          <td>${escapeHtml(predText)}</td>
+          <td>${note}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    function renderSteps(snapshot) {
+      stepsEl.innerHTML = currentResult.steps.map((step, index) => {
+        const active = index === currentStep ? " active" : "";
+        const badge = step.accepted === true ? badgeHtml("good", "Terima")
+          : step.accepted === false ? badgeHtml("bad", "Tolak")
+          : badgeHtml("neutral", step.type);
+        const edgeText = step.edge ? `${state.nodes[step.edge.from]} -> ${state.nodes[step.edge.to]} (${step.edge.weight})` : "Basis/selesai";
+        return `<div class="step${active}" data-step="${index}">
+          <div class="step-title">
+            <span>Langkah ${index}</span>
+            ${badge}
+          </div>
+          <div class="step-text">
+            Sisi: ${escapeHtml(edgeText)}<br>
+            ${escapeHtml(step.text)}
+          </div>
+        </div>`;
+      }).join("");
+
+      stepsEl.querySelectorAll(".step").forEach(el => {
+        el.addEventListener("click", () => goToStep(Number(el.dataset.step)));
+      });
+      const activeEl = stepsEl.querySelector(".step.active");
+      if (activeEl) activeEl.scrollIntoView({ block: "nearest" });
+    }
+
+    function layoutNodes(order) {
+      const n = state.nodes.length;
+      const ranks = Array(n).fill(0);
+      const posInRank = new Map();
+      const orderMap = order || state.nodes.map((_, i) => i);
+
+      orderMap.forEach(u => {
+        let maxPredRank = 0;
+        for (let i = 0; i < n; i++) {
+          const w = state.matrix[i][u];
+          if (w !== "" && Number.isFinite(Number(w))) {
+            maxPredRank = Math.max(maxPredRank, ranks[i] + 1);
+          }
+        }
+        if (u === state.source) maxPredRank = 0;
+        ranks[u] = Math.max(ranks[u], maxPredRank);
+      });
+
+      const groups = new Map();
+      ranks.forEach((rank, i) => {
+        if (!groups.has(rank)) groups.set(rank, []);
+        groups.get(rank).push(i);
+      });
+
+      const maxRank = Math.max(...ranks, 0);
+      const width = Math.max(860, (maxRank + 1) * 160 + 120);
+      let height = 460;
+      groups.forEach(group => {
+        height = Math.max(height, group.length * 100 + 80);
+      });
+
+      const coords = {};
+      groups.forEach((group, rank) => {
+        group.sort((a, b) => state.nodes[a].localeCompare(state.nodes[b]));
+        const totalH = (group.length - 1) * 100;
+        group.forEach((idx, k) => {
+          coords[idx] = {
+            x: 60 + rank * 160,
+            y: height / 2 - totalH / 2 + k * 100
+          };
+          posInRank.set(idx, k);
+        });
+      });
+      return { coords, width, height };
+    }
+
+    function renderGraph(snapshot) {
+      const order = currentResult && currentResult.order ? currentResult.order : null;
+      const layout = layoutNodes(order);
+      graphSvg.setAttribute("width", layout.width);
+      graphSvg.setAttribute("height", layout.height);
+      graphSvg.setAttribute("viewBox", `0 0 ${layout.width} ${layout.height}`);
+
+      const bestEdges = new Set();
+      if (currentResult && currentResult.valid && currentStep === currentResult.snapshots.length - 1) {
+        const path = reconstructPath(snapshot.pred, state.target, snapshot.dist);
+        for (let i = 0; i < path.length - 1; i++) bestEdges.add(`${path[i]}-${path[i + 1]}`);
+      }
+
+      const edgeMarkup = buildGraph().edges.map(edge => {
+        const from = layout.coords[edge.from];
+        const to = layout.coords[edge.to];
+        const key = `${edge.from}-${edge.to}`;
+        const active = snapshot.edge && snapshot.edge.from === edge.from && snapshot.edge.to === edge.to;
+        const cls = bestEdges.has(key) ? "best" : active && snapshot.accepted === false ? "rejected" : active ? "active" : "";
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+        const sx = from.x + (dx / len) * 26;
+        const sy = from.y + (dy / len) * 26;
+        const ex = to.x - (dx / len) * 30;
+        const ey = to.y - (dy / len) * 30;
+        const mx = (sx + ex) / 2;
+        const my = (sy + ey) / 2 - 8;
+        return `<g>
+          <path class="edge ${cls}" marker-end="url(#arrow-${cls || "normal"})" d="M ${sx} ${sy} L ${ex} ${ey}"></path>
+          <text class="edge-label" x="${mx}" y="${my}">${edge.weight}</text>
+        </g>`;
+      }).join("");
+
+      const nodeMarkup = state.nodes.map((node, i) => {
+        const p = layout.coords[i];
+        const cls = [
+          i === state.source ? "source" : "",
+          i === state.target ? "target" : "",
+          snapshot.edge && (snapshot.edge.from === i || snapshot.edge.to === i) ? "current" : "",
+          bestEdges.size && reconstructPath(snapshot.pred, state.target, snapshot.dist).includes(i) ? "final" : ""
+        ].filter(Boolean).join(" ");
+        return `<g class="node ${cls}">
+          <circle cx="${p.x}" cy="${p.y}" r="25"></circle>
+          <text x="${p.x}" y="${p.y}">${escapeHtml(node)}</text>
+        </g>`;
+      }).join("");
+
+      graphSvg.innerHTML = `
+        <defs>
+          <marker id="arrow-normal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"></path>
+          </marker>
+          <marker id="arrow-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"></path>
+          </marker>
+          <marker id="arrow-best" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#15803d"></path>
+          </marker>
+          <marker id="arrow-rejected" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"></path>
+          </marker>
+        </defs>
+        ${edgeMarkup}
+        ${nodeMarkup}
+      `;
+    }
+
+    function updateButtons() {
+      const last = currentResult && currentResult.valid ? currentResult.snapshots.length - 1 : 0;
+      firstBtn.disabled = currentStep <= 0 || last === 0;
+      prevBtn.disabled = currentStep <= 0 || last === 0;
+      nextBtn.disabled = currentStep >= last || last === 0;
+      lastBtn.disabled = currentStep >= last || last === 0;
+      stepRange.disabled = last === 0;
+      stepRange.max = last;
+      stepRange.value = currentStep;
+      playBtn.textContent = playTimer ? "Pause" : "Play";
+      playBtn.disabled = !currentResult || !currentResult.valid || last === 0;
+    }
+
+    function goToStep(step) {
+      if (!currentResult || !currentResult.valid) return;
+      const last = currentResult.snapshots.length - 1;
+      currentStep = Math.max(0, Math.min(last, step));
+      renderCurrent();
+    }
+
+    function nextStep() {
+      if (!currentResult || !currentResult.valid) return;
+      if (currentStep >= currentResult.snapshots.length - 1) {
+        stopPlay();
+        return;
+      }
+      goToStep(currentStep + 1);
+    }
+
+    function startPlay() {
+      if (!currentResult || !currentResult.valid) return;
+      if (currentStep >= currentResult.snapshots.length - 1) goToStep(0);
+      playTimer = window.setInterval(() => {
+        if (!currentResult || currentStep >= currentResult.snapshots.length - 1) {
+          stopPlay();
+          return;
+        }
+        nextStep();
+      }, 900);
+      updateButtons();
+    }
+
+    function stopPlay() {
+      if (playTimer) {
+        window.clearInterval(playTimer);
+        playTimer = null;
+      }
+      updateButtons();
+    }
+
+    function togglePlay() {
+      if (playTimer) stopPlay();
+      else startPlay();
+    }
+
+    function badgeHtml(cls, text) {
+      return `<span class="badge ${cls}">${escapeHtml(text)}</span>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    document.getElementById("addNodeBtn").addEventListener("click", addNode);
+    document.getElementById("removeNodeBtn").addEventListener("click", removeNode);
+    document.getElementById("resetBtn").addEventListener("click", resetData);
+    document.getElementById("runBtn").addEventListener("click", runSimulation);
+    sourceSelect.addEventListener("change", runSimulation);
+    targetSelect.addEventListener("change", runSimulation);
+    firstBtn.addEventListener("click", () => { stopPlay(); goToStep(0); });
+    prevBtn.addEventListener("click", () => { stopPlay(); goToStep(currentStep - 1); });
+    nextBtn.addEventListener("click", () => { stopPlay(); nextStep(); });
+    lastBtn.addEventListener("click", () => { stopPlay(); goToStep(currentResult.snapshots.length - 1); });
+    playBtn.addEventListener("click", togglePlay);
+    stepRange.addEventListener("input", () => { stopPlay(); goToStep(Number(stepRange.value)); });
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.view).classList.add("active");
+      });
+    });
+
+    renderMatrix();
+    runSimulation();
+  </script>
+</body>
+</html>

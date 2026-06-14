@@ -1,0 +1,164 @@
+\section{Network Security}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Fondasi keamanan jaringan: shared resource, untrusted infrastructure, adversary, Alice/Bob/Mallory, dan secure communication channel.
+    \item Kriteria komunikasi aman: authentication, confidentiality, integrity, availability, dan CIA triad.
+    \item Kerentanan per layer: routing attack, IP spoofing, fragmentation, broadcast amplification, TCP vulnerabilities, dan application-layer attacks.
+    \item Cryptographic building blocks: cipher, plaintext, ciphertext, symmetric key, stream cipher, block cipher, CBC, AES, 3DES, public key, RSA, hash, MD5, SHA, HMAC, dan authenticator.
+    \item Key predistribution: KDC, CA, certificate, X.509, PKI, CRL, chain of trust, dan web of trust.
+    \item Authentication protocols: nonce, challenge-response, originality, timeliness, replay prevention, Diffie-Hellman, man-in-the-middle, Needham-Schroeder, dan Kerberos.
+    \item Sistem keamanan berlapis: PGP, SSH, TLS/SSL/HTTPS, IPsec, AH, ESP, IKE, WEP, WPA2, 802.11i, dan CCMP.
+    \item Firewalls, ingress filtering, egress filtering, NAT, malware, worms, virus, botnet, DoS, dan DDoS.
+\end{enumerate}
+
+\begin{cmt}{Audit Kelengkapan Materi}{}
+Verifikasi sumber menambahkan kebutuhan menjelaskan diagram Cipher Block Chaining, konsekuensi hash yang tidak random, alasan ISP melakukan outbound blocking melalui egress filtering, perbedaan 3 kriteria ujian dan 4 kriteria buku, komponen sertifikat X.509, serta batasan sumber pada detail TCP vulnerabilities, broadcast amplification, fragmentasi, dan botnet.
+\end{cmt}
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\begin{jawab}[Inti Network Security]
+Network Security membahas cara membangun komunikasi aman di atas infrastruktur yang tidak sepenuhnya dipercaya. Dalam model sumber, Alice dan Bob adalah pihak sah, sedangkan Mallory adalah adversary yang dapat menyadap, memodifikasi, memalsukan, atau mengganggu komunikasi.
+\end{jawab}
+
+Jaringan adalah shared resource: banyak pihak memakai sumber daya yang sama, termasuk pihak bermusuhan. Karena paket melewati ISP dan node antara yang tidak selalu dipercaya, secure communication channel perlu menjaga empat aspek:
+
+\begin{itemize}
+    \item \textbf{Authentication}: memastikan identitas pihak yang berkomunikasi.
+    \item \textbf{Confidentiality}: mencegah pihak tidak sah memahami isi data.
+    \item \textbf{Integrity}: memastikan data tidak dimodifikasi tanpa terdeteksi.
+    \item \textbf{Availability}: memastikan layanan tetap dapat dicapai.
+\end{itemize}
+
+Pada soal ujian, kriteria ini sering diringkas sebagai tiga pilar utama. Strategi umum: confidentiality dicapai dengan enkripsi, integrity dengan hash atau MAC, dan authentication dengan kunci publik, sertifikat digital, atau protokol autentikasi.
+
+\subsubsection*{Kerentanan Lintas Layer}
+
+Sumber menekankan bahwa serangan dapat terjadi pada setiap layer.
+
+Pada Network Layer, IP mempercayai alamat sumber yang diberikan host. Hal ini membuka spoofing. Fitur broadcast dapat disalahgunakan untuk traffic amplification, misalnya pola Smurf attack: penyerang memakai alamat sumber korban lalu mengirim ke alamat broadcast sehingga banyak host membalas ke korban. Routing attack dapat dilakukan dengan mengumumkan rute murah palsu pada distance-vector, memanipulasi link-state, atau membajak prefix BGP.
+
+Pada Transport Layer, TCP vulnerabilities meliputi SYN flood, session hijack, dan session reset. SYN flood membanjiri server dengan state koneksi setengah terbuka. Session hijack dapat mencoba menebak sequence number untuk berpura-pura menjadi host tepercaya. Session reset memutus koneksi sah.
+
+Pada Application Layer, serangan memanfaatkan kelemahan program, konfigurasi, atau perilaku pengguna. Sumber menyebut malware, phishing, worm, virus, dan botnet sebagai konteks ancaman.
+
+\subsubsection*{Cryptographic Building Blocks}
+
+Cipher mengubah plaintext menjadi ciphertext dengan encryption dan mengembalikannya dengan decryption. Symmetric-key cipher memakai kunci rahasia yang sama untuk enkripsi dan dekripsi. Masalah utamanya adalah distribusi kunci dan skalabilitas jumlah kunci.
+
+Stream cipher menghasilkan aliran bit pseudo-random yang di-XOR dengan plaintext. Block cipher memproses pesan per blok tetap. Contoh algoritma yang disebut sumber meliputi DES, 3DES, AES, Blowfish, RC4, dan A5.
+
+Cipher Block Chaining adalah mode block cipher. Setiap plaintext block di-XOR dengan ciphertext block sebelumnya sebelum dienkripsi. Untuk blok pertama diperlukan initialization vector.
+
+Public-key cipher memakai pasangan public key dan private key. Public key dapat dipakai untuk enkripsi atau verifikasi, sedangkan private key tetap rahasia. RSA disebut sebagai contoh. Sumber tidak menjabarkan matematika RSA.
+
+Hash atau message digest mengubah pesan panjang sembarang menjadi output berukuran tetap. Syarat hash yang baik: konsisten, one-way, collision resistant, dan distribusi output merata. Jika output hash tidak random atau tidak uniform, adversary dapat mencari collision lebih cepat sehingga integritas dokumen dan authenticator melemah. Contoh hash yang disebut adalah MD5 dan SHA. HMAC menggabungkan hash dengan kunci rahasia untuk membuat authenticator.
+
+\subsubsection*{Distribusi Kunci dan Autentikasi}
+
+KDC, Key Distribution Center, adalah trusted third party untuk mendistribusikan symmetric session key. CA, Certificate Authority, menandatangani certificate yang mengikat identitas dengan public key. PKI mencakup CA, certificate, Certificate Revocation List, dan chain of trust. X.509 disebut sebagai format sertifikat yang memuat identitas pemilik kunci, masa berlaku, public key, dan tanda tangan CA. Web of trust adalah alternatif desentralisasi yang digunakan pada PGP.
+
+Nonce adalah nilai acak yang digunakan sekali. Dalam challenge-response, satu pihak mengirim nonce, pihak lain membuktikan kepemilikan kunci dengan membalas MAC atau hasil kriptografis atas nonce tersebut. Ini menjaga originality dan timeliness serta mencegah replay.
+
+Diffie-Hellman memungkinkan dua pihak menyepakati kunci sesi melalui saluran tidak aman. Tanpa autentikasi, Diffie-Hellman rentan terhadap man-in-the-middle: Mallory dapat berpura-pura menjadi Bob di depan Alice dan menjadi Alice di depan Bob.
+
+Needham-Schroeder memakai KDC untuk autentikasi symmetric-key. Kerberos adalah sistem berbasis TCP/IP dari MIT yang dibangun dari ide ini dan memakai timestamp untuk mengatasi kelemahan replay pada versi awal.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{itemize}
+    \item \textbf{Adversary}: pihak yang mencoba menyadap, memalsukan, memodifikasi, atau melumpuhkan komunikasi.
+    \item \textbf{Authentication}: pembuktian identitas.
+    \item \textbf{Confidentiality}: perlindungan isi pesan.
+    \item \textbf{Integrity}: perlindungan dari modifikasi.
+    \item \textbf{Availability}: ketersediaan layanan.
+    \item \textbf{Cipher}: algoritma enkripsi/dekripsi.
+    \item \textbf{Hash}: ringkasan tetap untuk pesan berukuran sembarang.
+    \item \textbf{HMAC}: authenticator berbasis hash dan secret key.
+    \item \textbf{Certificate}: bukti digital yang mengikat identitas dengan public key.
+    \item \textbf{TLS}: keamanan transport untuk aplikasi seperti HTTPS.
+    \item \textbf{IPsec}: keamanan di Network Layer dengan AH, ESP, dan IKE.
+    \item \textbf{Firewall/filtering}: penyaringan traffic berdasarkan aturan keamanan.
+\end{itemize}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection*{Cipher Block Chaining}
+
+\begin{lstlisting}[language={},caption={Cipher Block Chaining secara konseptual}]
+C_0 = IV
+for each plaintext block P_i:
+    X_i = P_i XOR C_{i-1}
+    C_i = Encrypt(K, X_i)
+send IV and all C_i blocks
+\end{lstlisting}
+
+\[
+C_i = E_K(P_i \oplus C_{i-1})
+\]
+
+$P_i$ adalah plaintext block ke-$i$, $C_i$ adalah ciphertext block ke-$i$, $E_K$ adalah enkripsi dengan kunci $K$, dan $C_0$ adalah initialization vector.
+
+\subsubsection*{Challenge-Response dengan Nonce}
+
+\begin{lstlisting}[language={},caption={Challenge-response dengan nonce}]
+Alice sends nonce N_A to Bob
+Bob computes authenticator = MAC(secret_key, N_A)
+Bob returns authenticator
+Alice verifies authenticator using the shared secret
+if valid:
+    Bob is authenticated for this fresh challenge
+\end{lstlisting}
+
+\subsubsection*{TLS Secara Ringkas}
+
+\begin{lstlisting}[language={},caption={TLS handshake dan record protocol secara konseptual}]
+client and server negotiate cipher suite
+server presents certificate
+client verifies certificate through CA chain
+client and server establish shared secret
+record protocol encrypts and authenticates application data
+application protocol, such as HTTP, runs as HTTPS
+\end{lstlisting}
+
+\subsubsection*{Filtering}
+
+\begin{lstlisting}[language={},caption={Ide ingress dan egress filtering}]
+ingress filtering:
+    drop external packets pretending to use internal source address
+
+egress filtering:
+    drop outgoing packets with spoofed or disallowed source address
+    block infected internal hosts from attacking the Internet
+\end{lstlisting}
+
+\subsection{Hubungan dengan Materi Lain}
+
+\begin{itemize}
+    \item \textbf{Application Layer}: PGP mengamankan email; SSH menggantikan Telnet/rlogin; HTTPS adalah HTTP di atas TLS.
+    \item \textbf{Transport Layer}: TLS berada di antara aplikasi dan TCP; SYN flood menyerang mekanisme koneksi TCP.
+    \item \textbf{Network Layer}: IPsec mengamankan paket IP; spoofing dan routing attack muncul karena IP/routing awalnya tidak mendesain identitas kuat.
+    \item \textbf{Wireless Network}: WEP, WPA2, dan IEEE 802.11i mengamankan medium wireless yang mudah disadap.
+    \item \textbf{Congestion Control}: botnet dan DDoS menghasilkan unwanted traffic yang dapat memenuhi buffer dan bandwidth, memicu congestion dan availability failure.
+\end{itemize}
+
+\begin{cmt}{Bagian yang Terbatas di Sumber}{}
+Sumber menyebut banyak algoritma seperti AES, RSA, MD5, SHA, Diffie-Hellman, Kerberos, TLS, IPsec, dan 802.11i, tetapi tidak menurunkan matematika kriptografi detail. Fragmentation attack, TCP sequence prediction, SYN flood, Smurf attack, botnet command-and-control, MACAW, dan detail DDoS juga tidak dijelaskan sebagai simulasi teknis lengkap. Catatan ini menjaga cakupan pada mekanisme konseptual yang didukung sumber.
+\end{cmt}
+
+\subsection{Checklist Pemahaman}
+
+\begin{itemize}
+    \item Dapat menjelaskan authentication, confidentiality, integrity, dan availability.
+    \item Dapat memetakan ancaman ke layer: IP spoofing, routing attack, SYN flood, application attack, dan wireless sniffing.
+    \item Dapat membedakan symmetric cipher, public-key cipher, stream cipher, block cipher, dan CBC.
+    \item Dapat menjelaskan mengapa hash harus one-way, collision resistant, dan distribusinya uniform.
+    \item Dapat menjelaskan HMAC sebagai authenticator.
+    \item Dapat membedakan KDC, CA, certificate, PKI, CRL, chain of trust, web of trust, dan X.509.
+    \item Dapat menjelaskan nonce, challenge-response, replay attack, Diffie-Hellman, MitM, Needham-Schroeder, dan Kerberos.
+    \item Dapat menjelaskan peran PGP, SSH, TLS/HTTPS, IPsec, WEP, WPA2, dan 802.11i pada layer masing-masing.
+    \item Dapat menjelaskan alasan ingress filtering, egress filtering, firewall, dan NAT berkaitan dengan keamanan.
+    \item Dapat menjawab studi kasus outbound blocking oleh ISP dan konsekuensi hash tidak random.
+\end{itemize}

@@ -1,0 +1,485 @@
+\section{Route Planning}
+
+Route Planning adalah persoalan mencari lintasan dari simpul awal menuju simpul tujuan pada graf. Dalam konteks Strategi Algoritma, materi ini bukan sekadar ``mencari jalan'', tetapi memahami bagaimana algoritma pencarian memilih simpul berikutnya, bagaimana biaya lintasan dihitung, bagaimana heuristik memengaruhi keputusan, dan kapan hasil pencarian dapat dipercaya sebagai lintasan optimal.
+
+Fokus utama UAS adalah menjalankan algoritma secara manual pada graf berbobot: menentukan simpul ekspan, memperbarui simpul hidup, menghitung nilai evaluasi, menilai admissibility heuristik, lalu menuliskan jalur, jarak total, dan banyak iterasi. Pola ini muncul konsisten pada soal UAS 2022, solusi UAS 2023, soal UAS 2024, dan soal UAS 2025 yang tersedia di folder proyek.
+
+\begin{cmt}{Keterbatasan Sumber Utama}{}
+NotebookLM yang diberikan dapat diakses, tetapi jawaban yang diperoleh untuk Route Planning hanya memuat outline global: route planning sebagai pencarian lintasan terbaik, kategori \textit{uninformed search} dan \textit{informed search}, serta rumus $f(n)=g(n)$ untuk UCS, $f(n)=h(n)$ untuk Greedy Best-First Search, dan $f(n)=g(n)+h(n)$ untuk A*. Detail tambahan seperti syarat optimalitas, konsistensi heuristik, kompleksitas, dan prosedur implementasi dilengkapi menggunakan pengetahuan umum yang relevan untuk memperdalam pemahaman.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Model persoalan route planning
+    \begin{enumerate}
+        \item Graf sebagai representasi lokasi, status, atau konfigurasi.
+        \item Simpul awal, simpul tujuan, sisi, bobot sisi, dan biaya lintasan.
+        \item \textit{Goal test}: kondisi yang menentukan bahwa pencarian sudah mencapai tujuan.
+        \item Perbedaan graf berarah dan graf tidak berarah.
+        \item Perbedaan graf berbobot dan tidak berbobot.
+    \end{enumerate}
+
+    \item Terminologi pencarian
+    \begin{enumerate}
+        \item Simpul hidup (\textit{live node/frontier/agenda}).
+        \item Simpul ekspan atau simpul-E (\textit{expanded node}).
+        \item Simpul yang sudah dikunjungi atau ditutup (\textit{explored/closed set}).
+        \item Jalur parsial, parent pointer, dan rekonstruksi jalur.
+        \item Aturan \textit{tie-breaking}, misalnya urutan abjad.
+    \end{enumerate}
+
+    \item Fungsi biaya dan fungsi evaluasi
+    \begin{enumerate}
+        \item $g(n)$: biaya aktual dari simpul awal ke simpul $n$.
+        \item $h(n)$: estimasi biaya dari simpul $n$ ke simpul tujuan.
+        \item $h^*(n)$: biaya optimal sebenarnya dari simpul $n$ ke tujuan.
+        \item $f(n)$: nilai prioritas yang digunakan untuk memilih simpul berikutnya.
+    \end{enumerate}
+
+    \item \textit{Uninformed search} atau \textit{blind search}
+    \begin{enumerate}
+        \item Breadth-First Search (BFS).
+        \item Depth-First Search (DFS).
+        \item Depth-Limited Search (DLS).
+        \item Iterative Deepening Search (IDS).
+        \item Uniform Cost Search (UCS).
+    \end{enumerate}
+
+    \item \textit{Informed search} atau \textit{heuristic search}
+    \begin{enumerate}
+        \item Greedy Best-First Search.
+        \item A*.
+        \item Heuristik admissible.
+        \item Heuristik consistent atau monotone.
+        \item Hubungan kualitas heuristik dengan jumlah iterasi.
+    \end{enumerate}
+
+    \item Pola pengerjaan manual untuk UAS
+    \begin{enumerate}
+        \item Membuat tabel iterasi.
+        \item Menghitung $g(n)$, $h(n)$, dan $f(n)$ untuk simpul hidup.
+        \item Menghapus atau mengabaikan simpul yang sudah menjadi simpul ekspan sesuai aturan soal.
+        \item Menghentikan pencarian saat simpul tujuan menjadi simpul ekspan, bukan saat pertama kali muncul di simpul hidup.
+        \item Menuliskan jalur hasil, jarak total, banyak iterasi, dan analisis singkat.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+Route Planning penting karena ia memperlihatkan bentuk paling konkret dari persoalan pencarian pada graf. Banyak persoalan komputasi dapat dimodelkan sebagai pencarian lintasan: simpul menyatakan keadaan, sisi menyatakan aksi yang mengubah keadaan, dan bobot sisi menyatakan biaya aksi. Dengan model ini, persoalan navigasi kota, pencarian solusi puzzle, perencanaan gerak robot, routing paket jaringan, bahkan pencarian urutan keputusan dalam sistem otomatis dapat dipelajari memakai kerangka yang sama.
+
+Dalam ujian, nilai utama materi ini biasanya bukan pada hafalan nama algoritma, melainkan pada kemampuan menjaga invariant tabel pencarian. Jika pada setiap iterasi mahasiswa konsisten memilih simpul dengan nilai evaluasi terkecil, menghitung ulang biaya lintasan dengan benar, dan berhenti pada kondisi yang tepat, jawaban akan tetap dapat dipertanggungjawabkan meskipun graf soal cukup kompleks.
+
+\begin{cmt}{Relevansi Praktis}{}
+Dalam praktik industri, route planning muncul pada sistem navigasi, logistik, robotika, game AI, pemetaan rute kendaraan, jaringan komputer, dan perencanaan aksi. Catatan ini membatasi pembahasan pada bentuk algoritmik yang relevan untuk UAS: graf, biaya, heuristik, frontier, dan tabel iterasi.
+\end{cmt}
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Route Planning berhubungan langsung dengan Backtracking karena sama-sama dapat dipandang sebagai eksplorasi ruang status. Perbedaannya, Backtracking biasanya menekankan pembentukan solusi bertahap dan pruning berdasarkan constraint, sedangkan Route Planning menekankan urutan ekspansi simpul berdasarkan struktur frontier dan fungsi evaluasi.
+
+Materi ini juga dekat dengan Branch and Bound karena UCS dan A* sama-sama memilih simpul hidup berdasarkan nilai prioritas. Pada Branch and Bound, nilai prioritas adalah bound atau cost optimistik dari simpul ruang status; pada Route Planning, nilai prioritas dinyatakan eksplisit sebagai $g(n)$, $h(n)$, atau $g(n)+h(n)$. Hubungannya dengan Program Dinamis muncul pada persoalan lintasan terpendek: keduanya mencari lintasan biaya minimum, tetapi Program Dinamis menyusun relasi tahap-status, sedangkan Route Planning mengekspansi simpul dari frontier.
+
+\subsection{Pola Soal UAS Sebelumnya dan Prioritas}
+
+\begin{cmt}{Pola dari Soal 2022--2025}{}
+Pola soal Route Planning pada dokumen yang tersedia sangat stabil. Soal 2022 meminta uji admissibility dan menjalankan A*, Greedy Best-First Search, serta UCS sampai simpul tujuan menjadi simpul ekspan. Solusi 2023 menampilkan tabel $g(n)$, $h(n)$, rumus $f(n)$, jalur, cost, dan analisis iterasi. Soal 2024 meminta heuristik semua simpul, admissibility, simpul ekspan dan simpul hidup pada iterasi tertentu, iterasi berhenti, jalur, dan jarak. Soal 2025 secara eksplisit mensyaratkan jawaban dalam tabel iterasi untuk UCS, Greedy Best-First Search, dan A*.
+\end{cmt}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|X|}
+\hline
+\textbf{Pola Soal} & \textbf{Yang Biasanya Diminta} & \textbf{Kemampuan yang Harus Dikuasai} \\
+\hline
+Graf berbobot dengan heuristik & Menjalankan UCS, Greedy Best-First Search, dan A* sampai tujuan menjadi simpul ekspan. & Mengelola frontier, memilih simpul dengan $f(n)$ terkecil, menghitung biaya lintasan, dan merekonstruksi jalur. \\
+\hline
+Uji heuristik & Menentukan $h(n)$ setiap simpul dan apakah nilai tersebut admissible. & Membandingkan $h(n)$ dengan biaya optimal sebenarnya $h^*(n)$ dari simpul tersebut ke tujuan. \\
+\hline
+Tabel iterasi & Menuliskan simpul ekspan, simpul hidup, dan nilai evaluasi setiap simpul hidup. & Membedakan simpul yang baru ditemukan, simpul yang masih hidup, dan simpul yang sudah diekspansi. \\
+\hline
+Perbandingan algoritma & Menentukan jalur, jarak, jumlah iterasi, dan algoritma yang menghasilkan lintasan terbaik atau iterasi paling sedikit. & Memahami bahwa Greedy dapat cepat tetapi tidak selalu optimal, UCS optimal untuk biaya non-negatif, dan A* optimal jika syarat heuristik terpenuhi. \\
+\hline
+Aturan tie-breaking & Memilih simpul saat beberapa simpul memiliki nilai $f(n)$ sama. & Mengikuti aturan soal, misalnya urutan abjad, agar tabel deterministik. \\
+\hline
+\end{tabularx}
+\caption{Pola soal UAS Route Planning dan kemampuan yang perlu dikuasai}
+\label{tab:pola-soal-route-planning}
+\end{table}
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Model Graf untuk Route Planning}
+
+\begin{jawab}[Inti Konsep.]
+Route planning memodelkan persoalan sebagai graf: simpul adalah lokasi atau status, sisi adalah kemungkinan perpindahan, dan bobot sisi adalah biaya perpindahan.
+\end{jawab}
+
+Sebuah persoalan route planning dimulai dari simpul awal $s$ dan simpul tujuan $t$. Jika graf berbobot, setiap sisi $(u,v)$ memiliki biaya $c(u,v)$ yang biasanya menyatakan jarak, waktu, energi, bahan bakar, atau cost abstrak lain. Tujuan pencarian adalah menemukan lintasan dari $s$ ke $t$. Jika soal meminta jalur terpendek, maka lintasan yang dicari adalah lintasan dengan total bobot minimum.
+
+Pada graf tidak berbobot, semua sisi dapat dianggap memiliki biaya sama, sehingga jumlah sisi atau jumlah langkah menjadi ukuran biaya. Pada graf berbobot, jumlah langkah belum tentu mencerminkan kualitas lintasan. Jalur dengan lebih banyak sisi dapat saja lebih murah daripada jalur pendek yang melewati sisi berbiaya besar. Inilah alasan UCS dan A* menggunakan $g(n)$, bukan hanya kedalaman simpul.
+
+\subsubsection{Frontier, Simpul Ekspan, dan Kondisi Berhenti}
+
+\begin{jawab}[Inti Konsep.]
+Frontier berisi kandidat simpul yang sudah ditemukan tetapi belum diekspansi; simpul ekspan adalah simpul yang sedang dikeluarkan dari frontier untuk diperiksa dan dikembangkan.
+\end{jawab}
+
+Kesalahan umum pada soal UAS adalah berhenti saat simpul tujuan pertama kali muncul di simpul hidup. Instruksi soal 2022, 2024, dan 2025 menekankan bahwa pencarian dihentikan ketika simpul tujuan menjadi simpul ekspan. Artinya, simpul tujuan harus benar-benar terpilih sebagai simpul dengan prioritas terbaik pada suatu iterasi, bukan sekadar sudah ditemukan sebagai tetangga.
+
+Prosedur umum setiap iterasi adalah sebagai berikut:
+\begin{enumerate}
+    \item Pilih satu simpul dari frontier berdasarkan aturan algoritma.
+    \item Jadikan simpul tersebut sebagai simpul ekspan.
+    \item Jika simpul ekspan adalah tujuan, hentikan pencarian.
+    \item Bangkitkan tetangga dari simpul ekspan.
+    \item Hitung nilai $g(n)$, $h(n)$, dan $f(n)$ yang relevan untuk tetangga.
+    \item Masukkan tetangga ke frontier jika memenuhi aturan soal, misalnya belum pernah menjadi simpul ekspan.
+    \item Jika suatu simpul sudah ada di frontier melalui jalur lain, simpan jalur dengan prioritas lebih baik apabila aturan algoritma dan soal mengizinkan pembaruan.
+\end{enumerate}
+
+\begin{cmt}{Aturan Soal Lebih Kuat daripada Kebiasaan Implementasi}{}
+Implementasi algoritma graf di buku atau pustaka dapat berbeda dalam menangani simpul duplikat, pembaruan cost, dan closed set. Untuk ujian, ikuti instruksi eksplisit soal. Misalnya soal 2025 menyatakan bahwa simpul yang sudah pernah masuk simpul ekspan tidak ditambahkan lagi ke simpul hidup, kecuali yang sebelumnya sudah ada di simpul hidup.
+\end{cmt}
+
+\subsubsection{\textit{Uninformed Search}}
+
+\begin{jawab}[Inti Konsep.]
+\textit{Uninformed search} tidak memakai informasi perkiraan jarak ke tujuan; keputusan ekspansi hanya bergantung pada struktur pencarian atau biaya aktual yang sudah ditempuh.
+\end{jawab}
+
+BFS, DFS, DLS, IDS, dan UCS termasuk \textit{uninformed search}. Disebut \textit{blind search} karena algoritma tidak mengetahui arah mana yang tampak lebih dekat ke tujuan. Perbedaan antaralgoritma terletak pada cara frontier dikelola.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.18\textwidth}|L{0.23\textwidth}|X|}
+\hline
+\textbf{Algoritma} & \textbf{Prioritas Ekspansi} & \textbf{Makna dan Kondisi Penggunaan} \\
+\hline
+BFS & Kedalaman terkecil; frontier sebagai \textit{queue}. & Cocok untuk graf tidak berbobot jika yang dicari adalah jumlah langkah minimum. Tidak mempertimbangkan bobot sisi. \\
+\hline
+DFS & Simpul terdalam; frontier sebagai \textit{stack}. & Hemat memori dibanding BFS, tetapi dapat tersesat pada cabang dalam dan tidak menjamin solusi terpendek. \\
+\hline
+DLS & DFS dengan batas kedalaman. & Menghindari DFS masuk terlalu dalam, tetapi gagal jika solusi berada di bawah batas kedalaman. \\
+\hline
+IDS & DLS berulang dengan batas meningkat. & Menggabungkan kelebihan BFS untuk kedalaman solusi dan penggunaan memori seperti DFS, tetapi mengulang ekspansi pada level dangkal. \\
+\hline
+UCS & Biaya aktual terkecil $g(n)$. & Cocok untuk graf berbobot non-negatif dan menjamin lintasan optimal jika biaya sisi tidak negatif. \\
+\hline
+\end{tabularx}
+\caption{Perbandingan algoritma uninformed search}
+\label{tab:uninformed-route-planning}
+\end{table}
+
+\subsubsection{Uniform Cost Search}
+
+\begin{jawab}[Inti Konsep.]
+UCS selalu mengekspansi simpul hidup dengan biaya aktual paling kecil dari simpul awal.
+\end{jawab}
+
+Pada UCS, nilai evaluasi simpul $n$ adalah $f(n)=g(n)$. Nilai $g(n)$ tidak dihitung dari estimasi, melainkan dari jumlah bobot sisi yang benar-benar dilalui dari simpul awal ke simpul $n$. Karena itu, UCS dapat dipahami sebagai generalisasi BFS untuk graf berbobot: jika semua sisi memiliki bobot sama, urutan UCS akan menyerupai BFS; jika bobot sisi berbeda, UCS lebih tepat karena mengutamakan lintasan termurah, bukan lintasan terdangkal.
+
+Dalam tabel UAS, setiap simpul hidup biasanya ditulis bersama jalurnya atau nama simpulnya dan nilai $f(n)$. Jika terdapat dua jalur menuju simpul yang sama, periksa apakah jalur baru memberi $g(n)$ lebih kecil. Untuk pencarian graf yang benar, jalur dengan biaya lebih kecil seharusnya menggantikan jalur yang lebih mahal di frontier. Namun, bila soal memberikan aturan khusus tentang simpul yang sudah masuk simpul hidup atau simpul ekspan, aturan tersebut harus diikuti.
+
+\subsubsection{\textit{Informed Search} dan Heuristik}
+
+\begin{jawab}[Inti Konsep.]
+\textit{Informed search} memakai heuristik $h(n)$ untuk memperkirakan jarak atau biaya tersisa dari simpul $n$ ke tujuan.
+\end{jawab}
+
+Heuristik adalah fungsi estimasi. Pada soal route planning, heuristik dapat diberikan langsung dalam tabel, atau didefinisikan sebagai jarak tertentu, misalnya Manhattan distance, Euclidean distance, atau banyaknya sisi minimal menuju tujuan. Heuristik yang baik membantu algoritma mengarah ke tujuan dengan lebih sedikit iterasi, tetapi heuristik yang buruk dapat menyesatkan pencarian.
+
+Perlu dibedakan antara $h(n)$ dan $h^*(n)$. Nilai $h(n)$ adalah estimasi yang diberikan atau dihitung oleh soal. Nilai $h^*(n)$ adalah biaya optimal sebenarnya dari simpul $n$ ke tujuan. Karena $h^*(n)$ adalah nilai sebenarnya, ia biasanya harus dihitung dari graf, misalnya dengan mencari lintasan termurah dari simpul tersebut ke tujuan.
+
+\subsubsection{Greedy Best-First Search}
+
+\begin{jawab}[Inti Konsep.]
+Greedy Best-First Search memilih simpul yang tampak paling dekat ke tujuan berdasarkan nilai heuristik terkecil.
+\end{jawab}
+
+Greedy Best-First Search memakai $f(n)=h(n)$. Algoritma ini mengabaikan biaya yang sudah dikeluarkan dari simpul awal ke simpul $n$. Akibatnya, Greedy dapat menemukan tujuan dengan sedikit iterasi, tetapi tidak menjamin lintasan termurah. Dalam pola soal UAS, Greedy sering dibandingkan dengan UCS dan A*: Greedy dapat menang dari sisi jumlah iterasi, tetapi kalah dari sisi total cost.
+
+Intuisi Greedy sederhana: jika tujuan berada di ``arah'' tertentu menurut heuristik, algoritma akan terus mendekati arah itu. Masalahnya, lintasan yang tampak dekat bisa melalui sisi yang mahal. Karena itu, Greedy cocok dipahami sebagai strategi agresif menuju tujuan, bukan strategi optimal untuk biaya lintasan.
+
+\subsubsection{A*}
+
+\begin{jawab}[Inti Konsep.]
+A* menyeimbangkan biaya yang sudah ditempuh dan estimasi biaya tersisa dengan fungsi $f(n)=g(n)+h(n)$.
+\end{jawab}
+
+A* menggabungkan kekuatan UCS dan Greedy Best-First Search. Komponen $g(n)$ menjaga agar algoritma tidak mengabaikan biaya aktual yang sudah dikeluarkan, sedangkan $h(n)$ mengarahkan pencarian menuju tujuan. Jika $h(n)=0$ untuk semua simpul, A* berubah menjadi UCS. Jika $g(n)$ diabaikan, perilakunya menjadi Greedy Best-First Search.
+
+Kelebihan A* bergantung pada kualitas heuristik. Heuristik yang terlalu kecil tetap aman tetapi kurang informatif, sehingga A* mendekati UCS dan dapat mengeksplorasi banyak simpul. Heuristik yang terlalu besar dapat membuat A* memilih lintasan yang tampak murah tetapi sebenarnya bukan lintasan optimal.
+
+\subsubsection{Admissible dan Consistent Heuristic}
+
+\begin{jawab}[Inti Konsep.]
+Heuristik admissible tidak pernah melebih-lebihkan biaya optimal sebenarnya menuju tujuan; heuristik consistent juga memenuhi ketaksamaan segitiga pada setiap sisi.
+\end{jawab}
+
+Sebuah heuristik disebut admissible jika untuk setiap simpul $n$, estimasi $h(n)$ tidak lebih besar daripada biaya optimal sebenarnya $h^*(n)$. Dengan kata lain, heuristik boleh terlalu optimistis, tetapi tidak boleh terlalu pesimistis. Jika suatu simpul memiliki $h(n)>h^*(n)$, maka heuristik pada simpul tersebut tidak admissible.
+
+Heuristik consistent atau monotone memenuhi syarat lebih kuat: untuk setiap sisi $(n,n')$, nilai heuristik dari $n$ tidak boleh lebih besar daripada biaya dari $n$ ke $n'$ ditambah heuristik dari $n'$. Secara intuitif, estimasi dari suatu simpul tidak boleh turun terlalu tajam setelah mengambil satu langkah. Konsistensi penting pada pencarian graf karena membantu menjamin bahwa setelah suatu simpul diekspansi, biaya terbaiknya sudah final.
+
+\begin{cmt}{Hubungan Admissible dan Optimalitas A*}{}
+Untuk \textit{tree search}, admissibility cukup untuk menjamin A* optimal. Untuk \textit{graph search} dengan closed set, syarat consistent lebih kuat dan lazim digunakan agar simpul yang sudah diekspansi tidak perlu dibuka kembali. Dalam ujian IF2221, soal yang tersedia lebih sering meminta uji admissibility eksplisit daripada pembuktian konsistensi.
+\end{cmt}
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+Simpul awal $s$ & Titik mulai pencarian. Semua nilai $g(n)$ dihitung relatif terhadap simpul ini. \\
+\hline
+Simpul tujuan $t$ & Titik akhir yang dicari. Pencarian pada pola soal biasanya berhenti ketika $t$ menjadi simpul ekspan. \\
+\hline
+Sisi $(u,v)$ & Perpindahan dari simpul $u$ ke simpul $v$. Pada graf berarah, arah sisi harus dipatuhi. \\
+\hline
+Bobot sisi $c(u,v)$ & Biaya berpindah dari $u$ ke $v$, misalnya jarak, waktu, atau cost abstrak. \\
+\hline
+$g(n)$ & Biaya aktual lintasan dari simpul awal ke simpul $n$. \\
+\hline
+$h(n)$ & Estimasi biaya dari simpul $n$ ke tujuan. \\
+\hline
+$h^*(n)$ & Biaya optimal sebenarnya dari simpul $n$ ke tujuan. Dipakai untuk memeriksa admissibility. \\
+\hline
+$f(n)$ & Fungsi evaluasi untuk menentukan prioritas simpul hidup berikutnya. \\
+\hline
+Frontier/simpul hidup & Kumpulan kandidat simpul yang sudah ditemukan tetapi belum diekspansi. \\
+\hline
+Simpul ekspan & Simpul yang dipilih pada iterasi berjalan untuk diperiksa dan dikembangkan tetangganya. \\
+\hline
+Closed set & Kumpulan simpul yang sudah diekspansi. Dalam soal, simpul ini biasanya tidak dimasukkan lagi ke simpul hidup. \\
+\hline
+Parent pointer & Informasi pendahulu setiap simpul yang dipakai untuk merekonstruksi jalur hasil. \\
+\hline
+Tie-breaking & Aturan pemilihan saat beberapa simpul memiliki nilai prioritas sama, misalnya urutan abjad. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Route Planning}
+\label{tab:komponen-kunci-route-planning}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Biaya Lintasan}
+
+\begin{jawab}[Makna Rumus.]
+Biaya lintasan adalah jumlah bobot sisi yang dilalui dari simpul awal ke suatu simpul.
+\end{jawab}
+
+\begin{equation}
+    g(n)=\sum_{(u,v)\in \operatorname{path}(s,n)} c(u,v)
+    \label{eq:rp-path-cost}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $s$: simpul awal.
+    \item $n$: simpul yang sedang dinilai.
+    \item $\operatorname{path}(s,n)$: lintasan dari $s$ ke $n$.
+    \item $c(u,v)$: biaya sisi dari $u$ ke $v$.
+\end{itemize}
+
+Rumus ini dipakai pada UCS dan A*. Pada Greedy Best-First Search, $g(n)$ tetap dapat ditulis untuk menghitung jarak jalur akhir, tetapi tidak dipakai sebagai prioritas ekspansi.
+
+\subsubsection{Fungsi Evaluasi UCS, Greedy Best-First Search, dan A*}
+
+\begin{jawab}[Makna Rumus.]
+Perbedaan UCS, Greedy Best-First Search, dan A* terletak pada fungsi evaluasi $f(n)$ yang digunakan untuk memilih simpul hidup berikutnya.
+\end{jawab}
+
+\begin{align}
+    f_{\text{UCS}}(n) &= g(n), \label{eq:rp-ucs}\\
+    f_{\text{Greedy}}(n) &= h(n), \label{eq:rp-greedy}\\
+    f_{\text{A*}}(n) &= g(n)+h(n). \label{eq:rp-astar}
+\end{align}
+
+dengan:
+\begin{itemize}
+    \item $g(n)$: biaya aktual dari simpul awal ke $n$.
+    \item $h(n)$: estimasi biaya dari $n$ ke tujuan.
+    \item $f(n)$: prioritas ekspansi; simpul dengan $f(n)$ terkecil dipilih lebih dulu.
+\end{itemize}
+
+Aturan pemilihan simpul berikutnya dapat ditulis:
+\begin{equation}
+    n_{\text{next}}=\arg\min_{n\in \text{frontier}} f(n)
+    \label{eq:rp-next-node}
+\end{equation}
+
+Jika ada beberapa simpul dengan nilai $f(n)$ sama, gunakan aturan tie-breaking pada soal. Bila tidak disebutkan, pilihan harus dinyatakan secara eksplisit agar tabel dapat diikuti.
+
+\subsubsection{Admissibility Heuristic}
+
+\begin{jawab}[Makna Rumus.]
+Admissibility memeriksa apakah heuristik tidak pernah melebih-lebihkan biaya optimal sebenarnya menuju tujuan.
+\end{jawab}
+
+\begin{equation}
+    0 \le h(n) \le h^*(n)
+    \label{eq:rp-admissible}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $h(n)$: heuristik yang diberikan atau dihitung untuk simpul $n$.
+    \item $h^*(n)$: biaya optimal sebenarnya dari simpul $n$ ke tujuan.
+\end{itemize}
+
+Untuk mengecek admissibility pada soal, lakukan langkah berikut:
+\begin{enumerate}
+    \item Untuk setiap simpul $n$, cari biaya lintasan termurah sebenarnya dari $n$ ke tujuan.
+    \item Bandingkan nilai tersebut dengan heuristik $h(n)$.
+    \item Jika $h(n)\le h^*(n)$, heuristik pada simpul $n$ admissible.
+    \item Jika $h(n)>h^*(n)$, heuristik pada simpul $n$ tidak admissible.
+\end{enumerate}
+
+\subsubsection{Consistency Heuristic}
+
+\begin{jawab}[Makna Rumus.]
+Consistency memastikan estimasi heuristik tidak melanggar ketaksamaan segitiga pada setiap sisi.
+\end{jawab}
+
+\begin{equation}
+    h(n) \le c(n,n') + h(n')
+    \label{eq:rp-consistent}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $n'$: tetangga dari simpul $n$.
+    \item $c(n,n')$: biaya sisi dari $n$ ke $n'$.
+    \item $h(n)$ dan $h(n')$: estimasi biaya masing-masing simpul menuju tujuan.
+\end{itemize}
+
+Setiap heuristik consistent pasti admissible jika $h(t)=0$ pada simpul tujuan. Kebalikannya tidak selalu benar: heuristik dapat admissible tetapi tidak consistent.
+
+\subsubsection{Pseudocode Pencarian Best-First Generik}
+
+\begin{jawab}[Tujuan Algoritma.]
+Pseudocode ini menyatukan UCS, Greedy Best-First Search, dan A* dengan mengganti fungsi evaluasi $f(n)$.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode pencarian best-first untuk route planning}, label={lst:route-planning-best-first}]
+Input:
+    graph, start, goal
+    evaluation function f(n)
+Output:
+    path from start to goal, total cost, iteration table
+
+1. frontier <- priority queue ordered by f(n)
+2. insert start into frontier with g(start) = 0
+3. parent[start] <- None
+4. closed <- empty set
+5. iteration <- 0
+
+6. while frontier is not empty:
+7.     n <- pop node with smallest f(n) from frontier
+8.     if n is in closed:
+9.         continue
+10.    iteration <- iteration + 1
+11.    record n as expanded node and record current frontier
+12.    if n == goal:
+13.        return reconstruct_path(parent, goal), g(goal), iteration
+14.    add n to closed
+15.    for each neighbor m of n:
+16.        if m is in closed:
+17.            continue
+18.        tentative_g <- g(n) + cost(n, m)
+19.        if m not in frontier or tentative_g is better than g(m):
+20.            g(m) <- tentative_g
+21.            parent[m] <- n
+22.            insert or update m in frontier using f(m)
+
+23. return "Tidak ada solusi"
+\end{lstlisting}
+
+Untuk UCS, gunakan $f(n)=g(n)$. Untuk Greedy Best-First Search, gunakan $f(n)=h(n)$. Untuk A*, gunakan $f(n)=g(n)+h(n)$. Pada jawaban manual UAS, struktur prioritas ini diterjemahkan menjadi tabel iterasi: baris ke-$i$ berisi simpul ekspan pada iterasi tersebut dan daftar simpul hidup setelah ekspansi.
+
+\subsubsection{Template Tabel Iterasi UAS}
+
+\begin{jawab}[Tujuan Tabel.]
+Tabel iterasi membuat proses pemilihan simpul dapat diperiksa langkah demi langkah.
+\end{jawab}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.13\textwidth}|L{0.18\textwidth}|X|}
+\hline
+\textbf{Iterasi} & \textbf{Simpul Ekspan} & \textbf{Simpul Hidup dan Nilai Evaluasi} \\
+\hline
+1 & $A$ & $B: f(B)=\cdots$, $C: f(C)=\cdots$ \\
+\hline
+2 & $\cdots$ & $\cdots$ \\
+\hline
+$k$ & Tujuan & Pencarian berhenti karena simpul tujuan menjadi simpul ekspan. \\
+\hline
+\end{tabularx}
+\caption{Template tabel iterasi route planning untuk UAS}
+\label{tab:template-iterasi-route-planning}
+\end{table}
+
+Agar jawaban lengkap, setelah tabel tuliskan:
+\begin{itemize}
+    \item jalur hasil, misalnya $A\rightarrow C\rightarrow D\rightarrow F$;
+    \item jarak atau cost total, yaitu jumlah bobot sisi pada jalur hasil;
+    \item banyak iterasi, dihitung dari jumlah baris ekspansi sampai tujuan menjadi simpul ekspan;
+    \item aturan tie-breaking yang dipakai jika ada nilai sama;
+    \item catatan apabila tidak ada solusi.
+\end{itemize}
+
+\subsection{Kesalahan Umum dan Edge Case}
+
+\begin{itemize}
+    \item \textbf{Berhenti terlalu cepat}: tujuan baru muncul di frontier belum berarti pencarian selesai. Berhenti saat tujuan menjadi simpul ekspan.
+    \item \textbf{Mencampur rumus evaluasi}: UCS memakai $g(n)$, Greedy memakai $h(n)$, A* memakai $g(n)+h(n)$.
+    \item \textbf{Menghitung $g(n)$ dari simpul yang salah}: $g(n)$ selalu biaya dari simpul awal ke $n$, bukan dari simpul ekspan saat ini saja.
+    \item \textbf{Menganggap Greedy selalu optimal}: Greedy dapat memilih jalur yang tampak dekat tetapi mahal.
+    \item \textbf{Mengabaikan arah sisi}: pada graf berarah, sisi hanya boleh dilalui sesuai arah panah.
+    \item \textbf{Mengabaikan tie-breaking}: jika nilai $f(n)$ sama, pilihan simpul harus mengikuti aturan soal.
+    \item \textbf{Tidak memperbarui jalur}: jika simpul yang sama ditemukan melalui jalur lebih murah dan aturan soal mengizinkan, parent dan $g(n)$ harus diperbarui.
+    \item \textbf{Salah uji admissibility}: yang dibandingkan dengan $h(n)$ adalah biaya optimal sebenarnya dari simpul itu ke tujuan, bukan biaya dari simpul awal ke simpul itu.
+\end{itemize}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat memodelkan persoalan route planning sebagai graf dengan simpul, sisi, bobot, simpul awal, dan simpul tujuan.
+    \item[$\square$] Saya dapat membedakan simpul hidup, simpul ekspan, closed set, dan parent pointer.
+    \item[$\square$] Saya dapat menjelaskan perbedaan BFS, DFS, DLS, IDS, dan UCS.
+    \item[$\square$] Saya dapat menghitung $g(n)$ sebagai biaya aktual lintasan dari simpul awal.
+    \item[$\square$] Saya dapat menghitung $f(n)=g(n)$ untuk UCS.
+    \item[$\square$] Saya dapat menghitung $f(n)=h(n)$ untuk Greedy Best-First Search.
+    \item[$\square$] Saya dapat menghitung $f(n)=g(n)+h(n)$ untuk A*.
+    \item[$\square$] Saya dapat membuat tabel iterasi UCS, Greedy Best-First Search, dan A* sampai simpul tujuan menjadi simpul ekspan.
+    \item[$\square$] Saya dapat menentukan jalur hasil, total cost, dan banyak iterasi dari tabel pencarian.
+    \item[$\square$] Saya dapat menguji apakah heuristik admissible dengan membandingkan $h(n)$ dan $h^*(n)$.
+    \item[$\square$] Saya dapat menjelaskan mengapa Greedy tidak selalu optimal, UCS optimal untuk biaya non-negatif, dan A* optimal jika heuristik memenuhi syarat.
+    \item[$\square$] Saya dapat menjelaskan hubungan Route Planning dengan Backtracking, Branch and Bound, dan Program Dinamis.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Tabel iterasi UCS, Greedy Best-First Search, dan A*; perhitungan $g(n)$, $h(n)$, dan $f(n)$; kondisi berhenti saat tujuan menjadi simpul ekspan; jalur hasil; jarak total; banyak iterasi; dan uji admissibility heuristik. \\
+\hline
+\textbf{Cukup Paham Konsep} & BFS, DFS, DLS, IDS, consistency heuristic, tree search versus graph search, parent pointer, closed set, dan hubungan route planning dengan materi lain. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan. \\
+\hline
+\end{tabularx}

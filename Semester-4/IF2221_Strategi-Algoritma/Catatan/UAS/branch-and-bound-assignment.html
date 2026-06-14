@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Branch and Bound Assignment Maximization</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --ink: #1f2933;
+      --muted: #627184;
+      --line: #d7dde5;
+      --panel: #ffffff;
+      --accent: #0f766e;
+      --accent-dark: #115e59;
+      --warn: #b45309;
+      --bad: #b91c1c;
+      --good: #15803d;
+      --shadow: 0 8px 22px rgba(31, 41, 51, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    header {
+      padding: 18px 24px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(20px, 2vw, 30px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .subhead {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(360px, 0.9fr) minmax(520px, 1.4fr);
+      gap: 16px;
+      padding: 16px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .section-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .body {
+      padding: 16px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      min-height: 36px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    button.primary:hover { background: var(--accent-dark); }
+    button:hover { border-color: #9aa8b7; }
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .grid-table-wrap {
+      width: 100%;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      padding: 7px;
+      text-align: center;
+      vertical-align: middle;
+      min-width: 84px;
+    }
+
+    th:last-child, td:last-child { border-right: 0; }
+    tr:last-child td { border-bottom: 0; }
+
+    th {
+      background: #edf2f7;
+      font-weight: 700;
+      color: #243547;
+    }
+
+    td:first-child, th:first-child {
+      min-width: 110px;
+      text-align: left;
+      font-weight: 700;
+      background: #f9fafb;
+    }
+
+    input.cell-input {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 5px;
+      text-align: center;
+      font: inherit;
+      background: transparent;
+      color: var(--ink);
+    }
+
+    input.cell-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: #ffffff;
+    }
+
+    .name-input {
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfd;
+      min-height: 78px;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .solution-list {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      padding: 0 16px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab {
+      min-height: 32px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .tab.active {
+      background: #e6fffa;
+      color: var(--accent-dark);
+      border-color: #99f6e4;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .sim-panel {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+    }
+
+    .sim-controls {
+      display: grid;
+      grid-template-columns: auto auto auto auto auto 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .step-range {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .step-caption {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .frontier-line {
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .tree-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 540px;
+      background: #fbfcfd;
+    }
+
+    svg {
+      display: block;
+      min-width: 100%;
+      height: auto;
+    }
+
+    .node rect {
+      fill: #ffffff;
+      stroke: #9aa8b7;
+      stroke-width: 1.2;
+      rx: 7;
+    }
+
+    .node.best rect { fill: #dcfce7; stroke: #16a34a; stroke-width: 2; }
+    .node.pruned rect { fill: #fee2e2; stroke: #dc2626; }
+    .node.complete rect { fill: #e0f2fe; stroke: #0284c7; }
+    .node.expanded rect { fill: #fef3c7; stroke: #d97706; }
+    .node.current rect { stroke: #111827; stroke-width: 3; }
+
+    .node text {
+      font-size: 11px;
+      fill: var(--ink);
+      dominant-baseline: hanging;
+    }
+
+    .edge {
+      stroke: #94a3b8;
+      stroke-width: 1.2;
+      fill: none;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      margin-right: 5px;
+      vertical-align: -1px;
+      border: 1px solid var(--line);
+    }
+
+    .legend .expanded::before { background: #fef3c7; border-color: #d97706; }
+    .legend .complete::before { background: #e0f2fe; border-color: #0284c7; }
+    .legend .best::before { background: #dcfce7; border-color: #16a34a; }
+    .legend .pruned::before { background: #fee2e2; border-color: #dc2626; }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      max-height: 650px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfd;
+    }
+
+    .step.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.12);
+    }
+
+    .step-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .step-text {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .badge.good { background: #dcfce7; color: var(--good); }
+    .badge.bad { background: #fee2e2; color: var(--bad); }
+    .badge.warn { background: #fef3c7; color: var(--warn); }
+    .badge.neutral { background: #e5e7eb; color: #374151; }
+
+    .formula {
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      margin-top: 12px;
+    }
+
+    .assignment-table td:first-child {
+      width: 36%;
+    }
+
+    @media (max-width: 980px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      main { padding: 10px; }
+      header { padding: 14px; }
+      .summary { grid-template-columns: 1fr; }
+      .sim-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .step-range { grid-column: 1 / -1; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+      th, td { min-width: 76px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Branch and Bound Assignment Maximization</h1>
+    <div class="subhead">Edit tabel profit, lalu jalankan pencarian untuk melihat bound, pruning, dan assignment maksimum.</div>
+  </header>
+
+  <main>
+    <section>
+      <div class="section-head">
+        <h2>Data Profit</h2>
+        <div class="toolbar">
+          <button type="button" id="addProjectBtn">+ Project</button>
+          <button type="button" id="addTeamBtn">+ Tim</button>
+          <button type="button" id="removeProjectBtn">- Project</button>
+          <button type="button" id="removeTeamBtn">- Tim</button>
+          <button type="button" id="resetBtn">Reset</button>
+        </div>
+      </div>
+      <div class="body">
+        <div class="grid-table-wrap">
+          <table id="profitTable"></table>
+        </div>
+        <div class="formula">
+          Bound untuk simpul parsial = profit yang sudah dipilih + jumlah profit maksimum yang masih mungkin untuk setiap project tersisa dari tim yang belum dipakai. Simpul diproses dari bound terbesar. Simpul dipangkas jika bound tidak dapat mengalahkan profit terbaik sementara.
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Hasil Pencarian</h2>
+        <div class="toolbar">
+          <button type="button" class="primary" id="solveBtn">Hitung Ulang</button>
+        </div>
+      </div>
+      <div class="body">
+        <div class="sim-panel">
+          <div class="sim-controls">
+            <button type="button" id="simResetBtn">Awal</button>
+            <button type="button" id="prevStepBtn">Prev</button>
+            <button type="button" class="primary" id="nextStepBtn">Next</button>
+            <button type="button" id="playBtn">Play</button>
+            <button type="button" id="endStepBtn">Akhir</button>
+            <input type="range" id="stepRange" class="step-range" min="0" max="0" value="0">
+          </div>
+          <div class="step-caption" id="stepCaption">Belum ada simulasi.</div>
+          <div class="frontier-line" id="frontierLine">Frontier: -</div>
+        </div>
+
+        <div class="summary">
+          <div class="metric">
+            <div class="metric-label">Profit Maksimum</div>
+            <div class="metric-value" id="bestProfit">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Simpul Dibuat</div>
+            <div class="metric-value" id="nodesCreated">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Simpul Dipangkas</div>
+            <div class="metric-value" id="nodesPruned">-</div>
+          </div>
+        </div>
+
+        <div class="grid-table-wrap" style="margin-bottom: 14px;">
+          <table class="assignment-table">
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Tim</th>
+                <th>Profit</th>
+              </tr>
+            </thead>
+            <tbody id="solutionBody">
+              <tr><td colspan="3">Belum dihitung.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="tabs">
+          <button type="button" class="tab active" data-view="treeView">Tree</button>
+          <button type="button" class="tab" data-view="stepsView">Langkah</button>
+          <button type="button" class="tab" data-view="matrixView">Bound</button>
+        </div>
+
+        <div id="treeView" class="view active">
+          <div class="legend">
+            <span class="expanded">Diproses</span>
+            <span class="complete">Solusi lengkap</span>
+            <span class="best">Solusi terbaik</span>
+            <span class="pruned">Dipangkas</span>
+          </div>
+          <div class="tree-wrap" id="treeWrap">
+            <svg id="treeSvg" width="900" height="520" aria-label="Branch and Bound tree"></svg>
+          </div>
+        </div>
+
+        <div id="stepsView" class="view">
+          <div class="steps" id="steps"></div>
+        </div>
+
+        <div id="matrixView" class="view">
+          <div class="grid-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Simpul</th>
+                  <th>Assignment Parsial</th>
+                  <th>Profit</th>
+                  <th>Bound</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="boundRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const defaultProjects = ["Project A", "Project B", "Project C", "Project D", "Project E"];
+    const defaultTeams = ["Eren", "Himmel", "Tanjiro", "Saitama", "Rishin"];
+    const defaultProfit = [
+      [20, 15, 24, 18, 17],
+      [16, 14, 25, 21, 22],
+      [18, 19, 21, 17, 19],
+      [19, 17, 22, 16, 20],
+      [22, 20, 20, 22, 15]
+    ];
+
+    let state = cloneDefault();
+
+    const tableEl = document.getElementById("profitTable");
+    const bestProfitEl = document.getElementById("bestProfit");
+    const nodesCreatedEl = document.getElementById("nodesCreated");
+    const nodesPrunedEl = document.getElementById("nodesPruned");
+    const solutionBodyEl = document.getElementById("solutionBody");
+    const stepsEl = document.getElementById("steps");
+    const boundRowsEl = document.getElementById("boundRows");
+    const treeSvg = document.getElementById("treeSvg");
+    const simResetBtn = document.getElementById("simResetBtn");
+    const prevStepBtn = document.getElementById("prevStepBtn");
+    const nextStepBtn = document.getElementById("nextStepBtn");
+    const playBtn = document.getElementById("playBtn");
+    const endStepBtn = document.getElementById("endStepBtn");
+    const stepRange = document.getElementById("stepRange");
+    const stepCaptionEl = document.getElementById("stepCaption");
+    const frontierLineEl = document.getElementById("frontierLine");
+
+    let currentResult = null;
+    let currentStep = 0;
+    let playTimer = null;
+
+    function cloneDefault() {
+      return {
+        projects: defaultProjects.slice(),
+        teams: defaultTeams.slice(),
+        profit: defaultProfit.map(row => row.slice())
+      };
+    }
+
+    function renderTable() {
+      const headCells = ["<th>Project / Tim</th>"].concat(state.teams.map((team, j) => {
+        return `<th><input class="cell-input name-input" data-kind="team" data-j="${j}" value="${escapeHtml(team)}"></th>`;
+      }));
+
+      const bodyRows = state.projects.map((project, i) => {
+        const cells = [`<td><input class="cell-input name-input" data-kind="project" data-i="${i}" value="${escapeHtml(project)}"></td>`];
+        for (let j = 0; j < state.teams.length; j++) {
+          cells.push(`<td><input class="cell-input" type="number" data-kind="profit" data-i="${i}" data-j="${j}" value="${state.profit[i][j]}"></td>`);
+        }
+        return `<tr>${cells.join("")}</tr>`;
+      });
+
+      tableEl.innerHTML = `<thead><tr>${headCells.join("")}</tr></thead><tbody>${bodyRows.join("")}</tbody>`;
+
+      tableEl.querySelectorAll("input").forEach(input => {
+        input.addEventListener("input", updateFromInputs);
+      });
+    }
+
+    function updateFromInputs() {
+      tableEl.querySelectorAll("input").forEach(input => {
+        const kind = input.dataset.kind;
+        const i = Number(input.dataset.i);
+        const j = Number(input.dataset.j);
+        if (kind === "project") state.projects[i] = input.value || `Project ${i + 1}`;
+        if (kind === "team") state.teams[j] = input.value || `Team ${j + 1}`;
+        if (kind === "profit") {
+          const value = Number(input.value);
+          state.profit[i][j] = Number.isFinite(value) ? value : 0;
+        }
+      });
+    }
+
+    function addProject() {
+      updateFromInputs();
+      const nextIndex = state.projects.length + 1;
+      state.projects.push(`Project ${nextIndex}`);
+      const newRow = state.teams.map(() => 0);
+      state.profit.push(newRow);
+      renderTable();
+      solveAndRender();
+    }
+
+    function addTeam() {
+      updateFromInputs();
+      const nextIndex = state.teams.length + 1;
+      state.teams.push(`Team ${nextIndex}`);
+      state.profit.forEach(row => row.push(0));
+      renderTable();
+      solveAndRender();
+    }
+
+    function removeProject() {
+      updateFromInputs();
+      if (state.projects.length <= 1) return;
+      state.projects.pop();
+      state.profit.pop();
+      renderTable();
+      solveAndRender();
+    }
+
+    function removeTeam() {
+      updateFromInputs();
+      if (state.teams.length <= 1) return;
+      state.teams.pop();
+      state.profit.forEach(row => row.pop());
+      renderTable();
+      solveAndRender();
+    }
+
+    function resetData() {
+      state = cloneDefault();
+      renderTable();
+      solveAndRender();
+    }
+
+    function solveAssignment(data) {
+      const projects = data.projects;
+      const teams = data.teams;
+      const profit = data.profit;
+      const projectCount = projects.length;
+      const teamCount = teams.length;
+      const nodes = [];
+      const steps = [];
+      const snapshots = [];
+      let nextId = 0;
+      let best = { profit: -Infinity, assignment: [] };
+      let prunedCount = 0;
+
+      function snapshot(type, node, text, frontier) {
+        const statusById = {};
+        nodes.forEach(item => {
+          statusById[item.id] = item.status;
+        });
+        const frontierIds = frontier
+          .filter(item => item.status === "live")
+          .map(item => item.id);
+        const visibleIds = nodes.map(item => item.id);
+        const snap = {
+          type,
+          currentId: node ? node.id : null,
+          currentNode: node,
+          text,
+          visibleIds,
+          statusById,
+          frontierIds,
+          best: {
+            profit: best.profit,
+            assignment: best.assignment.slice(),
+            nodeId: best.nodeId
+          },
+          createdCount: nodes.length,
+          prunedCount
+        };
+        snapshots.push(snap);
+        steps.push({ node, type, text, snapshotIndex: snapshots.length - 1 });
+      }
+
+      function upperBound(level, usedTeams, currentProfit) {
+        let bound = currentProfit;
+        for (let p = level; p < projectCount; p++) {
+          let maxValue = -Infinity;
+          for (let t = 0; t < teamCount; t++) {
+            if (!usedTeams.has(t)) maxValue = Math.max(maxValue, profit[p][t]);
+          }
+          if (maxValue === -Infinity) return -Infinity;
+          bound += maxValue;
+        }
+        return bound;
+      }
+
+      function makeNode(parentId, level, usedTeams, assignment, currentProfit, label) {
+        const bound = upperBound(level, usedTeams, currentProfit);
+        const node = {
+          id: nextId++,
+          parentId,
+          level,
+          usedTeams: new Set(usedTeams),
+          assignment: assignment.slice(),
+          profit: currentProfit,
+          bound,
+          label,
+          status: "live",
+          order: nodes.length
+        };
+        nodes.push(node);
+        return node;
+      }
+
+      const root = makeNode(null, 0, new Set(), [], 0, "Root");
+      const frontier = [root];
+      snapshot("start", root, "Mulai dari root. Frontier berisi root dengan bound awal.", frontier);
+
+      while (frontier.length > 0) {
+        frontier.sort((a, b) => b.bound - a.bound || b.profit - a.profit || a.order - b.order);
+        const node = frontier.shift();
+        if (node.status !== "live") continue;
+
+        if (node.bound <= best.profit) {
+          node.status = "pruned";
+          prunedCount++;
+          snapshot("prune", node, `Bound ${node.bound} tidak dapat mengalahkan profit terbaik sementara ${best.profit}.`, frontier);
+          continue;
+        }
+
+        node.status = "expanded";
+
+        if (node.level === projectCount) {
+          node.status = "complete";
+          if (node.profit > best.profit) {
+            const oldBestNode = nodes.find(item => item.id === best.nodeId);
+            if (oldBestNode && oldBestNode.status === "best") oldBestNode.status = "complete";
+            best = { profit: node.profit, assignment: node.assignment.slice(), nodeId: node.id };
+            node.status = "best";
+            snapshot("best", node, `Solusi lengkap baru dengan profit ${node.profit}. Ini menjadi solusi terbaik sementara.`, frontier);
+          } else {
+            snapshot("complete", node, `Solusi lengkap dengan profit ${node.profit}, tetapi tidak lebih baik dari ${best.profit}.`, frontier);
+          }
+          continue;
+        }
+
+        const projectIndex = node.level;
+        const children = [];
+        for (let t = 0; t < teamCount; t++) {
+          if (node.usedTeams.has(t)) continue;
+          const used = new Set(node.usedTeams);
+          used.add(t);
+          const nextAssignment = node.assignment.concat([{ project: projectIndex, team: t, value: profit[projectIndex][t] }]);
+          const child = makeNode(
+            node.id,
+            projectIndex + 1,
+            used,
+            nextAssignment,
+            node.profit + profit[projectIndex][t],
+            `${projects[projectIndex]} -> ${teams[t]}`
+          );
+          children.push(child);
+          if (child.bound <= best.profit) {
+            child.status = "pruned";
+            prunedCount++;
+          } else {
+            frontier.push(child);
+          }
+        }
+
+        snapshot("expand", node, `Ekspansi ${projects[projectIndex]}. Dibuat ${children.length} cabang. Frontier berikutnya diprioritaskan berdasarkan bound terbesar.`, frontier);
+      }
+
+      nodes.forEach(node => {
+        if (node.id === best.nodeId) node.status = "best";
+      });
+
+      return {
+        projects,
+        teams,
+        profit,
+        nodes,
+        steps,
+        snapshots,
+        best,
+        prunedCount
+      };
+    }
+
+    function solveAndRender() {
+      stopPlay();
+      updateFromInputs();
+      currentResult = solveAssignment(state);
+      currentStep = 0;
+      stepRange.max = Math.max(0, currentResult.snapshots.length - 1);
+      stepRange.value = currentStep;
+      renderCurrentStep();
+    }
+
+    function renderCurrentStep() {
+      if (!currentResult) return;
+      const snapshot = currentResult.snapshots[currentStep] || currentResult.snapshots[0];
+      stepRange.value = currentStep;
+      updateSimButtons();
+      renderSimulationCaption(currentResult, snapshot);
+      renderSummary(currentResult, snapshot);
+      renderSteps(currentResult, snapshot);
+      renderBoundRows(currentResult, snapshot);
+      renderTree(currentResult, snapshot);
+    }
+
+    function renderSimulationCaption(result, snapshot) {
+      const stepLabel = `Langkah ${currentStep} dari ${result.snapshots.length - 1}`;
+      const current = snapshot.currentNode ? `Simpul ${snapshot.currentNode.id}` : "Tidak ada simpul aktif";
+      stepCaptionEl.textContent = `${stepLabel}. ${current}. ${snapshot.text}`;
+      const frontier = snapshot.frontierIds.length
+        ? snapshot.frontierIds.map(id => {
+            const node = result.nodes.find(item => item.id === id);
+            return `S${id}(b=${node.bound}, p=${node.profit})`;
+          }).join(", ")
+        : "-";
+      frontierLineEl.textContent = `Frontier: ${frontier}`;
+    }
+
+    function renderSummary(result, snapshot) {
+      bestProfitEl.textContent = snapshot.best.profit === -Infinity ? "Belum ada" : snapshot.best.profit;
+      nodesCreatedEl.textContent = snapshot.createdCount;
+      nodesPrunedEl.textContent = snapshot.prunedCount;
+
+      if (snapshot.best.profit === -Infinity) {
+        solutionBodyEl.innerHTML = `<tr><td colspan="3">Belum ada assignment lengkap pada langkah ini.</td></tr>`;
+        return;
+      }
+
+      solutionBodyEl.innerHTML = snapshot.best.assignment.map(item => {
+        return `<tr>
+          <td>${escapeHtml(result.projects[item.project])}</td>
+          <td>${escapeHtml(result.teams[item.team])}</td>
+          <td>${item.value}</td>
+        </tr>`;
+      }).join("") + `<tr><td colspan="2"><strong>Total</strong></td><td><strong>${snapshot.best.profit}</strong></td></tr>`;
+    }
+
+    function renderSteps(result, snapshot) {
+      stepsEl.innerHTML = result.steps.map((step, index) => {
+        const status = step.node ? (snapshot.statusById[step.node.id] || step.node.status) : step.type;
+        const badge = badgeFor(status, step.type);
+        const active = index === currentStep ? " active" : "";
+        return `<div class="step${active}" data-step="${index}">
+          <div class="step-title">
+            <span>Langkah ${index + 1}: Simpul ${step.node.id}</span>
+            ${badge}
+          </div>
+          <div class="step-text">
+            Assignment: ${assignmentText(step.node.assignment, result) || "kosong"}<br>
+            Profit = ${step.node.profit}, Bound = ${step.node.bound}<br>
+            ${escapeHtml(step.text)}
+          </div>
+        </div>`;
+      }).join("");
+      stepsEl.querySelectorAll(".step").forEach(stepEl => {
+        stepEl.addEventListener("click", () => {
+          currentStep = Number(stepEl.dataset.step);
+          renderCurrentStep();
+        });
+      });
+      const activeEl = stepsEl.querySelector(".step.active");
+      if (activeEl) activeEl.scrollIntoView({ block: "nearest" });
+    }
+
+    function renderBoundRows(result, snapshot) {
+      const visible = new Set(snapshot.visibleIds);
+      boundRowsEl.innerHTML = result.nodes.filter(node => visible.has(node.id)).map(node => {
+        const status = snapshot.statusById[node.id] || node.status;
+        return `<tr>
+          <td>${node.id}</td>
+          <td>${assignmentText(node.assignment, result) || "Root"}</td>
+          <td>${node.profit}</td>
+          <td>${node.bound}</td>
+          <td>${statusText(status)}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    function renderTree(result, snapshot) {
+      const levels = new Map();
+      const visible = new Set(snapshot.visibleIds);
+      const treeNodes = result.nodes.filter(node => visible.has(node.id));
+      treeNodes.forEach(node => {
+        if (!levels.has(node.level)) levels.set(node.level, []);
+        levels.get(node.level).push(node);
+      });
+
+      const nodeW = 172;
+      const nodeH = 70;
+      const gapX = 28;
+      const gapY = 42;
+      const maxLevelWidth = Math.max(...Array.from(levels.values()).map(nodes => nodes.length), 1);
+      const width = Math.max(900, maxLevelWidth * (nodeW + gapX) + 80);
+      const height = Math.max(520, levels.size * (nodeH + gapY) + 40);
+      const positions = new Map();
+
+      levels.forEach((nodesAtLevel, level) => {
+        const totalW = nodesAtLevel.length * nodeW + (nodesAtLevel.length - 1) * gapX;
+        let x = Math.max(40, (width - totalW) / 2);
+        const y = 30 + level * (nodeH + gapY);
+        nodesAtLevel.forEach(node => {
+          positions.set(node.id, { x, y });
+          x += nodeW + gapX;
+        });
+      });
+
+      const edges = treeNodes.filter(node => node.parentId !== null && visible.has(node.parentId)).map(node => {
+        const from = positions.get(node.parentId);
+        const to = positions.get(node.id);
+        if (!from || !to) return "";
+        const x1 = from.x + nodeW / 2;
+        const y1 = from.y + nodeH;
+        const x2 = to.x + nodeW / 2;
+        const y2 = to.y;
+        const midY = (y1 + y2) / 2;
+        return `<path class="edge" d="M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}"></path>`;
+      }).join("");
+
+      const nodeMarkup = treeNodes.map(node => {
+        const pos = positions.get(node.id);
+        const status = snapshot.statusById[node.id] || node.status;
+        const currentClass = node.id === snapshot.currentId ? " current" : "";
+        const cls = `node ${status}${currentClass}`;
+        const line1 = node.id === 0 ? "Root" : shortLabel(node.label);
+        const line2 = `p=${node.profit} b=${node.bound}`;
+        const line3 = statusTextPlain(status);
+        return `<g class="${cls}" transform="translate(${pos.x},${pos.y})">
+          <rect width="${nodeW}" height="${nodeH}"></rect>
+          <text x="10" y="8">${escapeHtml(line1)}</text>
+          <text x="10" y="28">${escapeHtml(line2)}</text>
+          <text x="10" y="48">${escapeHtml(line3)}</text>
+        </g>`;
+      }).join("");
+
+      treeSvg.setAttribute("width", width);
+      treeSvg.setAttribute("height", height);
+      treeSvg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      treeSvg.innerHTML = edges + nodeMarkup;
+    }
+
+    function assignmentText(assignment, result) {
+      return assignment.map(item => `${result.projects[item.project]} -> ${result.teams[item.team]} (${item.value})`).join(", ");
+    }
+
+    function shortLabel(label) {
+      if (label.length <= 26) return label;
+      return label.slice(0, 23) + "...";
+    }
+
+    function statusText(status) {
+      const cls = status === "best" ? "good" : status === "pruned" ? "bad" : status === "expanded" ? "warn" : "neutral";
+      return `<span class="badge ${cls}">${statusTextPlain(status)}</span>`;
+    }
+
+    function badgeFor(status, type) {
+      const s = status === "live" ? type : status;
+      const cls = s === "best" ? "good" : s === "pruned" || s === "prune" ? "bad" : s === "expand" || s === "expanded" ? "warn" : "neutral";
+      return `<span class="badge ${cls}">${statusTextPlain(s)}</span>`;
+    }
+
+    function statusTextPlain(status) {
+      const labels = {
+        live: "Hidup",
+        expanded: "Diproses",
+        complete: "Lengkap",
+        best: "Terbaik",
+        pruned: "Pangkas",
+        expand: "Ekspansi",
+        prune: "Pangkas"
+      };
+      return labels[status] || status;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function updateSimButtons() {
+      const last = currentResult ? currentResult.snapshots.length - 1 : 0;
+      simResetBtn.disabled = currentStep <= 0;
+      prevStepBtn.disabled = currentStep <= 0;
+      nextStepBtn.disabled = currentStep >= last;
+      endStepBtn.disabled = currentStep >= last;
+      stepRange.disabled = last === 0;
+      playBtn.textContent = playTimer ? "Pause" : "Play";
+    }
+
+    function goToStep(step) {
+      if (!currentResult) return;
+      const last = currentResult.snapshots.length - 1;
+      currentStep = Math.max(0, Math.min(last, step));
+      renderCurrentStep();
+    }
+
+    function nextStep() {
+      if (!currentResult) return;
+      if (currentStep >= currentResult.snapshots.length - 1) {
+        stopPlay();
+        return;
+      }
+      goToStep(currentStep + 1);
+    }
+
+    function prevStep() {
+      stopPlay();
+      goToStep(currentStep - 1);
+    }
+
+    function startPlay() {
+      if (!currentResult) return;
+      if (currentStep >= currentResult.snapshots.length - 1) goToStep(0);
+      playTimer = window.setInterval(() => {
+        if (!currentResult || currentStep >= currentResult.snapshots.length - 1) {
+          stopPlay();
+          return;
+        }
+        nextStep();
+      }, 850);
+      updateSimButtons();
+    }
+
+    function stopPlay() {
+      if (playTimer) {
+        window.clearInterval(playTimer);
+        playTimer = null;
+      }
+      updateSimButtons();
+    }
+
+    function togglePlay() {
+      if (playTimer) stopPlay();
+      else startPlay();
+    }
+
+    document.getElementById("addProjectBtn").addEventListener("click", addProject);
+    document.getElementById("addTeamBtn").addEventListener("click", addTeam);
+    document.getElementById("removeProjectBtn").addEventListener("click", removeProject);
+    document.getElementById("removeTeamBtn").addEventListener("click", removeTeam);
+    document.getElementById("resetBtn").addEventListener("click", resetData);
+    document.getElementById("solveBtn").addEventListener("click", solveAndRender);
+    simResetBtn.addEventListener("click", () => { stopPlay(); goToStep(0); });
+    prevStepBtn.addEventListener("click", prevStep);
+    nextStepBtn.addEventListener("click", () => { stopPlay(); nextStep(); });
+    endStepBtn.addEventListener("click", () => { stopPlay(); goToStep(currentResult.snapshots.length - 1); });
+    playBtn.addEventListener("click", togglePlay);
+    stepRange.addEventListener("input", () => { stopPlay(); goToStep(Number(stepRange.value)); });
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.view).classList.add("active");
+      });
+    });
+
+    renderTable();
+    solveAndRender();
+  </script>
+</body>
+</html>

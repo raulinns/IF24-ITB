@@ -1,0 +1,627 @@
+\section{PDA}
+
+Pushdown Automata (PDA) adalah model automaton untuk bahasa bebas konteks, yaitu kelas bahasa yang lebih kuat daripada regular language tetapi masih lebih terbatas daripada model komputasi umum seperti Mesin Turing. Fokus utama materi ini adalah memahami bagaimana stack memberi PDA memori tak terbatas secara terstruktur, bagaimana komputasi PDA dinyatakan secara formal, dan mengapa PDA ekuivalen dengan Context-Free Grammar (CFG).
+
+Dalam konteks ujian, PDA perlu dipahami sebagai objek desain sekaligus objek pembuktian: mahasiswa harus dapat membaca atau membuat transisi PDA, menentukan mode penerimaan, menelusuri instantaneous description, serta menjelaskan konstruksi konversi antara CFG dan PDA.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Konsep dasar Pushdown Automata
+    \begin{enumerate}
+        \item \pwajib PDA sebagai $\epsilon$-NFA dengan stack
+        \item \pwajib Definisi formal 7-tuple
+        \item \pwajib Fungsi transisi dan operasi stack
+        \item \ppaham Contoh bahasa yang membutuhkan stack
+    \end{enumerate}
+    \item \pwajib Representasi komputasi PDA
+    \begin{enumerate}
+        \item \pwajib Diagram transisi dan label $a,X/\gamma$
+        \item \pwajib Instantaneous Description $(q,w,\gamma)$
+        \item \pwajib Relasi $\vdash$ dan $\vdash^*$
+        \item \ppaham Sifat validitas ID
+    \end{enumerate}
+    \item \pwajib Penerimaan bahasa oleh PDA
+    \begin{enumerate}
+        \item \pwajib Acceptance by final state
+        \item \pwajib Acceptance by empty stack
+        \item \pwajib Ekuivalensi kedua mode penerimaan
+    \end{enumerate}
+    \item \pwajib Ekuivalensi PDA dan CFG
+    \begin{enumerate}
+        \item \pwajib Konversi CFG ke PDA
+        \item \pwajib Konversi PDA ke CFG
+        \item \ppaham Pertumbuhan ukuran grammar pada konversi
+        \item \pwajib Derivasi leftmost/rightmost dan parse tree
+    \end{enumerate}
+    \item \ppaham Deterministic Pushdown Automata
+    \begin{enumerate}
+        \item \ppaham Syarat determinisme DPDA
+        \item \ppaham Hierarki $Regular \subset L(DPDA) \subset CFL$
+        \item \ppaham Prefix property dan unambiguous CFG
+    \end{enumerate}
+    \item \ppaham Keterbatasan dan sifat tambahan
+    \begin{enumerate}
+        \item \ppaham Perbedaan NPDA dan DPDA
+        \item \ppaham Sifat closure DCFL
+        \item \ppaham Closure CFL via product PDA-DFA
+        \item \ppaham Inverse homomorphism untuk CFL
+        \item \ppaham Strategi desain PDA dari pola bahasa
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{\texorpdfstring{PDA sebagai $\epsilon$-NFA dengan Stack}{PDA sebagai epsilon-NFA dengan Stack}}
+
+\begin{jawab}[Inti Konsep.]
+PDA adalah $\epsilon$-NFA yang dilengkapi stack, sehingga automaton dapat menyimpan informasi dalam pola Last-In, First-Out. Stack membuat PDA mampu mengenali struktur bersarang atau berpasangan yang tidak dapat dikenali finite automaton biasa.
+\end{jawab}
+
+Finite automaton hanya mengingat informasi melalui state yang jumlahnya berhingga. Keterbatasan ini membuat finite automaton gagal mengenali bahasa yang membutuhkan pencocokan jumlah atau struktur bersarang, misalnya bahasa dengan jumlah simbol pembuka dan penutup yang harus cocok. PDA menambahkan **stack**, yaitu memori yang hanya dapat diakses dari puncaknya, sehingga informasi yang terakhir disimpan akan menjadi informasi pertama yang dapat diambil kembali.
+
+Secara informal, satu langkah PDA menggabungkan tiga aksi: membaca satu simbol input atau tidak membaca input sama sekali melalui transisi $\epsilon$, berpindah state, dan mengganti simbol pada puncak stack. Karena PDA boleh nondeterministic, pada satu konfigurasi yang sama PDA dapat memiliki beberapa pilihan transisi; sebuah input diterima jika ada setidaknya satu jalur komputasi yang berhasil memenuhi kondisi penerimaan.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Contoh klasik yang menonjolkan kebutuhan stack adalah $L=\{a^n b^n \mid n \geq 0\}$. PDA dapat melakukan push satu simbol stack untuk setiap $a$, lalu melakukan pop satu simbol untuk setiap $b$. Bahasa ini bukan regular karena finite automaton tidak memiliki memori tak terbatas untuk menghitung jumlah $a$ yang harus dicocokkan dengan jumlah $b$.
+\end{cmt}
+
+Konsep ini menjadi dasar CPMK 1 karena memperlihatkan batas finite automaton dan posisi PDA dalam hierarki automaton. Konsep ini juga menjadi dasar CPMK 2 karena desain PDA selalu dimulai dari keputusan informasi apa yang harus disimpan di stack.
+
+\subsubsection{Definisi Formal 7-Tuple}
+
+\begin{jawab}[Inti Konsep.]
+Secara formal PDA dinyatakan sebagai tuple $P=(Q,\Sigma,\Gamma,\delta,q_0,Z_0,F)$. Tuple ini menentukan state, alfabet input, alfabet stack, fungsi transisi, state awal, simbol awal stack, dan state penerima.
+\end{jawab}
+
+Definisi formal diperlukan agar perilaku PDA tidak hanya dipahami melalui gambar, tetapi juga dapat dibuktikan secara matematis. Setiap komponen tuple membatasi apa yang boleh dibaca, apa yang boleh berada di stack, serta kapan sebuah string dinyatakan diterima.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Komponen} & \textbf{Definisi atau Peran} \\
+\hline
+$Q$ & Himpunan berhingga state, yaitu kendali terbatas PDA. \\
+\hline
+$\Sigma$ & Alfabet input, yaitu simbol-simbol yang boleh muncul pada string masukan. \\
+\hline
+$\Gamma$ & Alfabet stack, yaitu simbol-simbol yang boleh disimpan di stack. \\
+\hline
+$\delta$ & Fungsi transisi yang menentukan pilihan state berikutnya dan perubahan stack. \\
+\hline
+$q_0$ & State awal tempat PDA mulai beroperasi. \\
+\hline
+$Z_0$ & Simbol awal stack, biasanya berperan sebagai penanda dasar stack. \\
+\hline
+$F$ & Himpunan state akhir atau accepting states untuk mode penerimaan final state. \\
+\hline
+\end{tabularx}
+\caption{Komponen formal PDA}
+\label{tab:komponen-pda}
+\end{table}
+
+Jika PDA digunakan dengan acceptance by empty stack, komponen $F$ tidak menentukan penerimaan dan kadang modelnya ditulis sebagai 6-tuple. Namun dalam catatan ini bentuk 7-tuple tetap digunakan karena memudahkan perbandingan dua mode penerimaan.
+
+Definisi formal ini terhubung langsung dengan instantaneous description, karena ID hanya memotret tiga bagian yang berubah selama eksekusi: state saat ini, sisa input, dan isi stack.
+
+\subsubsection{Fungsi Transisi dan Operasi Stack}
+
+\begin{jawab}[Inti Konsep.]
+Fungsi transisi PDA menentukan apa yang terjadi ketika PDA berada di state tertentu, melihat simbol input tertentu atau $\epsilon$, dan melihat simbol tertentu di puncak stack. Hasil transisi adalah pilihan pasangan state baru dan string stack pengganti.
+\end{jawab}
+
+Fungsi transisi PDA ditulis:
+\[
+    \delta: Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma \rightarrow 2^{Q \times \Gamma^*}.
+\]
+Jika $(p,\alpha) \in \delta(q,a,X)$, artinya PDA yang sedang berada di state $q$, membaca simbol input $a$ atau $\epsilon$, dan melihat $X$ di puncak stack boleh berpindah ke state $p$ serta mengganti $X$ dengan string stack $\alpha$.
+
+Perubahan stack selalu terjadi pada puncak. Jika stack sebelumnya $X\beta$, maka setelah transisi stack menjadi $\alpha\beta$. Bagian $\beta$ tidak disentuh karena berada di bawah puncak stack.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Bentuk Pengganti} & \textbf{Makna Operasi} \\
+\hline
+$\alpha=\epsilon$ & Pop: simbol puncak $X$ dihapus. \\
+\hline
+$\alpha=X$ & No-op terhadap stack: $X$ diganti dengan dirinya sendiri. \\
+\hline
+$\alpha=Y$ & Replace: $X$ diganti dengan satu simbol stack baru $Y$. \\
+\hline
+$\alpha=YZ$ & Push berantai: $X$ diganti oleh dua simbol, dengan simbol paling kiri menjadi puncak stack. \\
+\hline
+\end{tabularx}
+\caption{Makna operasi stack dari hasil transisi}
+\label{tab:operasi-stack-pda}
+\end{table}
+
+Sumber menekankan aturan **no mixing and matching**. Jika $\delta(q,a,X)=\{(p,YZ),(r,\epsilon)\}$, PDA harus memilih satu pasangan secara utuh. PDA tidak boleh mengambil state $p$ dari pasangan pertama tetapi operasi stack $\epsilon$ dari pasangan kedua.
+
+Fungsi transisi adalah inti desain PDA: untuk merancang PDA, kita menentukan simbol apa yang disimpan saat fase pertama input dibaca, kapan automaton berpindah fase, dan kapan stack harus dikosongkan atau dipertahankan.
+
+\subsubsection{\texorpdfstring{Diagram Transisi dan Label $a,X/\gamma$}{Diagram Transisi dan Label a,X/gamma}}
+
+\begin{jawab}[Inti Konsep.]
+Diagram transisi PDA menggambarkan state sebagai node dan transisi sebagai panah berlabel $a,X/\gamma$. Label tersebut berarti PDA membaca $a$, mensyaratkan $X$ di puncak stack, lalu mengganti $X$ dengan $\gamma$.
+\end{jawab}
+
+Diagram transisi membantu membaca perilaku PDA tanpa menuliskan seluruh fungsi $\delta$ dalam bentuk himpunan. Jika label panah adalah $a,X/\gamma$, transisi itu hanya dapat dipakai ketika dua syarat terpenuhi: simbol input berikutnya adalah $a$ atau $a=\epsilon$, dan puncak stack adalah $X$.
+
+Jika $a$ adalah simbol input nyata, pointer input maju satu simbol. Jika $a=\epsilon$, PDA tidak mengonsumsi input sehingga transisi dapat terjadi spontan. Transisi $\epsilon$ sering dipakai untuk berpindah fase, misalnya dari fase push ke fase pop, atau untuk menebak produksi CFG pada konstruksi CFG ke PDA.
+
+Diagram dan tuple formal saling melengkapi. Diagram cocok untuk desain dan simulasi cepat, sedangkan tuple dan fungsi $\delta$ cocok untuk pembuktian, konversi, dan penulisan rumus penerimaan.
+
+\subsubsection{\texorpdfstring{Instantaneous Description $(q,w,\gamma)$}{Instantaneous Description (q,w,gamma)}}
+
+\begin{jawab}[Inti Konsep.]
+Instantaneous Description (ID) adalah snapshot konfigurasi PDA pada suatu saat. ID berbentuk $(q,w,\gamma)$, dengan $q$ state saat ini, $w$ sisa input, dan $\gamma$ isi stack dengan simbol puncak di posisi paling kiri.
+\end{jawab}
+
+ID diperlukan karena state saja tidak cukup untuk menjelaskan kondisi PDA. PDA juga mempunyai input yang belum dibaca dan stack yang dapat berubah panjang selama komputasi. Dengan ID, setiap langkah komputasi dapat dinyatakan secara formal.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.18\textwidth}|X|}
+\hline
+\textbf{Komponen ID} & \textbf{Makna} \\
+\hline
+$q$ & State PDA saat ini. \\
+\hline
+$w$ & Sisa input yang belum dikonsumsi. \\
+\hline
+$\gamma$ & Isi stack. Simbol paling kiri adalah puncak stack. \\
+\hline
+\end{tabularx}
+\caption{Komponen instantaneous description PDA}
+\label{tab:id-pda}
+\end{table}
+
+Sebagai contoh, ID $(q,abb,XZ_0)$ berarti PDA sedang berada di state $q$, belum membaca string $abb$, dan puncak stack adalah $X$ dengan $Z_0$ di bawahnya. Jika transisi berikutnya mem-pop $X$, maka bagian bawah stack $Z_0$ tetap ada.
+
+ID menghubungkan pembacaan intuitif diagram dengan bukti formal. Rumus penerimaan final state dan empty stack sama-sama ditulis menggunakan ID awal dan ID akhir.
+
+\subsubsection{\texorpdfstring{Relasi $\vdash$ dan $\vdash^*$}{Relasi turnstile dan turnstile-star}}
+
+\begin{jawab}[Inti Konsep.]
+Relasi $\vdash$ menyatakan satu langkah komputasi PDA dari satu ID ke ID berikutnya. Relasi $\vdash^*$ menyatakan nol, satu, atau banyak langkah komputasi.
+\end{jawab}
+
+Jika $(p,\alpha)\in\delta(q,a,X)$, maka langkah formalnya ditulis:
+\[
+    (q,aw,X\beta) \vdash (p,w,\alpha\beta).
+\]
+Rumus ini mengatakan bahwa PDA mengonsumsi simbol $a$ dari awal sisa input $aw$, mengganti puncak stack $X$ dengan $\alpha$, dan membiarkan bagian bawah stack $\beta$ tetap sama.
+
+Jika transisi menggunakan input $\epsilon$, bentuknya dapat dibaca sebagai:
+\[
+    (q,w,X\beta) \vdash (p,w,\alpha\beta),
+\]
+karena tidak ada simbol input yang dikonsumsi. Sementara itu, $\vdash^*$ adalah penutupan refleksif-transitif dari $\vdash$, sehingga $(I \vdash^* I)$ selalu benar untuk nol langkah, dan $I_0 \vdash^* I_k$ benar jika ada rantai $I_0 \vdash I_1 \vdash \cdots \vdash I_k$.
+
+Relasi ini penting dalam pembuktian karena definisi bahasa yang diterima PDA tidak merujuk pada diagram, melainkan pada ada atau tidaknya rantai ID dari konfigurasi awal menuju konfigurasi penerima.
+
+\subsubsection{Sifat Validitas ID}
+
+\begin{jawab}[Inti Konsep.]
+Sifat validitas ID menjelaskan bahwa komputasi PDA tetap legal jika bagian input yang tidak disentuh atau bagian bawah stack yang tidak terlihat diperlakukan secara konsisten. Sifat ini berguna dalam pembuktian induktif tentang komputasi PDA.
+\end{jawab}
+
+Karena PDA hanya membaca input dari kiri ke kanan dan hanya melihat puncak stack, bagian tertentu dari konfigurasi tidak memengaruhi langkah lokal. Sumber menyebut tiga sifat utama.
+
+\begin{thm}{Sifat Penambahan dan Pemotongan ID}{}
+Jika $(q,x,\alpha)\vdash^*(p,y,\beta)$, maka untuk string input tambahan $w$ dan string stack tambahan $\gamma$ berlaku
+\[
+    (q,xw,\alpha\gamma)\vdash^*(p,yw,\beta\gamma).
+\]
+Sebaliknya, jika komputasi $(q,xw,\alpha)\vdash^*(p,yw,\beta)$ tidak pernah membaca ekor $w$, maka
+\[
+    (q,x,\alpha)\vdash^*(p,y,\beta).
+\]
+\end{thm}
+
+Makna praktisnya adalah bagian bawah stack dapat dianggap sebagai konteks yang tetap selama transisi tidak mencapainya. Demikian pula, ekor input yang belum pernah dibaca tidak memengaruhi validitas langkah yang sudah terjadi.
+
+Sifat ini berhubungan dengan pembuktian ekuivalensi PDA dan CFG. Pada konstruksi CFG ke PDA, pembuktian induktif memerlukan argumen bahwa sisa input dan tail sentential form dapat dibawa sepanjang komputasi tanpa mengubah legalitas langkah lokal.
+
+\subsubsection{Acceptance by Final State}
+
+\begin{jawab}[Inti Konsep.]
+Acceptance by final state menerima string jika seluruh input habis dibaca dan PDA berada di salah satu state penerima. Isi stack akhir tidak memengaruhi penerimaan.
+\end{jawab}
+
+Untuk PDA $P=(Q,\Sigma,\Gamma,\delta,q_0,Z_0,F)$, bahasa yang diterima melalui final state adalah:
+\[
+    L(P)=\{w \mid (q_0,w,Z_0)\vdash^*(q,\epsilon,\alpha),\ q\in F\}.
+\]
+Komponen $\alpha$ dapat berupa string stack apa pun. Artinya, selama input sudah habis dan state akhir tercapai, PDA menerima string tersebut walaupun stack masih berisi simbol.
+
+Mode ini mirip finite automaton karena penerimaan ditentukan oleh state. Namun berbeda dari finite automaton, jalur menuju state akhir dapat bergantung pada isi stack selama komputasi.
+
+Acceptance by final state sering nyaman untuk desain PDA yang memiliki state khusus ``selesai''. Namun untuk pembuktian ekuivalensi dengan CFG, acceptance by empty stack sering lebih langsung karena stack dapat dipandang sebagai sentential form yang harus habis dicocokkan.
+
+\subsubsection{Acceptance by Empty Stack}
+
+\begin{jawab}[Inti Konsep.]
+Acceptance by empty stack menerima string jika seluruh input habis dibaca dan stack menjadi kosong. State akhir tidak diperhatikan.
+\end{jawab}
+
+Bahasa yang diterima melalui empty stack adalah:
+\[
+    N(P)=\{w \mid (q_0,w,Z_0)\vdash^*(q,\epsilon,\epsilon)\}.
+\]
+Pada definisi ini, state $q$ boleh state apa pun. Syarat yang menentukan adalah input habis dan stack kosong.
+
+Mode ini cocok dengan intuisi parsing. Jika stack menyimpan simbol grammar atau kewajiban yang masih harus dicocokkan, maka stack kosong berarti semua kewajiban derivasi sudah selesai dan semua input sudah cocok.
+
+Perbedaan paling penting dengan final state adalah apa yang diabaikan. Final state mengabaikan isi stack akhir, sedangkan empty stack mengabaikan state akhir. Meskipun tampak berbeda, keduanya ekuivalen dalam kekuatan bahasa.
+
+\subsubsection{Ekuivalensi Mode Penerimaan}
+
+\begin{jawab}[Inti Konsep.]
+PDA yang menerima dengan final state dan PDA yang menerima dengan empty stack memiliki kekuatan bahasa yang sama. Setiap PDA dari satu mode dapat dikonstruksi menjadi PDA mode lain dengan menambahkan marker stack dan state bantu.
+\end{jawab}
+
+Untuk mengubah empty stack ke final state, konstruksi menambahkan state awal baru $p_0$, state final baru $p_f$, dan marker dasar baru $X_0$. PDA baru mula-mula mendorong $Z_0X_0$ sehingga $X_0$ berada di dasar stack, lalu mensimulasikan PDA lama. Ketika simulasi lama berhasil mengosongkan stack aslinya dan marker dasar terlihat, PDA baru berpindah ke $p_f$.
+
+Untuk mengubah final state ke empty stack, konstruksi menambahkan state awal baru, marker dasar baru, dan state pembersih. PDA baru mensimulasikan PDA lama. Dari setiap state penerima PDA lama, PDA baru boleh berpindah dengan transisi $\epsilon$ ke state pembersih. Di state pembersih, semua simbol stack di-pop sampai stack kosong.
+
+\begin{cmt}{Catatan: Titik Rawan Pemahaman}{}
+Pada konstruksi final state ke empty stack, transisi menuju state pembersih harus dipakai setelah input yang relevan sudah dikonsumsi. Jika tidak hati-hati, PDA dapat mengosongkan stack terlalu awal. Dalam pembuktian formal, konstruksi diatur agar bahasa yang diterima tetap sama dengan bahasa PDA asal.
+\end{cmt}
+
+Ekuivalensi ini penting karena beberapa teorema lebih mudah dibuktikan dengan empty stack, sementara desain automaton sering lebih intuitif dengan final state.
+
+\subsubsection{Konversi CFG ke PDA}
+
+\begin{jawab}[Inti Konsep.]
+Konversi CFG ke PDA membangun PDA yang mensimulasikan leftmost derivation grammar. Stack menyimpan simbol grammar yang masih harus dikembangkan atau dicocokkan dengan input.
+\end{jawab}
+
+Misalkan CFG $G=(V,T,R,S)$. PDA hasil konstruksi dapat ditulis secara ringkas sebagai:
+\[
+    P_G=(\{q\},T,V\cup T,\delta,q,S),
+\]
+dengan satu state $q$ dan start stack symbol $S$. PDA menerima dengan empty stack.
+
+Ada dua jenis transisi utama. Pertama, **expand variable**:
+\[
+    \delta(q,\epsilon,A)=\{(q,\beta)\mid A\rightarrow \beta \in R\}.
+\]
+Jika variabel $A$ berada di puncak stack, PDA menebak produksi $A\rightarrow\beta$ dan mengganti $A$ dengan $\beta$ di stack.
+
+Kedua, **match terminal**:
+\[
+    \delta(q,a,a)=\{(q,\epsilon)\}
+\]
+untuk setiap terminal $a\in T$. Jika puncak stack adalah terminal yang sama dengan input berikutnya, PDA membaca input tersebut dan menghapus terminal dari stack.
+
+Konstruksi ini mengikuti leftmost derivation. Pada bentuk sentensial kiri $xA\alpha$, bagian $x$ sudah dicocokkan dengan input, sedangkan $A\alpha$ masih tersimpan di stack. Saat PDA mengekspansi $A$, ia meniru langkah derivasi $xA\alpha \Rightarrow_{lm} x\beta\alpha$.
+
+\subsubsection{\texorpdfstring{Mengapa $N(P_G)=L(G)$}{Mengapa N(PG)=L(G)}}
+
+\begin{jawab}[Inti Konsep.]
+Kesetaraan $N(P_G)=L(G)$ berarti string yang dihasilkan CFG persis sama dengan string yang dapat diterima PDA hasil konstruksi melalui empty stack. Intinya, setiap leftmost derivation dapat disimulasikan oleh stack PDA, dan setiap simulasi PDA yang berhasil merepresentasikan derivasi grammar yang sah.
+\end{jawab}
+
+Jika $w\in L(G)$, ada leftmost derivation
+\[
+    S=\gamma_1 \Rightarrow_{lm} \gamma_2 \Rightarrow_{lm} \cdots \Rightarrow_{lm} \gamma_n=w.
+\]
+Pada setiap langkah, PDA menggunakan transisi expand variable untuk mengganti variabel paling kiri di stack sesuai produksi yang dipakai derivasi. Ketika simbol terminal muncul di puncak stack, PDA menggunakan transisi match terminal untuk mencocokkannya dengan input.
+
+Sebaliknya, jika PDA menerima $w$ dengan empty stack, setiap transisi expand variable yang dipilih PDA berkaitan dengan produksi grammar yang sah, dan setiap transisi match terminal memastikan terminal pada stack benar-benar sama dengan input. Karena stack akhirnya kosong dan input habis, seluruh rangkaian pilihan PDA membentuk derivasi grammar untuk $w$.
+
+Kesetaraan ini adalah salah satu hubungan utama antara automata dan grammar: CFG adalah cara generatif untuk mendeskripsikan CFL, sedangkan PDA adalah cara operasional untuk mengenali CFL.
+
+\begin{cmt}{Contoh Soal UAS: CFG ke PDA}{}
+Salah satu pola latihan yang sering muncul adalah mengubah grammar menjadi PDA empty stack. Untuk grammar
+\[
+    S\rightarrow aAA,\qquad A\rightarrow aS\mid bS\mid a,
+\]
+konstruksi satu-state $P_G$ memakai state $q$, start stack symbol $S$, dan acceptance by empty stack.
+
+Transisi expand-variable:
+\[
+\begin{aligned}
+    \delta(q,\epsilon,S) &= \{(q,aAA)\},\\
+    \delta(q,\epsilon,A) &= \{(q,aS),(q,bS),(q,a)\}.
+\end{aligned}
+\]
+Transisi match-terminal:
+\[
+    \delta(q,a,a)=\{(q,\epsilon)\},\qquad
+    \delta(q,b,b)=\{(q,\epsilon)\}.
+\]
+Jadi daftar transisi lengkapnya terdiri dari tiga transisi ekspansi produksi dan dua transisi pencocokan terminal. PDA tidak membutuhkan state tambahan karena seluruh sentential form yang belum diproses disimpan pada stack.
+
+Contoh verifikasi untuk string \texttt{aaa}:
+\[
+\begin{aligned}
+    (q,\texttt{aaa},S)
+    &\vdash (q,\texttt{aaa},aAA)\\
+    &\vdash (q,\texttt{aa},AA)\\
+    &\vdash (q,\texttt{aa},aA)\\
+    &\vdash (q,\texttt{a},A)\\
+    &\vdash (q,\texttt{a},a)\\
+    &\vdash (q,\epsilon,\epsilon).
+\end{aligned}
+\]
+Rantai ID ini sesuai derivasi leftmost $S\Rightarrow aAA\Rightarrow aaA\Rightarrow aaa$.
+\end{cmt}
+
+\subsubsection{Konversi PDA ke CFG}
+
+\begin{jawab}[Inti Konsep.]
+Konversi PDA ke CFG membangun grammar yang menghasilkan semua string yang dapat membuat PDA menghapus simbol stack tertentu dari satu state ke state lain. Variabel grammar berbentuk komposit $[pXq]$.
+\end{jawab}
+
+Misalkan PDA memiliki state dalam $Q$ dan simbol stack dalam $\Gamma$. Untuk setiap $p,q\in Q$ dan $X\in\Gamma$, dibuat variabel komposit $[pXq]$. Maknanya adalah himpunan string yang dapat membawa PDA dari state $p$ dengan $X$ di puncak stack menuju state $q$ setelah $X$ terhapus sebagai efek bersih.
+
+Aturan awal grammar adalah:
+\[
+    S \rightarrow [q_0 Z_0 p]
+\]
+untuk setiap $p\in Q$. Produksi ini menyatakan bahwa string diterima jika dapat menghapus simbol stack awal $Z_0$ dari state awal $q_0$ menuju suatu state akhir proses pengosongan stack.
+
+Untuk transisi $(r,Y_1Y_2\cdots Y_k)\in\delta(q,a,X)$, grammar membuat produksi:
+\[
+    [qXr_k] \rightarrow a[rY_1r_1][r_1Y_2r_2]\cdots[r_{k-1}Y_kr_k],
+\]
+untuk semua pilihan state perantara $r_1,\ldots,r_k$. Jika $k=0$, yaitu transisi langsung mem-pop $X$, produksinya menjadi:
+\[
+    [qXr]\rightarrow a.
+\]
+Jika $a=\epsilon$, bagian terminal pada ruas kanan dapat diperlakukan sebagai kosong.
+
+Konstruksi ini lebih sulit daripada CFG ke PDA karena grammar harus menebak semua state perantara tempat simbol-simbol hasil push akhirnya dihapus.
+
+\subsubsection{Pertumbuhan Ukuran Grammar pada Konversi PDA ke CFG}
+
+\begin{jawab}[Inti Konsep.]
+Konversi PDA ke CFG dapat menghasilkan grammar yang sangat besar karena setiap transisi yang mendorong banyak simbol harus mempertimbangkan banyak kombinasi state perantara. Ukuran grammar dapat dikendalikan dengan membatasi jumlah simbol yang di-push per transisi.
+\end{jawab}
+
+Jumlah variabel komposit berformat $[pXq]$ bergantung pada kombinasi dua state dan satu simbol stack. Jika jumlah state $n$ dan jumlah simbol stack juga diperhitungkan, jumlah variabel dapat tumbuh besar tetapi masih sistematis.
+
+Masalah utama muncul ketika transisi mendorong string stack panjang $Y_1Y_2\cdots Y_k$. Untuk membuat produksi grammar, konstruksi harus memilih state perantara $r_1,\ldots,r_k$ dari himpunan state. Semakin besar $k$, semakin banyak produksi yang harus dibuat.
+
+Sumber baru memperjelas ukuran pertumbuhan ini. Jika sebuah transisi PDA mem-push $k$ simbol sekaligus, konstruksi grammar harus mempertimbangkan kombinasi state perantara, sehingga dapat menghasilkan orde $O(n^k)$ aturan produksi. Jika $k$ ikut membesar mendekati jumlah state $n$, ukuran grammar dapat meledak menjadi $O(n^n)$.
+
+Solusi konstruktifnya adalah memodifikasi PDA sebelum konversi. Untuk transisi yang mem-push string panjang, tambahkan maksimal $k-2$ state bantu agar push panjang dipecah menjadi beberapa langkah pendek. Dengan menjaga setiap transisi hanya mem-push jumlah simbol terbatas, konstruksi CFG dapat dijaga tetap polinomial, dalam sumber disebut dapat ditekan ke orde $O(n^3)$ untuk bentuk yang sudah dinormalisasi.
+
+\begin{cmt}{Contoh Soal UAS: PDA ke CFG}{}
+Untuk memahami konstruksi $[pXq]$, gunakan PDA empty stack sederhana untuk bahasa $\{0^n1^n\mid n\geq 1\}$ dengan state $q_0$ untuk fase push, $q_1$ untuk fase pop, start stack symbol $Z_0$, dan simbol stack $X$.
+Transisi intinya:
+\[
+\begin{aligned}
+    \delta(q_0,0,Z_0) &= \{(q_0,XZ_0)\},\\
+    \delta(q_0,0,X) &= \{(q_0,XX)\},\\
+    \delta(q_0,1,X) &= \{(q_1,\epsilon)\},\\
+    \delta(q_1,1,X) &= \{(q_1,\epsilon)\},\\
+    \delta(q_1,\epsilon,Z_0) &= \{(q_1,\epsilon)\}.
+\end{aligned}
+\]
+Variabel CFG yang dibangkitkan berbentuk $[pXq]$ untuk $p,q\in\{q_0,q_1\}$ dan $X\in\{Z_0,X\}$. Aturan start mengikuti pola umum:
+\[
+    S\rightarrow [q_0Z_0q_0]\mid [q_0Z_0q_1].
+\]
+Karena penerimaan empty stack berakhir setelah $Z_0$ dihapus, produksi yang produktif biasanya menuju $q_1$.
+
+Untuk transisi pop langsung, dibuat produksi terminal:
+\[
+    [q_0Xq_1]\rightarrow 1,\qquad
+    [q_1Xq_1]\rightarrow 1,\qquad
+    [q_1Z_0q_1]\rightarrow \epsilon.
+\]
+Untuk transisi push dua simbol $\delta(q_0,0,Z_0)=(q_0,XZ_0)$, bentuk produksinya menebak state perantara $r$:
+\[
+    [q_0Z_0q]\rightarrow 0[q_0Xr][rZ_0q]
+\]
+untuk setiap $r,q\in\{q_0,q_1\}$. Untuk transisi $\delta(q_0,0,X)=(q_0,XX)$:
+\[
+    [q_0Xq]\rightarrow 0[q_0Xr][rXq].
+\]
+Setelah produksi dibuat, buang variabel dan produksi yang tidak reachable atau tidak generating. Pada contoh ini, jalur produktif untuk string seperti \texttt{0011} memakai produksi yang menumpuk $X$ saat membaca $0$, lalu produksi pop $X$ saat membaca $1$.
+
+Sumber NotebookLM juga mencatat pola pilihan ganda UAS 2425 yang perlu dikenali secara cepat. Jika PDA ditulis $P=(\{p,q\},\{0,1\},\{X,Z\},\delta,q,Z)$, maka aturan start memuat semua state tujuan:
+\[
+    S\rightarrow [qZq]\mid [qZp].
+\]
+Jika diberikan transisi push $\delta(p,0,X)=\{(r,XX)\}$, produksi valid mengikuti bentuk pecah dua simbol:
+\[
+    [pXq]\rightarrow 0[rXp][pXq].
+\]
+Jika diberikan transisi pop $\delta(q,\epsilon,X)=\{(q,\epsilon)\}$, produksi langsungnya adalah:
+\[
+    [qXq]\rightarrow \epsilon.
+\]
+Pola ini adalah inti konversi PDA ke CFG: setiap simbol stack yang didorong harus diwakili oleh satu variabel komposit yang akhirnya menghapus simbol tersebut dari suatu state awal ke state akhir yang ditebak.
+\end{cmt}
+
+\subsubsection{Derivasi Leftmost/Rightmost dan Parse Tree}
+
+\begin{jawab}[Inti Konsep.]
+Derivasi leftmost dan rightmost adalah cara sistematis memperluas nonterminal pada CFG. Parse tree merangkum struktur derivasi; grammar ambiguous jika ada satu string yang mempunyai dua parse tree atau dua leftmost derivation berbeda.
+\end{jawab}
+
+Leftmost derivation selalu mengekspansi nonterminal paling kiri pada setiap langkah. Rightmost derivation selalu mengekspansi nonterminal paling kanan. Keduanya dapat menghasilkan string yang sama, tetapi urutan ekspansinya berbeda. Untuk grammar tidak ambiguous, parse tree yang dihasilkan tetap sama secara struktur.
+
+Gunakan grammar:
+\[
+    S\rightarrow AB,\qquad A\rightarrow 0A\mid 0,\qquad B\rightarrow 1B\mid 1.
+\]
+Untuk string \texttt{0011}, leftmost derivation:
+\[
+    S\Rightarrow AB\Rightarrow 0AB\Rightarrow 00B\Rightarrow 001B\Rightarrow 0011.
+\]
+Rightmost derivation:
+\[
+    S\Rightarrow AB\Rightarrow A1B\Rightarrow A11\Rightarrow 0A11\Rightarrow 0011.
+\]
+Parse tree-nya dapat dibaca sebagai:
+\begin{lstlisting}[caption={Parse tree untuk 0011}]
+        S
+       / \
+      A   B
+     / \ / \
+    0  A 1  B
+       |    |
+       0    1
+\end{lstlisting}
+
+Cara membuktikan grammar ambiguous adalah mencari satu string $w\in L(G)$ yang memiliki dua leftmost derivation berbeda. Untuk grammar ekspresi klasik
+\[
+    E\rightarrow E+E\mid E*E\mid id,
+\]
+string \texttt{id+id*id} mempunyai dua struktur: $(id+id)*id$ dan $id+(id*id)$. Dua leftmost derivation-nya dapat dimulai sebagai $E\Rightarrow E*E\Rightarrow E+E*E\Rightarrow id+E*E\Rightarrow id+id*E\Rightarrow id+id*id$ atau $E\Rightarrow E+E\Rightarrow id+E\Rightarrow id+E*E\Rightarrow id+id*E\Rightarrow id+id*id$. Bukti ujian tidak cukup mengatakan ``terlihat ambiguous''; tuliskan dua derivasi atau dua parse tree berbeda untuk string yang sama.
+
+Subtopik ini terhubung langsung dengan konversi CFG ke PDA. PDA hasil konstruksi CFG meniru leftmost derivation, sehingga kemampuan menulis derivasi manual membantu membaca rangkaian ID PDA.
+
+\subsubsection{Deterministic Pushdown Automata}
+
+\begin{jawab}[Inti Konsep.]
+DPDA adalah PDA yang tidak memiliki pilihan komputasi ganda pada konfigurasi yang sama. Determinisme ini membuat DPDA lebih mudah diimplementasikan sebagai parser deterministik, tetapi juga membuatnya lebih lemah daripada PDA nondeterministik penuh.
+\end{jawab}
+
+Sebuah DPDA membatasi fungsi transisi agar pada state, simbol input, dan puncak stack tertentu tidak ada lebih dari satu aksi yang mungkin. Selain itu, jika pada kombinasi $(q,X)$ tersedia transisi $\epsilon$, maka transisi yang membaca simbol input nyata dari konfigurasi yang sama tidak boleh bersaing dengannya. Jika tidak, automaton harus memilih antara membaca input sekarang atau bergerak spontan, yang melanggar determinisme.
+
+Sumber memberikan perbandingan bahasa $L_{ww^R}=\{ww^R\mid w\in\{0,1\}^*\}$ dan $L_{wcw^R}=\{wcw^R\mid w\in\{0,1\}^*\}$. Bahasa pertama membutuhkan tebakan titik tengah karena tidak ada marker eksplisit. Bahasa kedua memiliki marker $c$, sehingga titik balik dari fase push ke fase pop dapat ditentukan secara deterministik.
+
+DPDA menempati hierarki:
+\[
+    Regular \subset L(DPDA) \subset CFL.
+\]
+Semua regular language dapat dikenali DPDA dengan mengabaikan stack dan meniru DFA. Namun tidak semua CFL dapat dikenali DPDA karena sebagian CFL memerlukan nondeterministic choice, misalnya untuk menebak titik tengah string. Sumber baru juga menegaskan bahwa bahasa yang diterima DPDA dengan final state merupakan subkelas sejati dari CFL dan setiap bahasa yang diterima DPDA memiliki CFG yang tidak ambigu.
+
+\subsubsection{Prefix Property dan Unambiguous CFG}
+
+\begin{jawab}[Inti Konsep.]
+Prefix property menyatakan bahwa tidak ada string dalam bahasa yang menjadi prefix dari string lain dalam bahasa yang sama. Sifat ini penting untuk DPDA dengan acceptance by empty stack karena stack kosong memaksa keputusan penerimaan terjadi tepat saat input yang valid selesai.
+\end{jawab}
+
+Jika sebuah DPDA menerima dengan empty stack, begitu stack kosong dan input yang dibaca membentuk string valid, automaton tidak lagi memiliki informasi stack untuk melanjutkan pengenalan string yang lebih panjang dengan prefix yang sama. Karena itu bahasa yang diterima DPDA empty stack harus memiliki prefix property.
+
+Sumber juga mengaitkan DPDA dengan unambiguous CFG. Intuisi dasarnya adalah determinisme automaton membatasi satu jalur komputasi penerimaan, sehingga ketika dikonversi ke grammar, bahasa yang dihasilkan memiliki struktur derivasi yang tidak ambigu untuk kelas yang sesuai. Namun hubungan ini perlu dibaca hati-hati: tidak semua unambiguous CFL deterministik, tetapi deterministic CFL merupakan subclass dari unambiguous CFL.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Tambahan standar: deterministic context-free languages (DCFL) tertutup terhadap komplemen, tetapi tidak tertutup terhadap union dan intersection umum. Ini berbeda dari CFL umum yang tidak tertutup terhadap komplemen. Sifat ini berguna untuk memahami bahwa DPDA bukan sekadar PDA yang ``lebih praktis'', melainkan mendefinisikan subclass bahasa dengan perilaku closure yang berbeda.
+\end{cmt}
+
+Konsep ini terhubung dengan parser deterministik seperti LL(1) dan LR: parser tersebut pada dasarnya menghindari tebakan nondeterministik dengan memastikan grammar memberi satu aksi parsing yang jelas untuk setiap konfigurasi.
+
+\subsubsection{Closure Properties CFL via PDA}
+
+\begin{jawab}[Inti Konsep.]
+Beberapa sifat closure CFL dapat dibuktikan langsung memakai konstruksi PDA. Dua konstruksi penting adalah intersection antara CFL dan regular language melalui product PDA-DFA, serta inverse homomorphism dengan menerjemahkan setiap simbol input ke string asalnya.
+\end{jawab}
+
+Closure properties menjawab apakah hasil operasi terhadap bahasa masih berada dalam kelas yang sama. Untuk PDA, pertanyaan ini penting karena stack memberi memori tak terbatas yang terstruktur, tetapi tidak semua operasi bahasa aman untuk CFL.
+
+Untuk intersection dengan regular language, misalkan $L$ adalah CFL yang dikenali PDA $P$ dan $R$ adalah regular language yang dikenali DFA $D$. Bahasa $L\cap R$ dikenali oleh PDA baru yang mensimulasikan $P$ dan $D$ secara paralel:
+\begin{enumerate}
+    \item State baru berbentuk pasangan $(q_P,q_D)$.
+    \item Jika PDA membaca simbol input nyata $a$, komponen DFA ikut berpindah dengan transisi pada $a$.
+    \item Jika PDA memakai transisi $\epsilon$, komponen DFA tidak berubah.
+    \item String diterima jika simulasi PDA menerima dan komponen DFA berada pada state penerima.
+\end{enumerate}
+
+Konstruksi ini berhasil karena DFA hanya menambah memori berhingga, sehingga dapat dimasukkan ke finite control PDA. Akibatnya, CFL tertutup terhadap intersection dengan regular language, walaupun CFL tidak tertutup terhadap intersection umum antara dua CFL.
+
+Untuk inverse homomorphism, misalkan $h:\Sigma^*\rightarrow\Delta^*$ adalah homomorphism dan $L$ adalah CFL atas alfabet $\Delta$. Bahasa $h^{-1}(L)=\{w\mid h(w)\in L\}$ tetap CFL. PDA untuk $h^{-1}(L)$ membaca simbol $a$ dari input asal, lalu mensimulasikan PDA untuk $L$ seolah-olah menerima seluruh string $h(a)$.
+
+\begin{cmt}{Catatan: Hubungan dengan Closure CFL}{}
+CFL tertutup terhadap union, concatenation, Kleene star, homomorphism, inverse homomorphism, dan intersection dengan regular language. Namun CFL tidak tertutup terhadap intersection umum dan complement umum. Product PDA-DFA menjelaskan mengapa intersection khusus dengan regular language masih aman: komponen regular hanya menambah state berhingga.
+\end{cmt}
+
+Closure via PDA menghubungkan materi PDA dengan hierarki bahasa formal. Jika soal meminta membuktikan bahasa tetap CFL setelah dibatasi pola regular, konstruksi product PDA-DFA adalah strategi utama.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Fungsi Transisi PDA}
+
+\begin{jawab}[Makna Rumus.]
+Rumus fungsi transisi menjelaskan domain informasi yang dilihat PDA dan bentuk pilihan aksi yang dapat diambil. Rumus ini digunakan saat mendefinisikan PDA secara formal atau menerjemahkan diagram transisi menjadi tuple.
+\end{jawab}
+
+\begin{equation}
+    \delta: Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma \rightarrow 2^{Q \times \Gamma^*}
+    \label{eq:fungsi-transisi-pda}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $Q$: himpunan state.
+    \item $\Sigma$: alfabet input.
+    \item $\Gamma$: alfabet stack.
+    \item $\epsilon$: transisi tanpa membaca input.
+    \item $2^{Q \times \Gamma^*}$: himpunan semua pilihan pasangan state baru dan string pengganti stack.
+\end{itemize}
+
+\subsubsection{Langkah ID PDA}
+
+\begin{jawab}[Makna Rumus.]
+Rumus langkah ID menyatakan efek satu transisi PDA terhadap sisa input dan stack. Rumus ini adalah dasar simulasi dan pembuktian penerimaan.
+\end{jawab}
+
+\begin{equation}
+    (q,aw,X\beta)\vdash(p,w,\alpha\beta)
+    \quad \text{jika } (p,\alpha)\in\delta(q,a,X).
+    \label{eq:langkah-id-pda}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $q$: state sebelum transisi.
+    \item $p$: state setelah transisi.
+    \item $a$: simbol input yang dibaca, atau $\epsilon$.
+    \item $w$: sisa input setelah $a$.
+    \item $X$: simbol puncak stack sebelum transisi.
+    \item $\alpha$: string pengganti untuk $X$.
+    \item $\beta$: bagian stack di bawah $X$.
+\end{itemize}
+
+\subsubsection{Mode Penerimaan PDA}
+
+\begin{jawab}[Makna Rumus.]
+Dua rumus penerimaan membedakan apakah keberhasilan ditentukan oleh state akhir atau oleh stack kosong. Keduanya ekuivalen dalam kekuatan bahasa, tetapi sering berbeda kenyamanan saat desain atau pembuktian.
+\end{jawab}
+
+\begin{align}
+    L(P) &= \{w \mid (q_0,w,Z_0)\vdash^*(q,\epsilon,\alpha),\ q\in F\}, \label{eq:final-state-pda}\\
+    N(P) &= \{w \mid (q_0,w,Z_0)\vdash^*(q,\epsilon,\epsilon)\}. \label{eq:empty-stack-pda}
+\end{align}
+
+dengan:
+\begin{itemize}
+    \item $L(P)$: bahasa yang diterima dengan final state.
+    \item $N(P)$: bahasa yang diterima dengan empty stack.
+    \item $\alpha$: isi stack akhir yang diabaikan pada final state.
+    \item $q$: state akhir komputasi yang diabaikan pada empty stack.
+\end{itemize}
+
+\subsubsection{Pseudocode Simulasi PDA Nondeterministik}
+
+\begin{jawab}[Tujuan Algoritma.]
+Pseudocode ini menunjukkan cara berpikir operasional PDA: dari satu konfigurasi, coba semua transisi yang legal, lalu terima jika ada cabang yang mencapai kondisi penerimaan.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode simulasi PDA nondeterministik}, label={lst:simulasi-pda}]
+Input: PDA P, string w
+Output: accept jika ada cabang komputasi yang menerima
+
+1. Masukkan ID awal (q0, w, Z0) ke worklist.
+2. Selama worklist tidak kosong:
+   a. Ambil satu ID (q, rest, stack).
+   b. Jika ID memenuhi mode penerimaan, return accept.
+   c. Untuk setiap transisi yang cocok dengan q, simbol input berikutnya,
+      dan top(stack):
+      i. Hitung sisa input baru.
+      ii. Hitung stack baru.
+      iii. Masukkan ID baru ke worklist.
+3. Jika semua cabang habis tanpa menerima, return reject.
+\end{lstlisting}
+
+Pseudocode ini bukan algoritma keputusan umum tanpa batas tambahan, karena PDA nondeterministik dengan transisi $\epsilon$ dapat memiliki cabang yang berputar. Untuk keperluan teori bahasa, pseudocode ini terutama membantu memahami makna ``ada jalur komputasi yang menerima''.

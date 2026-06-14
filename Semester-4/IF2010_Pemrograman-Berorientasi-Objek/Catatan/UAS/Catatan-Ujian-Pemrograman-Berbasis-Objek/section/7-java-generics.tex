@@ -1,0 +1,243 @@
+\section{Java Generics}
+
+Java Generics memungkinkan class, interface, dan method ditulis dengan parameter tipe sehingga kode tetap reusable sekaligus type-safe. Tanpa generics, collection seperti \texttt{List} hanya menyimpan \texttt{Object}, sehingga programmer harus melakukan cast manual dan risiko error baru muncul saat runtime. Dengan generics, compiler dapat memastikan bahwa \texttt{List<String>} hanya diperlakukan sebagai list berisi \texttt{String}.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini disusun menggunakan pengetahuan umum Java. Materi generics sangat berkaitan dengan Java Collection dan Wildcard, sehingga pembahasannya diarahkan untuk menjadi fondasi dua materi tersebut.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Motivasi generics \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Type safety saat kompilasi.
+        \item Mengurangi cast manual.
+        \item Membuat struktur data dan algoritma reusable.
+    \end{enumerate}
+    \item Generic class dan generic interface \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Parameter tipe seperti \texttt{T}, \texttt{E}, \texttt{K}, dan \texttt{V}.
+        \item Instansiasi seperti \texttt{Box<String>} atau \texttt{Map<String, Integer>}.
+    \end{enumerate}
+    \item Generic method \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Parameter tipe milik method, bukan class.
+        \item Type inference oleh compiler.
+    \end{enumerate}
+    \item Bounded type parameter
+    \begin{enumerate}
+        \item \texttt{T extends Number}.
+        \item Multiple bounds seperti \texttt{T extends Number \& Comparable<T>}.
+    \end{enumerate}
+    \item Type erasure
+    \begin{enumerate}
+        \item Informasi generic sebagian besar hilang di runtime.
+        \item Tidak bisa \texttt{new T()}, \texttt{T.class}, atau array generic langsung.
+    \end{enumerate}
+    \item Raw type dan heap pollution
+    \begin{enumerate}
+        \item Raw type melemahkan type safety.
+        \item Warning compiler harus dipahami, bukan diabaikan.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Generics adalah dasar type-safe programming di Java modern. Hampir semua API penting Java memakai generics: collection, stream, optional, comparator, future, dan functional interface.
+\end{jawab}
+
+Dalam ujian, generics biasanya diuji melalui pembacaan tipe: mengapa \texttt{List<String>} tidak dapat diisi \texttt{Integer}, mengapa \texttt{List<Integer>} bukan subtype dari \texttt{List<Number>}, kapan memakai bounded type parameter, dan apa dampak type erasure. Generics juga menjadi dasar untuk memahami wildcard pada materi berikutnya.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Generics bergantung pada pemahaman class, interface, inheritance, dan type system Java. Collection Framework hampir seluruhnya generic. Stream API memakai generic type dalam pipeline. Wildcard adalah perluasan generics untuk variance. Reflection memiliki keterbatasan karena type erasure.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Generic Class}
+
+\begin{jawab}[Inti Konsep.]
+Generic class adalah class yang menerima parameter tipe. Parameter tipe membuat class dapat bekerja dengan banyak tipe tanpa kehilangan pemeriksaan tipe saat kompilasi.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Generic class sederhana}, label={lst:generic-box}]
+public class Box<T> {
+    private T value;
+
+    public Box(T value) {
+        this.value = value;
+    }
+
+    public T get() {
+        return value;
+    }
+
+    public void set(T value) {
+        this.value = value;
+    }
+}
+
+Box<String> nameBox = new Box<>("Java");
+String name = nameBox.get();
+\end{lstlisting}
+
+Huruf \texttt{T} bukan tipe khusus; ia hanya konvensi untuk ``type''. Konvensi umum lain adalah \texttt{E} untuk element, \texttt{K} untuk key, \texttt{V} untuk value, dan \texttt{R} untuk return/result.
+
+\subsubsection{Generic Method}
+
+\begin{jawab}[Inti Konsep.]
+Generic method memiliki parameter tipe sendiri yang dideklarasikan sebelum return type. Parameter tipe method dapat dipakai meskipun class-nya bukan generic.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Generic method}, label={lst:generic-method}]
+public class ArrayUtil {
+    public static <T> T first(List<T> values) {
+        if (values.isEmpty()) {
+            throw new IllegalArgumentException("List kosong");
+        }
+        return values.get(0);
+    }
+}
+
+String firstName = ArrayUtil.first(List.of("Ayu", "Budi"));
+Integer firstNumber = ArrayUtil.first(List.of(10, 20, 30));
+\end{lstlisting}
+
+Compiler biasanya dapat menyimpulkan tipe \texttt{T} dari argumen method, sehingga pemanggil tidak perlu menulis tipe secara eksplisit.
+
+\subsubsection{Bounded Type Parameter}
+
+\begin{jawab}[Inti Konsep.]
+Bounded type parameter membatasi tipe yang boleh digunakan sehingga method dapat memakai operasi yang dijamin tersedia pada bound tersebut.
+\end{jawab}
+
+Jika parameter \texttt{T} tidak dibatasi, compiler hanya tahu bahwa \texttt{T} adalah subtype dari \texttt{Object}. Jika ingin memakai method khusus \texttt{Number}, buat bound \texttt{T extends Number}.
+
+\begin{lstlisting}[language=Java, caption={Bounded type parameter}, label={lst:bounded-type}]
+public static <T extends Number> double sum(List<T> numbers) {
+    double total = 0.0;
+    for (T number : numbers) {
+        total += number.doubleValue();
+    }
+    return total;
+}
+\end{lstlisting}
+
+Kata \texttt{extends} pada generics berarti batas atas, baik untuk class maupun interface. Multiple bounds dapat digunakan, tetapi jika ada bound class, ia harus ditulis paling depan.
+
+\begin{lstlisting}[language=Java, caption={Multiple bounds pada generic type}, label={lst:multiple-bounds}]
+public static <T extends Number & Comparable<T>> T max(T a, T b) {
+    return a.compareTo(b) >= 0 ? a : b;
+}
+\end{lstlisting}
+
+\subsubsection{Type Erasure}
+
+\begin{jawab}[Inti Konsep.]
+Java generics diimplementasikan dengan type erasure: compiler memakai informasi generic untuk type checking, lalu sebagian besar informasi tipe tersebut dihapus pada bytecode.
+\end{jawab}
+
+Akibat type erasure, \texttt{List<String>} dan \texttt{List<Integer>} memiliki raw runtime class yang sama, yaitu \texttt{List}. Ini menjaga kompatibilitas dengan kode Java lama sebelum generics, tetapi menimbulkan batasan.
+
+\begin{itemize}
+    \item Tidak dapat membuat object \texttt{new T()} karena runtime tidak tahu class konkret \texttt{T}.
+    \item Tidak dapat memakai \texttt{T.class}.
+    \item Tidak dapat membuat array generic langsung seperti \texttt{new T[10]}.
+    \item Tidak dapat overload method hanya berdasarkan parameter generic yang terhapus.
+\end{itemize}
+
+\subsubsection{Raw Type dan Heap Pollution}
+
+\begin{jawab}[Inti Konsep.]
+Raw type adalah penggunaan generic class tanpa argumen tipe, misalnya \texttt{List} alih-alih \texttt{List<String>}. Raw type melemahkan type safety dan dapat menyebabkan error runtime.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Raw type berbahaya}, label={lst:raw-type}]
+List<String> names = new ArrayList<>();
+List raw = names;
+raw.add(123); // Warning, tetapi masih bisa dikompilasi.
+
+String first = names.get(0); // ClassCastException saat runtime.
+\end{lstlisting}
+
+Dalam kode modern, hindari raw type kecuali saat berinteraksi dengan API legacy. Warning unchecked harus dibaca sebagai tanda bahwa compiler tidak lagi dapat menjamin type safety.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+Type parameter & Placeholder tipe seperti \texttt{T}, \texttt{E}, \texttt{K}, dan \texttt{V}. \\
+\hline
+Generic class & Class dengan parameter tipe. \\
+\hline
+Generic method & Method dengan parameter tipe sendiri. \\
+\hline
+Bounded type & Parameter tipe dengan batas atas seperti \texttt{T extends Number}. \\
+\hline
+Type erasure & Penghapusan sebagian informasi generic pada runtime. \\
+\hline
+Raw type & Generic type yang dipakai tanpa argumen tipe. \\
+\hline
+Heap pollution & Kondisi ketika variabel generic menyimpan object yang tidak sesuai tipe deklarasinya. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java Generics}
+\label{tab:komponen-kunci-java-generics}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Menentukan Parameter Generics}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu memilih antara generic class, generic method, bounded type, atau tipe konkret.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode pemilihan generics}, label={lst:generics-decision}]
+Input: Kode yang ingin dibuat reusable terhadap tipe
+Output: Bentuk generics yang sesuai
+
+1. Jika seluruh class menyimpan atau memproses tipe yang sama:
+      gunakan generic class/interface.
+2. Jika hanya satu method yang membutuhkan parameter tipe:
+      gunakan generic method.
+3. Jika method perlu memanggil operasi khusus dari tipe:
+      gunakan bounded type parameter.
+4. Jika tipe hanya dibaca dari struktur data:
+      pertimbangkan wildcard extends pada materi wildcard.
+5. Jika tipe hanya ditulis ke struktur data:
+      pertimbangkan wildcard super pada materi wildcard.
+6. Hindari raw type.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan motivasi generics.
+    \item[$\square$] Saya dapat menulis generic class dan generic method.
+    \item[$\square$] Saya dapat memakai bounded type parameter.
+    \item[$\square$] Saya dapat menjelaskan type erasure dan batasannya.
+    \item[$\square$] Saya dapat menjelaskan bahaya raw type.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Generic class, generic method, bounded type, type safety, raw type, type erasure. \\
+\hline
+\textbf{Cukup Paham Konsep} & Multiple bounds, heap pollution, batasan \texttt{new T()} dan generic array. \\
+\hline
+\textbf{Sudah Dikuasai} & Termasuk materi kuis 1 sampai 10, tetapi tetap perlu dipahami kuat untuk Collection dan Stream API. \\
+\hline
+\end{tabularx}

@@ -1,0 +1,266 @@
+\section{Java Collection}
+
+Java Collection membahas framework struktur data standar Java untuk menyimpan, mencari, mengurutkan, mengelompokkan, dan memproses object. Collection Framework memakai interface seperti \texttt{Collection}, \texttt{List}, \texttt{Set}, \texttt{Queue}, dan \texttt{Map}, serta implementasi konkret seperti \texttt{ArrayList}, \texttt{LinkedList}, \texttt{HashSet}, \texttt{TreeSet}, \texttt{HashMap}, dan \texttt{TreeMap}.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini disusun berdasarkan pengetahuan umum Java. Fokus dipilih untuk kebutuhan ujian: pemilihan struktur data, kontrak equals-hashCode, ordering, generics, iterator, dan kompleksitas umum.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Hierarki Collection Framework \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item \texttt{Iterable}, \texttt{Collection}, \texttt{List}, \texttt{Set}, \texttt{Queue}.
+        \item \texttt{Map} bukan subtype \texttt{Collection}, tetapi bagian dari framework.
+    \end{enumerate}
+    \item List \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Ordered, boleh duplikat, akses berdasarkan indeks.
+        \item \texttt{ArrayList} vs \texttt{LinkedList}.
+    \end{enumerate}
+    \item Set \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Tidak menyimpan duplikat.
+        \item \texttt{HashSet}, \texttt{LinkedHashSet}, \texttt{TreeSet}.
+    \end{enumerate}
+    \item Map \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Pasangan key-value.
+        \item Key unik; value boleh duplikat.
+        \item \texttt{HashMap}, \texttt{LinkedHashMap}, \texttt{TreeMap}.
+    \end{enumerate}
+    \item Iterator dan enhanced for
+    \begin{enumerate}
+        \item Iterasi aman dengan \texttt{Iterator}.
+        \item \texttt{ConcurrentModificationException} saat modifikasi tidak tepat.
+    \end{enumerate}
+    \item Equality, hashing, dan ordering
+    \begin{enumerate}
+        \item \texttt{equals} dan \texttt{hashCode} untuk hash-based collection.
+        \item \texttt{Comparable} dan \texttt{Comparator} untuk ordering.
+    \end{enumerate}
+    \item Pemilihan collection
+    \begin{enumerate}
+        \item Berdasarkan duplikasi, urutan, pencarian, indeks, dan sorting.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Collection adalah API inti untuk menyimpan banyak object. Kemampuan memilih collection yang tepat menentukan kebenaran, performa, dan kejelasan desain program Java.
+\end{jawab}
+
+Jika data membutuhkan urutan input dan akses indeks, \texttt{List} cocok. Jika data harus unik, \texttt{Set} cocok. Jika data dicari berdasarkan key, \texttt{Map} cocok. Kesalahan memilih collection sering menyebabkan kode tambahan yang tidak perlu, performa buruk, atau bug karena duplikasi dan urutan tidak dipahami.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Collection bergantung pada Generics dan Interface. String sering diproses dalam collection. Stream API adalah cara deklaratif memproses collection. Equality/hashing berkaitan dengan desain class dan enkapsulasi. Wildcard muncul pada method collection seperti \texttt{addAll(Collection<? extends E>)}.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{List}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{List} adalah collection berurutan yang mengizinkan duplikat dan menyediakan akses berdasarkan indeks.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Penggunaan List}, label={lst:list-basic}]
+List<String> names = new ArrayList<>();
+names.add("Ayu");
+names.add("Budi");
+names.add("Ayu");
+
+System.out.println(names.get(0)); // Ayu
+System.out.println(names.size()); // 3
+\end{lstlisting}
+
+\texttt{ArrayList} umumnya menjadi pilihan default untuk list karena akses indeks cepat dan performa iterasi baik. \texttt{LinkedList} jarang menjadi pilihan default; meskipun insertion di tengah secara teori dapat murah jika node sudah diketahui, pencarian posisi tetap mahal.
+
+\subsubsection{Set}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{Set} menyimpan elemen unik. Keunikan bergantung pada \texttt{equals}/\texttt{hashCode} untuk hash set atau ordering untuk tree set.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Penggunaan Set untuk menghapus duplikasi}, label={lst:set-basic}]
+Set<String> uniqueNames = new HashSet<>();
+uniqueNames.add("Ayu");
+uniqueNames.add("Budi");
+uniqueNames.add("Ayu");
+
+System.out.println(uniqueNames.size()); // 2
+\end{lstlisting}
+
+\texttt{HashSet} tidak menjamin urutan. \texttt{LinkedHashSet} mempertahankan urutan insertion. \texttt{TreeSet} menjaga elemen terurut berdasarkan \texttt{Comparable} atau \texttt{Comparator}.
+
+\subsubsection{Map}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{Map} menyimpan pasangan key-value. Key harus unik; value boleh sama. Map cocok ketika data perlu dicari berdasarkan identitas tertentu.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Penggunaan Map}, label={lst:map-basic}]
+Map<String, Integer> scores = new HashMap<>();
+scores.put("Ayu", 90);
+scores.put("Budi", 85);
+scores.put("Ayu", 95); // Mengganti value untuk key Ayu.
+
+System.out.println(scores.get("Ayu")); // 95
+\end{lstlisting}
+
+Iterasi map biasanya dilakukan melalui \texttt{entrySet} agar key dan value tersedia bersamaan.
+
+\begin{lstlisting}[language=Java, caption={Iterasi Map dengan entrySet}, label={lst:map-entryset}]
+for (Map.Entry<String, Integer> entry : scores.entrySet()) {
+    System.out.println(entry.getKey() + " = " + entry.getValue());
+}
+\end{lstlisting}
+
+\subsubsection{Equals dan HashCode}
+
+\begin{jawab}[Inti Konsep.]
+Object yang digunakan sebagai key \texttt{HashMap} atau elemen \texttt{HashSet} harus memiliki kontrak \texttt{equals} dan \texttt{hashCode} yang konsisten.
+\end{jawab}
+
+Kontrak pentingnya: jika \texttt{a.equals(b)} bernilai \texttt{true}, maka \texttt{a.hashCode()} dan \texttt{b.hashCode()} harus sama. Jika kontrak ini dilanggar, lookup pada \texttt{HashMap} atau \texttt{HashSet} dapat gagal.
+
+\begin{lstlisting}[language=Java, caption={Record otomatis memiliki equals dan hashCode berbasis komponen}, label={lst:record-map-key}]
+public record StudentId(String value) { }
+
+Map<StudentId, String> students = new HashMap<>();
+students.put(new StudentId("13524044"), "Narendra");
+
+System.out.println(students.get(new StudentId("13524044"))); // Narendra
+\end{lstlisting}
+
+\subsubsection{Comparable dan Comparator}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{Comparable} mendefinisikan natural ordering pada class, sedangkan \texttt{Comparator} mendefinisikan ordering eksternal yang dapat berubah sesuai kebutuhan.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Sorting dengan Comparator}, label={lst:comparator}]
+List<Student> students = new ArrayList<>(List.of(
+    new Student("Ayu", 90),
+    new Student("Budi", 85)
+));
+
+students.sort(Comparator
+    .comparingInt(Student::score)
+    .reversed()
+    .thenComparing(Student::name));
+\end{lstlisting}
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+\texttt{List} & Collection berurutan, boleh duplikat, akses indeks. \\
+\hline
+\texttt{Set} & Collection unik tanpa duplikasi. \\
+\hline
+\texttt{Map} & Struktur key-value dengan key unik. \\
+\hline
+\texttt{ArrayList} & Implementasi list berbasis array dinamis. \\
+\hline
+\texttt{HashSet} & Set berbasis hashing. \\
+\hline
+\texttt{HashMap} & Map berbasis hashing. \\
+\hline
+\texttt{TreeSet}/\texttt{TreeMap} & Collection/map terurut. \\
+\hline
+\texttt{Iterator} & Object untuk mengiterasi collection. \\
+\hline
+\texttt{Comparable} & Natural ordering. \\
+\hline
+\texttt{Comparator} & Ordering eksternal. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java Collection}
+\label{tab:komponen-kunci-java-collection}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Memilih Collection}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu memilih struktur data Java berdasarkan kebutuhan data.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode pemilihan collection}, label={lst:collection-choice}]
+Input: Kebutuhan penyimpanan data
+Output: Jenis collection yang sesuai
+
+1. Jika data dipetakan dari key ke value:
+      gunakan Map.
+2. Jika data harus unik:
+      gunakan Set.
+3. Jika data perlu urutan dan akses indeks:
+      gunakan List.
+4. Jika perlu urutan insertion pada set/map:
+      gunakan LinkedHashSet atau LinkedHashMap.
+5. Jika perlu urutan sorted:
+      gunakan TreeSet atau TreeMap, atau sort List dengan Comparator.
+6. Jika operasi utama adalah FIFO:
+      gunakan Queue atau Deque.
+7. Jika operasi banyak dilakukan secara concurrent:
+      pertimbangkan collection dari java.util.concurrent.
+\end{lstlisting}
+
+\subsubsection{Kompleksitas Umum}
+
+\begin{jawab}[Makna Rumus.]
+Kompleksitas membantu membandingkan biaya operasi collection. Nilai berikut adalah aturan umum, bukan jaminan absolut untuk semua kondisi.
+\end{jawab}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|L{0.25\textwidth}|X|}
+\hline
+\textbf{Struktur} & \textbf{Operasi Umum} & \textbf{Kompleksitas Rata-Rata} \\
+\hline
+\texttt{ArrayList} & \texttt{get(i)} & $O(1)$ \\
+\hline
+\texttt{ArrayList} & tambah di akhir & amortized $O(1)$ \\
+\hline
+\texttt{HashSet}/\texttt{HashMap} & add/get/contains & rata-rata $O(1)$ \\
+\hline
+\texttt{TreeSet}/\texttt{TreeMap} & add/get/contains & $O(\log n)$ \\
+\hline
+\end{tabularx}
+\caption{Kompleksitas umum collection Java}
+\label{tab:kompleksitas-collection}
+\end{table}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat membedakan \texttt{List}, \texttt{Set}, dan \texttt{Map}.
+    \item[$\square$] Saya dapat memilih \texttt{ArrayList}, \texttt{HashSet}, \texttt{HashMap}, atau struktur lain sesuai kebutuhan.
+    \item[$\square$] Saya dapat menjelaskan kontrak \texttt{equals} dan \texttt{hashCode}.
+    \item[$\square$] Saya dapat memakai \texttt{Comparable} dan \texttt{Comparator}.
+    \item[$\square$] Saya dapat membaca kompleksitas umum collection.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & \texttt{List}, \texttt{Set}, \texttt{Map}, implementasi utama, equals-hashCode, Comparator, pemilihan collection. \\
+\hline
+\textbf{Cukup Paham Konsep} & Iterator, fail-fast behavior, kompleksitas umum, concurrent collection. \\
+\hline
+\textbf{Sudah Dikuasai} & Termasuk materi kuis, tetapi penting sebagai basis Stream API dan soal implementasi Java. \\
+\hline
+\end{tabularx}

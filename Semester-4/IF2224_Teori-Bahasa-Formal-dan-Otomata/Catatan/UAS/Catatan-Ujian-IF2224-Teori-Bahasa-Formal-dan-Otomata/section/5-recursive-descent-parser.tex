@@ -1,0 +1,460 @@
+\section{Recursive Descent Parser}
+
+Recursive Descent Parser adalah implementasi langsung dari top-down parsing menggunakan sekumpulan fungsi rekursif. Setiap nonterminal pada grammar diterjemahkan menjadi satu fungsi, dan body produksi diterjemahkan menjadi urutan pemanggilan fungsi nonterminal atau pencocokan token terminal. Karena bentuknya dekat dengan kode program, RD Parser sangat cocok untuk memahami hubungan antara CFG dan implementasi parser.
+
+Materi ini penting sebagai jembatan dari teori grammar menuju compiler nyata. Fokus ujian biasanya mencakup cara kerja fungsi parser, backtracking, keterbatasan akibat left recursion, transformasi grammar, dan hubungan RD Parser dengan predictive parsing serta syntax-directed translation.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Dasar top-down parsing
+    \begin{enumerate}
+        \item \pwajib Parse tree dibangun dari root ke leaves
+        \item \pwajib Input dibaca kiri ke kanan
+        \item \pwajib Relasi dengan leftmost derivation
+    \end{enumerate}
+    \item \pwajib Definisi recursive descent
+    \begin{enumerate}
+        \item \pwajib Satu prosedur untuk setiap nonterminal
+        \item \pwajib Prosedur start symbol sebagai titik awal
+        \item \pwajib Terminal dicocokkan dengan lookahead
+    \end{enumerate}
+    \item \pwajib Terminologi implementasi
+    \begin{enumerate}
+        \item \pwajib Token
+        \item \pwajib Lookahead
+        \item \pwajib Pointer input \texttt{next}
+        \item \pwajib Fungsi pencocokan terminal
+    \end{enumerate}
+    \item \pwajib Algoritma dasar
+    \begin{enumerate}
+        \item \pwajib Pilih produksi $A\rightarrow X_1X_2\cdots X_k$
+        \item \pwajib Jika $X_i$ nonterminal, panggil prosedurnya
+        \item \pwajib Jika $X_i$ terminal, cocokkan dengan input
+        \item \pwajib Jika gagal, laporkan error atau backtrack
+    \end{enumerate}
+    \item \pwajib Backtracking
+    \begin{enumerate}
+        \item \pwajib Simpan posisi input sebelum mencoba produksi
+        \item \pwajib Reset pointer saat produksi gagal
+        \item \ppaham Inefisiensi eksplorasi cabang
+        \item \ppaham Keterbatasan implementasi boolean sederhana
+    \end{enumerate}
+    \item \ppaham Brute-force parsing
+    \begin{enumerate}
+        \item \ppaham Ekspansi nonterminal secara coba-coba
+        \item \ppaham Backup posisi stack dan input
+        \item \ppaham Perbandingan dengan recursive parsing
+    \end{enumerate}
+    \item \pwajib Masalah left recursion
+    \begin{enumerate}
+        \item \pwajib Rekursi kiri langsung
+        \item \ppaham Rekursi kiri tidak langsung
+        \item \ppaham General left recursion melalui rantai nonterminal
+        \item \pwajib Infinite loop sebelum input dikonsumsi
+    \end{enumerate}
+    \item \pwajib Transformasi grammar
+    \begin{enumerate}
+        \item \pwajib Eliminasi left recursion
+        \item \pwajib Bentuk umum eliminasi left recursion
+        \item \ppaham Algoritma eliminasi left recursion tidak langsung
+        \item \pwajib Left factoring
+    \end{enumerate}
+    \item \ppaham Predictive parsing
+    \begin{enumerate}
+        \item \ppaham Recursive descent deterministik
+        \item \ppaham Tanpa backtracking
+        \item \ppaham Pemilihan produksi dengan lookahead
+        \item \ppaham Dependensi FIRST dan FOLLOW
+    \end{enumerate}
+    \item \ppaham Recursive descent untuk SDT
+    \begin{enumerate}
+        \item \ppaham Inherited attributes sebagai parameter fungsi
+        \item \ppaham Synthesized attributes sebagai return value
+        \item \ppaham Semantic actions dalam prosedur
+        \item \ppaham On-the-fly code generation
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Top-Down Parsing}
+
+\begin{jawab}[Inti Konsep.]
+Top-down parsing membangun parse tree dari start symbol sebagai root menuju terminal sebagai leaves. Proses ini ekuivalen dengan mencari leftmost derivation untuk token input.
+\end{jawab}
+
+Parser menerima token stream dari lexical analyzer dan menentukan apakah token tersebut sesuai dengan grammar bahasa. Pada top-down parsing, konstruksi dimulai dari start symbol. Parser memilih produksi untuk mengekspansi nonterminal, lalu terus menurunkan sampai terminal yang dihasilkan cocok dengan token input.
+
+Input dipindai dari kiri ke kanan. Karena parser selalu berusaha mencocokkan terminal paling kiri yang belum dibaca, strategi top-down berhubungan erat dengan **leftmost derivation**, yaitu derivasi yang selalu menurunkan nonterminal paling kiri terlebih dahulu.
+
+Relasi ini penting karena menjelaskan mengapa fungsi recursive descent biasanya mengikuti struktur grammar secara langsung. Setiap kali fungsi nonterminal dipanggil, parser sedang mencoba membangun bagian parse tree dari nonterminal tersebut.
+
+\subsubsection{Definisi Recursive Descent Parser}
+
+\begin{jawab}[Inti Konsep.]
+Recursive Descent Parser adalah top-down parser yang direalisasikan sebagai kumpulan fungsi rekursif. Setiap nonterminal grammar memiliki satu fungsi, dan pemanggilan fungsi mengikuti struktur produksi grammar.
+\end{jawab}
+
+Misalkan grammar memiliki nonterminal $E$, $T$, dan $F$. RD Parser akan memiliki fungsi seperti \texttt{E()}, \texttt{T()}, dan \texttt{F()}. Fungsi untuk start symbol dipanggil pertama. Jika fungsi tersebut sukses dan seluruh input habis dikonsumsi, parsing berhasil.
+
+Jika body produksi berisi nonterminal, fungsi parser memanggil fungsi nonterminal tersebut. Jika body produksi berisi terminal, fungsi parser mencocokkan terminal tersebut dengan token lookahead. Dengan cara ini, grammar seolah diterjemahkan langsung menjadi kode.
+
+Kelebihan RD Parser adalah mudah dibaca dan mudah ditulis manual untuk grammar sederhana. Kelemahannya, grammar harus disiapkan agar tidak menyebabkan backtracking berlebihan atau infinite loop.
+
+\subsubsection{Token, Lookahead, dan Pointer Input}
+
+\begin{jawab}[Inti Konsep.]
+RD Parser bekerja pada token stream, bukan character stream. Token berikutnya yang akan dibaca disebut lookahead dan sering diakses melalui pointer global seperti \texttt{next}.
+\end{jawab}
+
+Token adalah unit sintaksis yang dihasilkan scanner, misalnya \texttt{INT}, \texttt{OPEN}, \texttt{CLOSE}, \texttt{PLUS}, dan \texttt{TIMES}. Parser tidak perlu mengetahui karakter asli yang membentuk token; parser hanya peduli urutan token.
+
+**Lookahead** adalah token yang sedang dilihat parser untuk memutuskan apakah terminal tertentu cocok atau produksi tertentu harus dipilih. Dalam contoh sumber, lookahead direpresentasikan oleh pointer \texttt{next}. Jika terminal cocok, pointer dimajukan ke token berikutnya.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Istilah} & \textbf{Peran} \\
+\hline
+Token & Simbol terminal abstrak yang diterima parser dari lexer. \\
+\hline
+Lookahead & Token berikutnya yang sedang diamati untuk membuat keputusan parsing. \\
+\hline
+\texttt{next} & Pointer input yang menunjuk token yang belum dikonsumsi. \\
+\hline
+\texttt{term(tok)} & Fungsi pembantu untuk mencocokkan terminal dan memajukan pointer. \\
+\hline
+\end{tabularx}
+\caption{Komponen implementasi RD Parser}
+\label{tab:komponen-rd-parser}
+\end{table}
+
+Komponen ini membuat parser dapat ditulis sebagai fungsi boolean: fungsi mengembalikan true jika bagian grammar berhasil dikenali, dan false jika gagal.
+
+\subsubsection{Algoritma Prosedur Nonterminal}
+
+\begin{jawab}[Inti Konsep.]
+Fungsi untuk nonterminal $A$ mencoba produksi $A\rightarrow X_1X_2\cdots X_k$. Setiap simbol pada body produksi diproses berurutan: nonterminal dipanggil sebagai fungsi, terminal dicocokkan dengan lookahead.
+\end{jawab}
+
+Untuk sebuah produksi $A\rightarrow X_1X_2\cdots X_k$, algoritma konseptualnya adalah:
+\begin{enumerate}
+    \item Proses $X_1$ sampai $X_k$ dari kiri ke kanan.
+    \item Jika $X_i$ adalah nonterminal, panggil fungsi \texttt{Xi()}.
+    \item Jika $X_i$ adalah terminal, bandingkan dengan token lookahead.
+    \item Jika cocok, konsumsi token dan lanjut.
+    \item Jika tidak cocok, produksi gagal.
+\end{enumerate}
+
+Jika nonterminal $A$ memiliki beberapa alternatif produksi, parser harus menentukan alternatif mana yang dipakai. RD Parser umum dapat mencoba alternatif satu per satu dengan backtracking. Predictive RD Parser memilih alternatif secara deterministik dari lookahead.
+
+Algoritma ini adalah implementasi langsung dari leftmost derivation: fungsi yang sedang berjalan mewakili nonterminal paling kiri yang sedang diturunkan.
+
+\subsubsection{Brute-Force Parsing dan Recursive Parsing}
+
+\begin{jawab}[Inti Konsep.]
+Brute-force parsing mencoba ekspansi nonterminal dari kiri secara coba-coba dan mundur ketika pilihan gagal. Recursive descent lebih terstruktur karena nonterminal direpresentasikan sebagai prosedur yang mengembalikan sukses atau gagal.
+\end{jawab}
+
+Sumber baru membedakan brute-force parsing dan recursive parsing. Pada **brute-force parsing**, parser memperluas nonterminal paling kiri dengan mencoba alternatif produksi. Jika string yang dibentuk tidak cocok dengan input, parser harus melakukan backup terhadap posisi input dan riwayat stack, lalu mencoba alternatif lain. Cara ini benar secara konseptual untuk grammar sederhana, tetapi boros waktu dan memori karena banyak cabang gagal harus disimpan atau dikunjungi ulang.
+
+Pada **recursive descent parsing**, struktur grammar dipetakan ke prosedur. Setiap nonterminal menjadi fungsi yang mengontrol alur parsing dengan pemanggilan fungsi lain dan pencocokan terminal. Fungsi mengembalikan nilai benar atau salah, sehingga proses coba-coba menjadi lebih mudah diorganisasi dalam kode.
+
+Keduanya tetap termasuk top-down parsing. Karena itu, keduanya bermasalah terhadap left recursion: jika grammar memiliki produksi $A\rightarrow A\alpha$, parser akan menurunkan sisi kiri tanpa mengonsumsi terminal dan dapat loop tanpa akhir.
+
+\subsubsection{Terminal Matching}
+
+\begin{jawab}[Inti Konsep.]
+Terminal matching adalah operasi memeriksa apakah lookahead sama dengan terminal yang diharapkan. Jika cocok, parser mengonsumsi token; jika tidak cocok, parsing cabang tersebut gagal.
+\end{jawab}
+
+Sumber memberi fungsi pembantu:
+\begin{lstlisting}[language=C, caption={Fungsi terminal matching}, label={lst:term-rd}]
+bool term(TOKEN tok) {
+    return *next++ == tok;
+}
+\end{lstlisting}
+
+Fungsi ini ringkas, tetapi perlu dibaca hati-hati. Ia membandingkan token yang ditunjuk \texttt{next} dengan \texttt{tok}, lalu memajukan pointer. Dalam implementasi yang lebih aman, pointer biasanya hanya dimajukan jika token cocok; jika tidak cocok, posisi input harus dikembalikan atau kegagalan ditangani oleh mekanisme backtracking.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Dalam parser produksi nyata, fungsi terminal matching biasanya juga menghasilkan pesan error yang informatif, misalnya token apa yang diharapkan dan token apa yang ditemukan. Contoh sederhana dari sumber lebih menekankan ide parsing daripada kualitas diagnostik error.
+\end{cmt}
+
+\subsubsection{Backtracking}
+
+\begin{jawab}[Inti Konsep.]
+Backtracking memungkinkan RD Parser mencoba alternatif produksi lain setelah suatu pilihan gagal. Parser menyimpan posisi input sebelum mencoba produksi, lalu mengembalikannya jika produksi tersebut gagal.
+\end{jawab}
+
+Backtracking diperlukan ketika parser belum dapat menentukan alternatif produksi yang benar dari lookahead saat ini. Sebelum mencoba produksi, parser menyimpan pointer input:
+\[
+    \texttt{TOKEN *save = next;}
+\]
+Jika produksi gagal, parser melakukan:
+\[
+    \texttt{next = save;}
+\]
+sehingga alternatif berikutnya dicoba dari posisi input yang sama.
+
+Tanpa reset pointer, kegagalan cabang pertama dapat merusak parsing cabang berikutnya karena sebagian token sudah terlanjur dikonsumsi. Karena itu, save dan reset adalah inti RD Parser nondeterministik.
+
+Kelemahan backtracking adalah inefisiensi. Parser dapat mencoba banyak cabang yang akhirnya gagal, bahkan mengulangi pekerjaan yang sama. Untuk grammar bahasa pemrograman, compiler biasanya menghindari backtracking dengan grammar predictive atau parser generator.
+
+\subsubsection{Contoh Fungsi \texttt{E} dan \texttt{T}}
+
+\begin{jawab}[Inti Konsep.]
+Contoh fungsi \texttt{E} dan \texttt{T} menunjukkan cara grammar diterjemahkan menjadi fungsi boolean. Alternatif produksi dicoba dengan operator OR dan setiap produksi dicoba dari posisi input yang sama.
+\end{jawab}
+
+Misalkan grammar:
+\[
+\begin{aligned}
+E &\rightarrow T \mid T + E,\\
+T &\rightarrow int \mid int * T \mid (E).
+\end{aligned}
+\]
+Implementasi RD Parser dengan backtracking dapat ditulis:
+
+\begin{lstlisting}[language=C, caption={Recursive descent parser dengan backtracking}, label={lst:rd-parser-et}]
+bool E1() { return T(); }
+bool E2() { return T() && term(PLUS) && E(); }
+
+bool E() {
+    TOKEN *save = next;
+    return (next = save, E1())
+        || (next = save, E2());
+}
+
+bool T1() { return term(INT); }
+bool T2() { return term(INT) && term(TIMES) && T(); }
+bool T3() { return term(OPEN) && E() && term(CLOSE); }
+
+bool T() {
+    TOKEN *save = next;
+    return (next = save, T1())
+        || (next = save, T2())
+        || (next = save, T3());
+}
+\end{lstlisting}
+
+Pola ini mudah dipahami, tetapi tidak selalu efisien. Misalnya \texttt{T1()} dan \texttt{T2()} sama-sama diawali \texttt{INT}; parser dapat mencoba \texttt{T1()} lebih dulu, sukses sebagian, lalu baru menyadari struktur lebih panjang mungkin dibutuhkan. Masalah seperti ini memotivasi left factoring dan predictive parsing.
+
+\subsubsection{Left Recursion}
+
+\begin{jawab}[Inti Konsep.]
+Left recursion terjadi ketika nonterminal dapat menurunkan dirinya sendiri sebagai simbol paling kiri. Pada RD Parser, ini menyebabkan fungsi memanggil dirinya sendiri tanpa mengonsumsi token, sehingga terjadi infinite loop.
+\end{jawab}
+
+Produksi langsung seperti
+\[
+    A\rightarrow A\alpha
+\]
+berbahaya untuk RD Parser. Fungsi \texttt{A()} akan mencoba mengenali $A$ dengan memanggil \texttt{A()} lagi sebelum ada terminal yang dikonsumsi. Akibatnya, rekursi tidak pernah bergerak maju pada input.
+
+Contoh klasik:
+\[
+    E\rightarrow E+T \mid T.
+\]
+Jika diterjemahkan langsung, fungsi \texttt{E()} akan memanggil \texttt{E()} untuk alternatif pertama, lalu memanggil \texttt{E()} lagi, dan seterusnya.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Left recursion dapat langsung atau tidak langsung. Rekursi kiri tidak langsung terjadi misalnya ketika $A\Rightarrow^+ A\alpha$ melalui beberapa nonterminal, bukan melalui produksi $A\rightarrow A\alpha$ secara langsung. RD Parser tetap bermasalah karena pada akhirnya ada rantai fungsi yang kembali ke fungsi awal tanpa konsumsi input.
+\end{cmt}
+
+Karena itu, grammar untuk RD Parser harus bebas dari left recursion.
+
+\subsubsection{Eliminasi Left Recursion}
+
+\begin{jawab}[Inti Konsep.]
+Eliminasi left recursion mengubah rekursi kiri menjadi rekursi kanan. Bentuk $A\rightarrow A\alpha\mid\beta$ diganti menjadi $A\rightarrow\beta A'$ dan $A'\rightarrow\alpha A'\mid\epsilon$.
+\end{jawab}
+
+Untuk bentuk sederhana:
+\[
+    A\rightarrow A\alpha \mid \beta,
+\]
+dengan $\beta$ tidak diawali $A$, transformasinya:
+\[
+\begin{aligned}
+    A &\rightarrow \beta A',\\
+    A' &\rightarrow \alpha A' \mid \epsilon.
+\end{aligned}
+\]
+Bahasa yang dihasilkan tetap sama, tetapi struktur derivasi menjadi cocok untuk top-down parsing.
+
+Bentuk umum:
+\[
+    A\rightarrow A\alpha_1\mid\cdots\mid A\alpha_n\mid\beta_1\mid\cdots\mid\beta_m
+\]
+diubah menjadi:
+\[
+\begin{aligned}
+    A &\rightarrow \beta_1A'\mid\cdots\mid\beta_mA',\\
+    A' &\rightarrow \alpha_1A'\mid\cdots\mid\alpha_nA'\mid\epsilon.
+\end{aligned}
+\]
+
+Contoh:
+\[
+    E\rightarrow E+T\mid T
+\]
+menjadi:
+\[
+\begin{aligned}
+    E &\rightarrow TE',\\
+    E' &\rightarrow +TE'\mid\epsilon.
+\end{aligned}
+\]
+
+Transformasi ini sering muncul dalam soal karena mahasiswa harus mampu mengubah grammar sebelum menulis RD Parser.
+
+\begin{cmt}{Catatan: General Left Recursion}{}
+Untuk grammar dengan banyak nonterminal $A_1,A_2,\ldots,A_n$, rekursi kiri tidak langsung dapat dieliminasi dengan urutan sistematis. Algoritma formalnya:
+\begin{enumerate}
+    \item Urutkan nonterminal menjadi $A_1,A_2,\ldots,A_n$.
+    \item Untuk $i=1$ sampai $n$:
+    \begin{enumerate}
+        \item Untuk $j=1$ sampai $i-1$, ganti setiap produksi $A_i\rightarrow A_j\gamma$ dengan produksi $A_i\rightarrow \delta_1\gamma\mid\cdots\mid\delta_k\gamma$, dengan $A_j\rightarrow\delta_1\mid\cdots\mid\delta_k$ adalah semua alternatif $A_j$ saat itu.
+        \item Setelah semua awalan $A_j$ dengan $j<i$ diganti, hilangkan rekursi kiri langsung pada $A_i$ memakai transformasi $A_i\rightarrow\beta A_i'$ dan $A_i'\rightarrow\alpha A_i'\mid\epsilon$.
+    \end{enumerate}
+\end{enumerate}
+Proses ini mengubah rantai seperti $A\Rightarrow B\alpha\Rightarrow A\beta\alpha$ menjadi bentuk yang tidak memanggil nonterminal awal sebelum konsumsi input.
+
+Contoh dua nonterminal:
+\[
+    A_1\rightarrow A_2a\mid b,\qquad A_2\rightarrow A_1c\mid d.
+\]
+Saat memproses $A_2$, produksi $A_2\rightarrow A_1c$ diganti memakai alternatif $A_1$:
+\[
+    A_2\rightarrow A_2ac\mid bc\mid d.
+\]
+Sekarang rekursi kiri pada $A_2$ sudah langsung, sehingga dapat dihilangkan:
+\[
+\begin{aligned}
+    A_2 &\rightarrow bcA_2'\mid dA_2',\\
+    A_2' &\rightarrow acA_2'\mid\epsilon.
+\end{aligned}
+\]
+Grammar hasil tidak lagi membuat recursive descent memanggil $A_2$ kembali sebelum ada terminal yang dikonsumsi.
+\end{cmt}
+
+\subsubsection{Left Factoring}
+
+\begin{jawab}[Inti Konsep.]
+Left factoring menunda keputusan produksi ketika beberapa alternatif memiliki prefix yang sama. Transformasi ini membuat parser dapat memilih produksi berdasarkan lookahead tanpa mencoba cabang yang sama berulang.
+\end{jawab}
+
+Jika grammar memiliki:
+\[
+    A\rightarrow \alpha\beta_1 \mid \alpha\beta_2,
+\]
+parser tidak dapat memilih alternatif hanya dengan melihat prefix $\alpha$, karena keduanya diawali sama. Left factoring mengubahnya menjadi:
+\[
+\begin{aligned}
+    A &\rightarrow \alpha A',\\
+    A' &\rightarrow \beta_1 \mid \beta_2.
+\end{aligned}
+\]
+
+Transformasi ini tidak mengubah bahasa yang dihasilkan, tetapi mengubah struktur grammar agar keputusan parsing ditunda sampai token yang membedakan alternatif muncul.
+
+Left factoring sangat penting untuk predictive parsing, karena parser deterministik tidak boleh mencoba satu alternatif lalu mundur.
+
+\subsubsection{Predictive Parsing}
+
+\begin{jawab}[Inti Konsep.]
+Predictive parsing adalah varian RD Parser yang deterministik dan tidak memakai backtracking. Produksi dipilih dari lookahead dengan bantuan FIRST dan FOLLOW.
+\end{jawab}
+
+Pada predictive parsing, fungsi nonterminal tidak mencoba semua alternatif dengan OR. Fungsi memakai struktur \texttt{if-else} atau \texttt{switch} berdasarkan token lookahead.
+
+Jika ada alternatif $A\rightarrow\alpha\mid\beta$, parser dapat memilih $\alpha$ ketika lookahead berada di $FIRST(\alpha)$, dan memilih $\beta$ ketika lookahead berada di $FIRST(\beta)$. Agar tidak ambigu, FIRST dari alternatif-alternatif harus saling lepas.
+
+Jika ada produksi nullable seperti $A\rightarrow\epsilon$, FOLLOW digunakan untuk menentukan kapan $A$ boleh dikosongkan. Jika lookahead berada di $FOLLOW(A)$, parser dapat memilih produksi $\epsilon$ karena secara sintaksis nonterminal $A$ boleh selesai pada titik itu.
+
+Predictive parsing menjadi pengantar langsung ke LL(1) Parser, yang akan dibahas pada section berikutnya.
+
+\subsubsection{Recursive Descent untuk Syntax-Directed Translation}
+
+\begin{jawab}[Inti Konsep.]
+RD Parser dapat diperluas menjadi syntax-directed translator dengan membawa atribut melalui parameter dan return value. Inherited attributes menjadi argumen fungsi, sedangkan synthesized attributes menjadi nilai kembalian.
+\end{jawab}
+
+Pada grammar beratribut-L, evaluasi atribut cocok dengan traversal top-down. **Inherited attribute** dapat diteruskan dari fungsi parent ke fungsi child sebagai parameter. **Synthesized attribute** dapat dikembalikan oleh fungsi child sebagai return value.
+
+Semantic actions dapat disisipkan di antara pemanggilan fungsi parsing. Misalnya setelah mengenali ekspresi, parser dapat langsung mencetak instruksi intermediate code atau mengisi node AST.
+
+Sumber menekankan **on-the-fly code generation**. Jika output berupa rangkaian kode panjang, parser tidak harus menggabungkan string besar dari seluruh subtree. Ia dapat langsung memancarkan fragmen kode saat semantic action dieksekusi. Ini mengurangi beban memori dan cocok untuk translator sederhana.
+
+Konsep ini menghubungkan RD Parser dengan compiler: parser bukan hanya alat validasi syntax, tetapi juga titik masuk untuk membangun representasi semantik program.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Skema Umum Fungsi Nonterminal}
+
+\begin{jawab}[Tujuan Algoritma.]
+Skema ini menunjukkan pola umum RD Parser: coba produksi, proses body dari kiri ke kanan, dan kembalikan sukses jika seluruh body cocok.
+\end{jawab}
+
+\begin{lstlisting}[caption={Skema umum fungsi nonterminal recursive descent}, label={lst:rd-generic}]
+function parseA():
+    save = next
+
+    for setiap produksi A -> X1 X2 ... Xk:
+        next = save
+        ok = true
+
+        for i = 1 sampai k:
+            if Xi adalah terminal:
+                ok = ok and match(Xi)
+            else:
+                ok = ok and parseXi()
+
+            if not ok:
+                break
+
+        if ok:
+            return true
+
+    next = save
+    return false
+\end{lstlisting}
+
+Skema ini menggambarkan RD Parser dengan backtracking. Pada predictive parser, loop alternatif diganti dengan pemilihan produksi berdasarkan lookahead.
+
+\subsubsection{Eliminasi Left Recursion}
+
+\begin{jawab}[Makna Rumus.]
+Rumus ini mengubah grammar yang tidak aman untuk RD Parser menjadi grammar rekursif kanan yang menghasilkan bahasa sama.
+\end{jawab}
+
+\begin{align}
+    A &\rightarrow A\alpha \mid \beta \label{eq:left-rec-before}\\
+    A &\rightarrow \beta A' \label{eq:left-rec-after-a}\\
+    A' &\rightarrow \alpha A' \mid \epsilon \label{eq:left-rec-after-b}
+\end{align}
+
+dengan:
+\begin{itemize}
+    \item $A$: nonterminal yang left-recursive.
+    \item $\alpha$: suffix setelah pemanggilan rekursif kiri.
+    \item $\beta$: alternatif yang tidak diawali $A$.
+    \item $A'$: nonterminal baru yang menyimpan pengulangan suffix.
+\end{itemize}
+
+\subsubsection{Left Factoring}
+
+\begin{jawab}[Makna Rumus.]
+Rumus left factoring mengekstrak prefix bersama agar keputusan alternatif dapat ditunda sampai bagian yang berbeda terlihat oleh parser.
+\end{jawab}
+
+\begin{align}
+    A &\rightarrow \alpha\beta_1 \mid \alpha\beta_2 \label{eq:left-factor-before}\\
+    A &\rightarrow \alpha A' \label{eq:left-factor-after-a}\\
+    A' &\rightarrow \beta_1 \mid \beta_2 \label{eq:left-factor-after-b}
+\end{align}
+
+Transformasi ini menjadi prasyarat penting untuk membuat grammar lebih cocok bagi predictive recursive descent parser.

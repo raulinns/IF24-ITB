@@ -1,0 +1,195 @@
+\section{Transport Layer}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Posisi dan tujuan Transport Layer: mengubah layanan host-to-host dari Network Layer menjadi layanan process-to-process untuk aplikasi.
+    \item Identifikasi proses: socket, port number, multiplexing, dan demultiplexing.
+    \item UDP: layanan datagram sederhana, connectionless, unreliable, header minimal, checksum, pseudoheader, dan penggunaan pada DNS, SNMP, RIP, TFTP, serta multimedia.
+    \item TCP: layanan connection-oriented, reliable byte stream, segment, sequence number, acknowledgment number, flags, window, handshake, teardown, retransmission, timeout, dan sliding window.
+    \item Flow control: receive buffer, advertised window, effective window, dan batas pengiriman agar receiver tidak overflow.
+    \item Kinerja TCP: triggering transmission, MSS, MTU, PUSH, timer, delay-bandwidth product, dan keeping the pipe full.
+    \item Topik lanjutan yang disebut sumber: Nagle's Algorithm, RTP, RTCP, RPC, record boundaries, TCP options, persistent HTTP, dan end-to-end argument.
+\end{enumerate}
+
+\begin{cmt}{Audit Kelengkapan Materi}{}
+Verifikasi sumber NotebookLM menunjukkan bahwa selain inti UDP/TCP, catatan perlu memuat latihan estimasi RTT, analisis pemilihan TCP vs UDP untuk aplikasi, record boundaries pada byte stream, RTCP, semantik RPC, SCTP sebagai topik yang disebut, end-to-end argument, serta dampak persistent HTTP terhadap biaya 3-way handshake dan slow start.
+\end{cmt}
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\begin{jawab}[Inti Transport Layer]
+Transport Layer berada di antara Application Layer dan Network Layer. Network Layer menyediakan layanan pengiriman host-to-host berbasis IP yang bersifat best-effort: paket dapat hilang, terduplikasi, tertunda, atau datang tidak berurutan. Transport Layer memberi abstraksi yang lebih sesuai untuk aplikasi, yaitu komunikasi logis antar-proses pada host berbeda.
+\end{jawab}
+
+Protokol transport berjalan pada end systems, bukan pada router inti. Dengan desain ini, mekanisme seperti reliability, flow control, dan sebagian besar congestion control ditempatkan pada host pengirim dan penerima. Sumber juga menyinggung \textit{end-to-end argument}: fungsi yang membutuhkan pengetahuan akhir aplikasi lebih tepat ditempatkan pada end-host daripada dipaksakan di semua router.
+
+Socket adalah API yang digunakan proses aplikasi untuk mengirim dan menerima data. Sumber menganalogikan socket sebagai pintu proses ke jaringan. Pada Internet API, aplikasi memilih jenis layanan seperti \texttt{SOCK\_STREAM} untuk TCP atau \texttt{SOCK\_DGRAM} untuk UDP.
+
+Port number adalah pengenal logis 16-bit untuk proses. Alamat IP hanya menunjuk host, sedangkan pasangan IP dan port menunjuk endpoint aplikasi tertentu. Multiplexing menggabungkan data dari banyak proses ke layanan jaringan yang sama; demultiplexing memisahkan segmen yang datang ke socket/proses yang tepat berdasarkan port dan informasi endpoint.
+
+\subsubsection*{UDP}
+
+UDP adalah protokol transport yang sederhana. UDP bersifat connectionless, sehingga tidak ada SYN, FIN, atau handshake. UDP juga unreliable: tidak ada jaminan pengiriman, tidak ada jaminan urutan, dan tidak ada ACK bawaan. Segmen yang dikirim 1, 2, 3, 4 dapat diterima sebagai 2, 3, 1, 4 atau sebagian hilang.
+
+Header UDP terdiri atas empat field 16-bit: source port, destination port, length, dan checksum. Checksum digunakan untuk mendeteksi kesalahan bit. Perhitungan checksum menggunakan 1's complement sum terhadap deretan word 16-bit dari UDP header, data, dan pseudoheader IP. Pseudoheader memuat alamat IP sumber, alamat IP tujuan, nomor protokol, dan panjang UDP sehingga penerima dapat mendeteksi paket yang salah endpoint.
+
+UDP cocok untuk aplikasi yang lebih mementingkan waktu daripada jaminan pengiriman, seperti DNS, SNMP, RIP, TFTP, streaming multimedia, dan aplikasi real-time tertentu. Bila aplikasi tetap membutuhkan reliability di atas UDP, sumber menyebut bahwa fitur seperti pelacakan byte, urutan, dan retransmission dapat diimplementasikan di Application Layer.
+
+\subsubsection*{TCP}
+
+TCP menyediakan layanan reliable byte stream yang connection-oriented dan full-duplex. Aplikasi menulis byte ke send buffer TCP. TCP kemudian mengelompokkan byte tersebut menjadi segment berukuran wajar. Karena TCP adalah byte stream, ia tidak mempertahankan batas pesan aplikasi atau record boundaries. Aplikasi harus memberi penanda sendiri, misalnya panjang pesan atau delimiter, bila ingin membedakan akhir satu pesan dari pesan berikutnya.
+
+Field penting TCP header meliputi source port, destination port, sequence number, acknowledgment number, advertised window, flags, dan options. Sequence number mengidentifikasi posisi byte dalam aliran. Acknowledgment number menyatakan byte berikutnya yang diharapkan penerima; ACK TCP bersifat kumulatif. Flags meliputi \texttt{SYN}, \texttt{ACK}, \texttt{FIN}, \texttt{RST}, \texttt{PSH}, dan \texttt{URG}.
+
+Pembentukan koneksi TCP menggunakan three-way handshake:
+
+\begin{enumerate}
+    \item Client melakukan active open dan mengirim \texttt{SYN} dengan initial sequence number, misalnya $x$.
+    \item Server melakukan passive open, mengalokasikan buffer, lalu membalas \texttt{SYN+ACK} dengan sequence number $y$ dan acknowledgment $x+1$.
+    \item Client mengirim \texttt{ACK} dengan acknowledgment $y+1$. Segmen ketiga ini dapat mulai membawa data.
+\end{enumerate}
+
+Penutupan koneksi bersifat simetris. Pihak yang selesai mengirim data mengirim \texttt{FIN}; lawan membalas \texttt{ACK}, lalu dapat mengirim \texttt{FIN} sendiri saat arahnya juga selesai. Setelah ACK final, pihak penutup aktif masuk \texttt{TIME\_WAIT} sekitar dua kali Maximum Segment Lifetime untuk menghindari segmen lama mengganggu koneksi baru dengan pasangan port yang sama. Flag \texttt{RST} dipakai untuk membatalkan koneksi secara mendadak ketika segmen yang diterima tidak sesuai keadaan koneksi.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{itemize}
+    \item \textbf{Best-effort IP}: layanan bawah yang dapat drop, reorder, duplicate, delay, dan membatasi ukuran paket.
+    \item \textbf{Socket}: API aplikasi menuju layanan transport.
+    \item \textbf{Port}: pengenal proses pada host.
+    \item \textbf{UDP checksum}: deteksi kesalahan bit menggunakan 1's complement sum dan pseudoheader IP.
+    \item \textbf{TCP sequence number}: nomor posisi byte dalam aliran.
+    \item \textbf{TCP ACK}: acknowledgment kumulatif yang menyatakan \textit{NextByteExpected}.
+    \item \textbf{Sliding window}: mekanisme yang memungkinkan beberapa segmen in flight tanpa menunggu ACK satu per satu.
+    \item \textbf{AdvertisedWindow}: ruang receiver yang diiklankan kepada sender untuk flow control.
+    \item \textbf{CongestionWindow}: batas dari sisi jaringan yang dibahas lebih rinci pada materi Congestion Control.
+    \item \textbf{MSS}: Maximum Segment Size, diturunkan dari MTU setelah dikurangi header IP dan TCP.
+\end{itemize}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection*{UDP Checksum}
+
+\begin{lstlisting}[language={},caption={Skema UDP checksum berdasarkan sumber}]
+sender:
+    words = pseudoheader_ip + udp_header + udp_data
+    sum = ones_complement_sum(words as 16-bit integers)
+    checksum = ones_complement(sum)
+    put checksum into UDP header
+
+receiver:
+    words = pseudoheader_ip + udp_header + udp_data
+    sum = ones_complement_sum(words as 16-bit integers)
+    if sum is all 1 bits:
+        accept as no detected error
+    else:
+        detected error
+\end{lstlisting}
+
+\subsubsection*{TCP Reliability dan Fast Retransmit}
+
+\begin{lstlisting}[language={},caption={Intuisi reliability TCP}]
+send segment and start timer
+if ACK for segment arrives before timeout:
+    slide send window
+else if timeout expires:
+    retransmit segment
+
+if sender receives 3 duplicate ACKs for the same missing byte:
+    retransmit missing segment immediately
+\end{lstlisting}
+
+Estimasi timeout adaptif yang disebut sumber:
+
+\[
+\text{EstRTT} = \alpha \times \text{EstRTT} + (1-\alpha) \times \text{SampleRTT}
+\]
+
+\[
+\text{TimeOut} = 2 \times \text{EstRTT}
+\]
+
+Nilai $\alpha$ pada sumber berada sekitar 0.8 sampai 0.9. Karn/Partridge menghindari pengambilan sample RTT dari paket retransmitted dan memakai exponential backoff. Jacobson/Karels memperbaiki estimasi dengan mempertimbangkan variasi RTT.
+
+\subsubsection*{Flow Control}
+
+Ruang receive buffer:
+
+\[
+\text{RcvWindow} = \text{RcvBuffer} - (\text{LastByteRcvd} - \text{LastByteRead})
+\]
+
+Versi advertised window yang diturunkan dari byte berikutnya yang diharapkan:
+
+\[
+\text{AdvertisedWindow} = \text{MaxRcvBuffer} - ((\text{NextByteExpected}-1)-\text{LastByteRead})
+\]
+
+Batas ketat pengirim:
+
+\[
+\text{LastByteSent} - \text{LastByteAcked} \leq \text{AdvertisedWindow}
+\]
+
+Ruang efektif untuk data baru:
+
+\[
+\text{EffectiveWindow} = \text{AdvertisedWindow} - (\text{LastByteSent}-\text{LastByteAcked})
+\]
+
+Jika $\text{EffectiveWindow}=0$, sender tidak boleh mengirim data baru sampai receiver mengiklankan ruang tambahan.
+
+\subsubsection*{Triggering Transmission dan Pipe}
+
+\[
+\text{MSS} = \text{MTU} - (\text{TCP header} + \text{IP header})
+\]
+
+TCP mengirim segmen ketika data mencapai MSS, aplikasi meminta \texttt{PUSH}, atau timer mengharuskan buffer dikirim. Untuk menjaga pipa tetap penuh, ukuran window perlu cukup besar dibandingkan delay-bandwidth product:
+
+\[
+\text{Data in flight ideal} \approx \text{Bandwidth} \times \text{RTT}
+\]
+
+Jika delay-bandwidth product besar, batas window 16-bit lama sebesar 64 KB tidak cukup. Sumber menyebut TCP option seperti window scaling untuk mengatasi hal ini.
+
+\subsubsection*{Nagle's Algorithm}
+
+\begin{lstlisting}[language={},caption={Nagle's Algorithm menurut sumber}]
+if buffered data >= MSS:
+    send immediately
+else if there is unACKed data in flight:
+    buffer small data until an ACK arrives
+else:
+    send the small segment
+\end{lstlisting}
+
+Tujuannya mengurangi tiny packets dan silly window syndrome ketika aplikasi atau receiver menghasilkan potongan data sangat kecil.
+
+\subsection{Hubungan dengan Materi Lain}
+
+\begin{itemize}
+    \item \textbf{Application Layer}: HTTP, SMTP, FTP, dan banyak aplikasi lain memakai TCP; DNS dan beberapa layanan manajemen memakai UDP; RTP berjalan di atas UDP untuk multimedia real-time.
+    \item \textbf{Congestion Control}: TCP memakai loss, timeout, dan duplicate ACK sebagai sinyal untuk mengatur CongestionWindow.
+    \item \textbf{Wireless Network}: packet loss karena bit error pada wireless dapat disalahartikan TCP sebagai kongesti sehingga throughput turun padahal bottleneck bukan kemacetan.
+    \item \textbf{Network Security}: TLS/SSL disisipkan antara aplikasi dan TCP untuk confidentiality, integrity, dan authentication sambil tetap memakai reliability TCP.
+    \item \textbf{HTTP persistent connection}: HTTP/1.1 menjaga koneksi TCP agar tidak terus mengulang 3-way handshake dan slow start untuk setiap objek.
+\end{itemize}
+
+\begin{cmt}{Bagian yang Disebut tetapi Terbatas di Sumber}{}
+Sumber menyebut RTP, RTCP, RPC, SCTP, TCP options, dan end-to-end argument. Bagian tersebut penting untuk konteks, tetapi tidak semuanya dijelaskan sedalam UDP, TCP, flow control, dan congestion control pada slide utama.
+\end{cmt}
+
+\subsection{Checklist Pemahaman}
+
+\begin{itemize}
+    \item Dapat membedakan host-to-host, process-to-process, socket, dan port.
+    \item Dapat menjelaskan mengapa UDP cepat tetapi unreliable.
+    \item Dapat menjelaskan field header UDP dan TCP yang paling penting.
+    \item Dapat menggambar three-way handshake dan teardown TCP.
+    \item Dapat menghitung advertised window, effective window, MSS, dan EstRTT iteratif sederhana.
+    \item Dapat menjelaskan ACK kumulatif, duplicate ACK, timeout, fast retransmit, dan sliding window.
+    \item Dapat memilih TCP atau UDP untuk aplikasi seperti chat, file transfer, DNS, dan VoIP beserta alasannya.
+    \item Dapat menjelaskan mengapa persistent HTTP memperbaiki kinerja dibanding nonpersistent HTTP.
+\end{itemize}

@@ -1,0 +1,337 @@
+\section{Wireless Network}
+
+Wireless Network membahas jaringan yang memakai gelombang radio sebagai media transmisi. Materi ini penting karena sifat medium udara berbeda tajam dari kabel: sinyal melemah, dapat terinterferensi, memantul, mudah disadap, dan membuat packet loss yang tidak selalu berarti congestion.
+
+Fokus ujian adalah memahami elemen jaringan nirkabel, mode infrastructure/ad hoc, standar Wi-Fi dan seluler, masalah link fisik, MAC 802.11 dengan CSMA/CA dan RTS/CTS, mobilitas, routing ad hoc, keamanan link-layer, serta dampaknya terhadap TCP dan security.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Fondasi dan Elemen Wireless Network
+    \begin{enumerate}
+        \item \pwajib Wireless host, base station, wireless link, dan wired infrastructure
+        \item \pwajib Infrastructure mode, ad hoc mode, dan handoff
+        \item \pwajib Taksonomi single-hop/multi-hop, infrastructure/no-infrastructure
+    \end{enumerate}
+    \item \pwajib Standar dan Karakteristik Link
+    \begin{enumerate}
+        \item \pwajib WLAN vs Wi-Fi
+        \item \ppaham IEEE 802.15/Bluetooth dan IEEE 802.11b/a/g/n/ac/ax
+        \item \ppaham Cellular 2G, 2.5G, 3G, 4G LTE/WiMAX, dan 5G\textsuperscript{\dag}
+        \item \pwajib Path loss, interference, dan multipath propagation
+        \item \ppaham MIMO, frequency hopping, direct sequence, CDMA, dan chipping code
+    \end{enumerate}
+    \item \pwajib MAC 802.11
+    \begin{enumerate}
+        \item \pwajib Hidden terminal dan exposed terminal
+        \item \pwajib Alasan CSMA/CD tidak cocok untuk wireless
+        \item \pwajib CSMA/CA dan RTS/CTS/DATA/ACK
+        \item \pwajib Scanning, beacon frame, authentication, dan association
+        \item \ppaham Wi-Fi 6/802.11ax high-efficiency features\textsuperscript{\dag}
+    \end{enumerate}
+    \item \ppaham Mobilitas dan Routing
+    \begin{enumerate}
+        \item \ppaham Mobile IP, home agent, foreign agent, dan tunneling
+        \item \ppaham MACAW, AODV, OLSR, dan ExOR
+    \end{enumerate}
+    \item \pwajib Wireless Security
+    \begin{enumerate}
+        \item \pwajib Risiko medium broadcast
+        \item \pwajib WEP, WPA2, IEEE 802.11i, dan CCMP\textsuperscript{\ddag}
+        \item \ppaham WPA3 dan SAE\textsuperscript{\dag}
+    \end{enumerate}
+    \item \pwajib Relasi Lintas Materi
+    \begin{enumerate}
+        \item \pwajib TCP over wireless dan misinterpretasi loss
+        \item \pwajib Ad hoc routing vs routing IP biasa
+        \item \pwajib Kebutuhan link-layer security pada wireless
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Fondasi dan Elemen Wireless Network}
+\begin{jawab}[Inti Konsep.]
+Wireless Network adalah jaringan yang memakai gelombang radio untuk mengirim data tanpa kabel fisik. Konsep ini penting karena konektivitas menjadi fleksibel dan mobile, tetapi medium udara membawa masalah baru seperti interferensi, atenuasi, handoff, dan keamanan siaran.
+\end{jawab}
+
+Motivasi utama wireless adalah mobilitas dan fleksibilitas. Laptop, smartphone, sensor, dan perangkat bergerak membutuhkan akses jaringan tanpa harus tersambung kabel. Namun, nirkabel tidak selalu berarti mobile: perangkat wireless dapat diam, dan perangkat mobile dapat berpindah antar-base station.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Elemen} & \textbf{Definisi atau Peran} \\
+\hline
+Wireless host & End device seperti laptop atau smartphone yang menjalankan aplikasi dan memakai link radio. \\
+\hline
+Base station & Perangkat seperti access point atau cell tower yang menjadi relay antara host wireless dan jaringan kabel. \\
+\hline
+Wireless link & Medium udara/radio yang menghubungkan host dengan base station atau host lain. \\
+\hline
+Wired infrastructure & Infrastruktur kabel/Internet yang terhubung melalui base station. \\
+\hline
+\end{tabularx}
+\caption{Elemen dasar wireless network}
+\label{tab:wireless-elements}
+\end{table}
+
+Mode operasi utama:
+\begin{enumerate}
+    \item **Infrastructure mode**: host berkomunikasi melalui base station yang terhubung ke jaringan kabel. Ketika host bergerak, **handoff** memindahkan koneksi dari satu base station ke base station lain.
+    \item **Ad hoc mode**: tidak ada base station. Node berkomunikasi langsung jika berada dalam jangkauan dan dapat merutekan paket antar-node.
+\end{enumerate}
+
+Taksonomi wireless network:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|}
+\hline
+\textbf{Kategori} & \textbf{Contoh / Makna} \\
+\hline
+Single-hop infrastructure & Host langsung ke AP/cell tower, misalnya Wi-Fi atau cellular. \\
+\hline
+Single-hop no infrastructure & Komunikasi langsung tanpa Internet, misalnya Bluetooth sederhana. \\
+\hline
+Multi-hop infrastructure & Host mencapai base station melalui relay wireless lain, misalnya mesh network. \\
+\hline
+Multi-hop no infrastructure & Jaringan relay tanpa koneksi luar, misalnya MANET atau VANET. \\
+\hline
+\end{tabularx}
+\caption{Taksonomi wireless network}
+\label{tab:wireless-taxonomy}
+\end{table}
+
+Konsep ini berkaitan dengan Network Layer dan Transport Layer. Jika host berpindah jaringan, alamat dan rute dapat berubah; jika link radio menyebabkan loss, TCP dapat salah mengira loss tersebut sebagai congestion.
+
+\subsubsection{Standar dan Karakteristik Link}
+\begin{jawab}[Inti Konsep.]
+Standar wireless menentukan jangkauan, frekuensi, modulasi, dan kapasitas transmisi; karakteristik link menentukan mengapa komunikasi radio lebih sulit daripada kabel. Bagian ini penting karena banyak masalah MAC, TCP, dan security berasal dari sifat fisik link wireless.
+\end{jawab}
+
+**WLAN** adalah kategori jaringan lokal nirkabel. **Wi-Fi** adalah implementasi komersial WLAN berbasis standar IEEE 802.11 dan disertifikasi oleh Wi-Fi Alliance. Keduanya sering dipakai bergantian, tetapi secara teknis Wi-Fi adalah merek/ekosistem implementasi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Standar} & \textbf{Karakteristik dari sumber} \\
+\hline
+IEEE 802.15 / Bluetooth & Personal area network, indoor sekitar 10--30 m, sekitar 1 Mbps. \\
+\hline
+802.11b & 2.4 GHz, sekitar 5--11 Mbps. \\
+\hline
+802.11a/g & Sekitar 54 Mbps; 802.11a di 5 GHz, 802.11g di 2.4 GHz. \\
+\hline
+802.11n & Wi-Fi 4, memakai MIMO, sekitar 450--600 Mbps. \\
+\hline
+802.11ac & Wi-Fi 5, 5 GHz, 256-QAM, theoretical rate hingga beberapa Gbps. \\
+\hline
+802.11ax & Wi-Fi 6, 2.4/5 GHz, 1024-QAM, theoretical rate hingga sekitar 9.6 Gbps. \\
+\hline
+2G/2.5G/3G/4G & Evolusi cellular dari puluhan Kbps sampai beberapa Mbps/Gbps bergantung standar dan lingkungan. \\
+\hline
+\end{tabularx}
+\caption{Standar wireless yang disebut sumber}
+\label{tab:wireless-standards}
+\end{table}
+
+Tiga masalah fisik utama:
+\begin{itemize}
+    \item **Path loss**: kekuatan sinyal melemah seiring jarak dan hambatan fisik.
+    \item **Interference**: sinyal lain pada frekuensi yang sama/berdekatan merusak transmisi.
+    \item **Multipath propagation**: sinyal memantul dan tiba lewat beberapa jalur dengan delay berbeda.
+\end{itemize}
+
+Teknik fisik untuk mengatasi keterbatasan ini meliputi **MIMO**, **frequency hopping**, **direct sequence spread spectrum**, dan **CDMA/chipping code**. MIMO memakai banyak antena untuk membuat spatial streams. Frequency hopping berpindah-pindah frekuensi. Direct sequence menyebar bit menjadi chip. CDMA memakai kode untuk memisahkan beberapa pengguna pada frekuensi yang sama.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+5G ditambahkan sebagai konteks modern dari evolusi cellular. Secara umum, 5G menargetkan throughput lebih tinggi, latency lebih rendah, dan dukungan perangkat masif dibanding generasi sebelumnya. Detail arsitektur 5G tidak menjadi fokus sumber NotebookLM untuk materi ini, sehingga catatan ini hanya menempatkannya sebagai kelanjutan standar cellular setelah 4G/LTE.
+\end{cmt}
+
+Karakteristik link ini menjelaskan mengapa MAC wireless berbeda dari Ethernet dan mengapa TCP dapat bermasalah di atas wireless.
+
+\subsubsection{MAC 802.11}
+\begin{jawab}[Inti Konsep.]
+MAC 802.11 mengatur cara banyak host berbagi medium radio yang sama. Konsep ini penting karena wireless tidak dapat mengandalkan collision detection seperti Ethernet, sehingga harus memakai collision avoidance, RTS/CTS, ACK link-layer, scanning, dan association.
+\end{jawab}
+
+Masalah MAC wireless berbeda dari kabel karena setiap node tidak selalu mendengar node lain. **Hidden terminal problem** terjadi ketika A dan C tidak saling mendengar, tetapi keduanya mengirim ke B sehingga tabrakan terjadi di B. **Exposed terminal problem** terjadi ketika node menahan transmisi karena mendengar tetangga, padahal transmisinya ke penerima lain tidak akan mengganggu.
+
+CSMA/CD pada Ethernet tidak cocok untuk wireless karena:
+\begin{enumerate}
+    \item Pengirim sulit mendeteksi collision sambil memancarkan sinyal sendiri.
+    \item Sinyal yang diterima dapat sangat lemah akibat fading dan path loss.
+    \item Collision dapat terjadi di penerima walaupun tidak terdeteksi di pengirim, terutama pada hidden terminal.
+\end{enumerate}
+
+Karena itu 802.11 memakai **CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance)**. Intinya, host mendengar channel sebelum mengirim dan berusaha menghindari collision sebelum terjadi.
+
+Prosedur RTS/CTS:
+\begin{enumerate}
+    \item Sender mengirim **RTS (Request to Send)** ke receiver.
+    \item Receiver membalas **CTS (Clear to Send)**.
+    \item Node yang mendengar CTS diam selama durasi transmisi agar hidden terminal tidak mengganggu.
+    \item Sender mengirim DATA.
+    \item Receiver mengirim ACK link-layer jika frame diterima utuh.
+\end{enumerate}
+
+Prosedur bergabung ke AP:
+\begin{enumerate}
+    \item AP menyiarkan **beacon frame** yang berisi identitas jaringan.
+    \item Client melakukan **scanning** untuk menemukan AP.
+    \item Client melakukan **authentication**, misalnya verifikasi kredensial/kunci.
+    \item Client melakukan **association** agar AP menerima dan meneruskan frame miliknya ke wired infrastructure.
+\end{enumerate}
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Fitur high-efficiency Wi-Fi 6/802.11ax ditambahkan dari sumber standar/umum. Contohnya OFDMA untuk membagi channel ke resource unit kecil, MU-MIMO untuk melayani banyak perangkat, BSS coloring untuk mengurangi gangguan antar-BSS, Target Wake Time untuk efisiensi daya, dan spatial reuse untuk meningkatkan kapasitas area padat. Sumber NotebookLM menyebut 802.11ax dan MIMO, tetapi tidak merinci semua fitur ini.
+\end{cmt}
+
+MAC 802.11 berkaitan langsung dengan reliability lokal. ACK di link-layer tidak menggantikan TCP ACK end-to-end, tetapi membantu mendeteksi kegagalan frame pada hop wireless.
+
+\subsubsection{Mobilitas dan Routing}
+\begin{jawab}[Inti Konsep.]
+Mobilitas dan routing wireless menjaga konektivitas ketika host bergerak atau ketika tidak ada base station pusat. Konsep ini penting karena routing IP biasa mengasumsikan topologi relatif stabil, sedangkan wireless ad hoc dan mobile host dapat berubah posisi dan rutenya.
+\end{jawab}
+
+Pada infrastructure mode, mobilitas link-layer ditangani dengan handoff antar-AP. Namun, jika host berpindah subnet IP, koneksi transport dapat terganggu karena alamat IP berubah. **Mobile IP** mencoba mempertahankan identitas IP host.
+
+Mekanisme Mobile IP:
+\begin{enumerate}
+    \item Host memiliki jaringan asal dengan **home agent**.
+    \item Saat berpindah ke jaringan lain, host berhubungan dengan **foreign agent**.
+    \item Paket yang dikirim ke alamat asli host dicegat oleh home agent.
+    \item Home agent melakukan **tunneling**, yaitu membungkus paket dan mengirimkannya ke foreign agent.
+    \item Foreign agent membongkar paket dan menyerahkannya ke mobile host.
+\end{enumerate}
+
+Pada ad hoc multi-hop, tidak ada AP yang menjadi pusat routing. Node harus menemukan dan memelihara rute sendiri. Sumber menyebut beberapa pendekatan:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Protokol} & \textbf{Peran} \\
+\hline
+MACAW & Perbaikan akses medium wireless untuk mengurangi hidden/exposed terminal. \\
+\hline
+AODV & Reactive ad hoc routing; mencari rute saat dibutuhkan. \\
+\hline
+OLSR & Proactive link-state routing; menjaga peta topologi secara berkala. \\
+\hline
+ExOR & Opportunistic routing yang memanfaatkan peluang beberapa node penerima. \\
+\hline
+\end{tabularx}
+\caption{Contoh routing dan MAC lanjutan pada wireless}
+\label{tab:wireless-routing}
+\end{table}
+
+Mobilitas menghubungkan Wireless Network dengan Network Layer dan Transport Layer. Perubahan rute, subnet, dan kualitas link dapat mengubah RTT, loss, dan koneksi TCP yang sedang berjalan.
+
+\subsubsection{Wireless Security}
+\begin{jawab}[Inti Konsep.]
+Wireless security diperlukan karena radio disiarkan ke udara dan dapat didengar oleh perangkat dalam jangkauan. Keamanan wireless harus bekerja sejak link-layer agar frame tidak mudah disadap, dipalsukan, atau dimodifikasi sebelum mencapai lapisan transport/aplikasi.
+\end{jawab}
+
+Berbeda dari kabel, penyerang wireless tidak harus menyambung fisik ke medium. Cukup berada dalam jangkauan sinyal, penyerang dapat mengamati trafik. Karena itu wireless memerlukan autentikasi dan enkripsi link-layer.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Mekanisme} & \textbf{Makna} \\
+\hline
+WEP & Upaya awal memberi privasi setara kabel, tetapi lemah dan mudah diretas. \\
+\hline
+WPA2 / IEEE 802.11i & Pengamanan modern yang menggantikan WEP dan memakai mekanisme kunci serta AES. \\
+\hline
+CCMP & Protokol berbasis AES untuk confidentiality dan integrity frame MAC. \\
+\hline
+\end{tabularx}
+\caption{Evolusi keamanan wireless}
+\label{tab:wireless-security}
+\end{table}
+
+\begin{cmt}{Catatan: Perbedaan dengan Sumber Lain}{}
+NotebookLM menyebut CCMP sebagai CTR Counter Mode. Penjelasan yang lebih tepat dari referensi keamanan 802.11 adalah CCMP berbasis AES-CCM, yaitu kombinasi counter mode untuk enkripsi dan CBC-MAC/MIC untuk autentikasi serta integritas. Jadi, CCMP bukan sekadar CTR; ia adalah skema authenticate-and-encrypt untuk frame 802.11.
+\end{cmt}
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+WPA3 dan SAE ditambahkan sebagai konteks modern. WPA3-Personal memakai SAE (Simultaneous Authentication of Equals) untuk menggantikan PSK handshake lama dan memperkuat perlindungan terhadap serangan tebakan password offline. Detail WPA3 tidak dibahas sebagai topik utama sumber NotebookLM, sehingga catatan ini hanya menempatkannya sebagai evolusi setelah WPA2.
+\end{cmt}
+
+Wireless security berkaitan dengan Network Security. TLS atau IPsec tetap berguna, tetapi wireless juga membutuhkan perlindungan Data Link karena medium udara terbuka bahkan sebelum paket mencapai layer atas.
+
+\subsubsection{Relasi Lintas Materi}
+\begin{jawab}[Inti Konsep.]
+Wireless Network memengaruhi layer lain karena packet loss, mobilitas, dan broadcast medium mengubah asumsi jaringan kabel. Relasi paling penting adalah TCP over wireless: loss radio dapat disalahartikan sebagai congestion.
+\end{jawab}
+
+Dengan **Transport Layer**, masalah utama adalah interpretasi loss. TCP klasik menganggap packet loss sebagai tanda congestion. Pada wireless, loss dapat terjadi karena path loss, interference, atau multipath, bukan karena router bottleneck. Akibatnya TCP melakukan multiplicative decrease secara sia-sia, cwnd turun, dan throughput merosot.
+
+Dengan **Network Layer**, ad hoc mode memerlukan routing yang berbeda dari routing IP biasa. Topologi dapat berubah cepat, node dapat menjadi relay, dan rute harus ditemukan atau dipelihara secara dinamis.
+
+Dengan **Network Security**, wireless membutuhkan link-layer security karena medium siar terbuka. Firewall di jaringan kabel tidak cukup untuk mencegah penyadapan radio; frame harus dilindungi sejak hop wireless.
+
+Dengan **Congestion Control**, loss wireless menantang asumsi bahwa loss berarti queue overflow. Ini menjelaskan mengapa desain lintas-layer atau sinyal eksplisit dapat membantu membedakan congestion loss dari wireless error loss.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{CSMA/CA dengan RTS/CTS}
+\begin{jawab}[Tujuan Algoritma.]
+CSMA/CA menghindari collision sebelum terjadi karena wireless sulit melakukan collision detection. RTS/CTS membantu mengurangi hidden terminal dengan membuat node sekitar receiver ikut diam.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode CSMA/CA dengan RTS/CTS}, label={lst:csmaca}]
+Input: frame to send, destination
+Output: frame delivered or retransmission attempted
+
+while frame not delivered and retry_limit not exceeded:
+    sense_channel()
+    if channel_is_busy:
+        wait_random_backoff()
+        continue
+
+    send_RTS(destination)
+    if CTS_received:
+        send_DATA(destination)
+        if ACK_received:
+            mark_delivered()
+        else:
+            wait_random_backoff()
+    else:
+        wait_random_backoff()
+\end{lstlisting}
+
+\subsubsection{Mobile IP Tunneling}
+\begin{jawab}[Tujuan Algoritma.]
+Mobile IP tunneling mempertahankan konektivitas host yang bergerak ke jaringan asing. Home agent membungkus paket yang menuju alamat permanen host dan mengirimkannya ke foreign agent.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode Mobile IP tunneling}, label={lst:mobile-ip}]
+correspondent sends packet to mobile_host_home_address
+home_agent intercepts packet
+home_agent encapsulates packet to foreign_agent_address
+foreign_agent decapsulates packet
+foreign_agent delivers original packet to mobile_host
+\end{lstlisting}
+
+\subsubsection{Delay Spread Intuition pada Multipath}
+\begin{jawab}[Makna Rumus.]
+Multipath membuat salinan sinyal tiba pada waktu berbeda. Selisih waktu kedatangan ini membantu menjelaskan mengapa simbol dapat saling mengganggu pada link wireless.
+\end{jawab}
+
+\begin{equation}
+    \Delta t = t_{\text{late}} - t_{\text{early}}
+    \label{eq:multipath-delay-spread}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $t_{\text{late}}$: waktu kedatangan salinan sinyal yang lebih lambat.
+    \item $t_{\text{early}}$: waktu kedatangan salinan sinyal yang lebih cepat.
+\end{itemize}
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Sumber utama menjelaskan multipath propagation secara konseptual, tetapi tidak memberikan model matematis kanal radio yang rinci. Persamaan delay spread di atas adalah abstraksi dasar untuk membantu memahami dampak multipath, bukan rumus performa lengkap dari sumber.
+\end{cmt}

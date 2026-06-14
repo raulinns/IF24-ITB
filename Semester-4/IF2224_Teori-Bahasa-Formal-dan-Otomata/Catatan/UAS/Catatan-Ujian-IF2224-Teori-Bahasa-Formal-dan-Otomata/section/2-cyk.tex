@@ -1,0 +1,403 @@
+\section{CYK}
+
+Algoritma CYK (Cocke-Younger-Kasami) adalah algoritma membership test untuk Context-Free Language (CFL). Tujuannya bukan menghasilkan grammar baru, melainkan memutuskan apakah sebuah string tertentu dapat diturunkan oleh sebuah CFG tertentu. Materi ini berdiri di atas konsep CFG, Chomsky Normal Form (CNF), parse tree biner, dan dynamic programming.
+
+Untuk ujian, CYK perlu dikuasai sebagai prosedur tabel: mahasiswa harus dapat mengisi tabel dari substring panjang satu, menggabungkan sel melalui semua titik potong, membaca kondisi penerimaan, dan menjelaskan mengapa kompleksitasnya polinomial.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Dasar membership problem CFL
+    \begin{enumerate}
+        \item \pwajib Tujuan menguji $w \in L(G)$
+        \item \ppaham Kelemahan enumerasi parse tree secara naif
+        \item \pwajib CYK sebagai algoritma dynamic programming
+        \item \pwajib Dependensi wajib terhadap Chomsky Normal Form
+    \end{enumerate}
+    \item \pwajib Prasyarat CNF
+    \begin{enumerate}
+        \item \pwajib Produksi bentuk $A \rightarrow BC$
+        \item \pwajib Produksi terminal $A \rightarrow a$
+        \item \ppaham Perlakuan start symbol dan string kosong
+        \item \pwajib Clean-up grammar: nullable, unit pairs, generating, dan reachable symbols
+        \item \pwajib Konversi CFG ke CNF sebelum CYK
+        \item \ppaham Kompleksitas pertumbuhan grammar saat konversi
+    \end{enumerate}
+    \item \pwajib Struktur tabel CYK
+    \begin{enumerate}
+        \item \pwajib String input $w=a_1a_2\cdots a_n$
+        \item \pwajib Sel tabel $X_{ij}$
+        \item \pwajib Makna $X_{ij}=\{A\mid A\Rightarrow_G^* a_i\cdots a_j\}$
+        \item \ppaham Tabel segitiga dari panjang 1 sampai panjang $n$
+    \end{enumerate}
+    \item \pwajib Prosedur algoritma CYK
+    \begin{enumerate}
+        \item \pwajib Basis $X_{ii}=\{A\mid A\rightarrow a_i\}$
+        \item \pwajib Induksi dengan semua split $i\leq k<j$
+        \item \pwajib Tambahkan $A$ jika ada $A\rightarrow BC$, $B\in X_{ik}$, dan $C\in X_{k+1,j}$
+        \item \pwajib Acceptance condition $S\in X_{1n}$
+    \end{enumerate}
+    \item \pwajib Kompleksitas
+    \begin{enumerate}
+        \item \pwajib Jumlah sel $O(n^2)$
+        \item \pwajib Split per sel sampai $O(n)$
+        \item \pwajib Waktu $O(n^3)$ untuk grammar tetap
+        \item \ppaham Ruang $O(n^2)$
+        \item \ppaham Pengaruh ukuran grammar jika tidak dianggap konstan
+    \end{enumerate}
+    \item \pwajib Contoh simulasi
+    \begin{enumerate}
+        \item \pwajib Grammar CNF contoh
+        \item \pwajib Input \texttt{baaba}
+        \item \pwajib Pengisian basis
+        \item \pwajib Pengisian baris induksi
+        \item \pwajib Pemeriksaan sel puncak
+    \end{enumerate}
+    \item \ppaham Relasi teoretis
+    \begin{enumerate}
+        \item \ppaham CYK membuktikan membership CFL decidable
+        \item \ppaham CFL termasuk recursive languages
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{\texorpdfstring{Membership Problem untuk CFL}{Membership Problem untuk CFL}}
+
+\begin{jawab}[Inti Konsep.]
+Membership problem menanyakan apakah sebuah string $w$ termasuk dalam bahasa $L(G)$ yang dihasilkan oleh grammar $G$. Untuk CFL, CYK memberikan prosedur sistematis yang selalu berhenti dan menjawab ya atau tidak.
+\end{jawab}
+
+Dalam teori bahasa formal, pertanyaan ``apakah $w\in L(G)$?'' adalah pertanyaan keputusan. Inputnya adalah sebuah grammar bebas konteks $G$ dan sebuah string $w$; outputnya hanya dua kemungkinan: string diterima karena dapat diturunkan dari start symbol, atau ditolak karena tidak ada derivasi yang menghasilkan string tersebut.
+
+Masalah ini penting karena parsing pada compiler pada dasarnya adalah membership testing terhadap grammar bahasa pemrograman. Jika token stream program berada dalam bahasa grammar, parser dapat membangun struktur sintaksis. Jika tidak, parser melaporkan syntax error.
+
+CYK memecah masalah besar ``apakah $S$ menghasilkan seluruh string?'' menjadi submasalah kecil ``variabel apa saja yang menghasilkan substring tertentu?''. Submasalah ini disimpan dalam tabel agar hasil yang sama tidak dihitung berulang.
+
+\subsubsection{Kelemahan Pendekatan Naif}
+
+\begin{jawab}[Inti Konsep.]
+Pendekatan naif mencoba semua kemungkinan parse tree biner untuk string sepanjang $n$. Jumlah kemungkinan pohon tumbuh eksponensial, sehingga cara ini tidak praktis untuk membership testing.
+\end{jawab}
+
+Jika grammar sudah berada dalam Chomsky Normal Form, parse tree untuk string terminal panjang $n$ memiliki struktur biner: setiap node internal bercabang menjadi dua nonterminal, kecuali node yang langsung menghasilkan terminal. Struktur biner ini membantu analisis, tetapi tidak berarti semua pohon mudah dicoba satu per satu.
+
+Pendekatan naif akan membangkitkan seluruh kemungkinan bentuk parse tree dan seluruh kemungkinan label variabel pada node internal, lalu memeriksa apakah salah satunya menghasilkan $w$. Banyak subtree yang sama dapat muncul berulang dalam percobaan berbeda. Inilah redundansi yang dihindari oleh dynamic programming CYK.
+
+Sumber menyebut bahwa cara naif bersifat eksponensial terhadap panjang string. CYK memperbaikinya dengan menyimpan hasil setiap substring pada satu sel tabel, sehingga substring yang sama tidak perlu dianalisis ulang.
+
+\subsubsection{CYK sebagai Dynamic Programming}
+
+\begin{jawab}[Inti Konsep.]
+CYK adalah algoritma dynamic programming yang mengisi tabel dari substring pendek menuju substring panjang. Setiap sel menyimpan semua nonterminal yang dapat menurunkan substring tertentu.
+\end{jawab}
+
+Dynamic programming cocok untuk CYK karena derivasi CNF memiliki sifat optimal substructure. Jika sebuah variabel $A$ menurunkan substring panjang melalui produksi $A\rightarrow BC$, maka substring tersebut pasti dapat dipotong menjadi bagian kiri yang diturunkan oleh $B$ dan bagian kanan yang diturunkan oleh $C$.
+
+Dengan kata lain, keputusan untuk substring besar bergantung pada keputusan substring yang lebih kecil. CYK mengurutkan pengisian tabel berdasarkan panjang substring: panjang 1 terlebih dahulu, lalu panjang 2, dan seterusnya sampai panjang $n$.
+
+Nama CYK berasal dari Cocke, Younger, dan Kasami, yang mengembangkan pendekatan ini secara independen. Dalam konteks mata kuliah, nama algoritma tidak sepenting kemampuan menjalankan recurrence tabelnya dengan benar.
+
+\subsubsection{Dependensi terhadap Chomsky Normal Form}
+
+\begin{jawab}[Inti Konsep.]
+CYK membutuhkan grammar dalam Chomsky Normal Form karena recurrence-nya mengandalkan fakta bahwa produksi nonterminal berbentuk biner $A\rightarrow BC$ atau terminal tunggal $A\rightarrow a$. Tanpa bentuk ini, pembagian substring menjadi dua bagian tidak langsung sesuai dengan produksi grammar.
+\end{jawab}
+
+CNF membatasi bentuk produksi menjadi dua pola utama. Produksi $A\rightarrow a$ dipakai untuk mengisi sel basis karena substring panjang satu hanya berisi satu terminal. Produksi $A\rightarrow BC$ dipakai pada langkah induksi karena substring panjang lebih dari satu dapat dibelah menjadi dua bagian.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Bentuk Produksi} & \textbf{Peran dalam CYK} \\
+\hline
+$A\rightarrow a$ & Mengisi sel basis $X_{ii}$ untuk terminal $a_i$. \\
+\hline
+$A\rightarrow BC$ & Mengisi sel induksi $X_{ij}$ dari kombinasi $X_{ik}$ dan $X_{k+1,j}$. \\
+\hline
+\end{tabularx}
+\caption{Peran bentuk produksi CNF dalam CYK}
+\label{tab:cnf-cyk}
+\end{table}
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Jika $\epsilon\in L(G)$, beberapa definisi CNF mengizinkan produksi khusus $S\rightarrow\epsilon$, dengan syarat start symbol tidak muncul di ruas kanan produksi lain. Untuk CYK pada string kosong, kasus ini biasanya ditangani terpisah sebelum tabel CYK biasa dijalankan.
+\end{cmt}
+
+Dependensi terhadap CNF menghubungkan materi CYK dengan materi penyederhanaan CFG dan konversi CNF. Sebelum CYK dapat dijalankan, grammar harus dibersihkan dari produksi $\epsilon$, unit production, dan useless symbols, lalu dibentuk menjadi produksi terminal tunggal dan produksi biner.
+
+\subsubsection{Clean-Up Grammar Menuju CNF}
+
+\begin{jawab}[Inti Konsep.]
+Clean-up grammar adalah rangkaian transformasi yang menyiapkan CFG agar dapat diubah ke Chomsky Normal Form tanpa mengubah bahasa pentingnya. Langkah ini melibatkan nullable symbols, unit pairs, generating symbols, dan reachable symbols.
+\end{jawab}
+
+CYK tidak dapat langsung dijalankan pada CFG arbitrer. Grammar perlu dibersihkan agar setiap produksi akhirnya cocok dengan pola CNF. Clean-up juga mencegah grammar memuat simbol yang tidak pernah menghasilkan terminal, tidak pernah tercapai dari start symbol, atau hanya menjadi rantai unit yang tidak membantu struktur parse tree biner.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Konsep} & \textbf{Peran dalam Konversi CNF} \\
+\hline
+Nullable symbol & Nonterminal yang dapat menurunkan $\epsilon$. Dipakai untuk menghapus produksi $\epsilon$ dengan menambahkan alternatif yang melewati simbol nullable. \\
+\hline
+Unit pair & Pasangan $(A,B)$ dengan $A\Rightarrow^* B$ hanya melalui unit productions. Dipakai untuk mengganti rantai $A\rightarrow B$ dengan produksi non-unit milik $B$. \\
+\hline
+Generating symbol & Simbol yang dapat menurunkan string terminal. Simbol non-generating dihapus karena tidak dapat berkontribusi pada string hasil. \\
+\hline
+Reachable symbol & Simbol yang dapat muncul dari start symbol. Simbol unreachable dihapus karena tidak pernah dipakai dalam derivasi dari grammar. \\
+\hline
+\end{tabularx}
+\caption{Konsep clean-up grammar menuju CNF}
+\label{tab:cleanup-cnf}
+\end{table}
+
+Urutan praktis yang aman untuk konversi CNF:
+\begin{enumerate}
+    \item Buat start symbol baru $S_0\rightarrow S$ agar start symbol asli tidak muncul di ruas kanan secara bermasalah.
+    \item Eliminasi produksi $\epsilon$, kecuali kemungkinan khusus $S_0\rightarrow\epsilon$ jika bahasa memang memuat string kosong.
+    \item Eliminasi unit productions dengan menghitung unit pairs.
+    \item Hapus useless symbols: pertama non-generating symbols, lalu unreachable symbols.
+    \item Ganti terminal pada produksi panjang dengan nonterminal bantu, misalnya $A\rightarrow aBC$ menjadi $A\rightarrow T_aBC$ dan $T_a\rightarrow a$.
+    \item Pecah produksi dengan ruas kanan lebih dari dua simbol menjadi produksi biner berantai.
+\end{enumerate}
+
+\begin{cmt}{Catatan: Kompleksitas Konversi CNF}{}
+Konversi CNF dapat memperbesar ukuran grammar karena eliminasi $\epsilon$ menambahkan kombinasi produksi baru dan binarisasi menambah nonterminal bantu. Untuk soal manual, yang penting bukan menghitung batas kompleksitas formal secara rinci, melainkan menjaga bahasa tidak berubah dan memastikan hasil akhir hanya memiliki bentuk $A\rightarrow BC$, $A\rightarrow a$, dan mungkin $S_0\rightarrow\epsilon$.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.34\textwidth}|X|}
+\hline
+\textbf{Tahap Konversi} & \textbf{Kompleksitas} \\
+\hline
+Generating dan reachable symbol cleanup & $O(|G|)$, linear terhadap ukuran grammar karena setiap produksi dan simbol cukup dipindai sampai himpunan stabil. \\
+\hline
+Unit-pair computation & $O(n^2)$ terhadap jumlah variabel $n$, karena pasangan unit $(A,B)$ antarnonterminal harus dihitung sebagai closure. \\
+\hline
+Ukuran grammar hasil CNF & $O(n^2)$ dalam kasus umum setelah unit pair dan binarisasi dikendalikan. \\
+\hline
+\end{tabularx}
+\caption{Kompleksitas tahap penting konversi CNF}
+\label{tab:kompleksitas-konversi-cnf}
+\end{table}
+
+Blow-up $O(n^2)$ terutama muncul ketika eliminasi nullable symbols menambahkan variasi produksi dan ketika unit pairs menggandakan produksi non-unit milik variabel tujuan. Karena itu, pada pengerjaan ujian, jangan hanya menulis ``ubah ke CNF''; tuliskan tahap clean-up yang dipakai agar grammar hasil tetap terkontrol.
+\end{cmt}
+
+Clean-up ini terhubung langsung dengan CYK: kesalahan kecil pada CNF akan membuat tabel $X_{ij}$ salah, karena recurrence CYK hanya melihat produksi terminal tunggal dan produksi biner.
+
+\subsubsection{\texorpdfstring{Struktur Tabel $X_{ij}$}{Struktur Tabel Xij}}
+
+\begin{jawab}[Inti Konsep.]
+Sel $X_{ij}$ berisi himpunan nonterminal yang dapat menurunkan substring dari posisi $i$ sampai $j$. Tabel CYK berbentuk segitiga karena hanya substring dengan $i\leq j$ yang dihitung.
+\end{jawab}
+
+Misalkan input adalah
+\[
+    w=a_1a_2\cdots a_n.
+\]
+Untuk setiap rentang posisi $i$ sampai $j$, CYK mendefinisikan:
+\[
+    X_{ij}=\{A\mid A\Rightarrow_G^* a_i a_{i+1}\cdots a_j\}.
+\]
+Artinya, $X_{ij}$ bukan berisi string, melainkan variabel grammar yang mampu menghasilkan substring tersebut.
+
+Tabel diisi berdasarkan panjang substring. Diagonal bawah berisi substring panjang 1: $X_{11},X_{22},\ldots,X_{nn}$. Di atasnya adalah substring panjang 2: $X_{12},X_{23},\ldots$. Puncak tabel adalah $X_{1n}$, yaitu sel untuk seluruh string.
+
+Cara membaca tabel ini sangat penting: jika suatu nonterminal ada di sebuah sel, itu adalah bukti bahwa nonterminal tersebut dapat menghasilkan substring pada rentang sel itu. Jika tidak ada, berarti sejauh grammar CNF yang diberikan, nonterminal itu tidak dapat menghasilkan substring tersebut.
+
+\subsubsection{Langkah Basis}
+
+\begin{jawab}[Inti Konsep.]
+Langkah basis mengisi sel untuk substring panjang satu. Sebuah nonterminal $A$ masuk ke $X_{ii}$ jika grammar memiliki produksi langsung $A\rightarrow a_i$.
+\end{jawab}
+
+Rumus basis CYK adalah:
+\[
+    X_{ii}=\{A\mid A\rightarrow a_i \in R\}.
+\]
+Langkah ini memakai produksi terminal CNF. Karena substring panjang satu hanya terdiri atas satu terminal, tidak ada titik potong yang perlu dicoba.
+
+Contoh: jika terminal pada posisi $i$ adalah $a$ dan grammar memiliki produksi $A\rightarrow a$ serta $C\rightarrow a$, maka $X_{ii}=\{A,C\}$. Jika hanya ada $B\rightarrow b$ untuk terminal $b$, maka sel untuk posisi berisi $b$ adalah $\{B\}$.
+
+Langkah basis adalah fondasi tabel. Kesalahan pada baris ini akan menyebar ke seluruh sel di atasnya, karena setiap sel induksi bergantung pada sel yang lebih pendek.
+
+\subsubsection{Langkah Induksi}
+
+\begin{jawab}[Inti Konsep.]
+Langkah induksi mengisi sel substring panjang dua atau lebih dengan mencoba semua titik potong. Nonterminal $A$ dimasukkan ke $X_{ij}$ jika ada produksi $A\rightarrow BC$ yang cocok dengan satu pembagian substring.
+\end{jawab}
+
+Untuk menghitung $X_{ij}$ dengan $i<j$, CYK mencoba semua $k$ dengan $i\leq k<j$. Titik $k$ membelah substring menjadi:
+\[
+    a_i\cdots a_k
+    \quad \text{dan} \quad
+    a_{k+1}\cdots a_j.
+\]
+Jika ada produksi $A\rightarrow BC$, dengan $B\in X_{ik}$ dan $C\in X_{k+1,j}$, maka $A$ masuk ke $X_{ij}$.
+
+Secara ringkas:
+\[
+    X_{ij}=\{A\mid \exists k,\ i\leq k<j,\ \exists A\rightarrow BC,\ B\in X_{ik},\ C\in X_{k+1,j}\}.
+\]
+
+Intuisi langkah ini mengikuti parse tree biner. Jika $A$ menghasilkan substring panjang, anak kiri $B$ menghasilkan bagian kiri substring dan anak kanan $C$ menghasilkan bagian kanan substring. Semua kemungkinan titik potong harus dicoba karena grammar tidak memberi tahu posisi split yang benar sejak awal.
+
+\subsubsection{Acceptance Condition}
+
+\begin{jawab}[Inti Konsep.]
+String $w$ diterima oleh grammar $G$ jika start symbol $S$ berada di sel puncak $X_{1n}$. Sel ini merepresentasikan seluruh input dari posisi pertama sampai posisi terakhir.
+\end{jawab}
+
+Setelah semua sel terisi, CYK tidak perlu mencari parse tree secara eksplisit untuk menjawab membership. Cukup periksa apakah:
+\[
+    S\in X_{1n}.
+\]
+Jika ya, ada derivasi $S\Rightarrow_G^* w$, sehingga $w\in L(G)$. Jika tidak, tidak ada derivasi dari start symbol yang menghasilkan seluruh string.
+
+Penting untuk tidak keliru membaca sel lain. Misalnya $S$ muncul di $X_{12}$ hanya berarti start symbol dapat menghasilkan substring posisi 1 sampai 2, bukan seluruh string. Untuk membership seluruh input, hanya $X_{1n}$ yang menentukan jawaban akhir.
+
+\subsubsection{Kompleksitas CYK}
+
+\begin{jawab}[Inti Konsep.]
+Untuk grammar tetap, CYK memakai ruang $O(n^2)$ dan waktu $O(n^3)$ terhadap panjang string $n$. Kompleksitas kubik muncul dari $O(n^2)$ sel dan sampai $O(n)$ titik potong per sel.
+\end{jawab}
+
+Jumlah substring dari string panjang $n$ adalah $O(n^2)$, sehingga tabel CYK memiliki $O(n^2)$ sel. Setiap sel menyimpan himpunan nonterminal. Jika grammar dianggap tetap, ukuran himpunan nonterminal dan jumlah produksi dianggap konstan terhadap $n$.
+
+Untuk setiap sel $X_{ij}$, algoritma mencoba semua titik potong $k$. Banyaknya titik potong paling banyak $n-1$, sehingga biaya per sel adalah $O(n)$ untuk grammar tetap. Maka total waktu:
+\[
+    O(n^2)\cdot O(n)=O(n^3).
+\]
+Ruang yang dibutuhkan adalah $O(n^2)$ sel tabel.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Jika ukuran grammar tidak dianggap konstan, waktu juga dipengaruhi oleh jumlah produksi dan jumlah nonterminal. Implementasi praktis biasanya mengindeks produksi berbentuk $A\rightarrow BC$ berdasarkan pasangan $(B,C)$ agar pencarian parent $A$ lebih cepat.
+\end{cmt}
+
+Kompleksitas ini menjelaskan mengapa CYK jauh lebih baik daripada enumerasi parse tree eksponensial. Walaupun $O(n^3)$ tidak selalu tercepat untuk parser produksi nyata, CYK sangat penting secara teoretis karena sederhana dan membuktikan decidability membership CFL.
+
+\subsubsection{Contoh Simulasi dengan \texttt{baaba}}
+
+\begin{jawab}[Inti Konsep.]
+Contoh \texttt{baaba} menunjukkan cara CYK mengisi tabel dari terminal individual menuju seluruh string. Karena $S$ muncul di sel puncak $X_{15}$, string tersebut diterima oleh grammar.
+\end{jawab}
+
+Gunakan grammar CNF:
+\[
+\begin{aligned}
+S &\rightarrow AB \mid BC,\\
+A &\rightarrow BA \mid a,\\
+B &\rightarrow CC \mid b,\\
+C &\rightarrow AB \mid a.
+\end{aligned}
+\]
+Input adalah $w=\texttt{baaba}$, sehingga $n=5$.
+
+Langkah basis:
+\[
+\begin{aligned}
+X_{11}&=\{B\} && \text{untuk } b,\\
+X_{22}&=\{A,C\} && \text{untuk } a,\\
+X_{33}&=\{A,C\} && \text{untuk } a,\\
+X_{44}&=\{B\} && \text{untuk } b,\\
+X_{55}&=\{A,C\} && \text{untuk } a.
+\end{aligned}
+\]
+
+Contoh pengisian induksi untuk $X_{12}$, substring \texttt{ba}: pasangan dari $X_{11}$ dan $X_{22}$ adalah $B$ dengan $A$ atau $C$, sehingga pasangan yang mungkin adalah $BA$ dan $BC$. Grammar memiliki $A\rightarrow BA$ dan $S\rightarrow BC$, maka:
+\[
+    X_{12}=\{S,A\}.
+\]
+
+Sumber menyebut bahwa setelah seluruh tabel dihitung, sel puncak untuk rentang seluruh string adalah:
+\[
+    X_{15}=\{S,A,C\}.
+\]
+Karena $S\in X_{15}$, string \texttt{baaba} diterima.
+
+\begin{cmt}{Catatan: Strategi Ujian}{}
+Saat mengerjakan soal CYK, jangan hanya menulis hasil akhir. Tunjukkan baris basis, minimal beberapa sel induksi penting, dan alasan penerimaan dari $S\in X_{1n}$. Untuk jawaban manual, tabel yang rapi biasanya lebih bernilai daripada paragraf panjang.
+\end{cmt}
+
+\subsubsection{CYK dan Decidability CFL}
+
+\begin{jawab}[Inti Konsep.]
+CYK membuktikan bahwa membership problem untuk CFL decidable karena algoritma ini selalu berhenti dan memberi jawaban benar untuk setiap string input. Dengan demikian, setiap CFL adalah recursive language untuk masalah keanggotaan stringnya.
+\end{jawab}
+
+Sebuah masalah disebut decidable jika ada algoritma yang selalu berhenti dengan jawaban benar. CYK memenuhi syarat ini untuk pertanyaan apakah $w\in L(G)$, selama grammar dapat dipersiapkan ke CNF dan string input berhingga.
+
+Relasi ini penting dalam hierarki bahasa. Regular language memiliki membership test lebih sederhana melalui DFA. CFL lebih kompleks, tetapi tetap decidable melalui algoritma seperti CYK. Ini berbeda dari kelas bahasa yang dikenali Mesin Turing secara umum, di mana membership dapat menjadi undecidable jika mesin tidak selalu halt.
+
+Dengan demikian, CYK tidak hanya algoritma parsing, tetapi juga bukti konstruktif bahwa CFL berada dalam kelas bahasa yang membership-nya dapat diputuskan secara algoritmik.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{\texorpdfstring{Definisi Sel $X_{ij}$}{Definisi Sel Xij}}
+
+\begin{jawab}[Makna Rumus.]
+Rumus ini mendefinisikan isi setiap sel tabel CYK. Sel menyimpan nonterminal yang dapat menghasilkan substring tertentu, bukan menyimpan substring itu sendiri.
+\end{jawab}
+
+\begin{equation}
+    X_{ij}=\{A\mid A\Rightarrow_G^* a_i a_{i+1}\cdots a_j\}
+    \label{eq:definisi-xij}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $X_{ij}$: sel tabel untuk substring dari indeks $i$ sampai $j$.
+    \item $A$: nonterminal grammar.
+    \item $\Rightarrow_G^*$: derivasi nol atau banyak langkah dalam grammar $G$.
+    \item $a_i\cdots a_j$: substring input yang sedang dianalisis.
+\end{itemize}
+
+\subsubsection{Basis dan Induksi CYK}
+
+\begin{jawab}[Makna Rumus.]
+Rumus basis mengisi terminal individual, sedangkan rumus induksi menggabungkan dua substring lebih pendek melalui produksi biner CNF.
+\end{jawab}
+
+\begin{align}
+    X_{ii} &= \{A\mid A\rightarrow a_i \in R\}, \label{eq:basis-cyk}\\
+    X_{ij} &= \{A\mid \exists k,\ i\leq k<j,\ \exists A\rightarrow BC\in R,\ B\in X_{ik},\ C\in X_{k+1,j}\}. \label{eq:induksi-cyk}
+\end{align}
+
+dengan:
+\begin{itemize}
+    \item $R$: himpunan produksi grammar.
+    \item $k$: titik potong substring.
+    \item $B$ dan $C$: nonterminal anak kiri dan kanan dalam produksi CNF.
+\end{itemize}
+
+\subsubsection{Pseudocode CYK}
+
+\begin{jawab}[Tujuan Algoritma.]
+Pseudocode ini merangkum urutan pengisian tabel CYK dari substring panjang satu sampai panjang $n$, lalu memeriksa apakah start symbol muncul pada sel puncak.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode algoritma CYK}, label={lst:cyk}]
+Input: CFG G=(V,T,R,S) dalam CNF, string w=a1...an
+Output: accept jika w berada dalam L(G)
+
+1. Untuk i = 1 sampai n:
+   X[i,i] = { A | produksi A -> ai ada di R }
+
+2. Untuk panjang = 2 sampai n:
+   Untuk i = 1 sampai n - panjang + 1:
+      j = i + panjang - 1
+      X[i,j] = {}
+      Untuk k = i sampai j - 1:
+         Untuk setiap produksi A -> B C di R:
+            Jika B ada di X[i,k] dan C ada di X[k+1,j]:
+               Tambahkan A ke X[i,j]
+
+3. Jika S ada di X[1,n], return accept.
+4. Jika tidak, return reject.
+\end{lstlisting}
+
+Kondisi keberhasilan algoritma adalah $S\in X_{1n}$. Jika string kosong diuji, perlakuannya bergantung pada apakah grammar mengizinkan produksi start khusus $S\rightarrow\epsilon$.

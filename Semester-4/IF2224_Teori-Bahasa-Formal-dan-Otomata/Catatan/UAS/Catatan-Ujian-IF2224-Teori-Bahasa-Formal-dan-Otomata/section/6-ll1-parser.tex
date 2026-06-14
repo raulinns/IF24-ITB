@@ -1,0 +1,589 @@
+\section{LL(1) Parser}
+
+LL(1) Parser adalah predictive top-down parser yang memilih produksi grammar secara deterministik dengan satu token lookahead. Materi ini melanjutkan Recursive Descent Parser: jika RD Parser umum masih dapat memakai backtracking, LL(1) menghilangkan backtracking dengan bantuan himpunan FIRST, FOLLOW, dan tabel parsing.
+
+Fokus utama untuk ujian adalah memahami arti LL(1), menghitung FIRST dan FOLLOW, membangun tabel parsing, mengenali konflik grammar, serta menjalankan algoritma parser berbasis stack. Secara praktis, LL(1) memperlihatkan bagaimana teori CFG diubah menjadi prosedur parsing yang mekanis dan efisien.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Definisi LL(1)
+    \begin{enumerate}
+        \item \pwajib Left-to-right scan
+        \item \pwajib Leftmost derivation
+        \item \pwajib Satu simbol lookahead
+    \end{enumerate}
+    \item \pwajib Hubungan dengan top-down parsing
+    \begin{enumerate}
+        \item \pwajib Predictive parsing
+        \item \pwajib Recursive descent tanpa backtracking
+        \item \pwajib Pemilihan produksi unik
+    \end{enumerate}
+    \item \pwajib FIRST set
+    \begin{enumerate}
+        \item \pwajib FIRST untuk terminal
+        \item \pwajib FIRST untuk nonterminal
+        \item \pwajib FIRST untuk string simbol grammar
+        \item \pwajib Peran $\epsilon$
+    \end{enumerate}
+    \item \pwajib FOLLOW set
+    \begin{enumerate}
+        \item \pwajib Definisi FOLLOW
+        \item \pwajib Endmarker \texttt{\$}
+        \item \pwajib Propagasi FOLLOW melalui produksi
+    \end{enumerate}
+    \item \pwajib Tabel parsing LL(1)
+    \begin{enumerate}
+        \item \pwajib Sel $M[A,a]$
+        \item \pwajib Aturan pengisian dari FIRST
+        \item \pwajib Aturan pengisian dari FOLLOW untuk produksi nullable
+        \item \pwajib Sel kosong sebagai error
+    \end{enumerate}
+    \item \pwajib Kondisi grammar LL(1)
+    \begin{enumerate}
+        \item \pwajib Tidak ada multiply defined entries
+        \item \pwajib Konflik akibat ambiguitas
+        \item \pwajib Konflik akibat left recursion
+        \item \pwajib Konflik akibat belum left-factored
+    \end{enumerate}
+    \item \pwajib Algoritma nonrecursive predictive parsing
+    \begin{enumerate}
+        \item \pwajib Stack dan input buffer
+        \item \pwajib Aksi expand
+        \item \pwajib Aksi match
+        \item \pwajib Aksi accept
+        \item \pwajib Aksi error
+    \end{enumerate}
+    \item \ppaham Transformasi grammar untuk LL(1)
+    \begin{enumerate}
+        \item \ppaham Eliminasi left recursion
+        \item \ppaham Left factoring
+    \end{enumerate}
+    \item \ppaham Error handling dan keterbatasan sumber
+    \begin{enumerate}
+        \item \ppaham Panic mode dan \texttt{synch} entries
+        \item \ppaham Phrase-level recovery
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Definisi LL(1)}
+
+\begin{jawab}[Inti Konsep.]
+LL(1) adalah kelas grammar dan parser top-down yang membaca input dari kiri ke kanan, merekonstruksi leftmost derivation, dan memakai satu token lookahead untuk memilih produksi. Angka 1 berarti keputusan parsing dibuat dari tepat satu simbol input berikutnya.
+\end{jawab}
+
+Motivasi LL(1) adalah menghilangkan tebakan dalam parsing top-down. Pada RD Parser biasa, parser dapat mencoba satu produksi, gagal, lalu kembali untuk mencoba produksi lain. LL(1) menuntut grammar disusun sedemikian rupa sehingga dari pasangan nonterminal di puncak stack dan token lookahead, hanya ada satu produksi yang mungkin.
+
+Nama LL(1) mempunyai tiga bagian:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Bagian} & \textbf{Makna} \\
+\hline
+L pertama & \textit{Left-to-right scan}, yaitu input token dibaca dari kiri ke kanan. \\
+\hline
+L kedua & \textit{Leftmost derivation}, yaitu parser merekonstruksi derivasi yang selalu menurunkan nonterminal paling kiri. \\
+\hline
+1 & Satu token lookahead digunakan untuk memilih produksi. \\
+\hline
+\end{tabularx}
+\caption{Makna notasi LL(1)}
+\label{tab:makna-ll1}
+\end{table}
+
+Konsep ini berkaitan langsung dengan CPMK karena mahasiswa harus mampu menjelaskan notasi parsing formal dan merancang mekanisme automaton/parser untuk grammar tertentu.
+
+\subsubsection{Hubungan dengan Top-Down Parsing}
+
+\begin{jawab}[Inti Konsep.]
+LL(1) adalah bentuk predictive top-down parsing. Parser tetap membangun parse tree dari root ke leaves, tetapi produksi dipilih lewat tabel sehingga tidak perlu backtracking.
+\end{jawab}
+
+Top-down parser memulai dari start symbol, lalu menurunkan nonterminal sampai terminal yang dihasilkan cocok dengan input. Dalam recursive descent biasa, pemilihan produksi dapat berupa trial-and-error. LL(1) membuat pemilihan itu deterministik.
+
+Hubungan antarkonsepnya adalah sebagai berikut:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Konsep} & \textbf{Peran dalam LL(1)} \\
+\hline
+Top-down parsing & Strategi umum: parse tree dibangun dari start symbol menuju token input. \\
+\hline
+Recursive descent & Implementasi top-down dengan fungsi rekursif; dapat memakai backtracking. \\
+\hline
+Predictive parsing & Top-down parsing deterministik; produksi dipilih dari lookahead. \\
+\hline
+LL(1) table-driven parser & Implementasi predictive parsing nonrekursif dengan stack dan tabel. \\
+\hline
+\end{tabularx}
+\caption{Relasi LL(1) dengan keluarga top-down parser}
+\label{tab:relasi-ll1-topdown}
+\end{table}
+
+Jika RD Parser menerjemahkan nonterminal menjadi fungsi, LL(1) table-driven parser menerjemahkan keputusan produksi menjadi lookup tabel $M[A,a]$. Keduanya tetap merepresentasikan leftmost derivation.
+
+\subsubsection{FIRST Set}
+
+\begin{jawab}[Inti Konsep.]
+FIRST($\alpha$) adalah himpunan terminal yang dapat muncul sebagai simbol pertama dari string yang diturunkan dari $\alpha$. Jika $\alpha$ dapat menurunkan string kosong, maka $\epsilon$ juga masuk FIRST($\alpha$).
+\end{jawab}
+
+FIRST diperlukan karena parser harus tahu token apa yang mungkin muncul pertama kali jika suatu produksi dipakai. Misalnya jika produksi $A\rightarrow \alpha$ memiliki $id\in FIRST(\alpha)$, maka ketika lookahead adalah $id$, produksi tersebut mungkin relevan.
+
+Definisi formalnya:
+\[
+    FIRST(\alpha)=\{a\in T \mid \alpha \Rightarrow^* aw\}\cup\{\epsilon \mid \alpha\Rightarrow^*\epsilon\}.
+\]
+
+dengan:
+\begin{itemize}
+    \item $\alpha$: string simbol grammar, dapat berupa terminal, nonterminal, atau gabungannya.
+    \item $T$: himpunan terminal.
+    \item $a$: terminal pertama yang mungkin dihasilkan.
+    \item $\epsilon$: string kosong.
+\end{itemize}
+
+Aturan komputasi FIRST:
+\begin{enumerate}
+    \item Jika $a$ adalah terminal, maka $FIRST(a)=\{a\}$.
+    \item Jika ada produksi $A\rightarrow\epsilon$, tambahkan $\epsilon$ ke $FIRST(A)$.
+    \item Untuk produksi $A\rightarrow Y_1Y_2\cdots Y_k$, tambahkan $FIRST(Y_1)-\{\epsilon\}$ ke $FIRST(A)$.
+    \item Jika $\epsilon\in FIRST(Y_1)$, lanjutkan dengan menambahkan $FIRST(Y_2)-\{\epsilon\}$, dan seterusnya.
+    \item Jika semua $Y_i$ dapat menurunkan $\epsilon$, tambahkan $\epsilon$ ke $FIRST(A)$.
+    \item Ulangi sampai tidak ada himpunan FIRST yang berubah.
+\end{enumerate}
+
+FIRST adalah dasar pengisian tabel LL(1): produksi ditempatkan pada kolom terminal yang dapat muncul pertama dari body produksi.
+
+\subsubsection{FOLLOW Set}
+
+\begin{jawab}[Inti Konsep.]
+FOLLOW($A$) adalah himpunan terminal yang dapat muncul tepat setelah nonterminal $A$ dalam suatu sentential form. FOLLOW dipakai terutama ketika produksi dapat menghasilkan $\epsilon$.
+\end{jawab}
+
+FOLLOW diperlukan karena produksi nullable tidak menghasilkan terminal pertama. Jika $A\rightarrow\epsilon$, parser perlu tahu kapan aman mengosongkan $A$. Jawabannya diberikan oleh FOLLOW($A$): jika lookahead adalah simbol yang boleh muncul setelah $A$, maka $A$ boleh dihapus.
+
+Definisi formal:
+\[
+    FOLLOW(A)=\{a\in T \mid S\Rightarrow^* \alpha Aa\beta\}.
+\]
+
+Simbol \texttt{\$} adalah **endmarker**, yaitu penanda akhir input sekaligus dasar stack. Untuk start symbol $S$, selalu berlaku:
+\[
+    \$\in FOLLOW(S).
+\]
+
+Aturan komputasi FOLLOW:
+\begin{enumerate}
+    \item Masukkan \texttt{\$} ke $FOLLOW(S)$ untuk start symbol $S$.
+    \item Untuk produksi $A\rightarrow \alpha B\beta$, tambahkan $FIRST(\beta)-\{\epsilon\}$ ke $FOLLOW(B)$.
+    \item Untuk produksi $A\rightarrow \alpha B$, tambahkan $FOLLOW(A)$ ke $FOLLOW(B)$.
+    \item Untuk produksi $A\rightarrow \alpha B\beta$ dengan $\epsilon\in FIRST(\beta)$, tambahkan $FOLLOW(A)$ ke $FOLLOW(B)$.
+    \item Ulangi sampai fixed point, yaitu tidak ada FOLLOW yang berubah lagi.
+\end{enumerate}
+
+FOLLOW menghubungkan posisi nonterminal dalam produksi dengan konteks sintaksis di sekelilingnya. Tanpa FOLLOW, parser tidak dapat menangani produksi $\epsilon$ secara deterministik.
+
+\subsubsection{Tabel Parsing LL(1)}
+
+\begin{jawab}[Inti Konsep.]
+Tabel parsing LL(1) $M[A,a]$ memetakan nonterminal $A$ dan lookahead terminal $a$ ke produksi yang harus dipakai. Sel kosong berarti error, sedangkan sel berisi lebih dari satu produksi berarti konflik.
+\end{jawab}
+
+Tabel parsing adalah pusat LL(1). Baris tabel adalah nonterminal, kolom tabel adalah terminal termasuk \texttt{\$}. Ketika puncak stack adalah nonterminal $A$ dan lookahead input adalah $a$, parser melihat $M[A,a]$.
+
+Aturan pengisian tabel untuk setiap produksi $A\rightarrow\alpha$:
+\begin{enumerate}
+    \item Untuk setiap terminal $a\in FIRST(\alpha)-\{\epsilon\}$, masukkan $A\rightarrow\alpha$ ke $M[A,a]$.
+    \item Jika $\epsilon\in FIRST(\alpha)$, maka untuk setiap $b\in FOLLOW(A)$, masukkan $A\rightarrow\alpha$ ke $M[A,b]$.
+    \item Semua sel yang tidak terisi dianggap error.
+\end{enumerate}
+
+Contoh grammar ekspresi yang sudah cocok untuk predictive parsing:
+\[
+\begin{aligned}
+E &\rightarrow TX,\\
+X &\rightarrow +E \mid \epsilon,\\
+T &\rightarrow intY \mid (E),\\
+Y &\rightarrow *T \mid \epsilon.
+\end{aligned}
+\]
+
+Potongan tabelnya:
+
+\begin{table}[H]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{|L{0.12\textwidth}|*{6}{>{\centering\arraybackslash}X|}}
+\hline
+\textbf{} & \textbf{\texttt{int}} & \textbf{\texttt{+}} & \textbf{\texttt{*}} & \textbf{\texttt{(}} & \textbf{\texttt{)}} & \textbf{\texttt{\$}} \\
+\hline
+$E$ & $E\rightarrow TX$ & & & $E\rightarrow TX$ & & \\
+\hline
+$X$ & & $X\rightarrow +E$ & & & $X\rightarrow\epsilon$ & $X\rightarrow\epsilon$ \\
+\hline
+$T$ & $T\rightarrow intY$ & & & $T\rightarrow (E)$ & & \\
+\hline
+$Y$ & & $Y\rightarrow\epsilon$ & $Y\rightarrow *T$ & & $Y\rightarrow\epsilon$ & $Y\rightarrow\epsilon$ \\
+\hline
+\end{tabularx}
+\caption{Contoh potongan tabel parsing LL(1)}
+\label{tab:contoh-tabel-ll1}
+\end{table}
+
+Tabel ini menggantikan logika \texttt{if-else} panjang dalam predictive recursive descent. Keputusan parsing menjadi operasi lookup.
+
+\subsubsection{Kondisi Grammar LL(1)}
+
+\begin{jawab}[Inti Konsep.]
+Grammar adalah LL(1) jika tabel parsingnya tidak memiliki sel yang berisi lebih dari satu produksi. Konflik tabel berarti satu token lookahead tidak cukup untuk memilih produksi secara unik.
+\end{jawab}
+
+Sumber menyatakan syarat praktis LL(1): setelah tabel dibangun, tidak boleh ada **multiply defined entries**, yaitu sel $M[A,a]$ yang menerima lebih dari satu produksi. Jika konflik muncul, grammar tersebut bukan LL(1) dalam bentuknya saat ini.
+
+Penyebab umum konflik:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Penyebab} & \textbf{Dampak pada LL(1)} \\
+\hline
+Ambiguitas grammar & Satu string dapat memiliki lebih dari satu derivasi atau parse tree, sehingga beberapa produksi bersaing. \\
+\hline
+Left recursion & Parser top-down dapat kembali ke nonterminal yang sama sebelum mengonsumsi input; tabel sering menjadi konflik. \\
+\hline
+Belum left-factored & Dua alternatif berbagi prefix yang sama, sehingga satu lookahead belum cukup membedakan pilihan. \\
+\hline
+\end{tabularx}
+\caption{Penyebab konflik pada tabel LL(1)}
+\label{tab:konflik-ll1}
+\end{table}
+
+Konflik tidak selalu berarti bahasanya tidak dapat diparse secara deterministik oleh parser lain. Konflik hanya menyatakan bahwa grammar tersebut, dengan strategi LL(1), belum memenuhi syarat satu keputusan unik per pasangan nonterminal dan lookahead.
+
+\begin{cmt}{Catatan: Tiga Syarat Formal LL(1)}{}
+Untuk membuktikan grammar $G$ bersifat LL(1) tanpa membangun seluruh tabel, periksa tiga kondisi formal berikut untuk setiap nonterminal $A$ dengan dua alternatif berbeda $A\rightarrow \alpha$ dan $A\rightarrow \beta$:
+\[
+    FIRST(\alpha)\cap FIRST(\beta)=\emptyset.
+\]
+Artinya, dua alternatif tidak boleh dapat diawali terminal yang sama. Kedua, paling banyak satu alternatif $A\rightarrow\alpha$ yang nullable, yaitu dapat menurunkan $\epsilon$. Ketiga, jika ada alternatif nullable, maka alternatif lain tidak boleh bersaing dengan FOLLOW nonterminal:
+\[
+    \epsilon\in FIRST(\alpha)
+    \Rightarrow
+    FIRST(\beta)\cap FOLLOW(A)=\emptyset
+    \quad\text{untuk setiap alternatif lain }\beta.
+\]
+Dalam soal ``buktikan grammar ini LL(1)'', hitung FIRST dan FOLLOW, lalu verifikasi tiga kondisi ini. Jika satu kondisi gagal, tabel parsing akan memiliki multiply defined entry.
+\end{cmt}
+
+\subsubsection{Algoritma Nonrecursive Predictive Parsing}
+
+\begin{jawab}[Inti Konsep.]
+Nonrecursive predictive parser memakai stack, input buffer, dan tabel parsing. Puncak stack menunjukkan simbol grammar paling kiri yang harus dicocokkan atau diekspansi.
+\end{jawab}
+
+Parser dimulai dengan stack berisi start symbol di atas endmarker:
+\[
+    S\ \$
+\]
+Input juga diakhiri dengan endmarker:
+\[
+    w\$
+\]
+
+Pada setiap langkah, parser membandingkan puncak stack $X$ dengan lookahead input $a$:
+\begin{enumerate}
+    \item Jika $X$ terminal dan $X=a$, lakukan match: pop $X$ dan majukan input.
+    \item Jika $X$ terminal tetapi $X\neq a$, parsing error.
+    \item Jika $X$ nonterminal, baca tabel $M[X,a]$.
+    \item Jika $M[X,a]$ berisi $X\rightarrow Y_1Y_2\cdots Y_k$, pop $X$, lalu push $Y_k,\ldots,Y_2,Y_1$ agar $Y_1$ berada di puncak stack.
+    \item Jika $M[X,a]$ kosong, parsing error.
+    \item Jika stack dan input sama-sama mencapai \texttt{\$}, accept.
+\end{enumerate}
+
+Empat aksi utama parser adalah:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Aksi} & \textbf{Makna} \\
+\hline
+Expand & Nonterminal di puncak stack diganti oleh body produksi dari tabel. \\
+\hline
+Match & Terminal di puncak stack cocok dengan lookahead, lalu token dikonsumsi. \\
+\hline
+Accept & Stack dan input mencapai endmarker secara bersamaan. \\
+\hline
+Error & Tidak ada produksi valid atau terminal puncak tidak cocok dengan lookahead. \\
+\hline
+\end{tabularx}
+\caption{Aksi dalam nonrecursive predictive parser}
+\label{tab:aksi-ll1}
+\end{table}
+
+Algoritma ini berhubungan dengan leftmost derivation karena simbol di puncak stack selalu merepresentasikan simbol paling kiri yang belum selesai diproses.
+
+\subsubsection{Transformasi Grammar untuk LL(1)}
+
+\begin{jawab}[Inti Konsep.]
+Grammar sering perlu ditransformasi sebelum menjadi LL(1). Dua transformasi utama adalah eliminasi left recursion dan left factoring.
+\end{jawab}
+
+Left recursion harus dihilangkan karena top-down parser dapat memanggil atau mengekspansi nonterminal yang sama tanpa kemajuan input. Bentuk umum:
+\[
+    A\rightarrow A\alpha\mid\beta
+\]
+diubah menjadi:
+\[
+\begin{aligned}
+    A &\rightarrow \beta A',\\
+    A' &\rightarrow \alpha A'\mid\epsilon.
+\end{aligned}
+\]
+
+Left factoring dipakai ketika beberapa produksi memiliki prefix sama:
+\[
+    A\rightarrow \alpha\beta_1\mid\alpha\beta_2
+\]
+diubah menjadi:
+\[
+\begin{aligned}
+    A &\rightarrow \alpha A',\\
+    A' &\rightarrow \beta_1\mid\beta_2.
+\end{aligned}
+\]
+
+Contoh dari sumber:
+\[
+    T\rightarrow int\mid int*T
+\]
+tidak mudah dipilih dengan satu lookahead karena keduanya diawali \texttt{int}. Setelah left factoring:
+\[
+\begin{aligned}
+    T &\rightarrow intY,\\
+    Y &\rightarrow *T\mid\epsilon.
+\end{aligned}
+\]
+
+Transformasi ini tidak dimaksudkan untuk mengubah bahasa, melainkan mengubah struktur grammar agar keputusan parsing menjadi eksplisit dan deterministik.
+
+\subsubsection{Error Handling dan Error Recovery}
+
+\begin{jawab}[Inti Konsep.]
+Error pada LL(1) terjadi ketika sel tabel kosong atau terminal puncak stack tidak cocok dengan lookahead. Sumber baru menambahkan bahwa compiler dapat merespons error dengan recovery agar parsing berlanjut, atau repair yang mencoba memperbaiki token sumber.
+\end{jawab}
+
+LL(1) Parser dapat mendeteksi kesalahan sintaks dengan dua cara utama. Pertama, ketika $M[A,a]$ kosong untuk nonterminal $A$ dan lookahead $a$, berarti tidak ada produksi yang valid. Kedua, ketika puncak stack adalah terminal $t$ tetapi lookahead bukan $t$, input tidak sesuai dengan terminal yang diharapkan.
+
+Sumber baru membedakan dua respons:
+\begin{itemize}
+    \item **Error recovery**: parser tidak langsung berhenti total, tetapi berusaha melewati bagian bermasalah agar dapat menemukan error lain.
+    \item **Error repair**: compiler mencoba memodifikasi token sumber secara konseptual, misalnya menyisipkan token yang hilang atau menghapus token berlebih.
+\end{itemize}
+
+Strategi yang disebut sumber:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Strategi} & \textbf{Makna} \\
+\hline
+Panic mode & Melewati token sampai menemukan delimiter atau token sinkronisasi, misalnya titik koma. \\
+\hline
+Unit deletion & Membuang unit sintaks utuh, misalnya statement atau block yang bermasalah. \\
+\hline
+Terminal repair & Menyisipkan terminal yang terlewat atau menghapus terminal yang berlebih. \\
+\hline
+Context-sensitive repair & Menggunakan informasi semantik, misalnya tipe atau deklarasi, untuk memperkirakan perbaikan. \\
+\hline
+Spelling repair & Mengoreksi salah ketik token keyword atau identifier secara heuristik. \\
+\hline
+\end{tabularx}
+\caption{Strategi penanganan kesalahan sintaks}
+\label{tab:error-recovery-ll1}
+\end{table}
+
+Untuk LL(1), panic mode sering dikaitkan dengan FOLLOW(nonterminal) sebagai himpunan sinkronisasi: jika parser gagal pada nonterminal $A$, token dilewati sampai menemukan token yang masuk FOLLOW($A$), lalu parser mencoba melanjutkan dari konteks setelah $A$.
+
+\subsubsection{\texorpdfstring{\texttt{synch} Entries dan Phrase-Level Recovery}{synch Entries dan Phrase-Level Recovery}}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{synch} entries adalah penanda pada tabel LL(1) yang membantu panic-mode recovery melakukan sinkronisasi ulang. Phrase-level recovery lebih lokal: sel error diisi dengan routine perbaikan kecil untuk frasa sintaksis tertentu.
+\end{jawab}
+
+Pada tabel LL(1) biasa, sel kosong berarti error. Untuk recovery, sebagian sel kosong dapat diisi dengan penanda \texttt{synch}. Umumnya, untuk setiap nonterminal $A$, semua terminal dalam $FOLLOW(A)$ ditempatkan sebagai kandidat sinkronisasi. Jika parser sedang memproses $A$ dan lookahead berada pada FOLLOW($A$), parser dapat menganggap bagian $A$ hilang atau salah, lalu mem-pop $A$ agar parsing lanjut pada konteks setelah $A$.
+
+Mekanisme panic mode dengan \texttt{synch}:
+\begin{enumerate}
+    \item Jika $M[A,a]$ berisi produksi, parser tetap melakukan expand normal.
+    \item Jika $M[A,a]$ berisi \texttt{synch}, parser melaporkan error lalu mem-pop $A$ dari stack.
+    \item Jika $M[A,a]$ kosong dan bukan \texttt{synch}, parser melewati token input $a$ sampai menemukan token yang lebih masuk akal.
+    \item Jika puncak stack terminal tidak cocok dengan lookahead, parser dapat mem-pop terminal tersebut sebagai token yang dianggap hilang.
+\end{enumerate}
+
+Phrase-level recovery berbeda karena parser tidak hanya melewati token. Sel error tertentu pada tabel diisi dengan routine yang mencoba perbaikan lokal, misalnya menyisipkan token yang sering hilang, menghapus token berlebih, atau mengganti token yang salah pada konteks tertentu.
+
+Dummy identifier adalah teknik context-sensitive repair pada fase yang melibatkan symbol table. Jika parser atau semantic analyzer menemukan identifier yang belum dideklarasikan, compiler dapat memasukkan identifier tersebut ke symbol table dengan tipe dummy. Tujuannya bukan membenarkan program, melainkan mencegah satu kesalahan deklarasi menghasilkan rentetan error palsu pada penggunaan berikutnya.
+
+\begin{cmt}{Catatan: Batas Recovery}{}
+Error recovery tidak bertujuan menebak program benar secara sempurna. Tujuannya adalah menjaga parser tetap berjalan agar compiler dapat melaporkan beberapa error sekaligus. Recovery yang terlalu agresif dapat menghasilkan pesan error lanjutan yang palsu, sehingga strategi sinkronisasi harus dipilih hati-hati.
+\end{cmt}
+
+Subtopik ini berhubungan langsung dengan tabel parsing: selain produksi dan error, tabel dapat diperkaya dengan informasi sinkronisasi. Ini membuat LL(1) tidak hanya menjadi recognizer, tetapi juga bagian dari compiler yang memberi diagnostik.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Rumus FIRST}
+
+\begin{jawab}[Makna Rumus.]
+Rumus FIRST menentukan terminal apa yang mungkin muncul pertama dari hasil derivasi suatu string grammar. Rumus ini dipakai saat mengisi tabel parsing untuk produksi non-nullable.
+\end{jawab}
+
+\begin{equation}
+    FIRST(\alpha)=\{a\in T \mid \alpha\Rightarrow^* aw\}\cup\{\epsilon\mid \alpha\Rightarrow^*\epsilon\}
+    \label{eq:first-ll1}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $\alpha$: string simbol grammar.
+    \item $a$: terminal pertama yang mungkin muncul.
+    \item $w$: sisa string terminal atau simbol hasil derivasi.
+    \item $\epsilon$: string kosong apabila $\alpha$ nullable.
+\end{itemize}
+
+\subsubsection{Rumus FOLLOW}
+
+\begin{jawab}[Makna Rumus.]
+Rumus FOLLOW menentukan terminal yang dapat muncul setelah suatu nonterminal. FOLLOW dipakai ketika produksi dapat menurunkan $\epsilon$.
+\end{jawab}
+
+\begin{equation}
+    FOLLOW(A)=\{a\in T \mid S\Rightarrow^* \alpha Aa\beta\}
+    \label{eq:follow-ll1}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $A$: nonterminal yang sedang dianalisis.
+    \item $S$: start symbol grammar.
+    \item $a$: terminal yang dapat muncul tepat setelah $A$.
+    \item $\alpha,\beta$: konteks sentential form di sekitar $A$.
+\end{itemize}
+
+\subsubsection{Algoritma Konstruksi Tabel LL(1)}
+
+\begin{jawab}[Tujuan Algoritma.]
+Algoritma ini mengubah grammar, FIRST, dan FOLLOW menjadi tabel keputusan $M[A,a]$. Grammar LL(1) valid jika tidak ada sel tabel yang menerima lebih dari satu produksi.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode konstruksi tabel parsing LL(1)}, label={lst:konstruksi-tabel-ll1}]
+Input: Grammar G, FIRST, FOLLOW
+Output: Parsing table M
+
+1. Inisialisasi semua sel M[A, a] sebagai error.
+2. Untuk setiap produksi A -> alpha:
+3.     Untuk setiap terminal a dalam FIRST(alpha) - {epsilon}:
+4.         Masukkan A -> alpha ke M[A, a].
+5.     Jika epsilon ada dalam FIRST(alpha):
+6.         Untuk setiap terminal b dalam FOLLOW(A):
+7.             Masukkan A -> alpha ke M[A, b].
+8. Jika suatu sel menerima lebih dari satu produksi:
+9.     Grammar bukan LL(1).
+\end{lstlisting}
+
+Langkah 5--7 adalah bagian yang sering menimbulkan kesalahan. Produksi $\epsilon$ tidak ditempatkan pada kolom $\epsilon$, melainkan pada kolom terminal yang dapat mengikuti nonterminal tersebut.
+
+\subsubsection{Algoritma Nonrecursive Predictive Parser}
+
+\begin{jawab}[Tujuan Algoritma.]
+Algoritma ini menjalankan parser LL(1) memakai stack eksplisit. Outputnya adalah accept jika input sesuai grammar, atau error jika tidak ada langkah parsing yang valid.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode nonrecursive predictive parser}, label={lst:parser-ll1}]
+Input: String token w$, parsing table M, start symbol S
+Output: ACCEPT atau ERROR
+
+1. Stack = [S, $]   // S berada di puncak stack
+2. a = token pertama input
+3. while top(Stack) != $:
+4.     X = top(Stack)
+5.     if X adalah terminal:
+6.         if X == a:
+7.             pop Stack
+8.             a = token berikutnya
+9.         else:
+10.            ERROR
+11.    else:
+12.        if M[X, a] berisi X -> Y1 Y2 ... Yk:
+13.            pop Stack
+14.            push Yk, ..., Y2, Y1
+15.        else:
+16.            ERROR
+17. if a == $:
+18.     ACCEPT
+19. else:
+20.     ERROR
+\end{lstlisting}
+
+Push dilakukan terbalik agar $Y_1$, simbol paling kiri pada body produksi, berada di puncak stack dan diproses lebih dulu.
+
+\subsubsection{Trace Parsing \texttt{int * int}}
+
+\begin{jawab}[Tujuan Trace.]
+Trace menunjukkan bagaimana stack, input, dan tabel bekerja bersama. Setiap baris adalah satu langkah match atau expand.
+\end{jawab}
+
+Untuk grammar:
+\[
+\begin{aligned}
+E &\rightarrow TX,\\
+X &\rightarrow +E \mid \epsilon,\\
+T &\rightarrow intY \mid (E),\\
+Y &\rightarrow *T \mid \epsilon,
+\end{aligned}
+\]
+trace untuk input \texttt{int * int \$} adalah:
+
+\begin{table}[H]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|L{0.22\textwidth}|X|}
+\hline
+\textbf{Stack} & \textbf{Input} & \textbf{Aksi} \\
+\hline
+$E\ \$$ & \texttt{int * int \$} & Expand $E\rightarrow TX$ \\
+\hline
+$T\ X\ \$$ & \texttt{int * int \$} & Expand $T\rightarrow intY$ \\
+\hline
+$int\ Y\ X\ \$$ & \texttt{int * int \$} & Match \texttt{int} \\
+\hline
+$Y\ X\ \$$ & \texttt{* int \$} & Expand $Y\rightarrow *T$ \\
+\hline
+$*\ T\ X\ \$$ & \texttt{* int \$} & Match \texttt{*} \\
+\hline
+$T\ X\ \$$ & \texttt{int \$} & Expand $T\rightarrow intY$ \\
+\hline
+$int\ Y\ X\ \$$ & \texttt{int \$} & Match \texttt{int} \\
+\hline
+$Y\ X\ \$$ & \texttt{\$} & Expand $Y\rightarrow\epsilon$ \\
+\hline
+$X\ \$$ & \texttt{\$} & Expand $X\rightarrow\epsilon$ \\
+\hline
+\texttt{\$} & \texttt{\$} & Accept \\
+\hline
+\end{tabularx}
+\caption{Trace parsing LL(1) untuk \texttt{int * int}}
+\label{tab:trace-ll1-int-times-int}
+\end{table}
+
+Trace ini memperlihatkan dua penggunaan produksi nullable. $Y$ dan $X$ dikosongkan karena lookahead \texttt{\$} berada pada FOLLOW masing-masing nonterminal sesuai tabel parsing.

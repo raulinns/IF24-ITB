@@ -1,0 +1,274 @@
+\section{Java Interface}
+
+Java Interface membahas cara Java mendefinisikan kontrak perilaku tanpa mengikat klien pada implementasi konkret. Interface adalah pusat dari abstraction, polymorphism, ISP, DIP, generics, collection framework, lambda expression, dan banyak design pattern. Karena Java hanya mengizinkan satu superclass, interface menjadi alat utama untuk membuat object memiliki banyak peran.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+NotebookLM pada materi SOLID menekankan bahwa Java menggunakan interface untuk menggantikan multiple inheritance class dalam konteks ISP dan DIP. Sintaks dan detail teknis interface di section ini dilengkapi menggunakan pengetahuan umum Java.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Konsep interface \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Interface sebagai kontrak method.
+        \item Class mengimplementasikan interface dengan \texttt{implements}.
+        \item Reference bertipe interface dapat menunjuk berbagai implementasi.
+    \end{enumerate}
+    \item Method dalam interface \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Abstract method implicit \texttt{public abstract}.
+        \item Default method dengan implementasi.
+        \item Static method pada interface.
+        \item Private helper method pada interface modern.
+    \end{enumerate}
+    \item Field dalam interface
+    \begin{enumerate}
+        \item Field interface implicit \texttt{public static final}.
+        \item Interface bukan tempat state instance.
+    \end{enumerate}
+    \item Multiple interface implementation
+    \begin{enumerate}
+        \item Class dapat mengimplementasikan banyak interface.
+        \item Konflik default method harus diselesaikan eksplisit.
+    \end{enumerate}
+    \item Functional interface
+    \begin{enumerate}
+        \item Interface dengan satu abstract method.
+        \item Dapat digunakan dengan lambda.
+        \item \texttt{@FunctionalInterface} untuk validasi.
+    \end{enumerate}
+    \item Interface dalam desain
+    \begin{enumerate}
+        \item ISP: interface kecil dan spesifik.
+        \item DIP: modul high-level bergantung pada interface.
+        \item Collection Framework dibangun di atas interface seperti \texttt{List}, \texttt{Set}, dan \texttt{Map}.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Interface memungkinkan kode bergantung pada apa yang bisa dilakukan object, bukan pada class konkret object tersebut. Ini membuat desain lebih fleksibel, mudah diuji, dan mudah diperluas.
+\end{jawab}
+
+Jika sebuah service bergantung langsung pada \texttt{EmailSender}, maka service sulit diganti untuk mengirim SMS, push notification, atau fake sender saat testing. Jika service bergantung pada interface \texttt{Notifier}, implementasi konkret dapat diganti tanpa mengubah service. Ini adalah inti polymorphism dan DIP dalam Java.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Interface berkaitan erat dengan SOLID, terutama ISP dan DIP. Collection memakai interface sebagai tipe utama. Generics sering memakai bound seperti \texttt{T extends Comparable<T>}. Stream API memakai functional interface seperti \texttt{Predicate}, \texttt{Function}, dan \texttt{Consumer}. Design Pattern seperti Strategy, Adapter, Observer, Factory, dan Repository sering dimodelkan dengan interface.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Interface sebagai Kontrak}
+
+\begin{jawab}[Inti Konsep.]
+Interface mendefinisikan kontrak perilaku: method apa yang tersedia, bukan bagaimana method tersebut diimplementasikan.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Interface dan implementasi konkret}, label={lst:interface-basic}]
+public interface PaymentGateway {
+    PaymentResult pay(Invoice invoice);
+}
+
+public class BankTransferGateway implements PaymentGateway {
+    @Override
+    public PaymentResult pay(Invoice invoice) {
+        return PaymentResult.success();
+    }
+}
+
+public class CheckoutService {
+    private final PaymentGateway gateway;
+
+    public CheckoutService(PaymentGateway gateway) {
+        this.gateway = gateway;
+    }
+
+    public PaymentResult checkout(Invoice invoice) {
+        return gateway.pay(invoice);
+    }
+}
+\end{lstlisting}
+
+\texttt{CheckoutService} tidak perlu mengetahui apakah pembayaran dilakukan melalui transfer bank, kartu, atau dompet digital. Ia hanya membutuhkan kontrak \texttt{PaymentGateway}.
+
+\subsubsection{Default, Static, dan Private Method}
+
+\begin{jawab}[Inti Konsep.]
+Interface modern dapat memiliki default method, static method, dan private helper method. Namun, state instance tetap milik class implementasi.
+\end{jawab}
+
+Default method memungkinkan interface menambahkan perilaku umum tanpa memaksa semua implementasi lama langsung berubah. Namun, default method harus dipakai hati-hati agar interface tidak menjadi terlalu gemuk.
+
+\begin{lstlisting}[language=Java, caption={Default dan static method pada interface}, label={lst:interface-default-static}]
+public interface Identifiable {
+    String id();
+
+    default boolean hasSameId(Identifiable other) {
+        return other != null && id().equals(other.id());
+    }
+
+    static boolean isValidId(String id) {
+        return id != null && !id.isBlank();
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Multiple Interface dan Konflik Default Method}
+
+\begin{jawab}[Inti Konsep.]
+Sebuah class dapat mengimplementasikan banyak interface. Jika dua interface memberi default method dengan signature sama, class harus memilih atau membuat implementasi sendiri.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Resolusi konflik default method}, label={lst:default-conflict}]
+interface A {
+    default String name() {
+        return "A";
+    }
+}
+
+interface B {
+    default String name() {
+        return "B";
+    }
+}
+
+class C implements A, B {
+    @Override
+    public String name() {
+        return A.super.name() + B.super.name();
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Functional Interface dan Lambda}
+
+\begin{jawab}[Inti Konsep.]
+Functional interface adalah interface dengan tepat satu abstract method. Interface seperti ini dapat diimplementasikan menggunakan lambda expression.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Functional interface dan lambda}, label={lst:functional-interface}]
+@FunctionalInterface
+public interface Validator<T> {
+    boolean isValid(T value);
+}
+
+Validator<String> notBlank = text -> text != null && !text.isBlank();
+
+System.out.println(notBlank.isValid("Java")); // true
+\end{lstlisting}
+
+Java standard library menyediakan functional interface umum seperti \texttt{Predicate<T>}, \texttt{Function<T,R>}, \texttt{Consumer<T>}, dan \texttt{Supplier<T>}. Ini menjadi dasar Stream API.
+
+\subsubsection{Interface, ISP, dan DIP}
+
+\begin{jawab}[Inti Konsep.]
+Interface yang baik kecil, stabil, dan mencerminkan kebutuhan klien. Interface yang terlalu besar melanggar ISP; modul yang bergantung pada class konkret melanggar DIP.
+\end{jawab}
+
+Contoh interface terlalu besar:
+
+\begin{lstlisting}[language=Java, caption={Fat interface yang memaksa method tidak relevan}, label={lst:fat-interface}]
+public interface Worker {
+    void work();
+    void eat();
+    void sleep();
+}
+\end{lstlisting}
+
+Robot worker mungkin bisa \texttt{work}, tetapi tidak \texttt{eat} atau \texttt{sleep}. Desain lebih baik adalah memisahkan interface:
+
+\begin{lstlisting}[language=Java, caption={Interface kecil sesuai ISP}, label={lst:small-interface}]
+public interface Workable {
+    void work();
+}
+
+public interface Eatable {
+    void eat();
+}
+
+public class Robot implements Workable {
+    @Override
+    public void work() { }
+}
+\end{lstlisting}
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+\texttt{interface} & Deklarasi kontrak perilaku. \\
+\hline
+\texttt{implements} & Kata kunci class untuk memenuhi interface. \\
+\hline
+Default method & Method interface dengan implementasi default. \\
+\hline
+Static method & Method milik interface, dipanggil melalui nama interface. \\
+\hline
+Functional interface & Interface dengan satu abstract method, cocok untuk lambda. \\
+\hline
+\texttt{@FunctionalInterface} & Annotation untuk validasi functional interface. \\
+\hline
+ISP & Prinsip agar klien tidak bergantung pada method yang tidak digunakan. \\
+\hline
+DIP & Prinsip agar modul high-level bergantung pada abstraksi. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java Interface}
+\label{tab:komponen-kunci-java-interface}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Mendesain Interface}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu menentukan interface yang cukup abstrak tanpa menjadi terlalu besar.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode desain interface}, label={lst:desain-interface}]
+Input: Sekumpulan class dan kebutuhan klien
+Output: Interface yang stabil dan spesifik
+
+1. Identifikasi operasi yang benar-benar dibutuhkan klien.
+2. Kelompokkan operasi berdasarkan alasan perubahan yang sama.
+3. Jika satu calon interface memiliki method yang tidak dipakai sebagian klien:
+      pecah interface tersebut.
+4. Hindari memasukkan state instance ke interface.
+5. Gunakan default method hanya untuk perilaku umum yang stabil.
+6. Pastikan implementasi dapat diganti tanpa mengubah klien.
+7. Jika interface hanya punya satu abstract method dan akan dipakai sebagai lambda:
+      beri @FunctionalInterface.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat mendefinisikan interface dan implementasinya.
+    \item[$\square$] Saya dapat menjelaskan polymorphism dengan reference bertipe interface.
+    \item[$\square$] Saya dapat memakai default dan static method interface.
+    \item[$\square$] Saya dapat menyelesaikan konflik default method.
+    \item[$\square$] Saya dapat menjelaskan functional interface dan lambda.
+    \item[$\square$] Saya dapat menghubungkan interface dengan ISP dan DIP.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & \texttt{interface}, \texttt{implements}, polymorphism, default method, functional interface, ISP, DIP. \\
+\hline
+\textbf{Cukup Paham Konsep} & Static/private method interface, konflik default method, package \texttt{java.util.function}. \\
+\hline
+\textbf{Sudah Dikuasai} & Materi ini pernah diuji dalam kuis, tetapi tetap krusial karena menjadi dasar collection, stream, dan design pattern. \\
+\hline
+\end{tabularx}

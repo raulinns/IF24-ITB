@@ -1,0 +1,145 @@
+\contentsline {section}{\numberline {1}Informasi Ujian}{1}{section.1}%
+\contentsline {section}{\numberline {2}Capaian Pembelajaran Mata Kuliah (CPMK)}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Tabel Keterpenuhan CPMK}{2}{subsection.2.1}%
+\contentsline {section}{\numberline {3}Daftar Materi yang Diujikan}{2}{section.3}%
+\contentsline {section}{\numberline {4}Outline Keseluruhan Materi}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Introduction to Database}{3}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Model Data}{3}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Relational Model}{3}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Relational Algebra \& Calculus}{3}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}SQL (Structured Query Language)}{3}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Database Design using E-R Model}{3}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Relational Database Design}{4}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}Integrity Constraints}{4}{subsection.4.8}%
+\contentsline {subsection}{\numberline {4.9}Model Data Multidimensi \& Data Warehouse}{4}{subsection.4.9}%
+\contentsline {section}{\numberline {5}Introduction to Database}{5}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Outline Fundamental Konsep Materi}{5}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Penjelasan Konsep}{6}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Data, Database, dan DBMS}{6}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Motivasi Penggunaan DBMS}{6}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Abstraksi Data}{7}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}Schema, Instance, dan Data Independence}{8}{subsubsection.5.2.4}%
+\contentsline {subsubsection}{\numberline {5.2.5}Bahasa Basis Data}{8}{subsubsection.5.2.5}%
+\contentsline {subsubsection}{\numberline {5.2.6}Komponen Internal DBMS}{9}{subsubsection.5.2.6}%
+\contentsline {subsubsection}{\numberline {5.2.7}Arsitektur, Pengguna, dan Proses Pengembangan Database}{10}{subsubsection.5.2.7}%
+\contentsline {subsection}{\numberline {5.3}Algoritma dan Rumus Penting}{10}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Alur Query Deklaratif di DBMS}{10}{subsubsection.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.2}Relasi Schema dan Instance}{11}{subsubsection.5.3.2}%
+\contentsline {section}{\numberline {6}Model Data}{12}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Outline Fundamental Konsep Materi}{12}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Penjelasan Konsep}{12}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {6.2.1}Konsep Dasar Model Data}{12}{subsubsection.6.2.1}%
+\contentsline {subsubsection}{\numberline {6.2.2}Level Pemodelan Data}{13}{subsubsection.6.2.2}%
+\contentsline {subsubsection}{\numberline {6.2.3}Entity-Relationship Model}{13}{subsubsection.6.2.3}%
+\contentsline {subsubsection}{\numberline {6.2.4}Relational Model}{14}{subsubsection.6.2.4}%
+\contentsline {subsubsection}{\numberline {6.2.5}Semi-Structured dan Object-Based Data Model}{15}{subsubsection.6.2.5}%
+\contentsline {subsubsection}{\numberline {6.2.6}Network dan Hierarchical Model}{15}{subsubsection.6.2.6}%
+\contentsline {subsubsection}{\numberline {6.2.7}Hubungan Antar Model}{16}{subsubsection.6.2.7}%
+\contentsline {subsection}{\numberline {6.3}Algoritma dan Rumus Penting}{16}{subsection.6.3}%
+\contentsline {subsubsection}{\numberline {6.3.1}Prosedur Pemodelan Data}{16}{subsubsection.6.3.1}%
+\contentsline {subsubsection}{\numberline {6.3.2}Transisi E-R ke Relasional}{16}{subsubsection.6.3.2}%
+\contentsline {section}{\numberline {7}Relational Model}{18}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Outline Fundamental Konsep Materi}{18}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Penjelasan Konsep}{18}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Relation, Attribute, dan Tuple}{18}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}Domain, Atomic Values, dan Null Values}{19}{subsubsection.7.2.2}%
+\contentsline {subsubsection}{\numberline {7.2.3}Schema dan Instance}{20}{subsubsection.7.2.3}%
+\contentsline {subsubsection}{\numberline {7.2.4}Keys}{20}{subsubsection.7.2.4}%
+\contentsline {subsubsection}{\numberline {7.2.5}Schema Diagram dan View}{21}{subsubsection.7.2.5}%
+\contentsline {subsubsection}{\numberline {7.2.6}Hubungan Relational Model dengan Materi Lain}{21}{subsubsection.7.2.6}%
+\contentsline {subsection}{\numberline {7.3}Algoritma dan Rumus Penting}{22}{subsection.7.3}%
+\contentsline {subsubsection}{\numberline {7.3.1}Relation Schema}{22}{subsubsection.7.3.1}%
+\contentsline {subsubsection}{\numberline {7.3.2}Kondisi Superkey}{22}{subsubsection.7.3.2}%
+\contentsline {section}{\numberline {8}Relational Algebra \& Calculus}{23}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Outline Fundamental Konsep Materi}{23}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Penjelasan Konsep}{24}{subsection.8.2}%
+\contentsline {subsubsection}{\numberline {8.2.1}Bahasa Kueri Relasional Formal}{24}{subsubsection.8.2.1}%
+\contentsline {subsubsection}{\numberline {8.2.2}Relational Algebra Dasar}{24}{subsubsection.8.2.2}%
+\contentsline {subsubsection}{\numberline {8.2.3}Operator Tambahan}{25}{subsubsection.8.2.3}%
+\contentsline {subsubsection}{\numberline {8.2.4}Division}{25}{subsubsection.8.2.4}%
+\contentsline {subsubsection}{\numberline {8.2.5}Extended Relational Algebra}{26}{subsubsection.8.2.5}%
+\contentsline {subsubsection}{\numberline {8.2.6}Relational Calculus}{26}{subsubsection.8.2.6}%
+\contentsline {subsubsection}{\numberline {8.2.7}Safety, SQL Quantifier, dan Relational Completeness}{27}{subsubsection.8.2.7}%
+\contentsline {subsection}{\numberline {8.3}Algoritma dan Rumus Penting}{27}{subsection.8.3}%
+\contentsline {subsubsection}{\numberline {8.3.1}Division}{27}{subsubsection.8.3.1}%
+\contentsline {subsubsection}{\numberline {8.3.2}Selection dan Projection}{28}{subsubsection.8.3.2}%
+\contentsline {section}{\numberline {9}SQL (Structured Query Language)}{29}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Outline Fundamental Konsep Materi}{29}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Penjelasan Konsep}{30}{subsection.9.2}%
+\contentsline {subsubsection}{\numberline {9.2.1}Latar Belakang dan Bagian SQL}{30}{subsubsection.9.2.1}%
+\contentsline {subsubsection}{\numberline {9.2.2}DDL dan Constraints}{30}{subsubsection.9.2.2}%
+\contentsline {subsubsection}{\numberline {9.2.3}Query Dasar Select-From-Where}{31}{subsubsection.9.2.3}%
+\contentsline {subsubsection}{\numberline {9.2.4}\texttt {NULL} dan Three-Valued Logic}{32}{subsubsection.9.2.4}%
+\contentsline {subsubsection}{\numberline {9.2.5}Set Operations, Aggregation, dan Grouping}{32}{subsubsection.9.2.5}%
+\contentsline {subsubsection}{\numberline {9.2.6}Nested Subqueries}{33}{subsubsection.9.2.6}%
+\contentsline {subsubsection}{\numberline {9.2.7}Join Expressions dan Views}{34}{subsubsection.9.2.7}%
+\contentsline {subsubsection}{\numberline {9.2.8}Modifikasi Data, Authorization, dan Transaction}{34}{subsubsection.9.2.8}%
+\contentsline {subsubsection}{\numberline {9.2.9}SQL Lanjutan}{35}{subsubsection.9.2.9}%
+\contentsline {subsection}{\numberline {9.3}Algoritma dan Rumus Penting}{35}{subsection.9.3}%
+\contentsline {subsubsection}{\numberline {9.3.1}Urutan Logis Query SQL}{35}{subsubsection.9.3.1}%
+\contentsline {subsubsection}{\numberline {9.3.2}SQL dan Aljabar Relasional}{36}{subsubsection.9.3.2}%
+\contentsline {section}{\numberline {10}Database Design using E-R Model}{37}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Outline Fundamental Konsep Materi}{37}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Penjelasan Konsep}{38}{subsection.10.2}%
+\contentsline {subsubsection}{\numberline {10.2.1}Fase Desain Basis Data}{38}{subsubsection.10.2.1}%
+\contentsline {subsubsection}{\numberline {10.2.2}Entity, Attribute, dan Relationship}{38}{subsubsection.10.2.2}%
+\contentsline {subsubsection}{\numberline {10.2.3}Cardinality, Participation, dan Keys}{39}{subsubsection.10.2.3}%
+\contentsline {subsubsection}{\numberline {10.2.4}Strong Entity, Weak Entity, dan Identifying Relationship}{39}{subsubsection.10.2.4}%
+\contentsline {subsubsection}{\numberline {10.2.5}E-R Diagram dan UML Class Diagram}{40}{subsubsection.10.2.5}%
+\contentsline {subsubsection}{\numberline {10.2.6}Specialization, Generalization, dan Inheritance}{40}{subsubsection.10.2.6}%
+\contentsline {subsubsection}{\numberline {10.2.7}Aggregation}{41}{subsubsection.10.2.7}%
+\contentsline {subsubsection}{\numberline {10.2.8}Design Issues dalam E-R Model}{41}{subsubsection.10.2.8}%
+\contentsline {subsubsection}{\numberline {10.2.9}Reduksi E-R ke Skema Relasional}{42}{subsubsection.10.2.9}%
+\contentsline {subsubsection}{\numberline {10.2.10}Hubungan E-R Model dengan Normalisasi}{43}{subsubsection.10.2.10}%
+\contentsline {subsection}{\numberline {10.3}Algoritma dan Rumus Penting}{43}{subsection.10.3}%
+\contentsline {subsubsection}{\numberline {10.3.1}Key Weak Entity}{43}{subsubsection.10.3.1}%
+\contentsline {subsubsection}{\numberline {10.3.2}Skema Relationship Set Many-to-Many}{43}{subsubsection.10.3.2}%
+\contentsline {section}{\numberline {11}Relational Database Design}{45}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Outline Fundamental Konsep Materi}{45}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Penjelasan Konsep}{46}{subsection.11.2}%
+\contentsline {subsubsection}{\numberline {11.2.1}Tujuan Desain Relasional}{46}{subsubsection.11.2.1}%
+\contentsline {subsubsection}{\numberline {11.2.2}Functional Dependency}{47}{subsubsection.11.2.2}%
+\contentsline {subsubsection}{\numberline {11.2.3}Closure dan Inferensi Dependensi}{48}{subsubsection.11.2.3}%
+\contentsline {subsubsection}{\numberline {11.2.4}Canonical Cover}{49}{subsubsection.11.2.4}%
+\contentsline {subsubsection}{\numberline {11.2.5}Decomposition, Lossless Join, dan Dependency Preservation}{50}{subsubsection.11.2.5}%
+\contentsline {subsubsection}{\numberline {11.2.6}Boyce-Codd Normal Form (BCNF)}{51}{subsubsection.11.2.6}%
+\contentsline {subsubsection}{\numberline {11.2.7}Third Normal Form (3NF)}{52}{subsubsection.11.2.7}%
+\contentsline {subsubsection}{\numberline {11.2.8}Bentuk Normal Lanjutan}{53}{subsubsection.11.2.8}%
+\contentsline {subsubsection}{\numberline {11.2.9}Denormalization for Performance}{54}{subsubsection.11.2.9}%
+\contentsline {subsubsection}{\numberline {11.2.10}Temporal Data Modeling}{54}{subsubsection.11.2.10}%
+\contentsline {subsection}{\numberline {11.3}Algoritma dan Rumus Penting}{55}{subsection.11.3}%
+\contentsline {subsubsection}{\numberline {11.3.1}Functional Dependency}{55}{subsubsection.11.3.1}%
+\contentsline {subsubsection}{\numberline {11.3.2}Attribute Closure}{56}{subsubsection.11.3.2}%
+\contentsline {subsubsection}{\numberline {11.3.3}BCNF Decomposition}{56}{subsubsection.11.3.3}%
+\contentsline {subsubsection}{\numberline {11.3.4}3NF Synthesis}{56}{subsubsection.11.3.4}%
+\contentsline {section}{\numberline {12}Integrity Constraints}{58}{section.12}%
+\contentsline {subsection}{\numberline {12.1}Outline Fundamental Konsep Materi}{58}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}Penjelasan Konsep}{59}{subsection.12.2}%
+\contentsline {subsubsection}{\numberline {12.2.1}Tujuan Integrity Constraints}{59}{subsubsection.12.2.1}%
+\contentsline {subsubsection}{\numberline {12.2.2}Pendekatan Penegakan Constraint}{60}{subsubsection.12.2.2}%
+\contentsline {subsubsection}{\numberline {12.2.3}Domain Constraints}{60}{subsubsection.12.2.3}%
+\contentsline {subsubsection}{\numberline {12.2.4}Entity Integrity}{61}{subsubsection.12.2.4}%
+\contentsline {subsubsection}{\numberline {12.2.5}Referential Integrity}{61}{subsubsection.12.2.5}%
+\contentsline {subsubsection}{\numberline {12.2.6}SQL Constraints pada Relasi Tunggal}{62}{subsubsection.12.2.6}%
+\contentsline {subsubsection}{\numberline {12.2.7}Foreign Key dan Referential Actions}{63}{subsubsection.12.2.7}%
+\contentsline {subsubsection}{\numberline {12.2.8}Deferred Constraint Checking}{63}{subsubsection.12.2.8}%
+\contentsline {subsubsection}{\numberline {12.2.9}Assertions, Triggers, Functions, dan Procedures}{64}{subsubsection.12.2.9}%
+\contentsline {subsubsection}{\numberline {12.2.10}Hubungan Integrity Constraints dengan Desain Relasional}{65}{subsubsection.12.2.10}%
+\contentsline {subsection}{\numberline {12.3}Algoritma dan Rumus Penting}{65}{subsection.12.3}%
+\contentsline {subsubsection}{\numberline {12.3.1}Validasi Penambahan Constraint}{65}{subsubsection.12.3.1}%
+\contentsline {subsubsection}{\numberline {12.3.2}Kondisi Referential Integrity}{66}{subsubsection.12.3.2}%
+\contentsline {subsubsection}{\numberline {12.3.3}Pemeriksaan Operasi DML terhadap Constraint}{66}{subsubsection.12.3.3}%
+\contentsline {section}{\numberline {13}Model Data Multidimensi \& Data Warehouse}{67}{section.13}%
+\contentsline {subsection}{\numberline {13.1}Outline Fundamental Konsep Materi}{67}{subsection.13.1}%
+\contentsline {subsection}{\numberline {13.2}Penjelasan Konsep}{68}{subsection.13.2}%
+\contentsline {subsubsection}{\numberline {13.2.1}Latar Belakang Decision Support}{68}{subsubsection.13.2.1}%
+\contentsline {subsubsection}{\numberline {13.2.2}OLTP dan OLAP}{68}{subsubsection.13.2.2}%
+\contentsline {subsubsection}{\numberline {13.2.3}Data Warehouse}{69}{subsubsection.13.2.3}%
+\contentsline {subsubsection}{\numberline {13.2.4}Model Data Multidimensi}{70}{subsubsection.13.2.4}%
+\contentsline {subsubsection}{\numberline {13.2.5}Fact Table dan Dimension Table}{70}{subsubsection.13.2.5}%
+\contentsline {subsubsection}{\numberline {13.2.6}Star, Snowflake, dan Galaxy Schema}{71}{subsubsection.13.2.6}%
+\contentsline {subsubsection}{\numberline {13.2.7}Query dan Operasi OLAP}{72}{subsubsection.13.2.7}%
+\contentsline {subsubsection}{\numberline {13.2.8}Hubungan dengan E-R Model dan Normalisasi}{72}{subsubsection.13.2.8}%
+\contentsline {subsection}{\numberline {13.3}Algoritma dan Rumus Penting}{73}{subsection.13.3}%
+\contentsline {subsubsection}{\numberline {13.3.1}Alur Pembangunan Data Warehouse}{73}{subsubsection.13.3.1}%
+\contentsline {subsubsection}{\numberline {13.3.2}Bentuk Umum Query Agregasi OLAP}{73}{subsubsection.13.3.2}%

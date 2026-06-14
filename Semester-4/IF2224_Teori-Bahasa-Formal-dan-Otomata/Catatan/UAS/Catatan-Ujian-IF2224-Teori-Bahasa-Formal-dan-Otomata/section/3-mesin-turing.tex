@@ -1,0 +1,601 @@
+\section{Mesin Turing}
+
+Mesin Turing adalah model matematika untuk komputasi umum. Jika finite automaton hanya memiliki memori berhingga dan PDA memiliki stack, Mesin Turing memiliki pita baca-tulis tak terbatas yang membuatnya cukup kuat untuk memodelkan algoritma umum. Materi ini penting karena menghubungkan teori automata dengan pertanyaan batas komputasi: persoalan mana yang dapat diselesaikan algoritma, mana yang hanya dapat dikenali, dan mana yang tidak dapat diputuskan sama sekali.
+
+Fokus belajar untuk ujian adalah definisi formal Mesin Turing, cara membaca instantaneous description, perbedaan bahasa recursive dan recursively enumerable, ekuivalensi beberapa varian Mesin Turing, serta teknik pembuktian undecidability seperti diagonalization, universal language, reduction, dan Rice's Theorem.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Motivasi dan batas komputasi
+    \begin{enumerate}
+        \item \pwajib Masalah yang dapat dan tidak dapat diselesaikan algoritma
+        \item \ppaham Argumen paradoks program penguji
+        \item \pwajib Church-Turing Thesis
+    \end{enumerate}
+    \item \pwajib Definisi formal Mesin Turing
+    \begin{enumerate}
+        \item \pwajib 7-tuple $M=(Q,\Sigma,\Gamma,\delta,q_0,B,F)$
+        \item \pwajib Fungsi transisi $\delta(q,Z)=(p,Y,D)$
+        \item \ppaham Diagram transisi $X/YD$
+    \end{enumerate}
+    \item \pwajib Instantaneous Description
+    \begin{enumerate}
+        \item \pwajib Format $\alpha q\beta$
+        \item \pwajib Aturan gerak kanan
+        \item \pwajib Aturan gerak kiri
+        \item \pwajib Relasi $\vdash$ dan $\vdash^*$
+        \item \pwajib Trace eksekusi pada input konkret
+    \end{enumerate}
+    \item \pwajib Penerimaan dan halting
+    \begin{enumerate}
+        \item \pwajib Acceptance by final state $L(M)$
+        \item \pwajib Acceptance by halting $H(M)$
+        \item \ppaham Mesin Turing sebagai transducer
+        \item \ppaham Mesin Turing sebagai enumerator
+        \item \pwajib Recursively enumerable language
+        \item \pwajib Recursive language
+        \item \pwajib Teorema komplemen RE
+        \item \ppaham Recognizer dan decider
+    \end{enumerate}
+    \item \ppaham Teknik pemrograman Mesin Turing
+    \begin{enumerate}
+        \item \ppaham Storage in state
+        \item \ppaham Multiple tracks
+        \item \ppaham Marker dan shifting-over
+        \item \ppaham Subroutines
+    \end{enumerate}
+    \item \ppaham Varian dan ekuivalensi Mesin Turing
+    \begin{enumerate}
+        \item \ppaham Multitape TM
+        \item \ppaham Nondeterministic TM
+        \item \ppaham Multi-head TM dan off-line TM
+        \item \ppaham Semi-infinite tape
+        \item \ppaham Two-stack dan counter machine
+    \end{enumerate}
+    \item \ppaham Hubungan dengan komputer riil
+    \begin{enumerate}
+        \item \ppaham Komputer mensimulasikan Mesin Turing
+        \item \ppaham Mesin Turing mensimulasikan komputer
+    \end{enumerate}
+    \item \pwajib Undecidability dan reduksi
+    \begin{enumerate}
+        \item \pwajib Encoding Mesin Turing
+        \item \pwajib Diagonalization language
+        \item \pwajib Universal language
+        \item \pwajib Reduction
+        \item \ppaham Post Correspondence Problem
+        \item \pwajib Rice's Theorem
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Motivasi Batas Komputasi}
+
+\begin{jawab}[Inti Konsep.]
+Mesin Turing dipakai untuk memformalkan konsep algoritma dan membuktikan bahwa ada masalah yang tidak dapat diselesaikan oleh algoritma apa pun. Model ini cukup sederhana untuk dianalisis, tetapi cukup kuat untuk mewakili komputasi umum.
+\end{jawab}
+
+Finite automaton dan PDA menjawab pertanyaan tentang kelas bahasa tertentu, tetapi belum cukup untuk membahas semua program komputer. Mesin Turing memperluas model automata dengan pita baca-tulis tak terbatas, sehingga dapat menyimpan dan memodifikasi informasi selama komputasi berlangsung.
+
+Motivasi utamanya bukan hanya membuat mesin yang lebih kuat, melainkan menentukan batas komputasi. Sumber memberi contoh program penguji ``hello, world''. Andaikan ada program $H$ yang dapat menentukan apakah program lain akan mencetak ``hello, world''. Program ini dapat dimodifikasi menjadi program paradoks $H_2$ yang mencetak ``hello, world'' justru ketika inputnya tidak mencetaknya, dan tidak mencetak ketika inputnya mencetak. Ketika $H_2$ dijalankan pada dirinya sendiri, timbul kontradiksi. Argumen seperti ini menunjukkan bahwa ada properti program yang mustahil diputuskan secara universal.
+
+Konsep ini menjadi jembatan dari automata ke computability theory. Pada bagian sebelumnya, pertanyaan membership untuk CFL decidable melalui CYK. Pada Mesin Turing, kita mulai melihat bahwa tidak semua pertanyaan tentang program atau bahasa dapat diputuskan.
+
+\subsubsection{Church-Turing Thesis}
+
+\begin{jawab}[Inti Konsep.]
+Church-Turing Thesis menyatakan bahwa setiap komputasi efektif yang dapat dilakukan oleh metode algoritmik apa pun dapat dilakukan oleh Mesin Turing. Ini bukan teorema matematis formal, melainkan tesis yang diterima luas tentang makna komputasi efektif.
+\end{jawab}
+
+A.M. Turing memperkenalkan Mesin Turing pada tahun 1936 sebagai model untuk menangkap gagasan ``segala kemungkinan komputasi''. Tesis ini tidak dapat dibuktikan seperti teorema biasa karena frasa ``metode algoritmik apa pun'' bersifat informal. Namun banyak model komputasi yang tampak berbeda, seperti lambda calculus, recursive functions, dan mesin register, ternyata ekuivalen dalam daya komputasinya dengan Mesin Turing.
+
+Makna praktisnya adalah jika sebuah persoalan terbukti tidak dapat diputuskan oleh Mesin Turing, maka persoalan itu dianggap tidak dapat diselesaikan oleh program komputer biasa. Karena itu, Mesin Turing menjadi model standar untuk membahas decidability dan undecidability.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Versi modern yang sering dipakai dalam analisis kompleksitas adalah Extended Church-Turing Thesis, yang secara kasar menyatakan bahwa model komputasi realistis dapat disimulasikan oleh Mesin Turing dengan overhead polinomial. Ini berbeda dari Church-Turing Thesis dasar, yang hanya membahas apa yang dapat dikomputasi, bukan efisiensinya.
+\end{cmt}
+
+\subsubsection{Definisi Formal 7-Tuple}
+
+\begin{jawab}[Inti Konsep.]
+Mesin Turing didefinisikan sebagai $M=(Q,\Sigma,\Gamma,\delta,q_0,B,F)$. Tuple ini menentukan kendali berhingga, alfabet input, alfabet pita, fungsi transisi, state awal, simbol blank, dan state penerima.
+\end{jawab}
+
+Definisi formal diperlukan agar perhitungan Mesin Turing dapat dinyatakan tanpa ambiguitas. Mesin memiliki **finite control** berupa state, tetapi memori utamanya adalah pita yang secara konseptual tak terbatas.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Komponen} & \textbf{Definisi atau Peran} \\
+\hline
+$Q$ & Himpunan berhingga state. \\
+\hline
+$\Sigma$ & Alfabet input yang muncul pada pita saat awal, tidak memuat blank. \\
+\hline
+$\Gamma$ & Alfabet pita, mencakup $\Sigma$ dan simbol tambahan yang boleh ditulis mesin. \\
+\hline
+$\delta$ & Fungsi transisi yang menentukan state baru, simbol tulis, dan arah gerak head. \\
+\hline
+$q_0$ & State awal. \\
+\hline
+$B$ & Simbol blank, anggota $\Gamma$ tetapi bukan anggota $\Sigma$. \\
+\hline
+$F$ & Himpunan final states atau accepting states. \\
+\hline
+\end{tabularx}
+\caption{Komponen formal Mesin Turing}
+\label{tab:komponen-tm}
+\end{table}
+
+Input awal diletakkan pada pita, dan semua sel di luar input berisi blank. Head membaca satu sel pada satu waktu, menulis simbol baru, lalu bergerak satu sel ke kiri atau ke kanan.
+
+\subsubsection{Fungsi Transisi}
+
+\begin{jawab}[Inti Konsep.]
+Fungsi transisi Mesin Turing menentukan aksi berdasarkan state saat ini dan simbol pita yang sedang dibaca. Dalam satu langkah, mesin menulis simbol baru, berpindah state, dan menggerakkan head.
+\end{jawab}
+
+Bentuk transisi dasar adalah:
+\[
+    \delta(q,Z)=(p,Y,D).
+\]
+Artinya, jika mesin berada di state $q$ dan head membaca simbol $Z$, mesin akan masuk ke state $p$, menulis simbol $Y$ menggantikan $Z$, lalu bergerak ke arah $D$. Pada model sumber, $D$ adalah $L$ untuk kiri atau $R$ untuk kanan; head bergerak tepat satu kotak setiap langkah.
+
+Diagram transisi menuliskan panah dari state $q$ ke state $p$ dengan label $Z/YD$. Label ini berarti ``baca $Z$, tulis $Y$, bergerak ke arah $D$''. Diagram memudahkan desain mesin, sedangkan fungsi $\delta$ memudahkan pembuktian formal.
+
+Jika $\delta(q,Z)$ tidak terdefinisi, mesin tidak dapat bergerak dari konfigurasi itu. Kondisi ini menjadi dasar acceptance by halting.
+
+\subsubsection{\texorpdfstring{Instantaneous Description $\alpha q\beta$}{Instantaneous Description alpha q beta}}
+
+\begin{jawab}[Inti Konsep.]
+Instantaneous Description (ID) Mesin Turing menulis konfigurasi sebagai $\alpha q\beta$. State $q$ disisipkan tepat sebelum simbol yang sedang dibaca head, sehingga isi pita dan posisi head dapat direpresentasikan dalam satu string.
+\end{jawab}
+
+Karena pita tak terbatas, ID tidak menuliskan seluruh blank tak terbatas. ID hanya menuliskan bagian relevan di antara simbol nonblank paling kiri dan paling kanan, ditambah state saat ini. Pada ID $\alpha q\beta$, string $\alpha\beta$ adalah isi pita relevan, dan simbol pertama dari $\beta$ adalah simbol yang sedang dipindai.
+
+Contoh: ID $abqcd$ berarti isi pita relevan adalah $abcd$, mesin sedang berada di state $q$, dan head sedang membaca simbol $c$. Jika $\beta$ kosong, head berada di blank tepat di kanan isi nonblank yang ditulis.
+
+ID adalah alat utama untuk menulis penerimaan formal, karena bahasa $L(M)$ dan $H(M)$ didefinisikan sebagai keberadaan rangkaian ID dari konfigurasi awal menuju konfigurasi penerima atau berhenti.
+
+\subsubsection{Aturan Gerak Kanan dan Kiri}
+
+\begin{jawab}[Inti Konsep.]
+Aturan gerak ID menjelaskan bagaimana satu transisi mengubah isi pita, posisi state dalam string ID, dan arah head. Gerak kanan memindahkan state ke kanan simbol yang baru ditulis, sedangkan gerak kiri memindahkan state ke sebelum simbol di kiri.
+\end{jawab}
+
+Jika $\delta(q,Z)=(p,Y,R)$, maka:
+\[
+    \alpha qZ\beta \vdash \alpha Yp\beta.
+\]
+Simbol $Z$ diganti menjadi $Y$, lalu head bergerak ke kanan, sehingga state $p$ ditulis setelah $Y$.
+
+Jika $\delta(q,Z)=(p,Y,L)$ dan ada simbol $X$ di kiri head, maka:
+\[
+    \alpha XqZ\beta \vdash \alpha pXY\beta.
+\]
+State $p$ berpindah ke sebelum $X$, karena setelah bergerak kiri head membaca $X$.
+
+Jika head bergerak ke kiri dari posisi paling kiri yang sedang ditulis, sumber menyatakan bentuk:
+\[
+    qZ\beta \vdash pBY\beta.
+\]
+Blank $B$ muncul sebagai sel baru di kiri.
+
+Relasi $\vdash$ menyatakan satu langkah, sedangkan $\vdash^*$ menyatakan nol, satu, atau banyak langkah. Sama seperti pada PDA, notasi ini memungkinkan pembuktian dengan rantai konfigurasi.
+
+\subsubsection{\texorpdfstring{Trace Eksekusi untuk $0^n1^n$}{Trace Eksekusi untuk 0n1n}}
+
+\begin{jawab}[Inti Konsep.]
+Trace eksekusi menunjukkan perubahan konfigurasi Mesin Turing secara konkret dari input awal sampai accept atau reject. Untuk bahasa $0^n1^n$, pola desain yang umum adalah menandai satu $0$ paling kiri yang belum dipakai, mencari satu $1$ pasangannya, lalu mengulang sampai semua simbol tertandai.
+\end{jawab}
+
+Soal Mesin Turing sering tidak cukup dijawab dengan ide umum. Jika diminta melakukan trace, tuliskan state, isi tape, posisi head, dan aksi transisi pada setiap langkah penting. Strategi mark-scan untuk $L=\{0^n1^n\mid n\geq 1\}$ adalah:
+\begin{enumerate}
+    \item Scan dari kiri dan tandai $0$ pertama yang belum dipakai menjadi $X$.
+    \item Scan ke kanan melewati $0$ dan $Y$ sampai menemukan $1$ pertama yang belum dipakai, lalu tandai menjadi $Y$.
+    \item Kembali ke kiri sampai melewati marker $X$ atau blank, lalu cari $0$ berikutnya.
+    \item Jika tidak ada $0$ tersisa, scan kanan untuk memastikan semua $1$ sudah menjadi $Y$.
+    \item Accept jika hanya ada $X$ dan $Y$ tersisa; reject jika bentuk input melanggar urutan $0^*1^*$ atau jumlahnya tidak seimbang.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.10\textwidth}|L{0.12\textwidth}|L{0.30\textwidth}|L{0.16\textwidth}|X|}
+\hline
+\textbf{Langkah} & \textbf{State} & \textbf{Isi Tape} & \textbf{Posisi Head} & \textbf{Aksi} \\
+\hline
+0 & $q_0$ & \texttt{0011} & simbol pertama \texttt{0} & Mulai; pilih $0$ paling kiri yang belum ditandai. \\
+\hline
+1 & $q_1$ & \texttt{X011} & simbol kedua \texttt{0} & Tulis $X$, bergerak kanan mencari $1$ pasangan. \\
+\hline
+2 & $q_1$ & \texttt{X011} & simbol pertama \texttt{1} & Lewati $0$ yang masih belum dipasangkan. \\
+\hline
+3 & $q_2$ & \texttt{X0Y1} & simbol \texttt{0} & Tulis $Y$ pada $1$ pertama, bergerak kiri kembali. \\
+\hline
+4 & $q_2$ & \texttt{X0Y1} & simbol \texttt{X} & Bergerak kiri melewati $0$ sampai marker kiri. \\
+\hline
+5 & $q_0$ & \texttt{X0Y1} & simbol kedua \texttt{0} & Kembali ke kanan untuk mencari $0$ berikutnya. \\
+\hline
+6 & $q_1$ & \texttt{XXY1} & simbol \texttt{Y} & Tandai $0$ kedua menjadi $X$, lalu scan kanan. \\
+\hline
+7 & $q_1$ & \texttt{XXY1} & simbol terakhir \texttt{1} & Lewati $Y$ yang sudah menjadi pasangan. \\
+\hline
+8 & $q_2$ & \texttt{XXYY} & simbol \texttt{Y} kedua & Tandai $1$ terakhir menjadi $Y$, kembali ke kiri. \\
+\hline
+9 & $q_3$ & \texttt{XXYY} & simbol pertama \texttt{Y} & Tidak ada $0$ tersisa; verifikasi sisa kanan hanya $Y$. \\
+\hline
+10 & $q_{acc}$ & \texttt{XXYY} & blank kanan & Semua simbol tertandai seimbang; accept. \\
+\hline
+\end{tabularx}
+\caption{Trace ringkas TM mark-scan untuk input \texttt{0011}}
+\label{tab:trace-tm-0011}
+\end{table}
+
+\begin{cmt}{Catatan: Pola Soal UAS dan Transducer Unary}{}
+Sumber soal/latihan NotebookLM menekankan bahwa trace TM sering ditulis sebagai konfigurasi $\alpha q\beta$, misalnya state disisipkan tepat sebelum simbol yang dibaca. Untuk soal transducer aritmetika, integer $n$ biasanya direpresentasikan unary: $n=3$ ditulis sebagai \texttt{000} atau \texttt{111}, sesuai konvensi soal. Untuk fungsi $f(n)=2n$, strategi standar adalah menyediakan area output, lalu untuk setiap simbol input unary yang belum diproses, tandai simbol tersebut dan tulis dua simbol unary pada area output. Multi-tape TM membuat pola ini jauh lebih mudah karena satu tape dapat menyimpan input dan tape lain menyimpan output, tetapi daya komputasinya tetap ekuivalen dengan single-tape TM.
+\end{cmt}
+
+\subsubsection{Acceptance by Final State}
+
+\begin{jawab}[Inti Konsep.]
+Acceptance by final state menerima string jika komputasi dari ID awal mencapai ID yang memuat state penerima. Mesin boleh saja memiliki isi pita apa pun saat menerima.
+\end{jawab}
+
+Bahasa yang diterima oleh Mesin Turing $M$ adalah:
+\[
+    L(M)=\{w\mid q_0w\vdash^*\alpha p\beta,\ p\in F\}.
+\]
+ID awal ditulis $q_0w$, dengan input $w$ berada di pita dan head membaca simbol pertama input.
+
+Jika mesin mencapai state $p\in F$, string diterima. Jika string bukan anggota bahasa, mesin tidak harus berhenti; ia boleh berhenti di konfigurasi non-accepting atau berjalan selamanya, tergantung mesin.
+
+Inilah perbedaan penting antara recognizer dan decider. Recognizer cukup menerima semua string anggota bahasa, tetapi tidak harus memberi jawaban penolakan untuk semua string bukan anggota.
+
+\subsubsection{Acceptance by Halting}
+
+\begin{jawab}[Inti Konsep.]
+Acceptance by halting menerima string jika komputasi mencapai ID yang tidak memiliki transisi lanjutan. Mode ini ekuivalen dengan acceptance by final state dalam kelas bahasa yang dapat dikenali.
+\end{jawab}
+
+Bahasa yang diterima dengan halting adalah:
+\[
+    H(M)=\{w\mid q_0w\vdash^* I,\ \text{dan tidak ada langkah dari ID } I\}.
+\]
+Artinya, mesin berhenti karena fungsi transisi tidak terdefinisi pada konfigurasi tersebut.
+
+Sumber menyebut bahwa kelas bahasa dari acceptance by final state dan acceptance by halting ekuivalen. Intuisi pembuktiannya: final state dapat dibuat tanpa transisi keluar sehingga masuk final state berarti halt; sebaliknya, semua kondisi halt dapat dialihkan ke state penerima khusus.
+
+Ekuivalensi ini berguna karena beberapa pembuktian lebih mudah dinyatakan dengan ``mencapai final state'', sedangkan pembahasan algoritma sering lebih natural memakai ``halt''.
+
+\subsubsection{Mesin Turing sebagai Transducer}
+
+\begin{jawab}[Inti Konsep.]
+Sebagai transducer, Mesin Turing tidak hanya menerima atau menolak input, tetapi menghitung sebuah fungsi. Input diletakkan pada pita, mesin berhenti, lalu isi pita tertentu dibaca sebagai output.
+\end{jawab}
+
+Recognizer menjawab pertanyaan ya atau tidak tentang membership bahasa. Namun program nyata sering menghitung nilai, misalnya menambah dua bilangan, mengubah string, atau menghasilkan representasi baru. Untuk fungsi seperti ini, Mesin Turing dipandang sebagai **transducer**, yaitu mesin yang mentransformasi input menjadi output.
+
+Secara umum, jika fungsi $f$ terdefinisi pada input $w$, maka mesin mulai dari konfigurasi awal berisi $w$, melakukan komputasi, berhenti, dan meninggalkan $f(w)$ pada pita dalam format encoding yang disepakati. Jika $f(w)$ tidak terdefinisi, mesin boleh tidak halt.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Peran TM} & \textbf{Makna} \\
+\hline
+Recognizer & Menentukan apakah input termasuk bahasa dengan menerima anggota bahasa. \\
+\hline
+Decider & Menentukan membership dengan selalu halt untuk semua input. \\
+\hline
+Transducer & Menghitung output dari input, bukan hanya memberi jawaban accept/reject. \\
+\hline
+\end{tabularx}
+\caption{Peran Mesin Turing dalam bahasa dan fungsi}
+\label{tab:peran-tm}
+\end{table}
+
+Transducer menghubungkan teori Mesin Turing dengan konsep algoritma umum. Ketika kita mengatakan fungsi dapat dihitung, maknanya adalah ada Mesin Turing transducer yang menghitung fungsi tersebut.
+
+\subsubsection{Mesin Turing sebagai Enumerator}
+
+\begin{jawab}[Inti Konsep.]
+Enumerator adalah Mesin Turing yang mencetak string-string suatu bahasa satu per satu. Sebuah bahasa recursively enumerable jika dan hanya jika ada enumerator yang menghasilkan semua string dalam bahasa tersebut.
+\end{jawab}
+
+Recognizer mengenali bahasa melalui input tunggal. Enumerator mengambil sudut pandang berbeda: mesin berjalan tanpa harus diberi satu input tertentu, lalu mencetak daftar string yang menjadi anggota bahasa. Urutan cetak boleh tidak terurut dan boleh mengandung pengulangan, selama setiap string anggota akhirnya muncul.
+
+Jika ada recognizer untuk bahasa $L$, enumerator untuk $L$ dapat dibuat dengan dovetailing:
+\begin{enumerate}
+    \item Enumerasi semua string $\Sigma^*$ dalam urutan kanonik, misalnya panjang naik lalu leksikografis.
+    \item Jalankan recognizer secara paralel terbatas pada semakin banyak string dan semakin banyak langkah.
+    \item Setiap kali sebuah simulasi menerima, cetak string terkait.
+\end{enumerate}
+
+Sebaliknya, jika ada enumerator untuk $L$, recognizer untuk $L$ dapat menjalankan enumerator dan menerima ketika string input muncul pada output enumerator. Jika input bukan anggota, recognizer dapat berjalan selamanya.
+
+Enumerator memperjelas istilah recursively enumerable: bahasa RE adalah bahasa yang anggotanya dapat didaftar secara efektif, walaupun mungkin tidak ada algoritma yang selalu berhenti untuk memastikan non-anggota.
+
+\subsubsection{Recursively Enumerable dan Recursive Language}
+
+\begin{jawab}[Inti Konsep.]
+Recursively enumerable language adalah bahasa yang dapat dikenali Mesin Turing, tetapi mesin bisa loop untuk input yang bukan anggota. Recursive language adalah bahasa yang dapat diputuskan Mesin Turing yang selalu halt untuk semua input.
+\end{jawab}
+
+Sebuah bahasa **recursively enumerable (RE)** memiliki TM yang menerima setiap string anggota. Untuk string bukan anggota, mesin boleh menolak dengan berhenti atau berjalan tanpa akhir. Karena itu RE berhubungan dengan recognizer.
+
+Sebuah bahasa **recursive** memiliki TM yang selalu berhenti untuk setiap input. Jika input anggota bahasa, mesin accept; jika bukan anggota, mesin reject. Mesin seperti ini disebut decider dan merupakan formalisasi dari algoritma keputusan.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|X|}
+\hline
+\textbf{Kelas} & \textbf{Jika $w\in L$} & \textbf{Jika $w\notin L$} \\
+\hline
+Recursively enumerable & Pasti accept suatu saat. & Boleh reject atau loop selamanya. \\
+\hline
+Recursive & Pasti accept suatu saat. & Pasti reject suatu saat. \\
+\hline
+\end{tabularx}
+\caption{Perbedaan RE dan recursive language}
+\label{tab:re-recursive}
+\end{table}
+
+Semua recursive language adalah RE, tetapi tidak semua RE recursive. Universal language adalah contoh penting bahasa yang RE tetapi undecidable.
+
+\begin{thm}{Teorema Komplemen RE}{}
+Jika $L\in RE$ dan $\overline{L}\in RE$, maka $L$ recursive.
+\[
+    L\in RE \land \overline{L}\in RE \Rightarrow L\in Recursive.
+\]
+Kontrapositifnya: jika $L\in RE$ tetapi $L\notin Recursive$, maka $\overline{L}\notin RE$.
+\end{thm}
+
+Ide pembuktiannya adalah menjalankan recognizer untuk $L$ dan recognizer untuk $\overline{L}$ secara dovetailing. Untuk input apa pun, tepat salah satu recognizer akhirnya menerima; ketika salah satunya menerima, decider dapat berhenti dengan jawaban accept atau reject. Teorema ini penting untuk argumen undecidability: jika sebuah bahasa RE terbukti tidak recursive, maka komplemennya tidak mungkin RE.
+
+\begin{cmt}{Catatan: Hubungan dengan $L_d$ dan $L_u$}{}
+Untuk bahasa diagonal $L_d$ dan universal language $L_u$, sumber standar memakai relasi komplemen untuk menunjukkan batas RE. $L_u$ adalah RE karena universal TM dapat mensimulasikan $M$ pada $w$ dan menerima jika simulasi menerima, tetapi $L_u$ tidak recursive. Bahasa diagonal $L_d$ tidak RE; relasi ini konsisten dengan fakta bahwa komplemen bahasa RE undecidable tidak harus RE.
+\end{cmt}
+
+\subsubsection{Teknik Pemrograman Mesin Turing}
+
+\begin{jawab}[Inti Konsep.]
+Teknik pemrograman TM adalah pola desain yang membuat konstruksi mesin lebih mudah tanpa menambah daya komputasi. Storage in state, multiple tracks, dan subroutine membantu menulis mesin tingkat tinggi secara ringkas.
+\end{jawab}
+
+**Storage in state** menyimpan informasi kecil dalam state. Misalnya state dapat ditulis sebagai $[q,A,B,C]$, dengan $q$ sebagai kontrol utama dan $A,B,C$ sebagai data terbatas yang diingat. Karena jumlah state tetap berhingga, teknik ini hanya cocok untuk informasi berhingga.
+
+**Multiple tracks** memperlakukan satu sel pita sebagai tuple beberapa komponen, misalnya $[X,Y,Z]$. Ini memungkinkan mesin menandai suatu posisi pada track atas tanpa menghapus simbol asli pada track bawah. Secara formal, ini hanya memperbesar alfabet pita $\Gamma$.
+
+**Marker dan shifting-over** adalah teknik untuk mengubah isi tape secara terkontrol. Marker seperti $X$, $Y$, atau simbol khusus lain dipakai untuk mencatat progress tanpa melupakan posisi penting, misalnya simbol yang sudah dipasangkan pada bahasa $0^n1^n$ atau batas antarbagian string. Shifting-over dipakai ketika mesin perlu menyisipkan simbol di tengah tape: simbol-simbol di kanan posisi sisip digeser satu sel ke kanan, lalu simbol baru ditulis pada posisi kosong. Teknik ini lazim pada konstruksi untuk bahasa seperti $\{ww^R\}$ atau transducer aritmetika yang perlu membangun output di pita yang sama.
+
+**Subroutines** adalah kumpulan state yang menjalankan tugas tertentu dan dipakai berulang. Sumber menekankan bahwa subroutine memiliki start state dan return state; untuk pemanggilan dari tempat berbeda, dapat dibuat salinan state agar arah kembali tidak ambigu.
+
+Teknik ini penting untuk pembuktian ekuivalensi model. Alih-alih menulis semua transisi kecil, kita boleh mendeskripsikan konstruksi TM pada level prosedural selama jelas dapat diterjemahkan menjadi transisi formal.
+
+\subsubsection{Multitape dan Nondeterministic TM}
+
+\begin{jawab}[Inti Konsep.]
+Multitape TM dan nondeterministic TM mempermudah desain komputasi, tetapi tidak menambah kelas bahasa yang dapat dikenali. Keduanya dapat disimulasikan oleh deterministic single-tape TM.
+\end{jawab}
+
+**Multitape TM** memiliki $k$ pita dan $k$ head baca-tulis. Satu transisi membaca $k$ simbol sekaligus, menulis $k$ simbol, dan menggerakkan tiap head. Model ini lebih nyaman untuk algoritma, tetapi dapat disimulasikan oleh satu pita dengan $2k$ track: sebagian track menyimpan isi pita, sebagian track menyimpan marker posisi head. Sumber menyebut simulasi ini berbiaya waktu $O(n^2)$.
+
+**Nondeterministic TM (NTM)** memiliki beberapa pilihan transisi dari satu konfigurasi. Input diterima jika ada satu cabang komputasi yang menerima. Deterministic TM dapat mensimulasikan NTM dengan menelusuri pohon konfigurasi secara breadth-first menggunakan antrean ID, sehingga tidak terjebak pada satu cabang yang loop. Simulasi ini dapat lambat secara eksponensial, tetapi daya pengenalan bahasanya tetap sama.
+
+Kesimpulannya, varian ini memperjelas perbedaan antara kekuatan komputasi dan efisiensi. Dari sisi bahasa yang dapat dikenali, model-model ini ekuivalen; dari sisi waktu, overhead simulasi dapat signifikan.
+
+\subsubsection{Multi-Head, Two-Way, dan Off-Line TM}
+
+\begin{jawab}[Inti Konsep.]
+Multi-head, two-way infinite tape, dan off-line TM adalah variasi Mesin Turing yang mengubah organisasi pita dan head. Variasi ini mempermudah pemodelan algoritma tertentu, tetapi tetap ekuivalen dengan Mesin Turing standar dalam daya komputasi.
+\end{jawab}
+
+Sumber baru menambahkan beberapa variasi operasional. **Two-way infinite tape** memiliki pita tak terbatas ke kiri dan kanan, bukan hanya semi-infinite dengan batas kiri. Model ini tampak lebih longgar karena head boleh bergerak melewati posisi awal ke sisi kiri, tetapi perilakunya dapat disimulasikan oleh pita standar dengan teknik pelipatan pita atau multi-track.
+
+**Multi-head TM** memakai beberapa head baca-tulis pada satu pita. Tiap head dapat membaca posisi berbeda dan bergerak secara independen. Model ini membuat beberapa algoritma lebih ringkas karena mesin dapat menandai dan membandingkan beberapa posisi sekaligus, tetapi semua posisi head tetap dapat dikodekan pada satu pita standar.
+
+**Off-line TM** memisahkan pita input dan pita kerja. Pita input bersifat read-only dan dibatasi marker kiri dan kanan, sedangkan working tape dipakai untuk menulis hasil antara. Model ini dekat dengan cara algoritma dianalisis dalam praktik: input tidak perlu diubah, sementara memori kerja dipakai untuk komputasi.
+
+Kesamaan ketiganya adalah menambah kenyamanan desain, bukan menambah kelas bahasa yang dapat diputuskan atau dikenali. Ini memperkuat Church-Turing Thesis: detail fisik pita dan jumlah head tidak mengubah batas komputabilitas.
+
+\subsubsection{Restricted TM}
+
+\begin{jawab}[Inti Konsep.]
+Restricted TM adalah model yang fiturnya tampak lebih terbatas, tetapi masih dapat mensimulasikan Mesin Turing biasa. Ini menunjukkan bahwa daya komputasi TM cukup robust terhadap variasi representasi memori.
+\end{jawab}
+
+**Semi-infinite tape** hanya tak terbatas ke kanan. Pita dua arah dapat disimulasikan dengan melipat pita: posisi nonnegatif disimpan di satu track, posisi negatif di track lain. Marker khusus menandai titik awal agar mesin tidak bergerak keluar batas kiri.
+
+**Multistack machine** memakai beberapa stack sebagai memori. Dua stack cukup untuk mensimulasikan pita TM: satu stack menyimpan isi di kiri head, stack lain menyimpan isi di posisi head dan kanan head. Gerak head dapat diterjemahkan sebagai pop dari satu stack dan push ke stack lain.
+
+**Counter machine** mengganti stack dengan counter bilangan bulat nonnegatif. Mesin hanya dapat menguji apakah counter nol atau bukan nol. Sumber menyebut 3 counter dapat mensimulasikan multistack, dan 3 counter dapat dikodekan menjadi 2 counter dengan representasi faktorisasi prima seperti $2^i3^j5^k$.
+
+Model-model ini membantu membuktikan bahwa komputasi tidak bergantung pada detail fisik pita, melainkan pada kemampuan menyimpan dan memanipulasi informasi tak terbatas secara efektif.
+
+\subsubsection{Hubungan dengan Komputer Riil}
+
+\begin{jawab}[Inti Konsep.]
+Komputer riil dan Mesin Turing saling mensimulasikan secara konseptual jika komputer diberi memori eksternal tak terbatas. Karena itu, Mesin Turing menjadi model formal yang layak untuk membahas program nyata.
+\end{jawab}
+
+Komputer nyata dapat mensimulasikan Mesin Turing dengan menyimpan pita pada memori atau media eksternal. Keterbatasan fisik RAM atau disk diabaikan secara teoritis dengan asumsi persediaan memori kosong selalu dapat ditambah.
+
+Sebaliknya, Mesin Turing multitape dapat mensimulasikan komputer riil dengan merepresentasikan memori, instruction counter, register, dan instruksi pada pita-pitanya. Operasi seperti pencarian alamat, pemindahan data, penjumlahan, dan shifting dapat dijalankan sebagai prosedur TM.
+
+Sumber menyebut bahwa simulasi program komputer dengan $n$ instruksi dapat dilakukan dalam batas waktu polinomial, misalnya $O(n^3)$ dalam konstruksi yang dibahas. Ini mendukung pandangan bahwa TM dan komputer riil ekuivalen untuk pembahasan decidability dan polynomial-time secara konseptual.
+
+\subsubsection{Encoding Mesin Turing}
+
+\begin{jawab}[Inti Konsep.]
+Encoding Mesin Turing mengubah spesifikasi mesin menjadi string biner, sehingga sebuah TM dapat menerima deskripsi TM lain sebagai input. Ide ini memungkinkan universal TM, diagonalization, dan pembuktian undecidability.
+\end{jawab}
+
+Untuk membahas program sebagai data, setiap state, simbol, arah, dan transisi harus dikodekan. Sumber menggambarkan konvensi kode biner dengan deretan $0$ dan $1$, misalnya transisi dikodekan sebagai pola yang memuat indeks state, simbol baca, state tujuan, simbol tulis, dan arah gerak, lalu seluruh transisi digabung dengan separator.
+
+Dengan encoding, semua Mesin Turing dapat dienumerasi sebagai $M_1,M_2,\ldots$, dan semua string biner dapat dienumerasi sebagai $w_1,w_2,\ldots$. Enumerasi ini menjadi dasar diagonalization language $L_d$, yang membandingkan mesin ke-$i$ dengan input ke-$i$.
+
+Encoding juga menjelaskan mengapa interpreter atau operating system dapat dipahami secara formal: program hanyalah data yang dikodekan dan dibaca oleh mesin universal.
+
+\subsubsection{Diagonalization Language}
+
+\begin{jawab}[Inti Konsep.]
+Diagonalization language $L_d$ berisi string $w_i$ yang tidak diterima oleh mesin $M_i$ pada input dirinya sendiri. Bahasa ini membuktikan bahwa ada bahasa yang tidak recursively enumerable.
+\end{jawab}
+
+Definisi sumber dapat ditulis:
+\[
+    L_d=\{w_i\mid w_i\notin L(M_i)\}.
+\]
+Bayangkan tabel tak hingga dengan baris mesin $M_i$ dan kolom string $w_j$. Entri tabel menyatakan apakah $M_i$ menerima $w_j$. Bahasa $L_d$ dibentuk dengan mengambil diagonal tabel, yaitu kasus $M_i$ pada $w_i$, lalu membalik status penerimaannya.
+
+Jika ada mesin $D$ yang mengenali $L_d$, maka $D$ sendiri muncul sebagai salah satu $M_k$ dalam enumerasi. Pertanyaan apakah $w_k\in L(D)$ akan memunculkan kontradiksi: $D$ menerima $w_k$ jika dan hanya jika $M_k$ tidak menerima $w_k$, padahal $D=M_k$.
+
+Kesimpulannya, $L_d$ bukan RE. Ini lebih kuat daripada sekadar undecidable: tidak ada TM yang bahkan dapat mengenali semua anggotanya dengan benar.
+
+\subsubsection{Universal Language}
+
+\begin{jawab}[Inti Konsep.]
+Universal language $L_u$ berisi pasangan encoding $(M,w)$ sedemikian sehingga Mesin Turing $M$ menerima input $w$. Bahasa ini RE karena dapat disimulasikan oleh Universal Turing Machine, tetapi tidak recursive.
+\end{jawab}
+
+Definisinya:
+\[
+    L_u=\{(M,w)\mid M \text{ menerima } w\}.
+\]
+Universal Turing Machine $U$ membaca encoding $M$ dan input $w$, lalu mensimulasikan langkah-langkah $M$ pada $w$. Jika $M$ menerima, $U$ juga menerima. Jika $M$ loop, $U$ ikut loop.
+
+Karena simulasi ini mungkin tidak pernah berhenti pada input yang bukan anggota, $L_u$ adalah RE. Namun $L_u$ undecidable: tidak ada decider yang selalu berhenti dan menentukan apakah mesin arbitrer menerima input arbitrer. Ini adalah bentuk umum dari halting/acceptance problem.
+
+Universal language menjadi sumber utama reduksi. Banyak problem lain dibuktikan undecidable dengan menunjukkan bahwa jika problem itu decidable, maka $L_u$ juga decidable, kontradiksi.
+
+\subsubsection{Post Correspondence Problem}
+
+\begin{jawab}[Inti Konsep.]
+Post Correspondence Problem (PCP) adalah problem undecidable tentang mencocokkan deretan kartu sehingga string atas dan string bawah menjadi sama. PCP penting karena sering dipakai sebagai sumber reduksi untuk membuktikan undecidability pada grammar dan bahasa formal.
+\end{jawab}
+
+Sebuah instansi PCP berisi himpunan kartu, masing-masing berbentuk pasangan string $(x_i,y_i)$. Pertanyaannya: apakah ada urutan indeks $i_1,i_2,\ldots,i_k$ dengan $k\geq 1$ sehingga
+\[
+    x_{i_1}x_{i_2}\cdots x_{i_k}
+    =
+    y_{i_1}y_{i_2}\cdots y_{i_k}?
+\]
+Kartu boleh dipakai berulang dan urutan solusi tidak harus memakai semua kartu.
+
+Contoh struktur pencarian PCP:
+\begin{enumerate}
+    \item Pilih satu kartu sebagai awal urutan.
+    \item Bandingkan prefix string atas dan bawah yang terbentuk.
+    \item Tambahkan kartu berikutnya untuk mencoba menutup selisih prefix.
+    \item Jika kedua string sama persis setelah sejumlah kartu, instansi memiliki solusi.
+\end{enumerate}
+
+PCP undecidable: tidak ada algoritma umum yang selalu berhenti dan menentukan apakah instansi arbitrer memiliki solusi. Namun PCP semi-decidable karena semua urutan kartu berhingga dapat dienumerasi; jika solusi ada, pencarian sistematis akhirnya menemukannya.
+
+\begin{cmt}{Catatan: Relevansi PCP}{}
+PCP sering muncul bukan karena konstruksi PDA atau CYK, tetapi karena ia menjadi jembatan reduksi dari Mesin Turing ke problem tentang string, grammar, dan derivasi. Jika soal undecidability menyinggung CFG atau ambiguity, PCP dapat menjadi sumber reduksi yang lebih natural daripada langsung memakai universal language.
+\end{cmt}
+
+PCP menguatkan pola berpikir reduction. Untuk membuktikan problem target undecidable, kita dapat menunjukkan bahwa solusi problem target akan memungkinkan kita menyelesaikan PCP, padahal PCP sudah diketahui undecidable.
+
+\subsubsection{Reduction}
+
+\begin{jawab}[Inti Konsep.]
+Reduction adalah teknik membuktikan undecidability dengan mengubah instansi problem yang sudah diketahui undecidable menjadi instansi problem target. Jika problem target dapat diputuskan, maka problem asal juga dapat diputuskan; karena problem asal mustahil, problem target juga mustahil.
+\end{jawab}
+
+Misalkan $P_1$ sudah diketahui undecidable dan kita ingin membuktikan $P_2$ undecidable. Kita membangun algoritma transformasi dari input $P_1$ menjadi input $P_2$ sehingga jawaban $P_2$ dapat dipakai untuk menjawab $P_1$.
+
+Struktur buktinya:
+\begin{enumerate}
+    \item Asumsikan ada decider untuk $P_2$.
+    \item Tunjukkan cara memakai decider $P_2$ untuk membuat decider $P_1$.
+    \item Karena $P_1$ sudah undecidable, asumsi decider $P_2$ salah.
+    \item Maka $P_2$ undecidable.
+\end{enumerate}
+
+Reduksi perlu arah yang benar. Untuk membuktikan problem baru sulit, problem lama yang sudah sulit harus direduksi ke problem baru, bukan sebaliknya.
+
+\subsubsection{Rice's Theorem}
+
+\begin{jawab}[Inti Konsep.]
+Rice's Theorem menyatakan bahwa setiap properti nontrivial tentang bahasa yang dikenali Mesin Turing bersifat undecidable. Teorema ini membuat banyak pertanyaan semantik tentang program otomatis tidak dapat diputuskan.
+\end{jawab}
+
+Properti disebut **nontrivial** jika ada setidaknya satu RE language yang memiliki properti itu dan setidaknya satu RE language yang tidak memilikinya. Properti yang dimaksud adalah properti bahasa yang dikenali, bukan sekadar properti sintaks encoding mesin.
+
+Contoh pertanyaan yang termasuk cakupan Rice's Theorem:
+\begin{itemize}
+    \item Apakah bahasa yang dikenali mesin ini kosong?
+    \item Apakah bahasa yang dikenali mesin ini finite?
+    \item Apakah bahasa yang dikenali mesin ini regular?
+    \item Apakah bahasa yang dikenali mesin ini context-free?
+\end{itemize}
+
+Teorema ini menjelaskan mengapa analisis program umum sangat terbatas. Jika sebuah pertanyaan bergantung pada perilaku bahasa/program secara nontrivial, maka tidak ada algoritma universal yang selalu menjawab benar untuk semua Mesin Turing.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Fungsi Transisi Mesin Turing}
+
+\begin{jawab}[Makna Rumus.]
+Rumus ini menyatakan satu langkah atomik Mesin Turing: membaca state dan simbol pita, lalu menentukan state baru, simbol tulis, dan arah gerak head.
+\end{jawab}
+
+\begin{equation}
+    \delta(q,Z)=(p,Y,D)
+    \label{eq:transisi-tm}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $q$: state saat ini.
+    \item $Z$: simbol pita yang sedang dibaca.
+    \item $p$: state berikutnya.
+    \item $Y$: simbol yang ditulis menggantikan $Z$.
+    \item $D\in\{L,R\}$: arah gerak head.
+\end{itemize}
+
+\subsubsection{Bahasa yang Diterima dan Dihentikan}
+
+\begin{jawab}[Makna Rumus.]
+Rumus $L(M)$ menyatakan penerimaan melalui state final, sedangkan $H(M)$ menyatakan penerimaan melalui konfigurasi halt. Keduanya mendefinisikan kelas bahasa yang ekuivalen.
+\end{jawab}
+
+\begin{align}
+    L(M)&=\{w\mid q_0w\vdash^*\alpha p\beta,\ p\in F\}, \label{eq:lm-tm}\\
+    H(M)&=\{w\mid q_0w\vdash^* I,\ \text{dan tidak ada langkah dari } I\}. \label{eq:hm-tm}
+\end{align}
+
+dengan:
+\begin{itemize}
+    \item $q_0w$: ID awal dengan input $w$.
+    \item $\alpha p\beta$: ID yang memuat state penerima $p$.
+    \item $I$: ID halt yang tidak memiliki transisi lanjutan.
+\end{itemize}
+
+\subsubsection{Pseudocode Universal Turing Machine}
+
+\begin{jawab}[Tujuan Algoritma.]
+Pseudocode ini menggambarkan ide Universal Turing Machine: membaca deskripsi mesin lain dan mensimulasikan langkahnya pada input tertentu.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode Universal Turing Machine}, label={lst:utm}]
+Input: encoding <M, w>
+Output: accept jika M menerima w
+
+1. Decode deskripsi M menjadi daftar state, alfabet, dan transisi.
+2. Inisialisasi konfigurasi simulasi sebagai ID awal M pada input w.
+3. Selama konfigurasi simulasi belum accepting:
+   a. Baca state saat ini dan simbol yang sedang dipindai.
+   b. Cari transisi M yang sesuai.
+   c. Jika tidak ada transisi, berhenti tanpa menerima.
+   d. Terapkan transisi itu pada konfigurasi simulasi.
+4. Jika state penerima M tercapai, accept.
+\end{lstlisting}
+
+Jika mesin $M$ berjalan selamanya pada $w$, universal machine juga berjalan selamanya. Karena itu $L_u$ dapat dikenali tetapi tidak dapat diputuskan.

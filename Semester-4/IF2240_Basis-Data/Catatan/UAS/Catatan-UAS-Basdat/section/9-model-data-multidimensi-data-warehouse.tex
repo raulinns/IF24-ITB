@@ -1,0 +1,329 @@
+\section{Model Data Multidimensi \& Data Warehouse}
+
+Model Data Multidimensi dan Data Warehouse membahas cara menyusun data untuk analisis historis dan pengambilan keputusan. Jika database operasional dirancang agar transaksi harian cepat dan konsisten, data warehouse dirancang agar pertanyaan analitik seperti tren penjualan, performa cabang, dan perilaku pelanggan dapat dijawab dengan query agregasi yang lebih sederhana.
+
+Materi ini menunjukkan bahwa desain basis data tidak selalu mengejar normalisasi maksimum. Untuk beban kerja analitik yang dominan baca dan agregasi, struktur seperti star schema sering sengaja menyimpan redundansi terkontrol agar query lebih efisien.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Query mendalam NotebookLM untuk materi ini beberapa kali gagal di tengah jawaban. Penyusunan bagian ini tetap memakai outline final yang sudah diperoleh dari NotebookLM pada workflow pra-penulisan, ditambah pengetahuan umum yang ditandai dalam environment \texttt{cmt}.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Latar belakang decision support
+    \begin{enumerate}
+        \item \pwajib Kebutuhan analisis eksekutif
+        \item \pwajib Masalah query analitik pada database operasional
+    \end{enumerate}
+    \item \pwajib OLTP dan OLAP
+    \begin{enumerate}
+        \item \pwajib Perbedaan tujuan, pengguna, desain, data, dan pola akses
+        \item \pwajib Alasan beban OLAP dipisah dari OLTP
+    \end{enumerate}
+    \item \pwajib Data warehouse
+    \begin{enumerate}
+        \item \pwajib Repositori historis terpadu
+        \item \pwajib Unified schema
+        \item \ppaham ETL/ELT dan data loaders
+    \end{enumerate}
+    \item \pwajib Model data multidimensi
+    \begin{enumerate}
+        \item \pwajib Fact, measure, dimension, member
+        \item \pwajib Data cube dan hypercube
+        \item \ppaham Grain fact table
+    \end{enumerate}
+    \item \pwajib Warehouse schema
+    \begin{enumerate}
+        \item \pwajib Fact table dan dimension table
+        \item \pwajib Star schema
+        \item \pwajib Snowflake schema
+        \item \ppaham Fact constellation atau galaxy schema
+    \end{enumerate}
+    \item \pwajib Query dan operasi OLAP
+    \begin{enumerate}
+        \item \pwajib Simplifikasi query analitik
+        \item \pwajib Roll-up dan drill-down
+        \item \ppaham Slice, dice, pivot, cross-tabulation
+        \item \ppaham \texttt{cube} dan \texttt{rollup}
+    \end{enumerate}
+    \item \ppaham Hubungan dengan materi lain
+    \begin{enumerate}
+        \item \ppaham Hubungan dengan E-R model
+        \item \ppaham Hubungan dengan normalisasi
+        \item \ppaham Additive, semi-additive, dan non-additive measures
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Latar Belakang Decision Support}
+
+\begin{jawab}[Inti Konsep.]
+Decision support membutuhkan data historis yang siap dianalisis untuk membantu manajemen mengambil keputusan. Konsep ini penting karena pertanyaan analitik berbeda dari transaksi harian: ia jarang dieksekusi, tetapi berat, agregatif, dan sering menyentuh banyak data.
+\end{jawab}
+
+Motivasi data warehouse berawal dari kebutuhan eksekutif untuk memahami tren dan faktor bisnis. Contoh pertanyaan dari sumber meliputi total penjualan barang setiap bulan, rata-rata rupiah penjualan per bulan, penjual terbaik, kota target pasar terbesar, dan barang yang paling laku.
+
+Database operasional relasional biasanya sangat baik untuk transaksi kecil seperti mencatat order, memperbarui stok, atau menyisipkan pembayaran. Namun pertanyaan analitik sering membutuhkan agregasi historis dan banyak join. Contoh dari sumber: untuk mencari penjual top kategori \textit{skin care} pada tahun tertentu, query relasional perlu menjumlahkan data order melalui banyak tabel seperti \texttt{order}, \texttt{order\_item}, \texttt{product}, \texttt{category}, dan \texttt{seller}.
+
+Mekanisme masalahnya:
+\begin{enumerate}
+    \item Data operasional disimpan terpisah mengikuti desain aplikasi dan normalisasi.
+    \item Query analitik perlu menggabungkan banyak tabel untuk memperoleh konteks bisnis.
+    \item Query melakukan agregasi besar seperti \texttt{SUM}, \texttt{AVG}, dan \texttt{GROUP BY}.
+    \item Eksekusi berat ini dapat mengganggu transaksi harian jika dijalankan langsung pada database OLTP.
+\end{enumerate}
+
+Konsep ini menjadi alasan utama pemisahan OLTP dan OLAP. Data warehouse bukan sekadar salinan database, tetapi struktur baru yang disusun agar pertanyaan analitik menjadi lebih langsung.
+
+\subsubsection{OLTP dan OLAP}
+
+\begin{jawab}[Inti Konsep.]
+OLTP menangani transaksi operasional harian, sedangkan OLAP menangani analisis historis untuk keputusan. Perbedaan ini penting karena desain schema, pola akses, dan optimasi keduanya berlawanan.
+\end{jawab}
+
+OLTP (\textit{Online Transaction Processing}) dipakai untuk operasi bisnis sehari-hari. Karakteristiknya adalah transaksi sering, kecil, dan membutuhkan konsistensi update yang kuat. OLAP (\textit{Online Analytical Processing}) dipakai untuk membaca dan menganalisis data besar, historis, dan teragregasi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|X|}
+\hline
+\textbf{Aspek} & \textbf{OLTP} & \textbf{OLAP} \\
+\hline
+Pengguna & Clerk, operator, aplikasi transaksi, IT professional. & Knowledge worker, analis, manajemen, eksekutif. \\
+\hline
+Fungsi & Operasi harian: insert, update, delete, lookup kecil. & Decision support: analisis tren, agregasi, pelaporan. \\
+\hline
+Desain skema & Application-oriented, sering berasal dari E-R model dan normalisasi. & Subject-oriented, sering memakai star schema atau snowflake schema. \\
+\hline
+Isi data & Data current, detail, dan terisolasi per aplikasi. & Data historis, consolidated, dan terintegrasi. \\
+\hline
+Pola akses & Banyak update interaktif dan transaksi pendek. & Read-mostly, query kompleks, agregasi besar. \\
+\hline
+\end{tabularx}
+\caption{Perbandingan OLTP dan OLAP}
+\label{tab:oltp-olap}
+\end{table}
+
+Alasan pemisahannya adalah beban kerja. Query OLAP yang berat dapat memakai banyak CPU, I/O, dan memori. Jika query seperti itu berjalan di sistem OLTP yang sedang melayani transaksi pelanggan, performa operasional dapat turun. Data warehouse memindahkan beban analitik ke sistem yang memang dirancang untuk itu.
+
+\subsubsection{Data Warehouse}
+
+\begin{jawab}[Inti Konsep.]
+Data warehouse adalah repositori informasi historis yang dikumpulkan dari berbagai sumber dan disimpan dalam satu skema terpadu. Ia digunakan untuk menyederhanakan query analitik dan memindahkan beban decision support dari sistem transaksi operasional.
+\end{jawab}
+
+Motivasi data warehouse adalah data perusahaan sering tersebar di banyak sistem: penjualan, inventori, pembayaran, pengiriman, dan customer service. Setiap sistem dapat memiliki skema dan istilah berbeda. Untuk analisis manajerial, data tersebut perlu disatukan agar dapat dibaca sebagai satu pandangan bisnis.
+
+\textbf{Unified schema} adalah skema terpadu yang menyelaraskan data dari berbagai sumber. Misalnya, satu sistem menyebut pelanggan sebagai \texttt{customer}, sistem lain menyebutnya \texttt{buyer}; warehouse perlu menyatukan definisi ini agar laporan tidak ambigu.
+
+Mekanisme umum pembangunan warehouse:
+\begin{enumerate}
+    \item Ambil data dari sumber operasional.
+    \item Bersihkan dan standarkan data.
+    \item Gabungkan data ke skema terpadu.
+    \item Simpan data historis pada struktur warehouse.
+    \item Jalankan query OLAP dan reporting di atas warehouse, bukan langsung di OLTP.
+\end{enumerate}
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Proses pemindahan data ke warehouse umum disebut ETL (\textit{Extract, Transform, Load}) atau ELT (\textit{Extract, Load, Transform}). ETL mengekstrak data dari sumber, mentransformasikannya lebih dulu, lalu memuatnya ke warehouse. ELT memuat data mentah ke platform tujuan lebih awal, kemudian transformasi dilakukan di dalam platform analitik. Outline NotebookLM menyebut data loaders dan contoh alat seperti Apache NiFi, Talend, Kafka, Teradata, SAP HANA, dan Amazon Redshift.
+\end{cmt}
+
+Data warehouse berhubungan dengan integrity dan relational design, tetapi tujuannya berbeda. Sistem OLTP mengutamakan update konsisten; warehouse mengutamakan pembacaan historis dan agregasi cepat.
+
+\subsubsection{Model Data Multidimensi}
+
+\begin{jawab}[Inti Konsep.]
+Model data multidimensi menyusun data analitik sebagai fakta yang diukur dari beberapa sudut pandang atau dimensi. Model ini penting karena query bisnis biasanya bertanya tentang ukuran numerik, seperti penjualan, berdasarkan waktu, produk, lokasi, atau penjual.
+\end{jawab}
+
+Motivasi model multidimensi adalah pertanyaan analitik hampir selalu memiliki bentuk: ``berapa ukuran bisnis tertentu jika dilihat menurut dimensi tertentu?'' Contoh: total penjualan menurut bulan, produk, dan kota.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Istilah} & \textbf{Definisi atau Peran} \\
+\hline
+\textbf{Fact} & Kejadian bisnis yang dianalisis, misalnya satu transaksi penjualan atau pengiriman barang. \\
+\hline
+\textbf{Measure} & Nilai kuantitatif yang diukur dari fact, misalnya \texttt{quantity}, \texttt{receipts}, \texttt{units\_sold}, atau \texttt{dollars\_sold}. \\
+\hline
+\textbf{Dimension} & Sudut pandang analisis terhadap measure, misalnya waktu, produk, toko, lokasi, penjual, atau pembeli. \\
+\hline
+\textbf{Member} & Nilai aktual dari dimensi, misalnya produk \textit{Shiny}, toko \textit{EverMore}, atau tanggal tertentu. \\
+\hline
+\textbf{Data cube} & Metafora struktur multidimensi; sel kubus menyimpan measure, tepi kubus merepresentasikan dimensi. \\
+\hline
+\textbf{Hypercube} & Data cube dengan lebih dari tiga dimensi. \\
+\hline
+\end{tabularx}
+\caption{Komponen model data multidimensi}
+\label{tab:multidimensional-components}
+\end{table}
+
+Contoh sumber memakai sales data cube dengan dimensi \texttt{store}, \texttt{product}, dan \texttt{date}. Satu sel dapat merepresentasikan penjualan produk \textit{Shiny} di toko \textit{EverMore} pada tanggal tertentu, dengan measure seperti \texttt{quantity = 10} dan \texttt{receipts = 25}.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+\textbf{Grain} fact table adalah tingkat detail paling rendah yang direpresentasikan oleh satu baris fact. Misalnya, grain dapat berupa ``satu baris per item terjual per transaksi'', atau ``satu baris per produk per toko per hari''. Grain harus ditentukan jelas sebelum memilih dimensi dan measure, karena grain menentukan makna setiap baris fact.
+\end{cmt}
+
+Model multidimensi berkaitan dengan SQL karena hasil akhirnya tetap sering diimplementasikan sebagai tabel relasional. Perbedaannya ada pada orientasi desain: tabel disusun agar agregasi bisnis mudah, bukan agar semua redundansi hilang.
+
+\subsubsection{Fact Table dan Dimension Table}
+
+\begin{jawab}[Inti Konsep.]
+Fact table menyimpan kejadian dan measure utama, sedangkan dimension table menyimpan konteks deskriptif untuk menganalisis measure tersebut. Pemisahan ini penting karena query analitik biasanya mengagregasi measure berdasarkan atribut dimensi.
+\end{jawab}
+
+\textbf{Fact table} biasanya besar karena memuat banyak kejadian bisnis. Atributnya terdiri dari \textbf{measure attributes} dan \textbf{dimension attributes}. Measure attributes adalah angka yang dianalisis; dimension attributes biasanya foreign key ke tabel dimensi.
+
+\textbf{Dimension table} biasanya lebih kecil dan menyimpan informasi deskriptif. Contoh dimensi produk dapat menyimpan nama produk, kategori, merek, atau supplier. Data yang tidak memberi makna analitik tidak perlu selalu disimpan di dimensi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Komponen} & \textbf{Peran} \\
+\hline
+Fact table & Menyimpan foreign key ke dimensi dan measure yang dihitung atau diagregasi. \\
+\hline
+Dimension table & Menyimpan deskripsi konteks untuk memfilter, mengelompokkan, atau melabeli fact. \\
+\hline
+Measure attributes & Nilai numerik seperti jumlah unit, nilai penjualan, dan rata-rata penjualan. \\
+\hline
+Dimension attributes & Kunci atau atribut pengelompokan seperti waktu, lokasi, barang, penjual, dan pembeli. \\
+\hline
+\end{tabularx}
+\caption{Fact table dan dimension table}
+\label{tab:fact-dimension}
+\end{table}
+
+Pada contoh e-commerce dari sumber, fact penjualan dapat memuat measure seperti \texttt{Jumlah\_penjualan\_barang} dan \texttt{Jumlah\_rupiah\_penjualan}, lalu dikelilingi dimensi seperti \texttt{Waktu}, \texttt{Barang}, \texttt{Penjual}, \texttt{Pembeli}, dan bahkan sumber eksternal seperti \texttt{Cuaca}.
+
+\subsubsection{Star, Snowflake, dan Galaxy Schema}
+
+\begin{jawab}[Inti Konsep.]
+Star, snowflake, dan galaxy schema adalah pola struktur data warehouse. Star schema menempatkan satu fact table di tengah dikelilingi dimensi; snowflake menormalisasi sebagian dimensi; galaxy schema memakai beberapa fact table yang berbagi dimensi.
+\end{jawab}
+
+Motivasi pola schema adalah menyusun fact dan dimension agar query analitik mudah dibaca dan efisien. Setiap pola memberi trade-off antara kesederhanaan query, redundansi, dan struktur hierarki dimensi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|X|}
+\hline
+\textbf{Schema} & \textbf{Struktur} & \textbf{Implikasi} \\
+\hline
+Star schema & Satu fact table pusat dikelilingi dimension tables. & Query sederhana dan cepat dibaca; dimensi cenderung denormalized. \\
+\hline
+Snowflake schema & Dimensi dipecah menjadi tabel hierarkis yang lebih kecil. & Redundansi dimensi berkurang, tetapi query butuh lebih banyak join. \\
+\hline
+Fact constellation / Galaxy schema & Beberapa fact table berbagi beberapa dimension table. & Cocok untuk proses bisnis lebih kompleks, misalnya sales dan shipping berbagi dimensi waktu, item, dan lokasi. \\
+\hline
+\end{tabularx}
+\caption{Pola warehouse schema}
+\label{tab:warehouse-schema}
+\end{table}
+
+Sumber memberi contoh star schema dengan Sales Fact Table yang memiliki measure seperti \texttt{units\_sold}, \texttt{dollars\_sold}, dan \texttt{avg\_sales}, terhubung ke dimensi \texttt{time}, \texttt{branch}, \texttt{item}, dan \texttt{location}. Pada snowflake schema, dimensi seperti item dapat dipecah ke supplier, dan location dapat dipecah ke city. Pada galaxy schema, Shipping Fact Table dapat ditambahkan dan berbagi dimensi \texttt{time}, \texttt{item}, dan \texttt{location}.
+
+Hubungannya dengan normalisasi bersifat pragmatis. Star schema sengaja menoleransi redundansi dimensi agar query lebih sederhana; snowflake schema menerapkan normalisasi pada dimensi tertentu ketika struktur hierarkis perlu dirapikan.
+
+\subsubsection{Query dan Operasi OLAP}
+
+\begin{jawab}[Inti Konsep.]
+Operasi OLAP adalah cara menavigasi data multidimensi melalui agregasi, perincian, pemilihan irisan data, dan perubahan perspektif tampilan. Operasi ini penting karena pengguna analitik perlu bergerak cepat dari ringkasan besar ke detail tertentu.
+\end{jawab}
+
+Motivasi operasi OLAP adalah laporan bisnis jarang berhenti pada satu query. Setelah melihat total penjualan nasional, analis mungkin ingin turun ke provinsi, lalu kota, lalu toko. Setelah melihat satu bulan, analis dapat membandingkan kuartal atau tahun.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Operasi} & \textbf{Makna} \\
+\hline
+Roll-up & Menaikkan level agregasi, misalnya dari hari ke bulan atau dari kota ke provinsi. \\
+\hline
+Drill-down & Menurunkan level agregasi ke detail lebih halus, misalnya dari tahun ke kuartal ke bulan. \\
+\hline
+Slice & Memilih satu nilai dimensi, misalnya hanya tahun 2026. \\
+\hline
+Dice & Memilih sub-kubus dengan beberapa rentang atau nilai dimensi. \\
+\hline
+Pivot / Cross-tabulation & Mengubah orientasi tampilan dimensi, misalnya produk sebagai baris dan bulan sebagai kolom. \\
+\hline
+\texttt{cube} dan \texttt{rollup} & Ekstensi agregasi SQL untuk menghitung banyak kombinasi grouping. \\
+\hline
+\end{tabularx}
+\caption{Operasi OLAP}
+\label{tab:olap-operations}
+\end{table}
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Ukuran atau \textit{measure} sering diklasifikasikan menjadi additive, semi-additive, dan non-additive. Measure additive dapat dijumlahkan pada semua dimensi, misalnya \texttt{sales\_amount}. Measure semi-additive dapat dijumlahkan pada sebagian dimensi tetapi tidak semua, misalnya saldo akun yang dapat dijumlahkan antar akun tetapi tidak tepat dijumlahkan sepanjang waktu. Measure non-additive tidak boleh dijumlahkan langsung, misalnya rasio atau persentase; biasanya perlu dihitung ulang dari komponen dasarnya.
+\end{cmt}
+
+Operasi OLAP berkaitan dengan SQL karena agregasi akhirnya dapat diekspresikan dengan \texttt{GROUP BY}, \texttt{ROLLUP}, \texttt{CUBE}, window function, atau query khusus tools BI. Model multidimensi membuat query ini lebih pendek karena banyak join operasional sudah disederhanakan ke fact-dimension schema.
+
+\subsubsection{Hubungan dengan E-R Model dan Normalisasi}
+
+\begin{jawab}[Inti Konsep.]
+Data warehouse berangkat dari data operasional yang sering dirancang dengan E-R model dan normalisasi, tetapi mengubah orientasinya menjadi subject-oriented dan analitik. Hubungan ini penting karena desain OLTP yang baik belum tentu menjadi desain OLAP yang baik.
+\end{jawab}
+
+Pada OLTP, E-R model membantu menangkap entitas dan hubungan aplikasi secara detail. Hasilnya sering dinormalisasi untuk mengurangi redundansi dan menjaga update konsisten. Pada OLAP, data direstrukturisasi menjadi fact dan dimension agar pembacaan historis cepat.
+
+Hubungan dengan normalisasi berupa trade-off:
+\begin{enumerate}
+    \item Normalisasi OLTP mengurangi redundansi dan anomali update.
+    \item Warehouse sering read-mostly sehingga biaya update bukan fokus utama.
+    \item Star schema menoleransi redundansi dimensi agar query sederhana.
+    \item Snowflake schema menerapkan sebagian normalisasi pada dimensi ketika hierarki perlu dipisah.
+\end{enumerate}
+
+Materi ini menutup rangkaian desain basis data dengan menunjukkan bahwa kualitas desain selalu bergantung pada beban kerja. Untuk transaksi, desain yang baik berarti konsisten dan minim redundansi. Untuk analitik, desain yang baik berarti historis, terpadu, dan mudah diagregasi.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Alur Pembangunan Data Warehouse}
+
+\begin{jawab}[Tujuan Algoritma.]
+Alur ini merangkum proses memindahkan data dari sumber operasional ke warehouse agar siap dipakai untuk query analitik.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode alur pembangunan data warehouse}, label={lst:warehouse-flow}]
+Input: operational data sources
+Output: analytical warehouse
+
+for each source system do
+    extract relevant current and historical data
+    clean invalid or inconsistent values
+    transform names, formats, and meanings into unified schema
+    load transformed data into warehouse tables
+build fact tables and dimension tables
+run OLAP queries and reporting on warehouse
+\end{lstlisting}
+
+\subsubsection{Bentuk Umum Query Agregasi OLAP}
+
+\begin{jawab}[Makna Rumus.]
+Bentuk ini menunjukkan pola umum query OLAP: measure dihitung dari fact table, lalu dikelompokkan menurut atribut dimensi.
+\end{jawab}
+
+\begin{equation}
+    Result = \gamma_{D_1,D_2,\ldots,D_k;\; agg(M)}(Fact \bowtie Dim_1 \bowtie \cdots \bowtie Dim_k)
+    \label{eq:olap-aggregation}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item \(Fact\): fact table.
+    \item \(Dim_i\): dimension table ke-\(i\).
+    \item \(D_i\): atribut dimensi untuk grouping.
+    \item \(M\): measure yang dihitung.
+    \item \(agg\): fungsi agregasi seperti \(\mathrm{SUM}\), \(\mathrm{AVG}\), \(\mathrm{COUNT}\), \(\mathrm{MIN}\), atau \(\mathrm{MAX}\).
+\end{itemize}

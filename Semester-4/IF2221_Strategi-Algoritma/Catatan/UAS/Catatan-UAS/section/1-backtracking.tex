@@ -1,0 +1,275 @@
+\section{Backtracking}
+
+Backtracking atau runut-balik adalah metode pemecahan masalah yang membangun solusi secara bertahap di dalam pohon ruang status. Fokus utama untuk UAS adalah memahami bagaimana kandidat solusi dibangkitkan, diuji dengan fungsi pembatas, lalu dipangkas ketika tidak lagi mungkin mengarah ke solusi.
+
+Materi ini berada setelah DFS/BFS karena pola penelusurannya mengikuti \textit{depth-first order}. Backtracking menjadi fondasi penting sebelum Branch and Bound, karena keduanya sama-sama membentuk pohon ruang status dan melakukan pemangkasan, tetapi berbeda dalam aturan ekspansi dan orientasi optimisasinya.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Definisi dan posisi backtracking
+    \begin{enumerate}
+        \item Perbaikan dari \textit{exhaustive search}
+        \item Hubungan dengan DFS
+        \item Optimasi dan non-optimasi
+    \end{enumerate}
+    \item Properti umum
+    \begin{enumerate}
+        \item Solusi sebagai vektor $X=(x_1,x_2,\ldots,x_n)$
+        \item Himpunan nilai $S_i$
+        \item Fungsi pembangkit $T$
+        \item Fungsi pembatas $B$
+    \end{enumerate}
+    \item Pohon ruang status
+    \begin{enumerate}
+        \item Ruang solusi dan pohon berakar
+        \item Simpul hidup, simpul-E, dan simpul mati
+        \item \textit{Pruning}
+    \end{enumerate}
+    \item Skema algoritma
+    \begin{enumerate}
+        \item Versi rekursif
+        \item Versi iteratif
+        \item Kompleksitas kasus terburuk
+    \end{enumerate}
+    \item Aplikasi
+    \begin{enumerate}
+        \item N-Ratu
+        \item Sum of Subsets
+        \item Pewarnaan graf
+        \item Sirkuit Hamilton
+        \item Labirin
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\subsubsection{Mengapa Materi Ini Penting}
+Backtracking penting karena banyak persoalan strategi algoritma memiliki ruang solusi besar, tetapi tidak semua kemungkinan perlu dievaluasi. Dengan fungsi pembatas, pencarian dapat dihentikan lebih awal pada cabang yang melanggar kendala. Kemampuan utama yang dibangun adalah memodelkan solusi sebagai keputusan bertahap, menentukan kendala, dan menulis aturan pemangkasan yang benar.
+
+\subsubsection{Implementasi Dasar}
+Implementasi dasar backtracking biasanya berbentuk prosedur rekursif. Tiap pemanggilan menentukan satu komponen solusi, memeriksa apakah solusi parsial masih menjanjikan, lalu melanjutkan ke komponen berikutnya jika memenuhi kendala.
+
+\subsubsection{Relevansi dengan Industri Saat Ini}
+\begin{cmt}{Keterbatasan Sumber}{}
+Sumber utama tidak memberikan pembahasan industri eksplisit untuk backtracking. Bagian ini dibatasi pada aplikasi yang disebut di sumber, yaitu pemilihan subset, penjadwalan/pemilihan kombinasi, pewarnaan graf, sirkuit Hamilton, dan pencarian rute labirin.
+\end{cmt}
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+Backtracking bergantung pada pemahaman DFS dan pohon. Materi ini berhubungan langsung dengan Branch and Bound karena keduanya memakai pohon ruang status dan pemangkasan, tetapi Branch and Bound menggunakan nilai batas untuk persoalan optimisasi.
+
+\subsection{Pola Soal UAS Sebelumnya dan Prioritas}
+
+\begin{cmt}{Pola dari Soal 2022--2025}{}
+Backtracking muncul pada semua sumber soal yang diperiksa: 2022, solusi 2023, 2024, dan 2025. Bentuk soal berulang adalah merumuskan representasi solusi, domain variabel, fungsi pembangkit, fungsi pembatas, dan proses pembentukan pohon ruang status.
+\end{cmt}
+
+Bagian yang paling perlu diprioritaskan adalah pemodelan persoalan sebagai vektor solusi, domain variabel, fungsi pembangkit, dan fungsi pembatas. Pada 2022, bentuk soal mencakup benar/salah untuk pewarnaan graf dan constraint cryptarithmetic, serta penentuan variabel dan domain Magic Square. Pada solusi 2023, soal meminta representasi solusi, domain, batasan, dan satu solusi untuk penjadwalan. Pada 2024, cryptarithmetic kembali muncul dengan permintaan representasi solusi, fungsi pembangkit, dan constraints. Pada 2025, soal meminta pohon ruang status untuk pewarnaan graf dan deskripsi fungsi pembatas.
+
+\begin{itemize}
+    \item \textbf{Pola desain}: rumuskan $X$, domain tiap variabel, fungsi pembangkit $T$, dan fungsi pembatas $B$ untuk cryptarithmetic, penjadwalan, magic square, atau pewarnaan graf.
+    \item \textbf{Pola penelusuran}: gambarkan pohon ruang status dan tandai cabang yang mati karena melanggar constraint.
+    \item \textbf{Pola benar/salah}: evaluasi apakah constraint tertentu sudah cukup benar untuk fungsi pembatas.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|L{0.28\textwidth}|}
+\hline
+\textbf{Permasalahan yang Sering Muncul} & \textbf{Yang Biasanya Diminta} & \textbf{Fungsi/Komponen Wajib Dipahami} \\
+\hline
+Cryptarithmetic & Representasi solusi, domain digit, constraint huruf berbeda, dan constraint aritmetika kolom. & Vektor solusi $X$, domain $S_i$, fungsi pembangkit $T$, fungsi pembatas $B$. \\
+\hline
+Pewarnaan graf & Pohon ruang status pewarnaan simpul dan cabang yang dipangkas karena simpul bertetangga berwarna sama. & Fungsi pembatas adjacency, urutan pewarnaan simpul, simpul hidup, simpul-E, simpul mati. \\
+\hline
+Penjadwalan dan magic square & Variabel keputusan, domain waktu/angka, constraint antarvariabel, dan solusi feasible. & Model solusi parsial, constraint feasibility, pruning. \\
+\hline
+\end{tabularx}
+\caption{Permasalahan dan fungsi penting pada Backtracking}
+\label{tab:pola-fungsi-backtracking}
+\end{table}
+
+\subsubsection{Formula Eksplisit yang Perlu Dikuasai}
+
+\begin{jawab}[Inti Formula.]
+Untuk setiap persoalan backtracking, tuliskan solusi sebagai $X=(x_1,x_2,\ldots,x_n)$, tentukan domain $x_i \in S_i$, lalu definisikan fungsi pembatas $B(x_1,\ldots,x_k)$.
+\end{jawab}
+
+Pada pewarnaan graf, jika $x_i$ menyatakan warna simpul $v_i$, maka fungsi pembatasnya:
+\begin{equation}
+    B(x_1,\ldots,x_k)=\text{true}
+    \iff
+    \forall (v_i,v_j)\in E,\; i,j\le k \Rightarrow x_i \ne x_j
+    \label{eq:bt-graph-coloring-bound}
+\end{equation}
+
+Pada cryptarithmetic, jika huruf $a$ dipetakan ke digit $d(a)$, maka constraint dasarnya:
+\begin{align}
+    d(a) &\in \{0,1,\ldots,9\}, \label{eq:crypto-domain}\\
+    a \ne b &\Rightarrow d(a)\ne d(b), \label{eq:crypto-unique}\\
+    d(a_{\text{awal}}) &\ne 0. \label{eq:crypto-leading-zero}
+\end{align}
+Constraint aritmetika dibuat per kolom. Misalnya pada kolom satuan:
+\begin{equation}
+    d(A)+d(B)+c_{\text{in}} = d(C)+10c_{\text{out}}
+    \label{eq:crypto-column}
+\end{equation}
+dengan $c_{\text{in}}$ dan $c_{\text{out}}$ adalah carry masuk dan keluar.
+
+Pada magic square $n\times n$, target jumlah setiap baris, kolom, dan diagonal adalah:
+\begin{equation}
+    M = \frac{n(n^2+1)}{2}
+    \label{eq:magic-square-sum}
+\end{equation}
+Fungsi pembatas mengecek agar jumlah parsial tidak melebihi $M$ dan baris/kolom/diagonal lengkap harus sama dengan $M$.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Backtracking sebagai Perbaikan Exhaustive Search}
+
+\begin{jawab}[Inti Konsep.]
+Backtracking mengeksplorasi hanya pilihan yang masih mengarah ke solusi dan memangkas pilihan yang melanggar kendala.
+\end{jawab}
+
+Pada \textit{exhaustive search}, semua kemungkinan solusi dieksplorasi dan dievaluasi satu per satu. Pada backtracking, pencarian tetap sistematis, tetapi solusi parsial yang sudah terbukti tidak mungkin menjadi solusi lengkap tidak diteruskan. Karena itu, backtracking tidak mengubah ruang solusi, tetapi mengurangi bagian ruang solusi yang benar-benar dikunjungi.
+
+\subsubsection{Properti Umum Algoritma Runut-balik}
+
+\begin{jawab}[Inti Konsep.]
+Setiap persoalan backtracking perlu dirumuskan sebagai vektor solusi, fungsi pembangkit nilai, dan fungsi pembatas.
+\end{jawab}
+
+Solusi dinyatakan sebagai vektor $X=(x_1,x_2,\ldots,x_n)$ dengan $x_i \in S_i$. Fungsi pembangkit $T(x_1,x_2,\ldots,x_{k-1})$ menghasilkan kandidat nilai untuk $x_k$. Fungsi pembatas $B(x_1,x_2,\ldots,x_k)$ bernilai benar jika solusi parsial masih mengarah ke solusi, dan salah jika solusi parsial harus dibuang.
+
+\paragraph{Mekanisme atau Prosedur Kerja}
+\begin{enumerate}
+    \item Nyatakan solusi sebagai vektor keputusan.
+    \item Tentukan domain nilai untuk setiap komponen solusi.
+    \item Bangkitkan nilai komponen berikutnya dengan fungsi $T$.
+    \item Uji solusi parsial menggunakan fungsi $B$.
+    \item Lanjutkan jika $B$ benar; lakukan backtrack jika $B$ salah.
+\end{enumerate}
+
+\subsubsection{Pohon Ruang Status}
+
+\begin{jawab}[Inti Konsep.]
+Pohon ruang status mengorganisasikan seluruh kemungkinan solusi sebagai lintasan dari akar menuju daun.
+\end{jawab}
+
+Setiap simpul menyatakan status persoalan. Setiap sisi menyatakan pilihan nilai untuk salah satu komponen solusi. Simpul yang sudah dibangkitkan disebut simpul hidup, simpul hidup yang sedang diperluas disebut simpul-E, dan simpul yang tidak lagi mengarah ke solusi disebut simpul mati.
+
+\paragraph{Klasifikasi atau Perbandingan}
+\begin{itemize}
+    \item \textbf{Simpul hidup}: simpul yang sudah dibangkitkan dan masih mungkin diperluas.
+    \item \textbf{Simpul-E}: simpul hidup yang sedang diperluas.
+    \item \textbf{Simpul mati}: simpul yang dipangkas karena tidak mengarah ke solusi.
+\end{itemize}
+
+\subsubsection{Aplikasi Backtracking}
+
+\begin{jawab}[Inti Konsep.]
+Aplikasi backtracking berbeda pada domain nilai dan fungsi pembatas, tetapi sama-sama membangun solusi parsial secara bertahap.
+\end{jawab}
+
+Pada N-Ratu, $x_i$ menyatakan kolom ratu pada baris ke-$i$, dan fungsi pembatas memastikan tidak ada dua ratu pada kolom atau diagonal yang sama. Pada \textit{sum of subsets}, $x_i \in \{0,1\}$ menyatakan apakah bobot $w_i$ dipilih, dan fungsi pembatas memastikan jumlah bobot masih mungkin mencapai target. Pada pewarnaan graf, $x_i$ menyatakan warna simpul ke-$i$, dan fungsi pembatas memastikan simpul bertetangga tidak memiliki warna sama.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+$X=(x_1,x_2,\ldots,x_n)$ & Vektor solusi yang dibangun bertahap. \\
+\hline
+$S_i$ & Himpunan nilai yang mungkin untuk komponen $x_i$. \\
+\hline
+$T$ & Fungsi pembangkit kandidat nilai komponen solusi berikutnya. \\
+\hline
+$B$ & Fungsi pembatas yang menentukan apakah solusi parsial masih menjanjikan. \\
+\hline
+Pohon ruang status & Struktur pohon yang merepresentasikan ruang solusi. \\
+\hline
+\textit{Pruning} & Pemangkasan simpul yang tidak mungkin menghasilkan solusi. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Backtracking}
+\label{tab:komponen-kunci-backtracking}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Skema Umum Backtracking Rekursif}
+
+\begin{jawab}[Tujuan Algoritma.]
+Skema ini mencari semua solusi dengan membangun komponen solusi satu per satu dan memangkas solusi parsial yang tidak memenuhi fungsi pembatas.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode backtracking rekursif}, label={lst:backtracking-rekursif}]
+procedure RunutBalikR(k)
+    for setiap x[k] dalam T(x[1], ..., x[k-1]) do
+        if B(x[1], ..., x[k]) = true then
+            if (x[1], ..., x[k]) adalah solusi then
+                cetak(x[1], ..., x[k])
+            endif
+            if k < n then
+                RunutBalikR(k + 1)
+            endif
+        endif
+    endfor
+
+Pemanggilan awal: RunutBalikR(1)
+\end{lstlisting}
+
+Dalam kasus terburuk, jika jumlah simpul pohon ruang status adalah $2^n$ atau $n!$, maka waktu backtracking dapat ditulis sebagai $O(p(n)2^n)$ atau $O(q(n)n!)$, dengan $p(n)$ dan $q(n)$ menyatakan waktu komputasi pada setiap simpul.
+
+\subsubsection{Fungsi Pembatas Sum of Subsets}
+
+\begin{jawab}[Makna Rumus.]
+Rumus ini menentukan apakah solusi parsial pada persoalan \textit{sum of subsets} masih mungkin mencapai target $m$.
+\end{jawab}
+
+\begin{equation}
+    \begin{aligned}
+    B(x_1,\ldots,x_k)=\text{true}
+    \iff{}&
+    \sum_{i=1}^{k} w_i x_i + \sum_{i=k+1}^{n} w_i \ge m \\
+    &{}\land
+    \left(\sum_{i=1}^{k} w_i x_i = m
+    \lor
+    \sum_{i=1}^{k} w_i x_i + w_{k+1} \le m\right)
+    \end{aligned}
+    \label{eq:sum-subsets-bound}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $w_i$: bobot elemen ke-$i$.
+    \item $x_i$: bernilai 1 jika $w_i$ dipilih, dan 0 jika tidak dipilih.
+    \item $m$: target jumlah bobot.
+\end{itemize}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan backtracking sebagai perbaikan dari \textit{exhaustive search}.
+    \item[$\square$] Saya dapat membedakan ruang solusi, pohon ruang status, simpul hidup, simpul-E, dan simpul mati.
+    \item[$\square$] Saya dapat merumuskan fungsi pembangkit dan fungsi pembatas untuk persoalan sederhana.
+    \item[$\square$] Saya dapat menjelaskan skema rekursif backtracking.
+    \item[$\square$] Saya dapat menelusuri cabang yang dipangkas pada contoh backtracking sederhana.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Vektor solusi, pohon ruang status, fungsi pembangkit, fungsi pembatas, pruning, dan skema rekursif. \\
+\hline
+\textbf{Cukup Paham Konsep} & Contoh aplikasi N-Ratu, Sum of Subsets, pewarnaan graf, sirkuit Hamilton, dan labirin. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan. \\
+\hline
+\end{tabularx}

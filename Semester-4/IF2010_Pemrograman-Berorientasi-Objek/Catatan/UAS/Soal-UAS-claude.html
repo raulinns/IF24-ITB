@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan UAS Pemrograman Berorientasi Objek — Java</title>
+<style>
+/* ── Reset & Base ──────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+body {
+  font-family: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.65;
+  color: #1c1c2e;
+  background: #e8eaf0;
+}
+
+.page-wrap {
+  max-width: 210mm;
+  margin: 24px auto;
+  background: #ffffff;
+  padding: 18mm 22mm 22mm;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+header {
+  border-bottom: 3px solid #0a2a6e;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header-title h1 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 16pt;
+  font-weight: 700;
+  color: #0a2a6e;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.header-title .subtitle {
+  font-size: 9.5pt;
+  color: #555;
+  margin-top: 3px;
+  font-style: italic;
+}
+
+.header-badge {
+  background: #0a2a6e;
+  color: #fff;
+  font-size: 9pt;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 4px;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px 24px;
+  margin-top: 12px;
+  font-size: 9.5pt;
+}
+
+.meta-row { display: flex; gap: 6px; }
+.meta-label { font-weight: 600; color: #0a2a6e; min-width: 140px; }
+
+/* ── Ketentuan Umum ─────────────────────────────────────────── */
+.ketentuan {
+  background: #f4f6fb;
+  border: 1px solid #bcc8e8;
+  border-left: 4px solid #0a2a6e;
+  border-radius: 0 5px 5px 0;
+  padding: 10px 14px;
+  margin: 14px 0 18px;
+  font-size: 9.5pt;
+}
+
+.ketentuan strong {
+  color: #0a2a6e;
+  display: block;
+  margin-bottom: 5px;
+  font-size: 10pt;
+}
+
+.ketentuan ol {
+  padding-left: 18px;
+  margin: 0;
+}
+
+.ketentuan li { margin-bottom: 3px; }
+
+/* ── TOC ────────────────────────────────────────────────────── */
+.toc {
+  background: #f9fafb;
+  border: 1px solid #d0d7ea;
+  border-radius: 5px;
+  padding: 11px 16px;
+  margin-bottom: 24px;
+  font-size: 9.5pt;
+}
+
+.toc h2 {
+  font-size: 10.5pt;
+  color: #0a2a6e;
+  font-weight: 700;
+  margin-bottom: 7px;
+  border-bottom: 1px solid #d0d7ea;
+  padding-bottom: 5px;
+}
+
+.toc-item {
+  display: flex;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px dotted #dde;
+}
+
+.toc-item:last-child { border-bottom: none; }
+.toc-num { font-weight: 700; color: #0a2a6e; min-width: 60px; }
+.toc-title { flex: 1; }
+.toc-bobot {
+  font-weight: 600;
+  color: #1a7a45;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ── Soal ───────────────────────────────────────────────────── */
+section.soal {
+  margin-bottom: 0;
+  padding: 22px 0 20px;
+  border-top: 2.5px solid #0a2a6e;
+}
+
+section.soal:first-of-type { border-top: none; padding-top: 0; }
+
+.soal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.soal-header h2 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 14pt;
+  font-weight: 700;
+  color: #0a2a6e;
+  line-height: 1.2;
+}
+
+.bobot-chip {
+  background: #1a7a45;
+  color: #fff;
+  font-size: 9.5pt;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.materi-row { margin-bottom: 10px; }
+
+.tag {
+  display: inline-block;
+  font-size: 8.5pt;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 12px;
+  margin: 2px 3px 2px 0;
+  letter-spacing: 0.2px;
+}
+
+.tag-solid   { background: #e8eeff; color: #1a3a9e; border: 1px solid #b0c0f0; }
+.tag-java    { background: #fff0e0; color: #a04000; border: 1px solid #f0c090; }
+.tag-string  { background: #e8ffe8; color: #1a6020; border: 1px solid #90d090; }
+.tag-gen     { background: #f0e8ff; color: #5a1a9e; border: 1px solid #c090f0; }
+.tag-thread  { background: #ffe8e8; color: #9e1a1a; border: 1px solid #f09090; }
+.tag-reflect { background: #e8f8ff; color: #005080; border: 1px solid #80c8f0; }
+.tag-dp      { background: #fffde8; color: #6a5a00; border: 1px solid #e0d070; }
+.tag-col     { background: #f0fff8; color: #006040; border: 1px solid #80dbb0; }
+.tag-exc     { background: #fff4f0; color: #903010; border: 1px solid #f0b090; }
+
+/* ── Narasi ─────────────────────────────────────────────────── */
+.narasi p {
+  margin-bottom: 8px;
+  text-align: justify;
+}
+
+.narasi ul, .narasi ol {
+  padding-left: 22px;
+  margin: 6px 0 8px;
+}
+
+.narasi li { margin-bottom: 3px; }
+
+/* ── Boxes ──────────────────────────────────────────────────── */
+.box {
+  border-left: 4px solid #0a2a6e;
+  background: #f4f6fb;
+  padding: 9px 14px;
+  margin: 12px 0;
+  border-radius: 0 5px 5px 0;
+  font-size: 9.5pt;
+}
+
+.box.warn  { border-left-color: #cc5500; background: #fff8f0; }
+.box.ok    { border-left-color: #1a7a45; background: #f0fff6; }
+.box.dark  { border-left-color: #555; background: #f6f6f6; }
+
+.box h4 {
+  font-size: 9.5pt;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: inherit;
+}
+
+/* ── Code ───────────────────────────────────────────────────── */
+pre {
+  background: #0f1424;
+  color: #c8d3f5;
+  border-radius: 6px;
+  padding: 13px 16px;
+  font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+  font-size: 8.8pt;
+  line-height: 1.55;
+  overflow-x: auto;
+  margin: 10px 0;
+  white-space: pre;
+  border: 1px solid #1e2a50;
+}
+
+code {
+  font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+  font-size: 9pt;
+  background: #eef0fa;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #0a2a6e;
+  border: 1px solid #d0d8ee;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+.line-note {
+  color: #7a8ab0;
+  font-style: italic;
+}
+
+/* ── Tables ─────────────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+  margin: 10px 0;
+}
+
+th {
+  background: #0a2a6e;
+  color: #fff;
+  padding: 7px 10px;
+  text-align: left;
+  font-weight: 600;
+}
+
+td {
+  padding: 5px 10px;
+  border: 1px solid #c8d0e8;
+  vertical-align: top;
+}
+
+tr:nth-child(even) td { background: #f5f7fb; }
+
+.td-center { text-align: center; }
+.td-ok  { color: #1a7a45; font-weight: 600; }
+.td-err { color: #c02020; font-weight: 600; }
+
+/* ── Subsoal ────────────────────────────────────────────────── */
+.subsoal-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  counter-reset: subq;
+}
+
+.subsoal-list > li {
+  counter-increment: subq;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  page-break-inside: avoid;
+}
+
+.subsoal-list > li::before {
+  content: counter(subq, lower-alpha) ".";
+  font-weight: 700;
+  color: #0a2a6e;
+  min-width: 20px;
+  font-size: 10.5pt;
+  padding-top: 1px;
+}
+
+.subsoal-body { flex: 1; }
+
+.roman-list {
+  list-style: lower-roman;
+  padding-left: 20px;
+  margin-top: 5px;
+}
+
+.roman-list li { margin-bottom: 6px; }
+
+.bullet-list {
+  list-style: disc;
+  padding-left: 20px;
+  margin-top: 5px;
+}
+
+.bullet-list li { margin-bottom: 4px; }
+
+/* ── Tugas Label ────────────────────────────────────────────── */
+.tugas-label {
+  font-weight: 700;
+  color: #0a2a6e;
+  font-size: 10pt;
+  margin: 14px 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tugas-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #bcc8e8;
+}
+
+/* ── Output example ─────────────────────────────────────────── */
+.output-example {
+  background: #0a1810;
+  color: #7adf7a;
+  border-radius: 5px;
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  line-height: 1.55;
+  margin: 8px 0;
+  border: 1px solid #1a3a20;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+footer {
+  border-top: 2px solid #0a2a6e;
+  padding-top: 10px;
+  font-size: 8.5pt;
+  color: #666;
+  text-align: center;
+  margin-top: 28px;
+}
+
+/* ── Coverage Note ──────────────────────────────────────────── */
+details.coverage-note {
+  margin-top: 28px;
+  border: 2px dashed #b08000;
+  border-radius: 6px;
+  padding: 14px 18px;
+  background: #fffbf0;
+  font-size: 9.5pt;
+}
+
+details.coverage-note summary {
+  font-weight: 700;
+  font-size: 10.5pt;
+  color: #6a4a00;
+  cursor: pointer;
+  user-select: none;
+}
+
+details.coverage-note table th { background: #7a5500; }
+details.coverage-note table td { font-size: 9pt; }
+
+.cov-check { color: #1a7a45; font-weight: 700; text-align: center; }
+.cov-dim   { color: #bbb; text-align: center; }
+
+/* ── Print ──────────────────────────────────────────────────── */
+@media print {
+  body { background: #fff; }
+  .page-wrap {
+    box-shadow: none;
+    margin: 0;
+    padding: 12mm 18mm 16mm;
+  }
+  pre { page-break-inside: avoid; font-size: 8pt; }
+  section.soal { page-break-inside: avoid; }
+  .output-example { page-break-inside: avoid; }
+  details.coverage-note { display: none !important; }
+  .toc { page-break-after: always; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+<!-- ══════════════════════════════════════════════════ HEADER -->
+<header>
+  <div class="header-top">
+    <div class="header-title">
+      <h1>Latihan UAS — Pemrograman Berorientasi Objek</h1>
+      <p class="subtitle">Paket Latihan Ujian Akhir Semester &mdash; Implementasi Java Modern</p>
+    </div>
+    <div class="header-badge">Closed Book<br>150 Menit</div>
+  </div>
+  <div class="meta-grid">
+    <div class="meta-row"><span class="meta-label">Mata Kuliah</span><span>: Pemrograman Berorientasi Objek</span></div>
+    <div class="meta-row"><span class="meta-label">Bahasa Pemrograman</span><span>: Java (Standard Edition)</span></div>
+    <div class="meta-row"><span class="meta-label">Total Bobot</span><span>: 100%</span></div>
+    <div class="meta-row"><span class="meta-label">Durasi yang Disarankan</span><span>: 150 menit</span></div>
+    <div class="meta-row" style="grid-column:1/-1;"><span class="meta-label">Materi</span><span>: SOLID &middot; Java Fundamentals &middot; Java&ndash;C++ Comparison &middot; String &middot; Interface &middot; Generics &middot; Wildcard &middot; Collection &middot; Exception &middot; Assertion &middot; Multithreading &middot; Reflection &middot; Design Pattern</span></div>
+  </div>
+  <div class="ketentuan">
+    <strong>Ketentuan Umum Pengerjaan</strong>
+    <ol>
+      <li>Seluruh jawaban ditulis menggunakan bahasa Java. Tidak diperkenankan menggunakan C++ atau bahasa lain.</li>
+      <li>Diperbolehkan menggunakan semua kelas dari Java Standard Library (<code>java.util</code>, <code>java.lang</code>, <code>java.io</code>, <code>java.lang.reflect</code>, dll.) tanpa library eksternal.</li>
+      <li>"Anggaplah seluruh kelas yang tidak diminta sudah diimplementasikan dengan benar" berlaku pada setiap soal, kecuali dinyatakan lain.</li>
+      <li>Tambahkan atribut atau method lain apabila diperlukan selama tidak bertentangan dengan spesifikasi.</li>
+      <li>Gunakan nama class, method, dan field <em>persis</em> seperti yang ditentukan dalam soal.</li>
+      <li>Kode yang dituliskan harus secara konseptual dapat dikompilasi; kesalahan sintaks kecil yang tidak mengubah logika tidak menggugurkan nilai secara keseluruhan.</li>
+    </ol>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════ TOC -->
+<nav class="toc">
+  <h2>Daftar Isi</h2>
+  <div class="toc-item">
+    <span class="toc-num">Soal 1</span>
+    <span class="toc-title">Refactoring Sistem Notifikasi Layanan Keuangan <em>(SOLID, Interface, Design Pattern)</em></span>
+    <span class="toc-bobot">22%</span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">Soal 2</span>
+    <span class="toc-title">Validasi dan Pemrosesan Data Pendaftaran <em>(Java Fundamentals, Java&ndash;C++, String, Exception, Assertion)</em></span>
+    <span class="toc-bobot">18%</span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">Soal 3</span>
+    <span class="toc-title">Katalog Aset Digital dengan Generic Container <em>(Generics, Wildcard, Collection, Exception)</em></span>
+    <span class="toc-bobot">25%</span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">Soal 4</span>
+    <span class="toc-title">Sistem Reservasi Kursi Konser Berbasis Thread <em>(Multithreading, Exception, Collection)</em></span>
+    <span class="toc-bobot">20%</span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">Soal 5</span>
+    <span class="toc-title">Arsitektur Plugin Laporan Dinamis <em>(Reflection, Interface, Design Pattern)</em></span>
+    <span class="toc-bobot">15%</span>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════════════════════ SOAL 1 -->
+<section class="soal" id="soal1">
+  <div class="soal-header">
+    <h2>Soal 1 &mdash; Refactoring Sistem Notifikasi Layanan Keuangan</h2>
+    <span class="bobot-chip">Bobot: 22%</span>
+  </div>
+  <div class="materi-row">
+    <span class="tag tag-solid">SOLID</span>
+    <span class="tag tag-java">Java Interface</span>
+    <span class="tag tag-dp">Design Pattern</span>
+    <span class="tag tag-java">Java Fundamentals</span>
+  </div>
+
+  <div class="narasi">
+    <p>Sebuah perusahaan finansial teknologi (<em>fintech</em>) memiliki layanan notifikasi transaksi bernama <code>TransaksiNotifier</code>. Setiap kali sebuah transaksi selesai diproses, sistem harus menyimpan catatan transaksi ke penyimpanan data dan mengirimkan pemberitahuan kepada pengguna. Awalnya notifikasi hanya dikirim melalui e-mail, namun sistem berkembang hingga kini mendukung SMS, push notification, dan webhook pihak ketiga.</p>
+    <p>Tim pengembang awal menulis seluruh logika dalam satu kelas untuk memenuhi tenggat waktu. Kode tersebut diberikan di bawah ini.</p>
+  </div>
+
+<pre><code>// FILE: TransaksiNotifier.java
+public class TransaksiNotifier {
+
+    private String dbUrl = "jdbc:mysql://prod-server/fintech";  // (L1)
+
+    public void prosesTransaksi(String userId, double jumlah, String tipe) {
+
+        // --- Validasi input ---
+        if (jumlah &lt;= 0) {                                         // (L2)
+            System.out.println("Jumlah transaksi tidak valid.");
+            return;
+        }
+
+        // --- Simpan ke database (logika fiktif) ---               // (L3)
+        System.out.println("[DB] Menyimpan transaksi " + tipe
+            + " sejumlah " + jumlah + " untuk user " + userId
+            + " ke " + dbUrl);
+
+        // --- Kirim notifikasi ---                                 // (L4)
+        String pesan = "Transaksi " + tipe + " sebesar Rp"
+            + jumlah + " telah berhasil.";
+
+        if (tipe.equals("TRANSFER")) {
+            System.out.println("[EMAIL] Ke " + userId + "@mail.com: " + pesan);
+            System.out.println("[SMS]   Ke +62xxx: " + pesan);
+
+        } else if (tipe.equals("PEMBAYARAN")) {
+            System.out.println("[PUSH]  Ke device " + userId + ": " + pesan);
+
+        } else if (tipe.equals("TOPUP")) {
+            System.out.println("[EMAIL] Ke " + userId + "@mail.com: " + pesan);
+            System.out.println("[WEBHOOK] POST https://partner.api/notify: " + pesan);
+        }
+        // Jika tipe lain: tidak ada notifikasi sama sekali         // (L5)
+    }
+}</code></pre>
+
+  <div class="box warn">
+    <h4>Konteks Pengembangan ke Depan</h4>
+    Jenis transaksi akan bertambah (misalnya <code>INVESTASI</code>, <code>CICILAN</code>). Kanal notifikasi baru sedang direncanakan (WhatsApp, in-app). Kombinasi tipe transaksi–kanal notifikasi akan berubah secara berkala sesuai keputusan bisnis. Tim QA juga mengeluhkan bahwa kelas ini sangat sulit diuji secara unit.
+  </div>
+
+  <div class="tugas-label">Tugas Anda</div>
+  <ol class="subsoal-list">
+    <li>
+      <div class="subsoal-body">
+        <strong>Identifikasi pelanggaran prinsip SOLID.</strong> Dari kode <code>TransaksiNotifier</code> di atas, sebutkan minimal <strong>tiga</strong> prinsip SOLID yang dilanggar. Untuk setiap pelanggaran:
+        <ul class="bullet-list">
+          <li>Sebutkan nama prinsip dan kepanjangannya.</li>
+          <li>Tunjukkan label baris (<code>L1</code>–<code>L5</code>) atau bagian kode yang menjadi bukti konkret pelanggaran tersebut.</li>
+          <li>Jelaskan secara singkat dampak praktisnya jika kode dibiarkan seperti ini (misalnya: apa yang harus diubah jika kanal notifikasi baru ditambahkan).</li>
+        </ul>
+        <em>(Jawaban berupa analisis singkat, belum perlu menulis kode.)</em>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Rancang ulang kontrak sistem.</strong> Buatlah dua interface berikut yang memisahkan tanggung jawab secara tepat:
+        <ul class="bullet-list">
+          <li><code>KanalNotifikasi</code>: merepresentasikan satu kanal pengiriman pesan. Tentukan method yang tepat beserta parameter dan tipe kembaliannya.</li>
+          <li><code>TransaksiRepository</code>: merepresentasikan operasi penyimpanan satu catatan transaksi. Tentukan method yang tepat.</li>
+        </ul>
+        Tuliskan deklarasi lengkap kedua interface tersebut, lengkap dengan Javadoc singkat pada setiap method.
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Terapkan Design Pattern dan implementasikan class inti.</strong>
+        <ol class="roman-list">
+          <li>Sistem baru harus memungkinkan penambahan kanal notifikasi tanpa mengubah kode <code>TransaksiService</code>. Sebutkan <strong>satu design pattern</strong> yang paling tepat untuk kebutuhan ini dan jelaskan alasannya (satu paragraf singkat).</li>
+          <li>Implementasikan class <code>EmailNotifikasi</code> dan class <code>SmsNotifikasi</code> sebagai implementasi konkret dari interface <code>KanalNotifikasi</code>. Setiap class cukup mencetak pesan ke konsol dengan format yang menunjukkan kanal dan penerima.</li>
+          <li>Implementasikan class <code>TransaksiService</code> yang telah direfactor. Class ini harus:
+            <ul class="bullet-list" style="margin-top:4px;">
+              <li>Menerima <code>TransaksiRepository</code> dan <code>List&lt;KanalNotifikasi&gt;</code> melalui <em>constructor injection</em>.</li>
+              <li>Memiliki method <code>prosesTransaksi(String userId, double jumlah, String tipe)</code> yang memanggil semua kanal yang telah didaftarkan.</li>
+              <li>Tidak mengandung blok <code>if-else</code> atau <code>switch</code> yang hardcode nama tipe transaksi.</li>
+              <li>Melempar <code>IllegalArgumentException</code> jika <code>jumlah &lt;= 0</code>.</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Tulis class <code>MainNotifikasi</code></strong> yang mendemonstrasikan desain baru. Program harus:
+        <ul class="bullet-list">
+          <li>Membuat implementasi <code>TransaksiRepository</code> anonim atau class dalam (<em>inner class</em>) sederhana yang hanya mencetak konfirmasi penyimpanan.</li>
+          <li>Membuat dua instance kanal notifikasi yang berbeda (<code>EmailNotifikasi</code> dan <code>SmsNotifikasi</code>).</li>
+          <li>Membuat satu instance <code>TransaksiService</code> dengan kanal dan repository di atas.</li>
+          <li>Memproses dua transaksi dengan tipe berbeda dan menampilkan output notifikasinya.</li>
+          <li>Menangkap dan mencetak exception jika transaksi dengan jumlah <code>0</code> dicoba.</li>
+        </ul>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ SOAL 2 -->
+<section class="soal" id="soal2">
+  <div class="soal-header">
+    <h2>Soal 2 &mdash; Validasi dan Pemrosesan Data Pendaftaran</h2>
+    <span class="bobot-chip">Bobot: 18%</span>
+  </div>
+  <div class="materi-row">
+    <span class="tag tag-java">Java Fundamentals</span>
+    <span class="tag tag-java">Java–C++ Comparison</span>
+    <span class="tag tag-string">String</span>
+    <span class="tag tag-exc">Exception</span>
+    <span class="tag tag-java">Assertion</span>
+  </div>
+
+  <div class="narasi">
+    <p>Sebuah platform kursus daring sedang membangun modul pendaftaran pengguna baru. Seorang developer dengan latar belakang C++ menulis kode Java berikut untuk memvalidasi dan memformat data pendaftaran. Kode ini berhasil dikompilasi (kecuali satu baris yang ditandai), namun mengandung sejumlah masalah semantik, logika, dan kebiasaan C++ yang tidak tepat ketika diterapkan di Java.</p>
+  </div>
+
+<pre><code>// FILE: RegistrasiService.java  (mengandung masalah yang disengaja)
+import java.util.ArrayList;
+import java.util.List;
+
+public class RegistrasiService {
+
+    // ── Bagian A: Membangun tag HTML dari daftar kursus ───────────────
+    public String buatTagKursus(List&lt;String&gt; daftarKursus) {
+        String hasil = "";
+        for (String kursus : daftarKursus) {
+            hasil = hasil + "&lt;li&gt;" + kursus + "&lt;/li&gt;";  // baris (A1)
+        }
+        return "&lt;ul&gt;" + hasil + "&lt;/ul&gt;";
+    }
+
+    // ── Bagian B: Memeriksa apakah username valid ─────────────────────
+    public boolean isUsernameValid(String username) {
+        String cleaned = username.trim().toLowerCase();
+        String reserved = new String("admin");           // baris (B1)
+
+        if (cleaned == reserved) {                       // baris (B2)
+            return false;
+        }
+        if (cleaned == "superuser" || cleaned == "root") { // baris (B3)
+            return false;
+        }
+        return cleaned.length() &gt;= 4;
+    }
+
+    // ── Bagian C: Memformat nama lengkap ──────────────────────────────
+    // Setiap kata diawali huruf kapital, sisa huruf kecil.
+    // Contoh masukan: "  bUDI   santOSO  " → keluaran: "Budi Santoso"
+    public String formatNama(String nama) {
+        assert nama != null;
+        String[] kata = nama.trim().split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i &lt; kata.length; i++) {
+            String k = kata[i];
+            sb.append(k.substring(0, 1).toUpperCase());  // baris (C1)
+            sb.append(k.substring(1).toLowerCase());     // baris (C2)
+            if (i &lt; kata.length - 1) sb.append(" ");
+        }
+        return sb.toString();
+    }
+
+    // ── Bagian D: Mendaftarkan pengguna baru ──────────────────────────
+    public void daftarPengguna(String username, String email, String nama) {
+        if (!isUsernameValid(username)) {
+            throw new Exception("Username tidak valid: " + username); // (D1) ← compile error
+        }
+        if (email == null || !email.contains("@")) {
+            throw new RuntimeException("Format email salah.");
+        }
+        assert formatNama(nama).length() &gt; 0;           // baris (D2)
+        System.out.println("Pengguna terdaftar: "
+            + formatNama(nama) + " [" + username + "] &lt;" + email + "&gt;");
+    }
+
+    // ── Bagian E &amp; F: Program utama untuk pengujian ──────────────────
+    public static void main(String[] args) {
+        RegistrasiService svc = new RegistrasiService();
+
+        // Pengujian isUsernameValid
+        String u1 = "admin";
+        String u2 = new String("admin");
+        System.out.println(svc.isUsernameValid(u1));   // baris (E1)
+        System.out.println(svc.isUsernameValid(u2));   // baris (E2)
+
+        // Pengujian formatNama
+        System.out.println(svc.formatNama("  bUDI   santOSO  ")); // baris (F1)
+        System.out.println(svc.formatNama(""));                   // baris (F2)
+
+        // Pengujian daftarPengguna (asumsikan baris D1 sudah diperbaiki)
+        try {
+            svc.daftarPengguna("admin", "admin@mail.com", "Admin User");
+        } catch (Exception e) {
+            System.out.println("Tangkap: " + e.getMessage());     // baris (G1)
+        }
+    }
+}</code></pre>
+
+  <div class="tugas-label">Tugas Anda</div>
+  <ol class="subsoal-list">
+    <li>
+      <div class="subsoal-body">
+        <strong>Analisis Bagian A &mdash; <code>buatTagKursus</code>.</strong>
+        <ol class="roman-list">
+          <li>Jelaskan masalah performa pada baris (A1) ketika <code>daftarKursus</code> berisi 1.000 elemen. Kaitkan penjelasan Anda dengan sifat <em>immutability</em> objek <code>String</code> di Java dan apa yang sebenarnya terjadi di memori pada setiap iterasi.</li>
+          <li>Tuliskan versi perbaikan method <code>buatTagKursus</code> menggunakan kelas yang tepat dari Java Standard Library, dan jelaskan secara singkat mengapa kelas tersebut lebih efisien.</li>
+          <li>Seorang developer C++ mengatakan: <em>"Di C++ saya bisa meng-overload <code>operator+=</code> pada kelas String buatan saya agar akumulasi string menjadi efisien secara custom."</em> Jelaskan mengapa pendekatan tersebut tidak tersedia di Java, dan sebutkan padanan idiomatik Java-nya.</li>
+        </ol>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Analisis Bagian B &mdash; <code>isUsernameValid</code>.</strong>
+        <ol class="roman-list">
+          <li>Jelaskan mengapa baris (B1) menunjukkan kebiasaan yang tidak idiomatik di Java meskipun tidak menyebabkan compile error maupun hasil yang salah dalam semua kondisi.</li>
+          <li>Jelaskan mengapa perbandingan pada baris (B2) dan (B3) menghasilkan perilaku yang <em>tidak dapat diprediksi</em>. Kaitkan penjelasan Anda dengan perbedaan antara <em>object identity</em> dan <em>object equality</em> di Java. Kemudian bandingkan dengan perilaku operator <code>==</code> pada <code>std::string</code> di C++ &mdash; apakah perbedaan semantiknya sama atau berbeda?</li>
+          <li>Tuliskan versi perbaikan method <code>isUsernameValid</code> yang benar.</li>
+          <li>Berdasarkan kode pada Bagian E dengan implementasi yang <em>belum diperbaiki</em>: jelaskan apakah baris (E1) dan (E2) <em>pasti</em> mencetak nilai yang sama. Apa yang menentukan hasilnya? (Petunjuk: perhatikan bagaimana <code>u1</code> dan <code>u2</code> dibuat.)</li>
+        </ol>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Analisis Bagian C dan D &mdash; <code>formatNama</code> dan <code>daftarPengguna</code>.</strong>
+        <ol class="roman-list">
+          <li>Baris (C1) berpotensi melempar exception dalam kondisi tertentu. Exception apa yang akan dilempar, dan berikan satu contoh nilai argumen <code>nama</code> yang &mdash; setelah melewati baris <code>assert</code> dan <code>split</code> &mdash; akan memicu exception tersebut pada (C1). (Petunjuk: pikirkan kasus kata kosong setelah proses <code>split</code>.)</li>
+          <li>Perbaiki method <code>formatNama</code> agar aman terhadap kondisi tersebut, dan pastikan method mengembalikan <code>""</code> jika seluruh input setelah <code>trim()</code> adalah string kosong.</li>
+          <li>Baris (D1) menyebabkan compile error. Jelaskan mengapa demikian, dan tuliskan <strong>dua alternatif perbaikan</strong> pada deklarasi method <code>daftarPengguna</code> beserta trade-off masing-masing alternatif. Kaitkan jawaban Anda dengan perbedaan antara <em>checked exception</em> dan <em>unchecked exception</em> di Java, serta jelaskan bagaimana konsep ini berbeda dari mekanisme exception di C++ (tidak ada checked/unchecked di C++).</li>
+          <li>Baris (D2) menggunakan <code>assert</code> untuk memeriksa hasil <code>formatNama</code>. Apakah ini penggunaan assertion yang tepat? Jelaskan perbedaan antara penggunaan <code>assert</code> untuk <em>internal invariant</em> dan penggunaan exception untuk validasi input pengguna, lalu tambahkan satu contoh <code>assert</code> lain yang lebih sesuai di dalam method <code>daftarPengguna</code>.</li>
+        </ol>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ SOAL 3 -->
+<section class="soal" id="soal3">
+  <div class="soal-header">
+    <h2>Soal 3 &mdash; Katalog Aset Digital dengan Generic Container</h2>
+    <span class="bobot-chip">Bobot: 25%</span>
+  </div>
+  <div class="materi-row">
+    <span class="tag tag-gen">Generics</span>
+    <span class="tag tag-gen">Wildcard</span>
+    <span class="tag tag-col">Collection</span>
+    <span class="tag tag-exc">Exception</span>
+    <span class="tag tag-java">Interface</span>
+  </div>
+
+  <div class="narasi">
+    <p>Sebuah platform distribusi konten digital menyimpan tiga jenis aset: <strong>Gambar</strong> (foto dan ilustrasi), <strong>Video</strong> (klip dan film pendek), serta <strong>Audio</strong> (musik dan podcast). Setiap aset memiliki atribut dasar berupa <code>id</code> (String, unik dalam platform), <code>judul</code> (String), dan <code>ukuranMB</code> (double). Selain itu, masing-masing jenis aset memiliki atribut spesifik:</p>
+    <ul class="bullet-list">
+      <li><strong>Gambar</strong>: <code>resolusi</code> (String, format <code>"1920x1080"</code>)</li>
+      <li><strong>Video</strong>: <code>durasiDetik</code> (int) dan <code>resolusi</code> (String)</li>
+      <li><strong>Audio</strong>: <code>durasiDetik</code> (int) dan <code>bitrateKbps</code> (int)</li>
+    </ul>
+    <p>Platform ini membutuhkan sebuah <strong>katalog generik</strong> yang dapat menyimpan dan mengelola koleksi aset berdasarkan <code>id</code>-nya. Selain itu, sistem membutuhkan dua fungsi utilitas: satu untuk menghitung total ukuran dari daftar aset campuran, dan satu untuk menggabungkan (<em>batch upload</em>) aset dari satu sumber ke dalam sebuah katalog tujuan.</p>
+  </div>
+
+  <div class="box">
+    <h4>Hierarki Class yang Ditetapkan</h4>
+    <code>AsetDigital</code> adalah abstract class. <code>Gambar</code>, <code>Video</code>, dan <code>Audio</code> adalah subclass konkret dari <code>AsetDigital</code>. Untuk subclass tersebut, Anda cukup menuliskan deklarasi class, konstruktor berparameter, dan override method <code>getInfo()</code>; implementasi lengkap lainnya tidak perlu dituliskan.
+  </div>
+
+  <p>Berikut adalah contoh urutan operasi yang harus dapat dilakukan oleh katalog dan exception yang harus dihasilkan pada kondisi tertentu:</p>
+
+  <table>
+    <thead>
+      <tr><th style="width:5%">No.</th><th style="width:30%">Aksi</th><th style="width:30%">Kondisi Katalog (<em>id</em> yang tersimpan)</th><th>Keterangan</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="td-center">0</td><td>Kondisi awal kosong</td><td><code>{ }</code></td><td>&mdash;</td></tr>
+      <tr><td class="td-center">1</td><td><code>tambah(gambar1)</code> &nbsp; id=<code>"G001"</code></td><td><code>{ G001 }</code></td><td class="td-ok">Berhasil</td></tr>
+      <tr><td class="td-center">2</td><td><code>tambah(video1)</code> &nbsp;&nbsp; id=<code>"V001"</code></td><td><code>{ G001, V001 }</code></td><td class="td-ok">Berhasil</td></tr>
+      <tr><td class="td-center">3</td><td><code>tambah(gambar1)</code> &nbsp; id=<code>"G001"</code> (duplikat)</td><td><code>{ G001, V001 }</code></td><td class="td-err">Lempar <code>AsetDuplikatException</code></td></tr>
+      <tr><td class="td-center">4</td><td><code>cari("G001")</code></td><td><code>{ G001, V001 }</code></td><td class="td-ok">Kembalikan <code>gambar1</code></td></tr>
+      <tr><td class="td-center">5</td><td><code>cari("X999")</code></td><td><code>{ G001, V001 }</code></td><td class="td-err">Lempar <code>AsetTidakDitemukanException</code></td></tr>
+      <tr><td class="td-center">6</td><td><code>tambah(audio1)</code> &nbsp;&nbsp; id=<code>"A001"</code></td><td><code>{ G001, V001, A001 }</code></td><td class="td-ok">Berhasil</td></tr>
+      <tr><td class="td-center">7</td><td><code>hapus("V001")</code></td><td><code>{ G001, A001 }</code></td><td class="td-ok">Berhasil</td></tr>
+      <tr><td class="td-center">8</td><td><code>hapus("X999")</code></td><td><code>{ G001, A001 }</code></td><td class="td-err">Lempar <code>AsetTidakDitemukanException</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="tugas-label">Tugas Anda</div>
+  <ol class="subsoal-list">
+    <li>
+      <div class="subsoal-body">
+        <strong>Implementasikan hierarki class aset.</strong>
+        <ul class="bullet-list">
+          <li>Tuliskan <code>AsetDigital</code> sebagai abstract class dengan atribut <code>id</code>, <code>judul</code>, <code>ukuranMB</code> (semua <code>private</code>), konstruktor berparameter, getter untuk ketiga atribut, deklarasi abstract method <code>String getInfo()</code>, serta override <code>toString()</code> yang mendelegasikan ke <code>getInfo()</code>.</li>
+          <li>Tuliskan deklarasi class <code>Gambar</code>, <code>Video</code>, dan <code>Audio</code>: masing-masing cukup memiliki konstruktor berparameter (semua atribut, termasuk yang spesifik) dan override <code>getInfo()</code> yang mengembalikan string deskriptif yang memuat seluruh atribut class tersebut.</li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Implementasikan dua custom exception.</strong>
+        <ul class="bullet-list">
+          <li><code>AsetTidakDitemukanException</code>: harus berupa <em>checked exception</em>. Konstruktornya menerima <code>String id</code> dan membentuk pesan error yang informatif.</li>
+          <li><code>AsetDuplikatException</code>: harus berupa <em>unchecked exception</em>. Konstruktornya menerima <code>String id</code> dan membentuk pesan error yang informatif.</li>
+        </ul>
+        Setelah implementasi, jelaskan secara singkat (satu kalimat per exception) mengapa Anda memilih <em>checked</em> untuk yang pertama dan <em>unchecked</em> untuk yang kedua, dilihat dari sifat kondisi yang diwakili oleh masing-masing exception.
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Implementasikan class <code>Katalog&lt;T extends AsetDigital&gt;</code></strong> dengan ketentuan berikut:
+        <ul class="bullet-list">
+          <li>Gunakan <code>HashMap&lt;String, T&gt;</code> sebagai penyimpanan internal, dengan kunci berupa <code>id</code> aset.</li>
+          <li><code>void tambah(T aset)</code>: menambahkan aset; melempar <code>AsetDuplikatException</code> jika <code>id</code> sudah ada.</li>
+          <li><code>T cari(String id) throws AsetTidakDitemukanException</code>: mengembalikan aset bertipe <code>T</code>; melempar exception jika tidak ditemukan.</li>
+          <li><code>void hapus(String id) throws AsetTidakDitemukanException</code>: menghapus aset; melempar exception jika tidak ditemukan.</li>
+          <li><code>List&lt;T&gt; semuaAset()</code>: mengembalikan semua aset sebagai list (urutan bebas).</li>
+          <li><code>double ukuranTotal()</code>: mengembalikan jumlah <code>ukuranMB</code> seluruh aset.</li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Implementasikan dua static generic method utilitas</strong> dalam class bernama <code>KatalogUtils</code>:
+        <ol class="roman-list">
+          <li>
+            Method dengan signature:<br>
+            <code>public static double hitungTotalUkuran(List&lt;? extends AsetDigital&gt; daftar)</code><br>
+            yang menjumlahkan <code>ukuranMB</code> dari semua elemen dalam <code>daftar</code>.
+            Setelah implementasi, jelaskan mengapa <code>? extends AsetDigital</code> lebih tepat digunakan di sini dibandingkan dengan tipe konkret <code>AsetDigital</code>, dan mengapa <code>? super AsetDigital</code> tidak cocok.
+          </li>
+          <li>
+            Method dengan signature:<br>
+            <code>public static &lt;T extends AsetDigital&gt; void uploadBatch(List&lt;? super T&gt; tujuan, List&lt;T&gt; sumber)</code><br>
+            yang menambahkan semua elemen dari <code>sumber</code> ke dalam <code>tujuan</code> satu per satu.
+            Jelaskan mengapa <code>? super T</code> digunakan pada parameter <code>tujuan</code> dan bukan <code>? extends T</code>. (Petunjuk: pikirkan operasi apa yang dilakukan terhadap <code>tujuan</code> di dalam method ini.)
+          </li>
+        </ol>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Tulis class <code>MainKatalog</code></strong> yang mendemonstrasikan seluruh fungsionalitas di atas. Anggaplah semua class dari poin (a)–(d) sudah diimplementasikan. Program <code>main</code> harus:
+        <ul class="bullet-list">
+          <li>Membuat sebuah <code>Katalog&lt;AsetDigital&gt;</code>.</li>
+          <li>Menambahkan minimal satu instance <code>Gambar</code>, satu <code>Video</code>, dan satu <code>Audio</code>.</li>
+          <li>Mencoba menambahkan aset dengan <code>id</code> yang sudah ada, menangkap <code>AsetDuplikatException</code>, dan mencetak pesannya.</li>
+          <li>Mencari aset dengan <code>id</code> yang tidak ada, menangkap <code>AsetTidakDitemukanException</code>, dan mencetak pesannya.</li>
+          <li>Membuat sebuah <code>PriorityQueue&lt;AsetDigital&gt;</code> dengan <code>Comparator</code> yang mengurutkan aset dari <code>ukuranMB</code> terbesar ke terkecil, mengisi antrian dengan semua aset dari katalog, lalu mengosongkan antrian sambil mencetak setiap aset.</li>
+          <li>Memanggil <code>KatalogUtils.hitungTotalUkuran</code> dengan list yang berisi campuran subkelas dan mencetak hasilnya.</li>
+        </ul>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ SOAL 4 -->
+<section class="soal" id="soal4">
+  <div class="soal-header">
+    <h2>Soal 4 &mdash; Sistem Reservasi Kursi Konser Berbasis Thread</h2>
+    <span class="bobot-chip">Bobot: 20%</span>
+  </div>
+  <div class="materi-row">
+    <span class="tag tag-thread">Multithreading</span>
+    <span class="tag tag-exc">Exception</span>
+    <span class="tag tag-col">Collection</span>
+    <span class="tag tag-java">Java Fundamentals</span>
+  </div>
+
+  <div class="narasi">
+    <p>Sebuah platform tiket konser daring memiliki fitur pemesanan kursi (<em>seat reservation</em>). Setiap konser memiliki denah kursi yang direpresentasikan sebagai peta status: tiap kursi memiliki ID unik (contoh: <code>"A1"</code>, <code>"B3"</code>) dan status apakah sudah dipesan atau belum. Ketika ribuan pengguna mengakses sistem secara bersamaan, banyak thread berlomba memesan kursi yang sama.</p>
+    <p>Tim developer menulis skeleton berikut sebagai titik awal, namun menyadari implementasinya <em>tidak thread-safe</em> dan meminta Anda memperbaikinya.</p>
+  </div>
+
+<pre><code>// FILE: SistemReservasi.java  (BELUM thread-safe — perlu diperbaiki)
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class SistemReservasi {
+
+    // Status kursi: true = sudah dipesan, false = tersedia
+    private Map&lt;String, Boolean&gt; statusKursi = new HashMap&lt;&gt;(); // (K1)
+    private int totalPesananBerhasil = 0;                         // (K2)
+
+    public SistemReservasi(List&lt;String&gt; daftarKursi) {
+        for (String id : daftarKursi) {
+            statusKursi.put(id, false);
+        }
+    }
+
+    /**
+     * Memesan sebuah kursi. Kembalikan true jika berhasil,
+     * false jika kursi sudah dipesan oleh orang lain.
+     */
+    public boolean pesanKursi(String idKursi) {             // (K3)
+        Boolean status = statusKursi.get(idKursi);          // (K3a)
+        if (status == null) {
+            throw new IllegalArgumentException(
+                "Kursi tidak dikenal: " + idKursi);
+        }
+        if (!status) {                                      // (K3b)
+            statusKursi.put(idKursi, true);                 // (K3c) ← masalah utama
+            totalPesananBerhasil++;                         // (K3d) ← masalah kedua
+            return true;
+        }
+        return false;
+    }
+
+    public int getTotalPesananBerhasil() { return totalPesananBerhasil; }
+
+    public long getKursiTersedia() {
+        return statusKursi.values().stream().filter(s -> !s).count();
+    }
+}
+
+// FILE: ThreadPemesan.java
+public class ThreadPemesan implements Runnable {
+    private final SistemReservasi sistem;
+    private final String idKursi;
+    private final String namaPemesan;
+
+    public ThreadPemesan(SistemReservasi sistem,
+                         String idKursi, String namaPemesan) {
+        this.sistem = sistem;
+        this.idKursi = idKursi;
+        this.namaPemesan = namaPemesan;
+    }
+
+    @Override
+    public void run() {
+        boolean berhasil = sistem.pesanKursi(idKursi);      // (K4)
+        if (berhasil) {
+            System.out.println("[BERHASIL] " + namaPemesan
+                + " memesan kursi " + idKursi);
+        } else {
+            System.out.println("[GAGAL]    Kursi " + idKursi
+                + " sudah dipesan. Pemesan: " + namaPemesan);
+        }
+    }
+}</code></pre>
+
+  <div class="tugas-label">Tugas Anda</div>
+  <ol class="subsoal-list">
+    <li>
+      <div class="subsoal-body">
+        <strong>Identifikasi masalah concurrency.</strong>
+        <ol class="roman-list">
+          <li>Jelaskan secara konkret satu skenario <em>race condition</em> yang dapat terjadi pada method <code>pesanKursi</code> (area K3b–K3c). Tuliskan urutan langkah eksekusi dua thread (Thread-A dan Thread-B) yang dapat menyebabkan keduanya sama-sama mendapatkan <code>return true</code> untuk kursi yang sama. Gunakan format notasi seperti: <em>Thread-A melakukan (K3b), Thread-B melakukan (K3b), ...</em></li>
+          <li>Jelaskan mengapa <code>totalPesananBerhasil++</code> pada baris (K3d) juga berpotensi menimbulkan <em>data race</em>, meskipun kodenya terlihat sederhana. Jelaskan pula mengapa <code>HashMap</code> pada (K1) tidak aman diakses langsung dari banyak thread secara bersamaan.</li>
+        </ol>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Perbaiki <code>SistemReservasi</code></strong> agar thread-safe dengan ketentuan:
+        <ol class="roman-list">
+          <li>Ganti <code>HashMap</code> dengan <code>ConcurrentHashMap</code> pada deklarasi <code>statusKursi</code>.</li>
+          <li>Ganti <code>int totalPesananBerhasil</code> dengan <code>AtomicInteger</code>. Sesuaikan semua penggunaan field ini di seluruh method.</li>
+          <li>Pastikan blok cek-dan-set pada area (K3b–K3c) bersifat <em>atomic</em> menggunakan method <code>replace(key, oldValue, newValue)</code> dari <code>ConcurrentHashMap</code>. Tuliskan implementasi method <code>pesanKursi</code> yang telah diperbaiki secara lengkap dan jelaskan secara singkat mengapa <code>replace</code> dengan tiga argumen memberikan jaminan atomicity.</li>
+          <li>Tambahkan custom <em>checked exception</em> <code>KursiTidakDikenalException</code> untuk menggantikan <code>IllegalArgumentException</code> pada method <code>pesanKursi</code>. Sesuaikan signature method, dan tangani exception ini di dalam method <code>run()</code> milik <code>ThreadPemesan</code> dengan mencetak pesan error yang informatif.</li>
+        </ol>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Tulis class <code>MainReservasi</code></strong> yang mendemonstrasikan sistem thread-safe. Anggaplah <code>SistemReservasi</code> dan <code>ThreadPemesan</code> sudah diperbaiki. Program harus:
+        <ul class="bullet-list">
+          <li>Membuat daftar 5 kursi: <code>"A1"</code>, <code>"A2"</code>, <code>"A3"</code>, <code>"A4"</code>, <code>"A5"</code>.</li>
+          <li>Membuat 10 <code>Thread</code>, masing-masing membungkus satu <code>ThreadPemesan</code>. Distribusikan percobaan pemesanan sehingga beberapa thread mencoba memesan kursi yang sama (misalnya thread 1 dan thread 6 sama-sama mencoba memesan <code>"A1"</code>).</li>
+          <li>Memulai semua thread, kemudian menunggu semua selesai menggunakan <code>Thread.join()</code>.</li>
+          <li>Mencetak total pesanan berhasil (dari <code>getTotalPesananBerhasil()</code>) dan jumlah kursi tersisa (dari <code>getKursiTersedia()</code>).</li>
+        </ul>
+
+        <div class="box ok" style="margin-top:8px;">
+          <h4>Contoh Output yang Diharapkan (urutan baris dapat berbeda)</h4>
+          <div class="output-example">[BERHASIL] Pengguna-1  memesan kursi A1
+[BERHASIL] Pengguna-2  memesan kursi A2
+[GAGAL]    Kursi A1 sudah dipesan. Pemesan: Pengguna-6
+[BERHASIL] Pengguna-3  memesan kursi A3
+[BERHASIL] Pengguna-4  memesan kursi A4
+[GAGAL]    Kursi A2 sudah dipesan. Pemesan: Pengguna-7
+[BERHASIL] Pengguna-5  memesan kursi A5
+[GAGAL]    Kursi A3 sudah dipesan. Pemesan: Pengguna-8
+...
+Total pesanan berhasil : 5
+Kursi tersisa          : 0</div>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Analisis singkat.</strong>
+        <ol class="roman-list">
+          <li>Mengapa menggunakan <code>Collections.synchronizedMap(new HashMap&lt;&gt;())</code> pada field <code>statusKursi</code> saja <em>belum cukup</em> untuk membuat operasi di dalam method <code>pesanKursi</code> benar-benar thread-safe, meskipun setiap pemanggilan method individual pada map-nya sudah thread-safe?</li>
+          <li>Seorang developer C++ bertanya: <em>"Di C++ saya biasa menggunakan <code>std::mutex</code> secara eksplisit dengan <code>lock()</code> dan <code>unlock()</code>. Apakah <code>synchronized</code> di Java pada dasarnya berbeda?"</em> Jelaskan persamaan dan minimal dua perbedaan utama antara <code>synchronized</code> Java dan <code>std::mutex</code> C++.</li>
+        </ol>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ SOAL 5 -->
+<section class="soal" id="soal5">
+  <div class="soal-header">
+    <h2>Soal 5 &mdash; Arsitektur Plugin Laporan Dinamis</h2>
+    <span class="bobot-chip">Bobot: 15%</span>
+  </div>
+  <div class="materi-row">
+    <span class="tag tag-reflect">Reflection</span>
+    <span class="tag tag-java">Interface</span>
+    <span class="tag tag-dp">Design Pattern</span>
+    <span class="tag tag-exc">Exception</span>
+  </div>
+
+  <div class="narasi">
+    <p>Sebuah sistem analitik penjualan membutuhkan fitur ekspor laporan ke berbagai format: <strong>teks biasa</strong> (<code>PlainTextPlugin</code>), <strong>CSV</strong> (<code>CsvPlugin</code>), dan <strong>Markdown</strong> (<code>MarkdownPlugin</code>). Format baru dapat ditambahkan di masa depan oleh tim yang berbeda, tanpa mengubah kode inti sistem. Nama class plugin disimpan dalam sebuah file konfigurasi — dalam konteks soal ini, direpresentasikan sebagai <code>List&lt;String&gt;</code> berisi <em>fully-qualified class name</em>.</p>
+    <p>Sistem harus memuat plugin secara <strong>dinamis saat runtime</strong> menggunakan Java Reflection. Sistem tidak boleh meng-hardcode nama class plugin dalam logikanya. Seluruh plugin harus mematuhi kontrak yang ditetapkan oleh sebuah interface, dan sistem harus memverifikasi kepatuhan tersebut sebelum menggunakan plugin.</p>
+  </div>
+
+  <div class="box">
+    <h4>Spesifikasi Interface <code>LaporanPlugin</code></h4>
+    Interface <code>LaporanPlugin</code> memiliki tepat dua method:
+    <ul class="bullet-list" style="margin-top:5px;">
+      <li><code>String getNamaFormat()</code> &mdash; mengembalikan nama format, misalnya <code>"CSV"</code>.</li>
+      <li><code>String ekspor(List&lt;String[]&gt; data, String[] header)</code> &mdash; menerima data tabel (setiap elemen <code>String[]</code> adalah satu baris data) dan array nama kolom, lalu mengembalikan String hasil ekspor dalam format plugin tersebut.</li>
+    </ul>
+  </div>
+
+<pre><code>// FILE: PluginLoader.java  (skeleton — lengkapi bagian yang ditandai)
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PluginLoader {
+
+    /**
+     * Memuat dan menginstansiasi plugin dari daftar nama class.
+     * Hanya class yang mengimplementasikan {@link LaporanPlugin}
+     * yang akan dimasukkan ke dalam hasil.
+     *
+     * @param namaClassList daftar fully-qualified class name plugin
+     * @return list berisi instance LaporanPlugin yang berhasil dimuat
+     */
+    public List&lt;LaporanPlugin&gt; muatPlugin(List&lt;String&gt; namaClassList) {
+        List&lt;LaporanPlugin&gt; hasil = new ArrayList&lt;&gt;();
+
+        for (String namaClass : namaClassList) {
+            try {
+                // (5.1) Muat class berdasarkan nama string
+                Class&lt;?&gt; clazz = _____________________________________________;
+
+                // (5.2) Periksa apakah clazz mengimplementasikan LaporanPlugin.
+                //       Jika tidak, lewati (continue) dan cetak peringatan ke konsol.
+                if ( _____________________________________________ ) {
+                    System.out.println("[PERINGATAN] " + namaClass
+                        + " bukan implementasi LaporanPlugin. Dilewati.");
+                    continue;
+                }
+
+                // (5.3) Dapatkan no-arg constructor dari clazz
+                Constructor&lt;?&gt; ctor = _____________________________________________;
+
+                // (5.4) Buat instance menggunakan constructor tersebut
+                LaporanPlugin plugin = (LaporanPlugin) ctor.newInstance();
+
+                hasil.add(plugin);
+                System.out.println("[INFO] Plugin dimuat: " + plugin.getNamaFormat());
+
+            } catch (ClassNotFoundException e) {
+                System.out.println("[ERROR] Class tidak ditemukan: " + namaClass);
+            } catch ( _________________________ e) {  // (5.5) tangani jika
+                // no-arg constructor tidak ada atau tidak dapat diakses
+                System.out.println("[ERROR] Gagal mengakses constructor: "
+                    + e.getMessage());
+            } catch ( _________________________ e) {  // (5.6) tangani jika
+                // konstruksi instance gagal saat runtime (InvocationTargetException
+                // atau InstantiationException)
+                System.out.println("[ERROR] Gagal membuat instance: "
+                    + e.getMessage());
+            }
+        }
+        return hasil;
+    }
+}</code></pre>
+
+  <div class="tugas-label">Tugas Anda</div>
+  <ol class="subsoal-list">
+    <li>
+      <div class="subsoal-body">
+        <strong>Tuliskan interface <code>LaporanPlugin</code></strong> lengkap sesuai spesifikasi di atas, termasuk Javadoc singkat pada setiap method.
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Implementasikan dua class plugin konkret:</strong>
+        <ol class="roman-list">
+          <li><code>PlainTextPlugin</code>: Setiap baris data diformat dengan kolom dipisahkan oleh karakter <code>" | "</code>. Setelah baris header, tambahkan baris pemisah berupa karakter <code>-</code> (panjangnya disesuaikan dengan lebar baris header). Kembalikan seluruh tabel sebagai satu String dengan karakter newline sebagai pemisah baris.</li>
+          <li><code>CsvPlugin</code>: Baris pertama adalah header dengan nilai dipisahkan koma. Baris-baris data berikutnya masing-masing dipisahkan koma. Jika nilai di dalam data mengandung koma, nilai tersebut harus dibungkus tanda kutip ganda. Kembalikan seluruh CSV sebagai satu String.</li>
+        </ol>
+        Kedua class harus memiliki konstruktor tanpa argumen (<em>no-arg constructor</em>).
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Lengkapi <code>PluginLoader</code></strong> dengan mengisi bagian (5.1) s.d. (5.6) pada skeleton di atas. Untuk setiap bagian yang Anda isi, tambahkan komentar singkat yang menjelaskan:
+        <ul class="bullet-list">
+          <li>API reflection Java apa yang Anda gunakan (nama method dan class-nya).</li>
+          <li>Mengapa API tersebut digunakan di titik ini.</li>
+          <li>Exception apa yang dapat dilempar oleh operasi tersebut (relevan untuk 5.5 dan 5.6).</li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Identifikasi design pattern.</strong> Kombinasi <code>LaporanPlugin</code> (interface) + <code>PluginLoader</code> (pemuat dinamis) + daftar nama class dari konfigurasi membentuk sebuah pola desain yang dikenal. Sebutkan nama pattern tersebut, lalu petakan setiap elemen dari sistem ini ke elemen-elemen dalam definisi formal pattern tersebut.
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Tulis class <code>MainLaporan</code></strong> yang mendemonstrasikan sistem plugin. Program harus:
+        <ul class="bullet-list">
+          <li>Mendefinisikan data penjualan: header <code>{"Produk", "Qty", "Harga (Rp)"}</code> dan minimal tiga baris data.</li>
+          <li>Menyiapkan daftar nama class plugin yang terdiri dari: nama lengkap <code>PlainTextPlugin</code>, nama lengkap <code>CsvPlugin</code>, dan satu nama class yang tidak ada (<code>"com.laporan.FakePlugin"</code>).</li>
+          <li>Menggunakan <code>PluginLoader</code> untuk memuat plugin secara dinamis.</li>
+          <li>Menjalankan setiap plugin yang berhasil dimuat terhadap data yang sama, lalu mencetak nama format dan hasil ekspornya ke konsol.</li>
+        </ul>
+
+        <div class="box ok" style="margin-top:8px;">
+          <h4>Contoh Potongan Output yang Diharapkan</h4>
+          <div class="output-example">[INFO] Plugin dimuat: Plain Text
+[INFO] Plugin dimuat: CSV
+[ERROR] Class tidak ditemukan: com.laporan.FakePlugin
+
+=== Laporan Format: Plain Text ===
+Produk   | Qty | Harga (Rp)
+---------+-----+-----------
+Laptop   | 2   | 15000000
+Mouse    | 5   | 250000
+Keyboard | 3   | 450000
+
+=== Laporan Format: CSV ===
+Produk,Qty,Harga (Rp)
+Laptop,2,15000000
+Mouse,5,250000
+Keyboard,3,450000</div>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="subsoal-body">
+        <strong>Pertanyaan Desain.</strong> Jelaskan mengapa pendekatan berbasis <code>interface</code> + reflection (<em>dynamic class loading</em>) lebih extensible dibandingkan dengan <code>if-else</code> atau <code>switch</code> yang memeriksa nama format secara hardcoded. Kaitkan jawaban Anda secara eksplisit dengan minimal dua prinsip SOLID yang relevan.
+      </div>
+    </li>
+  </ol>
+</section>
+
+</main>
+
+<footer>
+  Latihan UAS &mdash; Pemrograman Berorientasi Objek (Java) &nbsp;&bull;&nbsp; Total Bobot: 100% &nbsp;&bull;&nbsp; Durasi Disarankan: 150 menit &nbsp;&bull;&nbsp; Dokumen ini hanya untuk keperluan latihan internal.
+</footer>
+
+<!-- ══════════════════════════════════════ CATATAN PENYUSUN (hapus sebelum dibagikan) -->
+<details class="coverage-note">
+  <summary>&#9888;&#65039; Catatan Penyusun: Matriks Cakupan Materi &mdash; Hapus bagian ini sebelum dibagikan kepada mahasiswa</summary>
+  <br>
+  <p style="font-size:9.5pt; color:#6a4a00; margin-bottom:10px;">Tabel berikut memverifikasi bahwa seluruh 13 materi wajib diuji secara substantif — bukan sekadar disebutkan namanya. Tanda <strong>&#10003;</strong> berarti materi tersebut benar-benar diperlukan untuk menyelesaikan soal.</p>
+
+  <table style="font-size:9pt;">
+    <thead>
+      <tr>
+        <th style="width:22%">Materi</th>
+        <th style="width:9%" class="td-center">Soal 1<br>(22%)</th>
+        <th style="width:9%" class="td-center">Soal 2<br>(18%)</th>
+        <th style="width:9%" class="td-center">Soal 3<br>(25%)</th>
+        <th style="width:9%" class="td-center">Soal 4<br>(20%)</th>
+        <th style="width:9%" class="td-center">Soal 5<br>(15%)</th>
+        <th>Alasan Substantif</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. SOLID</strong></td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td>S1: identifikasi SRP/OCP/DIP dari kode konkret + refactoring wajib. S5: penjelasan extensibility plugin dikaitkan ke OCP dan DIP.</td>
+      </tr>
+      <tr>
+        <td><strong>2. Java Fundamentals</strong></td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-check">&#10003;</td>
+        <td>Setiap soal mengharuskan deklarasi class, interface, constructor, access modifier, dan kontrol alur Java yang valid dan idiomatic.</td>
+      </tr>
+      <tr>
+        <td><strong>3. Java–C++ Comparison</strong></td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td>S2: operator overloading, String semantics, checked exception (tidak ada di C++). S4: perbandingan synchronized Java vs std::mutex C++.</td>
+      </tr>
+      <tr>
+        <td><strong>4. Java String</strong></td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td>S2: immutability, String pool, == vs .equals(), StringBuilder — inti dari seluruh masalah kode yang dianalisis di Bagian A dan B.</td>
+      </tr>
+      <tr>
+        <td><strong>5. Java Interface</strong></td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td>S1: KanalNotifikasi, TransaksiRepository. S3: AsetDigital sebagai abstract class + kontrak Katalog. S5: LaporanPlugin sebagai kontrak wajib plugin.</td>
+      </tr>
+      <tr>
+        <td><strong>6. Java Generics</strong></td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td>S3: Katalog&lt;T extends AsetDigital&gt; adalah generic class utama; KatalogUtils berisi dua static generic method yang harus diimplementasikan penuh.</td>
+      </tr>
+      <tr>
+        <td><strong>7. Generics Wildcard</strong></td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td>S3: ? extends (produsen/pembaca) pada hitungTotalUkuran dan ? super T (konsumen/penulis) pada uploadBatch — prinsip PECS harus dipahami dan dijelaskan.</td>
+      </tr>
+      <tr>
+        <td><strong>8. Java Collection</strong></td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td>S3: HashMap, PriorityQueue dengan Comparator, List. S4: ConcurrentHashMap sebagai pengganti thread-safe dari HashMap.</td>
+      </tr>
+      <tr>
+        <td><strong>9. Java Exception</strong></td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-check">&#10003;</td>
+        <td>S1: IllegalArgumentException. S2: checked vs unchecked, throws. S3: custom exception hierarchy (checked + unchecked). S4: KursiTidakDikenalException. S5: exception reflection hierarchy.</td>
+      </tr>
+      <tr>
+        <td><strong>10. Java Assertion</strong></td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td>S2: analisis penggunaan assert untuk internal invariant vs validasi input — mahasiswa harus membedakan kapan assert tepat dan kapan harus diganti exception.</td>
+      </tr>
+      <tr>
+        <td><strong>11. Java Multithreading</strong></td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td>S4: race condition diidentifikasi dari kode nyata, ConcurrentHashMap.replace() untuk atomicity, AtomicInteger, Thread + join() — semua diimplementasikan bukan hanya dijelaskan.</td>
+      </tr>
+      <tr>
+        <td><strong>12. Java Reflection</strong></td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td>S5: Class.forName(), isAssignableFrom(), getDeclaredConstructor(), newInstance() — semua digunakan secara fungsional dalam PluginLoader, mahasiswa mengisi skeleton yang bermakna.</td>
+      </tr>
+      <tr>
+        <td><strong>13. Design Pattern</strong></td>
+        <td class="cov-check">&#10003;</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-dim">—</td>
+        <td class="cov-check">&#10003;</td>
+        <td>S1: Strategy/Observer pattern untuk kanal notifikasi — mahasiswa memilih dan mengimplementasikan. S5: Strategy + Factory/Registry pattern pada plugin architecture — mahasiswa mengidentifikasi dan memetakan elemen.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="font-size:9pt; margin-top:12px; color:#6a4a00;">
+    <strong>Verifikasi bobot:</strong> 22% + 18% + 25% + 20% + 15% = <strong>100% &#10003;</strong><br>
+    <strong>Verifikasi materi:</strong> Seluruh 13 materi diuji secara substantif &mdash; setiap materi muncul karena diperlukan oleh soal, bukan sekadar disebutkan. <strong>&#10003;</strong>
+  </p>
+</details>
+
+</div><!-- .page-wrap -->
+</body>
+</html>

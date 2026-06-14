@@ -1,0 +1,242 @@
+\section{Java Reflection}
+
+Java Reflection adalah kemampuan program Java untuk memeriksa dan memanipulasi metadata class, field, method, constructor, annotation, dan tipe saat runtime. Dengan reflection, program dapat mengetahui class apa yang sedang dipakai, method apa saja yang tersedia, membuat object secara dinamis, atau memanggil method berdasarkan nama. Reflection banyak dipakai oleh framework seperti dependency injection, serialization, ORM, testing framework, dan annotation processor runtime.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini disusun menggunakan pengetahuan umum Java. Reflection dibahas dari sisi konsep runtime, sintaks dasar, manfaat, dan risiko terhadap enkapsulasi.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Konsep reflection
+    \begin{enumerate}
+        \item Inspeksi metadata runtime.
+        \item Class object sebagai representasi metadata tipe.
+        \item Package utama: \texttt{java.lang.reflect}.
+    \end{enumerate}
+    \item Mendapatkan \texttt{Class<?>}
+    \begin{enumerate}
+        \item \texttt{Type.class}.
+        \item \texttt{object.getClass()}.
+        \item \texttt{Class.forName}.
+    \end{enumerate}
+    \item Inspeksi member
+    \begin{enumerate}
+        \item Field.
+        \item Method.
+        \item Constructor.
+        \item Modifier.
+    \end{enumerate}
+    \item Instansiasi dan invocation dinamis
+    \begin{enumerate}
+        \item Membuat object melalui constructor.
+        \item Memanggil method melalui \texttt{Method.invoke}.
+        \item Mengakses field melalui \texttt{Field}.
+    \end{enumerate}
+    \item Annotation runtime
+    \begin{enumerate}
+        \item Annotation dengan retention runtime.
+        \item Membaca annotation melalui reflection.
+    \end{enumerate}
+    \item Risiko reflection
+    \begin{enumerate}
+        \item Melanggar enkapsulasi.
+        \item Lebih lambat dari pemanggilan langsung.
+        \item Rentan error runtime.
+        \item Dipengaruhi security dan module system.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Reflection penting karena banyak framework Java bekerja dengan membaca metadata class saat runtime. Namun, reflection harus dipahami sebagai alat khusus, bukan pengganti pemanggilan method normal.
+\end{jawab}
+
+Tanpa reflection, framework seperti JUnit sulit menemukan method test berdasarkan annotation, serializer sulit membaca field object secara generik, dan dependency injection container sulit membuat object berdasarkan constructor. Tetapi reflection juga membuat kode lebih rapuh karena nama method/field menjadi string, error muncul saat runtime, dan akses private dapat merusak enkapsulasi.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Reflection bergantung pada class, method, access modifier, exception, annotation, dan generics. Reflection berhubungan dengan Design Pattern seperti Factory dan Dependency Injection. Type erasure pada generics membatasi informasi tipe yang tersedia di runtime.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Class Object}
+
+\begin{jawab}[Inti Konsep.]
+Setiap tipe Java memiliki object metadata bertipe \texttt{Class<?>}. Object ini menjadi pintu masuk reflection untuk membaca nama class, superclass, interface, field, method, dan constructor.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Mendapatkan Class object}, label={lst:class-object}]
+Class<String> stringClass = String.class;
+
+String text = "Java";
+Class<?> runtimeClass = text.getClass();
+
+Class<?> loaded = Class.forName("java.lang.String");
+\end{lstlisting}
+
+\texttt{Class.forName} memakai nama fully qualified dan dapat melempar \texttt{ClassNotFoundException}. Ini umum pada plugin system atau framework yang memuat class berdasarkan konfigurasi.
+
+\subsubsection{Inspeksi Method dan Field}
+
+\begin{jawab}[Inti Konsep.]
+Reflection dapat membaca daftar method, field, constructor, dan modifier. Method publik diwarisi dapat diambil dengan \texttt{getMethods}; method yang dideklarasikan langsung dapat diambil dengan \texttt{getDeclaredMethods}.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Inspeksi method dengan reflection}, label={lst:inspect-methods}]
+Class<?> clazz = BankAccount.class;
+
+for (Method method : clazz.getDeclaredMethods()) {
+    System.out.println(method.getName());
+    System.out.println(Modifier.toString(method.getModifiers()));
+}
+\end{lstlisting}
+
+Perbedaan penting:
+
+\begin{itemize}
+    \item \texttt{getField}: field publik, termasuk yang diwarisi.
+    \item \texttt{getDeclaredField}: field yang dideklarasikan di class tersebut, termasuk private.
+    \item \texttt{getMethod}: method publik.
+    \item \texttt{getDeclaredMethod}: method yang dideklarasikan di class tersebut.
+\end{itemize}
+
+\subsubsection{Membuat Object dan Memanggil Method}
+
+\begin{jawab}[Inti Konsep.]
+Reflection dapat membuat object dan memanggil method secara dinamis, tetapi hasilnya lebih rawan error runtime dibanding pemanggilan biasa.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Instansiasi dan pemanggilan method dengan reflection}, label={lst:reflection-invoke}]
+Constructor<User> constructor =
+    User.class.getConstructor(String.class, String.class);
+
+User user = constructor.newInstance("13524044", "Narendra");
+
+Method method = User.class.getMethod("name");
+String name = (String) method.invoke(user);
+\end{lstlisting}
+
+Operasi reflection dapat melempar banyak exception, misalnya method tidak ditemukan, instansiasi gagal, akses ilegal, atau invocation gagal. Invocation exception membungkus exception yang dilempar method yang dipanggil.
+
+\subsubsection{Mengakses Private Member}
+
+\begin{jawab}[Inti Konsep.]
+Reflection dapat mencoba mengakses private member melalui \texttt{setAccessible(true)}, tetapi ini melanggar enkapsulasi dan dapat dibatasi oleh module/security policy.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Akses private field dengan reflection}, label={lst:private-reflection}]
+Field field = User.class.getDeclaredField("name");
+field.setAccessible(true);
+
+String name = (String) field.get(user);
+\end{lstlisting}
+
+Dalam kode produksi biasa, akses private seperti ini sebaiknya dihindari. Jika framework melakukannya, biasanya ada alasan infrastruktur yang kuat. Untuk desain OOP, kebutuhan mengakses private field sering menjadi tanda API class belum dirancang dengan tepat.
+
+\subsubsection{Annotation Runtime}
+
+\begin{jawab}[Inti Konsep.]
+Reflection dapat membaca annotation yang memiliki retention runtime. Ini memungkinkan framework mengenali metadata deklaratif.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Annotation runtime dan pembacaannya}, label={lst:runtime-annotation}]
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Route {
+    String path();
+}
+
+public class UserController {
+    @Route(path = "/users")
+    public void listUsers() { }
+}
+
+for (Method method : UserController.class.getDeclaredMethods()) {
+    Route route = method.getAnnotation(Route.class);
+    if (route != null) {
+        System.out.println(route.path());
+    }
+}
+\end{lstlisting}
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+\texttt{Class<?>} & Object metadata untuk tipe Java. \\
+\hline
+\texttt{Field} & Representasi field melalui reflection. \\
+\hline
+\texttt{Method} & Representasi method melalui reflection. \\
+\hline
+\texttt{Constructor} & Representasi constructor melalui reflection. \\
+\hline
+\texttt{Modifier} & Utility untuk membaca modifier seperti public/private/static. \\
+\hline
+\texttt{setAccessible} & Mekanisme untuk mencoba membuka akses member non-public. \\
+\hline
+Invocation exception & Exception pembungkus ketika method reflektif melempar exception. \\
+\hline
+Runtime annotation & Annotation yang dapat dibaca saat program berjalan. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java Reflection}
+\label{tab:komponen-kunci-java-reflection}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Menggunakan Reflection}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu memakai reflection secara aman dan terbatas.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode penggunaan reflection}, label={lst:reflection-procedure}]
+Input: Nama class/member atau object runtime
+Output: Metadata atau operasi dinamis
+
+1. Dapatkan Class object.
+2. Tentukan apakah perlu field, method, atau constructor.
+3. Gunakan getX untuk public member atau getDeclaredX untuk member deklarasi class.
+4. Jika member non-public benar-benar perlu:
+      pertimbangkan risiko enkapsulasi sebelum setAccessible.
+5. Jalankan operasi reflection.
+6. Tangani exception reflection.
+7. Jika reflection hanya dipakai untuk menghindari desain interface:
+      pertimbangkan refactor ke polymorphism biasa.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan apa itu reflection.
+    \item[$\square$] Saya dapat memperoleh \texttt{Class<?>} melalui \texttt{.class}, \texttt{getClass}, dan \texttt{Class.forName}.
+    \item[$\square$] Saya dapat membaca method, field, dan constructor secara reflektif.
+    \item[$\square$] Saya dapat menjelaskan risiko \texttt{setAccessible(true)}.
+    \item[$\square$] Saya dapat menjelaskan penggunaan annotation runtime.
+    \item[$\square$] Saya dapat menyebutkan risiko performa, enkapsulasi, dan runtime error.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & \texttt{Class<?>}, \texttt{Field}, \texttt{Method}, \texttt{Constructor}, \texttt{Class.forName}, invocation, annotation runtime, risiko reflection. \\
+\hline
+\textbf{Cukup Paham Konsep} & Module/security limitation, type erasure, framework use case, \texttt{InvocationTargetException}. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan; materi ini perlu dipahami sebagai materi lanjut setelah Java runtime dan OOP dasar. \\
+\hline
+\end{tabularx}

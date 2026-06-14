@@ -1,0 +1,676 @@
+\section{Compiler}
+
+Compiler adalah program penerjemah yang mengubah program sumber menjadi program target yang ekuivalen, biasanya kode mesin atau assembly. Materi ini menunjukkan penerapan teori bahasa formal dalam sistem nyata: regular expression dan finite automata dipakai pada lexical analysis, CFG dipakai pada syntax analysis, dan struktur semantik program dipakai untuk menghasilkan intermediate representation, optimasi, serta kode target.
+
+Fokus section ini adalah arsitektur compiler secara menyeluruh. Detail algoritma parsing top-down, Recursive Descent, dan LL(1) dibahas pada section terpisah; di sini parsing ditempatkan sebagai salah satu fase dalam pipeline compiler.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Sistem pemrosesan bahasa
+    \begin{enumerate}
+        \item \ppaham Tujuan desain bahasa dan compilability
+        \item \pwajib Compiler, interpreter, VM, bytecode, dan JIT
+        \item \ppaham Preprocessor, compiler, assembler, linker, dan loader
+        \item \ppaham Bootstrapping dan translator tools
+        \item \ppaham Cross-compiling
+    \end{enumerate}
+    \item \pwajib Struktur compiler
+    \begin{enumerate}
+        \item \pwajib Analysis/front end
+        \item \pwajib Synthesis/back end
+        \item \pwajib Fase lexical, syntax, semantic, IR, optimization, dan code generation
+        \item \pwajib Symbol table
+        \item \pwajib Error handling compiler
+        \item \ppaham Passes
+    \end{enumerate}
+    \item \pwajib Lexical analysis
+    \begin{enumerate}
+        \item \pwajib Lexeme, pattern, dan token
+        \item \ppaham Input buffering dan sentinel
+        \item \pwajib Regular expression dan transition diagram
+        \item \ppaham Lex/Flex dan longest prefix
+    \end{enumerate}
+    \item \pwajib Syntax dan semantic analysis
+    \begin{enumerate}
+        \item \pwajib CFG, terminal, nonterminal, start symbol, dan production
+        \item \pwajib Parse tree atau syntax tree
+        \item \ppaham Bottom-up parsing, LR parser, dan Yacc
+        \item \pwajib SDD, SDT, synthesized dan inherited attributes
+        \item \pwajib Type checking, coercion, dan overloading
+    \end{enumerate}
+    \item \pwajib Runtime environment
+    \begin{enumerate}
+        \item \pwajib Code, static data, stack, dan heap
+        \item \pwajib Activation record
+        \item \ppaham Garbage collection dan reachability
+    \end{enumerate}
+    \item \pwajib Code generation
+    \begin{enumerate}
+        \item \pwajib Basic block dan flow graph
+        \item \pwajib Register descriptor dan address descriptor
+        \item \ppaham Instruction selection dan register allocation
+        \item \ppaham Peephole optimization
+        \item \ppaham Single accumulator code generation
+    \end{enumerate}
+    \item \pwajib Machine-independent optimization
+    \begin{enumerate}
+        \item \pwajib Data-flow analysis
+        \item \pwajib Gen-kill equation
+        \item \pwajib Reaching definitions
+        \item \pwajib Available expressions
+        \item \pwajib Live variables
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Tujuan Desain Bahasa dan Compilability}
+
+\begin{jawab}[Inti Konsep.]
+Desain bahasa pemrograman memengaruhi seberapa mudah bahasa dianalisis dan dikompilasi. Simplicity, orthogonality, machine independence, dan compilability membantu compiler menerjemahkan program secara konsisten dan efisien.
+\end{jawab}
+
+Compiler tidak bekerja di ruang kosong; bentuk bahasa sumber menentukan kompleksitas lexical analysis, syntax analysis, semantic analysis, dan code generation. Bahasa yang terlalu banyak pengecualian membuat grammar, type checker, dan optimizer lebih sulit dibangun.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Tujuan Desain} & \textbf{Dampak pada Compiler} \\
+\hline
+Simplicity & Aturan bahasa yang sederhana mengurangi kasus khusus pada parser dan semantic analyzer. \\
+\hline
+Orthogonality & Fitur dapat dikombinasikan secara konsisten, sehingga compiler tidak perlu banyak pengecualian semantik. \\
+\hline
+Machine independence & Program tidak terlalu bergantung pada detail hardware, sehingga front end dan IR lebih portabel. \\
+\hline
+Compilability & Konstruksi bahasa dapat diterjemahkan secara mekanis ke IR dan kode target dengan biaya masuk akal. \\
+\hline
+\end{tabularx}
+\caption{Tujuan desain bahasa yang memengaruhi compiler}
+\label{tab:tujuan-desain-bahasa}
+\end{table}
+
+Konsep ini menghubungkan teori bahasa formal dengan rekayasa bahasa. Grammar yang rapi dan aturan semantik yang konsisten membuat compiler lebih mudah dibangun, diuji, dan dioptimasi.
+
+\subsubsection{Compiler, Interpreter, dan Virtual Machine}
+
+\begin{jawab}[Inti Konsep.]
+Compiler menerjemahkan program sumber menjadi program target sebelum eksekusi, sedangkan interpreter mengeksekusi operasi program sumber secara langsung. Virtual machine menggabungkan keduanya melalui bytecode yang portabel dan dapat dipercepat dengan JIT compiler.
+\end{jawab}
+
+Compiler membaca program dalam **source language** dan menghasilkan program ekuivalen dalam **target language**. Target sering berupa assembly atau kode mesin. Keunggulan utamanya adalah performa eksekusi, karena program target sudah disiapkan sebelum dijalankan.
+
+Interpreter tidak menghasilkan program target utuh. Ia membaca program sumber dan langsung melakukan operasi yang diminta program. Karena eksekusi mengikuti program secara langsung, interpreter sering memberi diagnostik error yang lebih dekat dengan lokasi kesalahan, tetapi biasanya lebih lambat daripada kode hasil kompilasi.
+
+Model hibrida menggunakan **bytecode**, yaitu representasi antara yang lebih rendah daripada source code tetapi belum terikat penuh pada hardware tertentu. **Virtual machine (VM)** mengeksekusi bytecode sebagai software interpreter. Pada sistem modern, **Just-In-Time (JIT) compiler** dapat menerjemahkan bytecode menjadi kode mesin saat runtime untuk mengurangi penalti performa interpretasi.
+
+Konsep ini menghubungkan compiler dengan materi Interpreter dan Virtual Machine. Section ini hanya memberi gambaran pipeline; detail VM akan dibahas pada materi tersendiri.
+
+\subsubsection{Language-Processing System}
+
+\begin{jawab}[Inti Konsep.]
+Compiler biasanya bukan satu-satunya program dalam sistem pemrosesan bahasa. Program sumber melewati preprocessor, compiler, assembler, linker, dan loader sebelum menjadi proses yang berjalan.
+\end{jawab}
+
+Sistem pemrosesan bahasa membentuk pipeline dari source code menuju program eksekutabel. Setiap komponen menyelesaikan bentuk penerjemahan yang berbeda.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Komponen} & \textbf{Peran} \\
+\hline
+Preprocessor & Mengumpulkan modul terpisah dan mengekspansi macro atau shorthand. \\
+\hline
+Compiler & Menerjemahkan source program hasil preprocessing menjadi assembly atau representasi target lain. \\
+\hline
+Assembler & Mengubah assembly menjadi relocatable machine code. \\
+\hline
+Linker & Menggabungkan file objek dan library, serta menyelesaikan referensi alamat eksternal. \\
+\hline
+Loader & Memuat program eksekutabel ke memori agar dapat dijalankan. \\
+\hline
+\end{tabularx}
+\caption{Komponen sistem pemrosesan bahasa}
+\label{tab:language-processing-system}
+\end{table}
+
+Pipeline ini penting karena banyak error atau konsep sistem tidak berada murni dalam compiler. Misalnya undefined reference biasanya muncul saat linking, bukan saat parsing. Sebaliknya, syntax error ditemukan saat compiler menganalisis token dan grammar.
+
+\subsubsection{Bootstrapping dan Translator Tools}
+
+\begin{jawab}[Inti Konsep.]
+Bootstrapping dan translator tools menjelaskan bagaimana compiler dapat dibangun dengan bantuan compiler lain atau generator otomatis. Konsep ini penting karena compiler nyata jarang ditulis seluruhnya dari nol dalam satu bahasa target.
+\end{jawab}
+
+**Bootstrapping** adalah teknik membangun compiler untuk suatu bahasa dengan memanfaatkan compiler atau interpreter yang sudah tersedia. Dalam praktik, compiler awal dapat ditulis dalam bahasa lain, lalu setelah cukup matang, compiler dapat dipakai untuk mengompilasi versi berikutnya dari dirinya sendiri. Ini menunjukkan bahwa penerjemahan bahasa adalah proses bertahap yang dapat disusun dari beberapa translator.
+
+Sumber baru juga menyebut beberapa **translator tools**, yaitu perangkat bantu yang menghasilkan bagian compiler dari spesifikasi formal:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Tool} & \textbf{Peran} \\
+\hline
+Lex/Flex & Menghasilkan lexical analyzer dari spesifikasi regular expression. \\
+\hline
+Yacc/Bison & Menghasilkan parser dari spesifikasi grammar dan semantic actions. \\
+\hline
+ANTLR & Framework populer untuk membuat recognizer, compiler, dan translator berbasis grammar description. \\
+\hline
+ELI & Lingkungan pengembangan compiler yang membantu analisis struktural, analisis tipe/nama, dan generasi kode. \\
+\hline
+GENTLE & Toolkit untuk membangun compiler dengan dukungan AST, pattern matching, dan traversal. \\
+\hline
+\end{tabularx}
+\caption{Contoh translator tools dalam pengembangan compiler}
+\label{tab:translator-tools}
+\end{table}
+
+Hubungannya dengan teori bahasa formal jelas: bagian lexical analyzer berasal dari regular language dan automata hingga DFA, sedangkan parser berasal dari CFG dan algoritma parsing seperti RD atau LL(1).
+
+Cross-compiling adalah membangun compiler yang berjalan pada mesin host tetapi menghasilkan kode untuk mesin target yang berbeda. Teknik ini penting ketika target belum memiliki compiler matang, misalnya pada sistem embedded atau arsitektur baru.
+
+\subsubsection{Front End dan Back End}
+
+\begin{jawab}[Inti Konsep.]
+Front end menganalisis program sumber dan menghasilkan intermediate representation, sedangkan back end mensintesis program target dari representasi tersebut. Pemisahan ini membuat compiler modular dan dapat digunakan untuk banyak bahasa sumber atau banyak target mesin.
+\end{jawab}
+
+**Analysis** atau **front end** memecah source program, memeriksa struktur grammar, memeriksa konsistensi semantik, dan membangun intermediate representation (IR). Front end juga mengisi symbol table dengan informasi identifier seperti tipe, scope, dan lokasi.
+
+**Synthesis** atau **back end** memakai IR dan symbol table untuk menghasilkan kode target. Back end melakukan pemilihan instruksi, alokasi register, penentuan lokasi memori, dan penyusunan urutan instruksi.
+
+Pemisahan ini memungkinkan desain $m$ front end dan $n$ back end. Secara ideal, setiap bahasa sumber hanya perlu diterjemahkan ke IR, lalu IR dapat diterjemahkan ke berbagai arsitektur target.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+Banyak compiler modern juga memakai istilah middle end untuk fase optimasi yang bekerja pada IR dan relatif independen dari bahasa sumber maupun mesin target. Istilah ini tidak mengubah pipeline konseptual front end dan back end, tetapi membantu memahami mengapa optimasi sering dipisahkan sebagai lapisan tersendiri.
+\end{cmt}
+
+\subsubsection{Fase-Fase Compiler}
+
+\begin{jawab}[Inti Konsep.]
+Compiler dibagi menjadi fase-fase logis: lexical analysis, syntax analysis, semantic analysis, intermediate code generation, optimization, dan code generation. Setiap fase mengubah representasi program menjadi bentuk yang lebih terstruktur atau lebih dekat ke mesin target.
+\end{jawab}
+
+Fase-fase compiler membentuk alur bertahap. Input awal adalah karakter source code. Output akhir adalah program target.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Fase} & \textbf{Peran Utama} \\
+\hline
+Lexical Analysis & Mengubah character stream menjadi token stream. \\
+\hline
+Syntax Analysis & Memeriksa struktur token terhadap CFG dan membangun syntax tree. \\
+\hline
+Semantic Analysis & Memeriksa makna program, misalnya tipe dan scope. \\
+\hline
+Intermediate Code Generation & Menghasilkan IR seperti three-address code. \\
+\hline
+Machine-Independent Optimization & Memperbaiki IR tanpa bergantung pada mesin target. \\
+\hline
+Code Generation & Memetakan IR ke instruksi mesin target, register, dan memori. \\
+\hline
+\end{tabularx}
+\caption{Fase logis compiler}
+\label{tab:fase-compiler}
+\end{table}
+
+Walaupun fase-fase ini logis, implementasi nyata dapat menggabungkan beberapa fase ke dalam satu **pass**, yaitu satu siklus membaca input dan menghasilkan output antara. Misalnya front-end pass dapat mencakup scanning, parsing, semantic analysis, dan pembuatan IR.
+
+\subsubsection{Symbol Table}
+
+\begin{jawab}[Inti Konsep.]
+Symbol table adalah struktur data yang menyimpan identifier dan atributnya. Hampir semua fase compiler membutuhkan symbol table untuk memahami nama, tipe, scope, parameter, dan lokasi penyimpanan.
+\end{jawab}
+
+Saat scanner menemukan identifier, compiler perlu mengetahui apakah identifier itu variabel, fungsi, parameter, field, atau nama lain. Symbol table menyimpan entri untuk setiap nama penting beserta atributnya.
+
+Atribut yang umum disimpan meliputi tipe data, scope, jumlah argumen fungsi, jenis simbol, ukuran memori, dan lokasi penyimpanan. Semantic analyzer memakai informasi ini untuk type checking dan scope checking. Code generator memakai informasi lokasi untuk menghasilkan load dan store yang benar.
+
+Karena symbol table diakses berulang oleh banyak fase, operasinya harus cepat. Implementasi dapat memakai hash table, tree, atau struktur berlapis untuk mendukung nested scope.
+
+Sumber terbaru memberi struktur symbol table yang lebih rinci. Dalam compiler besar, satu ``symbol table'' konseptual dapat dipecah menjadi beberapa tabel khusus agar atribut yang berbeda tidak bercampur.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.24\textwidth}|X|}
+\hline
+\textbf{Tabel} & \textbf{Peran} \\
+\hline
+Identifier table & Menyimpan nama identifier dan pointer ke atribut semantiknya. \\
+\hline
+Array table & Menyimpan informasi array seperti dimensi, batas indeks, dan ukuran elemen. \\
+\hline
+Block table & Menyimpan informasi scope atau block, termasuk hubungan parent-child antar-block. \\
+\hline
+Real/string table & Menyimpan literal real atau string agar dapat dirujuk ulang tanpa duplikasi. \\
+\hline
+Display table & Membantu akses variabel non-lokal pada bahasa dengan nested scope. \\
+\hline
+\end{tabularx}
+\caption{Fragmentasi symbol table pada compiler}
+\label{tab:fragmentasi-symbol-table}
+\end{table}
+
+Fragmentasi ini tidak mengubah fungsi dasar symbol table, tetapi membuat implementasi lebih terorganisasi. Hubungannya dengan runtime environment terlihat pada display table dan block table, karena keduanya menentukan cara variabel pada scope luar diakses saat program berjalan.
+
+\subsubsection{Error Handling dalam Pipeline Compiler}
+
+\begin{jawab}[Inti Konsep.]
+Error handling adalah mekanisme compiler untuk mendeteksi, melaporkan, dan sebisa mungkin melanjutkan analisis setelah menemukan kesalahan. Tujuannya bukan memperbaiki program secara sempurna, tetapi mencegah satu error menghasilkan crash atau rentetan pesan palsu.
+\end{jawab}
+
+Compiler yang baik tidak boleh bereaksi dengan tiga cara buruk: crash, infinite loop, atau menghasilkan target program yang tampak valid tetapi korup. Karena itu, error handler biasanya dipakai lintas fase: scanner melaporkan token ilegal, parser melaporkan struktur sintaks salah, semantic analyzer melaporkan type atau scope error, dan code generator tidak boleh menghasilkan kode jika informasi semantik belum aman.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|}
+\hline
+\textbf{Strategi Recovery} & \textbf{Peran dalam Compiler} \\
+\hline
+Panic mode & Melewati input sampai delimiter atau token sinkronisasi ditemukan. \\
+\hline
+Unit deletion & Mengabaikan unit sintaks utuh seperti statement atau block yang rusak. \\
+\hline
+Terminal repair & Menyisipkan token yang hilang atau menghapus token berlebih secara lokal. \\
+\hline
+Context-sensitive repair & Memakai informasi semantik seperti tipe, scope, atau deklarasi untuk mengurangi error lanjutan. \\
+\hline
+Spelling repair & Mencoba mengenali salah ketik keyword atau identifier secara heuristik. \\
+\hline
+\end{tabularx}
+\caption{Strategi error recovery dalam compiler}
+\label{tab:error-handling-compiler}
+\end{table}
+
+Dummy identifier adalah contoh context-sensitive repair. Jika identifier $x$ belum dideklarasikan, compiler dapat memasukkan $x$ ke symbol table dengan tipe dummy agar penggunaan berikutnya tidak selalu menghasilkan error baru. Pesan error utama tetap dilaporkan, tetapi analisis lanjutan menjadi lebih stabil.
+
+\subsubsection{Lexeme, Pattern, dan Token}
+
+\begin{jawab}[Inti Konsep.]
+Lexical analysis mengelompokkan karakter menjadi lexeme dan mengirim token ke parser. Lexeme adalah string aktual di source code, pattern adalah aturan bentuknya, dan token adalah simbol abstrak yang dipakai parser.
+\end{jawab}
+
+Tiga istilah ini harus dibedakan.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Istilah} & \textbf{Definisi} \\
+\hline
+Pattern & Aturan yang mendeskripsikan bentuk lexeme, sering ditulis dengan regular expression. \\
+\hline
+Lexeme & Urutan karakter aktual dalam program sumber yang cocok dengan pattern. \\
+\hline
+Token & Pasangan abstrak $\langle token\text{-}name, attribute\text{-}value\rangle$ yang dikirim ke parser. \\
+\hline
+\end{tabularx}
+\caption{Istilah dasar lexical analysis}
+\label{tab:lexeme-pattern-token}
+\end{table}
+
+Contoh: pada kode `count = count + 1`, lexeme `count` dapat cocok dengan pattern identifier dan dikirim sebagai token `ID` dengan attribute pointer ke entri symbol table. Parser tidak perlu melihat karakter `c`, `o`, `u`, `n`, `t`; parser cukup melihat token abstrak.
+
+Lexical analysis berhubungan langsung dengan teori automata regular: pattern token dapat dispesifikasikan dengan regular expression dan diimplementasikan dengan finite automata.
+
+\subsubsection{Input Buffering dan Sentinel}
+
+\begin{jawab}[Inti Konsep.]
+Input buffering mempercepat lexical analysis dengan membaca karakter dalam blok dan mendukung lookahead. Sentinel mengurangi biaya pengecekan batas buffer pada setiap karakter.
+\end{jawab}
+
+Lexer sering harus melihat beberapa karakter ke depan untuk menentukan batas lexeme. Misalnya, saat membaca `<`, lexer perlu melihat karakter berikutnya untuk membedakan `<` dan `<=`. Jika setiap karakter dibaca langsung dari file, biaya I/O menjadi besar.
+
+Teknik **buffer pairs** memakai dua buffer yang bergantian diisi dari file. Dua pointer penting adalah **lexemeBegin**, yang menunjuk awal lexeme saat ini, dan **forward**, yang bergerak mencari akhir lexeme.
+
+**Sentinel** seperti `eof` ditempatkan di akhir buffer. Dengan sentinel, lexer dapat mendeteksi akhir buffer tanpa melakukan pengecekan batas eksplisit pada setiap karakter. Ini adalah optimasi kecil tetapi penting pada scanner yang berjalan untuk seluruh source code.
+
+\subsubsection{Regular Expression dan Transition Diagram}
+
+\begin{jawab}[Inti Konsep.]
+Regular expression mendeskripsikan pattern token secara deklaratif, sedangkan transition diagram mengimplementasikan proses pengenalan token sebagai automaton. Keduanya menghubungkan lexical analysis dengan finite automata.
+\end{jawab}
+
+Regular expression dibangun dari operasi union, concatenation, dan Kleene closure. Token seperti identifier, integer literal, operator, dan whitespace dapat dispesifikasikan dengan regular expression.
+
+Transition diagram adalah representasi grafis dari automaton yang mengenali pattern. Node adalah state, panah adalah transisi berdasarkan karakter input, dan accepting state menandakan lexeme berhasil dikenali.
+
+Dalam implementasi sistematis, regular expression dapat dikonversi ke NFA, lalu ke DFA, lalu diminimasi jika diperlukan. Materi compiler biasanya menekankan bahwa scanner dapat dihasilkan otomatis dari spesifikasi token karena token berada pada kelas regular language.
+
+\subsubsection{Lex/Flex dan Longest Prefix}
+
+\begin{jawab}[Inti Konsep.]
+Lex atau Flex adalah generator lexical analyzer yang mengubah spesifikasi regular expression menjadi program scanner. Konflik token diselesaikan dengan aturan longest prefix, lalu prioritas aturan yang muncul lebih awal.
+\end{jawab}
+
+Lex menerima daftar regular expression dan aksi program. Outputnya adalah program scanner, sering berupa `lex.yy.c`, yang membaca input dan menghasilkan token.
+
+Masalah muncul ketika beberapa pattern dapat cocok dengan awalan input yang sama. Contoh: `if` dapat cocok sebagai keyword, tetapi `ifx` harus menjadi identifier. Lex memilih lexeme terpanjang yang dapat dicocokkan. Jika ada dua pattern dengan panjang cocok sama, aturan yang ditulis lebih awal dipilih.
+
+Aturan ini membuat spesifikasi token harus disusun hati-hati. Keyword biasanya ditulis sebelum identifier agar lexeme `if` dikenali sebagai keyword, bukan identifier, ketika panjangnya sama.
+
+\subsubsection{Syntax Analysis sebagai Konteks CFG}
+
+\begin{jawab}[Inti Konsep.]
+Syntax analysis memeriksa apakah token stream mengikuti struktur grammar bahasa. CFG digunakan karena struktur program bersifat hierarkis, misalnya statement berisi expression dan expression berisi subexpression.
+\end{jawab}
+
+Parser menerima token dari scanner dan membangun parse tree atau syntax tree. Grammar yang dipakai adalah Context-Free Grammar dengan komponen terminal, nonterminal, start symbol, dan productions.
+
+Terminal adalah token yang muncul di daun parse tree. Nonterminal adalah kategori sintaksis seperti `stmt`, `expr`, atau `decl`. Start symbol adalah akar grammar, sedangkan production menjelaskan cara nonterminal diturunkan menjadi rangkaian terminal dan nonterminal.
+
+Section ini tidak membahas algoritma parser secara detail. Recursive Descent dan LL(1) akan dibahas pada materi tersendiri. Di sini yang penting adalah posisi syntax analysis dalam compiler: ia mengubah token stream menjadi struktur sintaksis yang dapat dianalisis semantik.
+
+\subsubsection{Bottom-Up Parsing, LR Parser, dan Yacc}
+
+\begin{jawab}[Inti Konsep.]
+Bottom-up parsing membangun parse tree dari token menuju start symbol dengan operasi shift dan reduce. LR parser adalah keluarga bottom-up parser deterministik yang banyak dipakai oleh generator parser seperti Yacc atau Bison.
+\end{jawab}
+
+Top-down parser mencoba menurunkan start symbol menjadi input. Bottom-up parser melakukan arah sebaliknya: ia membaca token, mengenali potongan yang cocok dengan ruas kanan produksi, lalu mereduksinya menjadi nonterminal sampai tersisa start symbol.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Aksi} & \textbf{Makna} \\
+\hline
+Shift & Memindahkan token lookahead dari input ke stack parser. \\
+\hline
+Reduce & Mengganti rangkaian simbol di puncak stack yang cocok dengan body produksi menjadi head produksi. \\
+\hline
+\end{tabularx}
+\caption{Aksi dasar shift-reduce parsing}
+\label{tab:shift-reduce}
+\end{table}
+
+LR parser membaca input dari kiri ke kanan dan membangun rightmost derivation secara terbalik. Keluarga LR lebih kuat daripada LL(1) untuk banyak grammar praktis, tetapi tabel dan konstruksinya lebih kompleks.
+
+Yacc/Bison menerima grammar dengan semantic actions dan menghasilkan parser bottom-up. Jika grammar memiliki konflik, tool melaporkan **shift/reduce conflict** atau **reduce/reduce conflict**. Ini berbeda dari konflik LL(1), tetapi maknanya sama-sama menunjukkan bahwa parser tidak memiliki satu aksi deterministik yang jelas pada konfigurasi tertentu.
+
+Materi ini menjadi konteks bagi Recursive Descent dan LL(1). Ujian yang fokus pada top-down parsing biasanya tidak meminta konstruksi tabel LR lengkap, tetapi memahami shift-reduce membantu membaca posisi Yacc dalam compiler toolchain.
+
+\subsubsection{Semantic Analysis, SDD, dan SDT}
+
+\begin{jawab}[Inti Konsep.]
+Semantic analysis memeriksa makna program yang tidak cukup ditentukan oleh syntax. SDD dan SDT memberi cara mengaitkan aturan grammar dengan komputasi atribut atau aksi semantik.
+\end{jawab}
+
+Syntax dapat memastikan struktur `x + y` valid sebagai expression, tetapi belum memastikan tipe `x` dan `y` cocok untuk operator `+`. Itulah tugas semantic analysis.
+
+**Syntax-Directed Definition (SDD)** adalah notasi deklaratif yang menempelkan atribut dan aturan semantik pada grammar. **Synthesized attribute** dihitung dari anak ke parent, sedangkan **inherited attribute** mengalir dari parent atau sibling ke node lain.
+
+**Syntax-Directed Translation Scheme (SDT)** menempatkan semantic actions langsung pada body produksi. Aksi ini dieksekusi pada momen tertentu selama parsing. SDT lebih operasional daripada SDD karena memperhatikan urutan eksekusi.
+
+Hasil semantic analysis dapat berupa annotated syntax tree, type information, atau IR awal yang siap dioptimasi.
+
+\subsubsection{Type Checking, Coercion, dan Overloading}
+
+\begin{jawab}[Inti Konsep.]
+Type checking memastikan operasi diterapkan pada tipe operand yang sah. Coercion menyisipkan konversi implisit, sedangkan overloading resolution memilih makna operator atau fungsi berdasarkan tipe argumen.
+\end{jawab}
+
+Type checking mendeteksi kesalahan seperti menerapkan operator boolean pada operand numerik, memanggil fungsi dengan jumlah argumen salah, atau mengembalikan nilai yang tidak cocok dengan tipe deklarasi fungsi.
+
+**Coercion** adalah konversi implisit yang ditambahkan compiler jika bahasa mengizinkan. Contoh sumber: jika integer dijumlahkan dengan float, compiler dapat menyisipkan operasi `inttofloat` agar operasi dilakukan pada tipe yang konsisten.
+
+**Overloading** terjadi ketika satu simbol memiliki beberapa makna. Operator `+` dapat berarti penjumlahan numerik atau penggabungan string, bergantung pada tipe operand. Compiler menyelesaikan overloading melalui informasi tipe dan konteks pemanggilan.
+
+Analisis ini bergantung pada symbol table dan syntax tree. Tanpa informasi identifier dan struktur program, compiler tidak dapat memutuskan makna semantik yang benar.
+
+\subsubsection{Runtime Environment}
+
+\begin{jawab}[Inti Konsep.]
+Runtime environment adalah model memori dan mekanisme eksekusi yang diasumsikan compiler saat menghasilkan kode. Area utamanya meliputi code, static data, stack, dan heap.
+\end{jawab}
+
+Compiler tidak hanya menerjemahkan ekspresi menjadi instruksi. Ia juga harus menempatkan data dan mengatur pemanggilan fungsi agar program dapat berjalan.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.20\textwidth}|X|}
+\hline
+\textbf{Area} & \textbf{Peran} \\
+\hline
+Code & Menyimpan instruksi program target. \\
+\hline
+Static Data & Menyimpan data global atau data berukuran tetap. \\
+\hline
+Stack & Menyimpan activation record untuk call dan return fungsi. \\
+\hline
+Heap & Menyimpan objek atau data dinamis yang umur hidupnya tidak mengikuti satu pemanggilan fungsi. \\
+\hline
+\end{tabularx}
+\caption{Area runtime environment}
+\label{tab:runtime-environment}
+\end{table}
+
+Pemahaman runtime environment penting untuk menjelaskan variabel lokal, parameter fungsi, return value, alokasi objek, dan garbage collection.
+
+\subsubsection{Activation Record}
+
+\begin{jawab}[Inti Konsep.]
+Activation record atau stack frame adalah blok data pada runtime stack yang mewakili satu pemanggilan fungsi. Isinya mendukung parameter, variabel lokal, nilai return, link ke caller, dan status mesin.
+\end{jawab}
+
+Setiap pemanggilan fungsi membuat activation record baru. Ketika fungsi selesai, activation record di-pop dari stack. Model ini cocok untuk fungsi yang dipanggil secara bertumpuk, termasuk rekursi.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|}
+\hline
+\textbf{Komponen} & \textbf{Peran} \\
+\hline
+Return value & Tempat nilai hasil fungsi dikembalikan. \\
+\hline
+Actual parameters & Argumen yang dikirim oleh caller. \\
+\hline
+Control link & Pointer ke activation record caller. \\
+\hline
+Access link & Pointer untuk mengakses variabel non-lokal pada nested scope. \\
+\hline
+Saved machine status & Register atau informasi mesin yang perlu dipulihkan. \\
+\hline
+Local data dan temporaries & Variabel lokal dan nilai sementara hasil komputasi. \\
+\hline
+\end{tabularx}
+\caption{Isi umum activation record}
+\label{tab:activation-record}
+\end{table}
+
+Code generator harus mengetahui layout activation record agar dapat menghasilkan alamat yang benar untuk parameter dan variabel lokal.
+
+\subsubsection{Heap dan Garbage Collection}
+
+\begin{jawab}[Inti Konsep.]
+Heap menyimpan objek dinamis yang umur hidupnya dapat melampaui fungsi pembuatnya. Garbage collection membebaskan objek yang tidak lagi reachable dari root set.
+\end{jawab}
+
+Tidak semua data cocok disimpan di stack. Objek yang dibuat dengan mekanisme seperti `new` dapat tetap hidup setelah fungsi pembuatnya selesai. Data seperti ini ditempatkan di heap.
+
+Masalah heap adalah deallocation. Jika objek yang tidak lagi dipakai tidak dibebaskan, terjadi memory leak. Pada bahasa dengan automatic memory management, garbage collector mencari objek yang masih dapat dijangkau dari **root set**, misalnya register, variabel global, dan variabel pada stack.
+
+Sumber menyebut algoritma **mark-and-sweep**. Fase mark menandai objek reachable. Fase sweep menyapu heap dan membebaskan objek yang tidak ditandai.
+
+\subsubsection{Basic Block dan Flow Graph}
+
+\begin{jawab}[Inti Konsep.]
+Basic block adalah urutan instruksi linear dengan satu titik masuk dan satu titik keluar. Flow graph merepresentasikan hubungan kontrol antar-basic block.
+\end{jawab}
+
+Code generator dan optimizer lebih mudah bekerja pada basic block daripada instruksi mentah satu per satu. Basic block tidak memiliki cabang masuk di tengah dan tidak memiliki cabang keluar sebelum instruksi terakhir.
+
+Leader biasanya mencakup instruksi pertama, target dari jump, dan instruksi tepat setelah jump. Setiap leader memulai basic block baru.
+
+**Flow graph** memakai node untuk basic block dan edge untuk kemungkinan aliran kontrol. Jika block dapat melompat atau jatuh lanjut ke block lain, ada edge dari block pertama ke block kedua. Flow graph menjadi dasar analisis loop, liveness, dan data-flow analysis.
+
+\subsubsection{Register dan Address Descriptor}
+
+\begin{jawab}[Inti Konsep.]
+Register descriptor mencatat nilai apa yang sedang berada di setiap register, sedangkan address descriptor mencatat lokasi terkini dari setiap variabel. Keduanya membantu code generator menghindari load dan store yang tidak perlu.
+\end{jawab}
+
+Register adalah sumber daya cepat tetapi terbatas. Code generator harus memutuskan nilai mana yang disimpan di register dan kapan nilai harus ditulis kembali ke memori.
+
+**Register descriptor** menjawab pertanyaan: register $R$ saat ini memuat nilai variabel apa? **Address descriptor** menjawab pertanyaan: nilai variabel $x$ saat ini tersedia di lokasi mana, misalnya register, stack slot, atau memori statik?
+
+Dengan descriptor, compiler dapat menghindari instruksi berulang. Jika nilai sudah ada di register, tidak perlu melakukan load dari memori. Jika nilai di register belum disimpan tetapi akan dibutuhkan nanti, compiler perlu store sebelum register dipakai ulang.
+
+\subsubsection{Instruction Selection, Register Allocation, dan Peephole Optimization}
+
+\begin{jawab}[Inti Konsep.]
+Code generation tidak hanya menerjemahkan IR secara literal, tetapi memilih instruksi target, menentukan lokasi nilai di register atau memori, dan membersihkan pola instruksi redundan. Tiga teknik kunci adalah instruction selection, register allocation, dan peephole optimization.
+\end{jawab}
+
+Instruction selection memetakan pola IR ke instruksi target yang tersedia. Misalnya 3AC $x=y+z$ pada mesin single accumulator dapat diterjemahkan menjadi:
+\[
+\begin{aligned}
+    &\texttt{LDA y}\\
+    &\texttt{ADD z}\\
+    &\texttt{STO x}.
+\end{aligned}
+\]
+Jika hasil sementara langsung dipakai oleh instruksi berikutnya, code generator dapat menghindari penyimpanan temporary ke memori dan langsung mempertahankan nilai di accumulator.
+
+Contoh sumber NotebookLM untuk ekspresi
+\[
+    Z := (X+Y)*2-X
+\]
+menunjukkan alasan optimasi accumulator penting:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|X|X|}
+\hline
+\textbf{Belum Dioptimasi} & \textbf{Dioptimasi} \\
+\hline
+\texttt{LDA X} & \texttt{LDA X} \\
+\texttt{ADD Y} & \texttt{ADD Y} \\
+\texttt{STO T1} & \texttt{MUL 2} \\
+\texttt{LDA T1} & \texttt{SUB X} \\
+\texttt{MUL 2} & \texttt{STO Z} \\
+\texttt{STO T2} & \\
+\texttt{LDA T2} & \\
+\texttt{SUB X} & \\
+\texttt{STO Z} & \\
+\hline
+\end{tabularx}
+\caption{Optimasi code generation single accumulator}
+\label{tab:single-accumulator-codegen}
+\end{table}
+
+Register allocation menentukan nilai mana yang disimpan dalam register terbatas. Model umum memakai interference graph: node adalah variabel atau temporary, edge berarti dua nilai hidup pada waktu yang sama sehingga tidak boleh memakai register yang sama. Jika graf dapat diwarnai dengan $k$ warna, program dapat memakai $k$ register. Jika tidak, sebagian nilai harus di-spill ke memori.
+
+Peephole optimization memeriksa jendela kecil, biasanya 3--5 instruksi, lalu menghapus atau mengganti pola lokal yang jelas redundan:
+\begin{itemize}
+    \item \texttt{MOV R0, R0} dihapus karena tidak mengubah state.
+    \item \texttt{STO x} diikuti \texttt{LDA x} dapat dihapus jika accumulator masih memuat nilai yang sama.
+    \item Operasi identitas seperti tambah nol atau kali satu dapat disederhanakan.
+\end{itemize}
+
+Teknik ini menghubungkan bagian Compiler dengan Intermediate Code. IR menyediakan operasi sederhana; code generator memilih urutan instruksi target yang benar dan cukup efisien.
+
+\subsubsection{Data-Flow Analysis dan Gen-Kill}
+
+\begin{jawab}[Inti Konsep.]
+Data-flow analysis menghitung fakta program pada titik-titik kontrol menggunakan persamaan yang diulang sampai konvergen. Gen-kill menjelaskan fakta yang dibuat dan fakta yang dihapus oleh sebuah basic block.
+\end{jawab}
+
+Optimasi global membutuhkan informasi lintas basic block. Misalnya, untuk menghapus ekspresi berulang, compiler perlu tahu apakah ekspresi tersebut sudah dihitung di semua jalur sebelumnya dan operandnya belum berubah.
+
+Sumber menuliskan bentuk umum fungsi transfer gen-kill:
+\[
+    OUT[B]=Gen[B]\cup(IN[B]-Kill[B]).
+\]
+**Gen** adalah fakta yang dihasilkan oleh block. **Kill** adalah fakta lama yang tidak lagi valid karena block menimpa atau mengubah sesuatu. Persamaan seperti ini diterapkan berulang pada flow graph sampai nilai setiap set stabil.
+
+Data-flow analysis adalah fondasi banyak optimasi machine-independent karena bekerja pada IR dan flow graph, bukan pada detail instruksi hardware tertentu.
+
+\subsubsection{Reaching Definitions}
+
+\begin{jawab}[Inti Konsep.]
+Reaching definitions menentukan definisi variabel mana yang mungkin mencapai suatu titik program tanpa ditimpa di sepanjang jalur. Analisis ini bergerak maju dan memakai union pada join point.
+\end{jawab}
+
+Sebuah definisi variabel adalah assignment yang memberi nilai pada variabel. Definisi $d$ mencapai titik $p$ jika ada jalur dari $d$ ke $p$ tanpa definisi lain yang menimpa variabel yang sama.
+
+Analisis ini **forward** karena informasi mengalir dari awal program ke akhir program. Pada percabangan yang bergabung, meet operator yang dipakai adalah union: jika definisi dapat datang dari salah satu jalur, definisi itu dianggap mungkin mencapai titik tersebut.
+
+Reaching definitions berguna untuk optimasi seperti constant propagation dan analisis use-definition chain.
+
+\subsubsection{Available Expressions}
+
+\begin{jawab}[Inti Konsep.]
+Available expressions menentukan ekspresi mana yang sudah pasti dihitung sebelumnya dan operandnya belum berubah pada semua jalur menuju titik program. Analisis ini forward dan memakai intersection pada join point.
+\end{jawab}
+
+Ekspresi seperti $x+y$ available pada titik tertentu jika setiap jalur menuju titik itu sudah menghitung $x+y$ dan tidak ada assignment ke $x$ atau $y$ setelah perhitungan tersebut. Karena harus benar pada semua jalur, meet operator-nya adalah intersection.
+
+Informasi ini dipakai untuk global common subexpression elimination. Jika ekspresi sudah available, compiler dapat memakai hasil lama daripada menghitung ulang.
+
+Perbedaan utama dengan reaching definitions adalah sifat kepastiannya. Reaching definitions bertanya ``mungkin sampai?'', sedangkan available expressions bertanya ``pasti tersedia di semua jalur?''.
+
+\subsubsection{Live Variables}
+
+\begin{jawab}[Inti Konsep.]
+Live variables menentukan apakah nilai variabel saat ini masih akan digunakan di masa depan. Analisis ini bergerak mundur dari akhir program dan membantu dead-code elimination serta register allocation.
+\end{jawab}
+
+Variabel disebut live pada titik tertentu jika ada jalur dari titik itu ke penggunaan variabel sebelum variabel tersebut ditimpa. Jika nilai variabel tidak akan digunakan lagi, variabel itu dead.
+
+Analisis ini **backward** karena informasi penggunaan masa depan harus dipropagasikan ke titik sebelumnya. Jika sebuah variabel live di salah satu jalur keluar, maka pada titik sebelum percabangan variabel itu harus dianggap live.
+
+Live-variable analysis membantu compiler membebaskan register lebih awal. Jika nilai dalam register sudah dead, register tersebut dapat dipakai untuk nilai lain tanpa store.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Gen-Kill Transfer Function}
+
+\begin{jawab}[Makna Rumus.]
+Rumus gen-kill menyatakan fakta keluar dari sebuah block sebagai fakta yang dihasilkan block ditambah fakta masuk yang tidak dibunuh oleh block.
+\end{jawab}
+
+\begin{equation}
+    OUT[B]=Gen[B]\cup(IN[B]-Kill[B])
+    \label{eq:gen-kill}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $IN[B]$: fakta data-flow sebelum masuk block $B$.
+    \item $OUT[B]$: fakta data-flow setelah keluar dari block $B$.
+    \item $Gen[B]$: fakta yang dibuat oleh block $B$.
+    \item $Kill[B]$: fakta lama yang dibuat tidak valid oleh block $B$.
+\end{itemize}
+
+\subsubsection{Pseudocode Iterative Data-Flow Analysis}
+
+\begin{jawab}[Tujuan Algoritma.]
+Algoritma iteratif menghitung persamaan data-flow pada flow graph sampai tidak ada perubahan lagi. Pola ini digunakan untuk reaching definitions, available expressions, live variables, dan analisis sejenis.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode iterative data-flow analysis}, label={lst:data-flow}]
+Input: flow graph CFG, fungsi transfer tiap basic block
+Output: IN dan OUT stabil untuk setiap block
+
+1. Inisialisasi IN[B] dan OUT[B] untuk semua block B.
+2. repeat
+3.     changed = false
+4.     for setiap block B:
+5.         old = OUT[B]
+6.         IN[B] = meet(OUT[P] untuk setiap predecessor P dari B)
+7.         OUT[B] = transfer_B(IN[B])
+8.         if OUT[B] != old:
+9.             changed = true
+10. until changed == false
+\end{lstlisting}
+
+Untuk analisis backward seperti live variables, arah predecessor/successor dibalik dan persamaan menghitung informasi dari titik keluar menuju titik masuk.

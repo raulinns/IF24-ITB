@@ -1,0 +1,644 @@
+\section{SOLID OOP Principle}
+
+SOLID adalah kumpulan lima prinsip desain berorientasi objek yang membantu kode tetap mudah diubah, mudah diuji, mudah diperluas, dan tidak cepat menjadi rapuh ketika kebutuhan bertambah. Dalam konteks IF2010 Pemrograman Berbasis Objek, materi ini bukan sekadar hafalan akronim, melainkan kemampuan membaca desain class, memahami arah dependensi, lalu menjelaskan mengapa suatu desain akan sulit dirawat atau mudah diperbaiki.
+
+Sumber NotebookLM menekankan bahwa SOLID diperlukan untuk menghindari \textit{bad design}, terutama tiga gejala utama: \textit{rigidity}, \textit{fragility}, dan \textit{immobility}. Catatan ini melengkapi pembahasan tersebut dengan sintaks Java dan contoh implementasi dunia nyata agar prinsip dapat diterapkan saat membaca atau menulis kode.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+NotebookLM dapat diakses dan memberikan rangkuman berbasis dokumen. Namun, sumber menyatakan bahwa tidak ada CPMK formal yang disebutkan, serta pembahasan DIP pada sumber awal lebih terbatas daripada SRP, OCP, LSP, dan ISP. Bagian sintaks Java, refactoring praktis, formula instabilitas, dan contoh industri dilengkapi menggunakan pengetahuan umum untuk memperjelas penerapan.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \textit{Bad design} sebagai masalah yang dicegah SOLID \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item \textit{Rigidity}: sistem sulit diubah karena perubahan kecil menjalar ke banyak bagian.
+        \item \textit{Fragility}: perubahan di satu tempat menyebabkan kerusakan tak terduga di tempat lain.
+        \item \textit{Immobility}: komponen sulit digunakan ulang karena terlalu bergantung pada konteks aplikasi asal.
+    \end{enumerate}
+    \item Single Responsibility Principle (SRP) \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Satu class memiliki satu alasan utama untuk berubah.
+        \item Pemisahan domain logic, persistence, formatting, logging, dan komunikasi eksternal.
+        \item Indikasi pelanggaran: class terlalu besar, method terlalu banyak, nama class terlalu umum, dan perubahan dari banyak aktor bisnis.
+    \end{enumerate}
+    \item Open/Closed Principle (OCP) \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Terbuka untuk ekstensi, tertutup untuk modifikasi.
+        \item Penggunaan polymorphism, interface, abstract class, composition, dan strategy.
+        \item Menghindari percabangan tipe yang terus bertambah.
+    \end{enumerate}
+    \item Liskov Substitution Principle (LSP) \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Subclass harus dapat menggantikan superclass tanpa merusak kebenaran program.
+        \item Kontrak perilaku lebih penting daripada kemiripan konseptual di dunia nyata.
+        \item Precondition tidak boleh diperketat, postcondition tidak boleh dilemahkan, invariant harus dipertahankan.
+    \end{enumerate}
+    \item Interface Segregation Principle (ISP) \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Klien tidak boleh dipaksa bergantung pada method yang tidak digunakan.
+        \item Interface kecil dan spesifik lebih baik daripada \textit{fat interface}.
+        \item Di Java, multiple inheritance perilaku dilakukan melalui banyak interface.
+    \end{enumerate}
+    \item Dependency Inversion Principle (DIP) \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Modul tingkat tinggi bergantung pada abstraksi, bukan implementasi konkret.
+        \item Detail implementasi bergantung pada kontrak abstrak.
+        \item Dependency injection membantu memasukkan implementasi konkret dari luar.
+    \end{enumerate}
+    \item Package principles dan metrik desain
+    \begin{enumerate}
+        \item Prinsip kohesi paket: REP, CCP, dan CRP.
+        \item Prinsip coupling paket: ADP, SDP, dan SAP.
+        \item Coupling masuk, coupling keluar, instabilitas, dan abstractness.
+    \end{enumerate}
+    \item Strategi menjawab soal desain
+    \begin{enumerate}
+        \item Identifikasi gejala desain buruk.
+        \item Tentukan prinsip SOLID yang dilanggar.
+        \item Jelaskan akibat praktisnya.
+        \item Usulkan refactoring Java yang menjaga kontrak dan mengurangi coupling.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+SOLID penting karena ujian OOP sering menguji kemampuan menilai desain, bukan hanya kemampuan menulis sintaks. Prinsip ini memberi bahasa teknis untuk menjelaskan mengapa suatu class, interface, atau hierarki inheritance mudah rusak atau mudah diperluas.
+\end{jawab}
+
+Dalam proyek nyata, perubahan kebutuhan adalah hal yang normal. Aplikasi yang awalnya hanya memiliki satu jenis pembayaran dapat bertambah menjadi pembayaran kartu, transfer bank, dompet digital, dan cicilan. Sistem yang awalnya hanya menggambar lingkaran dan persegi dapat bertambah menjadi segitiga, poligon, dan gambar kompleks. Tanpa prinsip desain yang baik, setiap penambahan fitur membuat programmer harus membuka ulang kode lama, menambah percabangan baru, dan mengambil risiko merusak perilaku yang sebelumnya sudah benar.
+
+SOLID membantu mengendalikan risiko tersebut dengan menempatkan perubahan pada lokasi yang tepat. SRP membatasi alasan perubahan pada satu unit. OCP membuat fitur baru dapat ditambahkan lewat class baru. LSP memastikan inheritance tidak menghasilkan substitusi yang menipu. ISP mencegah klien bergantung pada operasi yang tidak relevan. DIP membalik arah dependensi sehingga policy utama tidak dikunci oleh detail implementasi.
+
+\begin{cmt}{Relevansi Industri}{}
+Dalam pengembangan backend Java, SOLID sering muncul pada service layer, repository, payment gateway, notification system, parser, validator, dan integrasi API. Prinsip ini tidak berarti semua kode harus penuh interface sejak awal. Penerapan yang realistis adalah menggunakan abstraksi ketika ada variasi perilaku, kebutuhan testing, pergantian implementasi, atau boundary eksternal yang sering berubah.
+\end{cmt}
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+SOLID berhubungan langsung dengan Java Inheritance, Java Interface, Java Generics, Java Collection, Java Stream API, Java Exception, dan Design Pattern. Inheritance digunakan dalam OCP dan LSP, tetapi inheritance yang salah dapat merusak substitutability. Interface adalah alat utama untuk ISP dan DIP. Generics membantu membuat abstraksi tetap type-safe. Collection dan Stream API sering menjadi lokasi penerapan SRP dan DIP pada pengolahan data. Exception berkaitan dengan kontrak method karena subclass tidak boleh menghasilkan perilaku error yang mengejutkan klien. Design pattern seperti Strategy, Factory, Adapter, Observer, dan Template Method adalah bentuk penerapan praktis dari prinsip SOLID.
+
+\begin{cmt}{Hubungan dengan Materi Lanjut}{}
+SOLID bukan pengganti design pattern. SOLID adalah prinsip evaluasi desain, sedangkan design pattern adalah pola solusi. Sebuah pattern dapat membantu memenuhi SOLID, tetapi pattern yang dipakai berlebihan juga dapat membuat desain terlalu kompleks.
+\end{cmt}
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{\textit{Bad Design}: Rigidity, Fragility, dan Immobility}
+
+\begin{jawab}[Inti Konsep.]
+\textit{Bad design} adalah desain perangkat lunak yang sulit diubah, mudah rusak, dan sulit digunakan ulang. SOLID muncul untuk menurunkan risiko tiga gejala utama: \textit{rigidity}, \textit{fragility}, dan \textit{immobility}.
+\end{jawab}
+
+\textit{Rigidity} berarti sistem kaku: satu perubahan kecil membutuhkan perubahan lanjutan di banyak class lain. Contohnya, ketika sistem pembayaran menambahkan metode baru, programmer harus mengubah controller, service, validator, invoice generator, dan report generator karena semua bagian mengenal detail tipe pembayaran. Masalahnya bukan hanya jumlah perubahan, tetapi juga kenyataan bahwa perubahan tersebut tersebar di banyak tempat sehingga risiko lupa mengubah satu lokasi menjadi tinggi.
+
+\textit{Fragility} berarti sistem rapuh: perubahan di satu bagian menyebabkan error pada bagian lain yang secara mental tidak terlihat berhubungan. Misalnya, mengubah format penyimpanan data customer ternyata merusak fitur email karena class email membaca langsung field internal customer. Fragility biasanya muncul karena coupling tinggi dan pelanggaran enkapsulasi.
+
+\textit{Immobility} berarti sistem sulit digunakan ulang. Sebuah class mungkin tampak berguna, tetapi ternyata bergantung pada database tertentu, format konfigurasi tertentu, logger tertentu, atau framework tertentu. Akibatnya, class tersebut tidak dapat dipindahkan ke aplikasi lain tanpa membawa banyak dependensi yang tidak relevan.
+
+\begin{cmt}{Cara Membaca Gejala Desain}{}
+Saat melihat kode ujian, cari tanda seperti percabangan \texttt{if}/\texttt{switch} berdasarkan tipe objek, class bernama terlalu umum seperti \texttt{Manager} atau \texttt{Processor}, interface yang memaksa method kosong, subclass yang melempar \texttt{UnsupportedOperationException}, dan constructor yang membuat dependency konkret dengan \texttt{new}. Tanda tersebut sering mengarah ke pelanggaran SOLID.
+\end{cmt}
+
+\subsubsection{Single Responsibility Principle (SRP)}
+
+\begin{jawab}[Inti Konsep.]
+SRP menyatakan bahwa sebuah class sebaiknya hanya memiliki satu alasan untuk berubah. ``Satu tanggung jawab'' berarti satu sumbu perubahan, bukan sekadar satu method.
+\end{jawab}
+
+SRP sering disalahpahami sebagai aturan bahwa setiap class harus sangat kecil. Makna yang lebih tepat adalah sebuah class harus mewakili satu konsep atau satu aktor perubahan. Jika perubahan aturan bisnis, perubahan format tampilan, dan perubahan cara penyimpanan data semuanya memaksa class yang sama berubah, class tersebut kemungkinan melanggar SRP. Class seperti itu menjadi pusat terlalu banyak keputusan sehingga sulit diuji, sulit dipahami, dan mudah rusak ketika salah satu aspek berubah.
+
+Contoh pelanggaran SRP dalam Java:
+
+\begin{lstlisting}[language=Java, caption={Pelanggaran SRP: domain, persistence, dan formatting tercampur}, label={lst:srp-bad}]
+public class Invoice {
+    private final List<LineItem> items;
+
+    public Invoice(List<LineItem> items) {
+        this.items = items;
+    }
+
+    public BigDecimal total() {
+        return items.stream()
+            .map(LineItem::amount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void saveToDatabase(Connection connection) throws SQLException {
+        PreparedStatement statement =
+            connection.prepareStatement("INSERT INTO invoices(total) VALUES (?)");
+        statement.setBigDecimal(1, total());
+        statement.executeUpdate();
+    }
+
+    public String toHtml() {
+        return "<h1>Invoice</h1><p>Total: " + total() + "</p>";
+    }
+}
+\end{lstlisting}
+
+Pada contoh tersebut, \texttt{Invoice} berubah ketika aturan total berubah, ketika schema database berubah, dan ketika tampilan HTML berubah. Refactoring yang lebih baik adalah memisahkan tanggung jawab:
+
+\begin{lstlisting}[language=Java, caption={Penerapan SRP: tanggung jawab dipisahkan}, label={lst:srp-good}]
+public class Invoice {
+    private final List<LineItem> items;
+
+    public Invoice(List<LineItem> items) {
+        this.items = List.copyOf(items);
+    }
+
+    public BigDecimal total() {
+        return items.stream()
+            .map(LineItem::amount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+}
+
+public class InvoiceRepository {
+    public void save(Invoice invoice) {
+        // Simpan invoice ke storage.
+    }
+}
+
+public class InvoiceHtmlRenderer {
+    public String render(Invoice invoice) {
+        return "<h1>Invoice</h1><p>Total: " + invoice.total() + "</p>";
+    }
+}
+\end{lstlisting}
+
+Pemisahan tersebut membuat perubahan tampilan tidak mengganggu perhitungan total, dan perubahan penyimpanan tidak mengubah objek domain. Untuk ujian, argumen pentingnya adalah: SRP mengurangi alasan perubahan pada satu class, sehingga menurunkan rigidity dan fragility.
+
+\subsubsection{Open/Closed Principle (OCP)}
+
+\begin{jawab}[Inti Konsep.]
+OCP menyatakan bahwa entitas perangkat lunak harus terbuka untuk ekstensi, tetapi tertutup untuk modifikasi. Fitur baru sebaiknya ditambahkan dengan class atau implementasi baru, bukan dengan terus mengubah kode lama yang sudah stabil.
+\end{jawab}
+
+Sumber NotebookLM menekankan contoh \texttt{GraphicEditor}. Desain buruk terjadi ketika editor menggambar bentuk dengan memeriksa tipe bentuk melalui percabangan. Setiap kali bentuk baru ditambahkan, class editor harus dimodifikasi. Ini membuat class tersebut menjadi pusat perubahan dan melanggar OCP.
+
+\begin{lstlisting}[language=Java, caption={Pelanggaran OCP: percabangan tipe terus bertambah}, label={lst:ocp-bad}]
+public class GraphicEditor {
+    public void draw(Object shape) {
+        if (shape instanceof Rectangle rectangle) {
+            drawRectangle(rectangle);
+        } else if (shape instanceof Circle circle) {
+            drawCircle(circle);
+        }
+    }
+
+    private void drawRectangle(Rectangle rectangle) { }
+    private void drawCircle(Circle circle) { }
+}
+\end{lstlisting}
+
+Desain yang lebih baik adalah memindahkan variasi perilaku ke abstraksi:
+
+\begin{lstlisting}[language=Java, caption={Penerapan OCP: variasi perilaku lewat polymorphism}, label={lst:ocp-good}]
+public interface Shape {
+    void draw(Canvas canvas);
+}
+
+public class Rectangle implements Shape {
+    @Override
+    public void draw(Canvas canvas) {
+        canvas.drawRectangle(this);
+    }
+}
+
+public class Circle implements Shape {
+    @Override
+    public void draw(Canvas canvas) {
+        canvas.drawCircle(this);
+    }
+}
+
+public class GraphicEditor {
+    public void drawAll(List<Shape> shapes, Canvas canvas) {
+        for (Shape shape : shapes) {
+            shape.draw(canvas);
+        }
+    }
+}
+\end{lstlisting}
+
+Jika nanti ada \texttt{Triangle}, programmer cukup membuat class baru yang mengimplementasikan \texttt{Shape}. \texttt{GraphicEditor} tidak perlu berubah selama kontrak \texttt{Shape} tetap sama. Inilah makna ``tertutup untuk modifikasi'': bukan berarti tidak boleh pernah mengubah kode lama, tetapi perubahan normal untuk variasi baru tidak diarahkan ke class yang sudah stabil.
+
+\begin{cmt}{Batas Wajar OCP}{}
+OCP tidak berarti semua kemungkinan variasi harus diabstraksikan sejak awal. Abstraksi terlalu dini membuat kode sulit dibaca. Gunakan OCP ketika variasi perilaku memang sering bertambah, ketika percabangan tipe mulai berulang, atau ketika perubahan di kode lama berisiko tinggi.
+\end{cmt}
+
+\subsubsection{Liskov Substitution Principle (LSP)}
+
+\begin{jawab}[Inti Konsep.]
+LSP menyatakan bahwa objek subclass harus dapat menggantikan objek superclass tanpa membuat program menjadi salah. Inheritance harus menjaga kontrak perilaku, bukan hanya hubungan nama atau kemiripan dunia nyata.
+\end{jawab}
+
+LSP adalah prinsip yang paling sering menjebak karena hubungan di dunia nyata belum tentu cocok sebagai inheritance dalam kode. Sumber NotebookLM menekankan contoh \texttt{Square} dan \texttt{Rectangle}. Secara matematika, persegi adalah persegi panjang. Namun, dalam desain class mutable, \texttt{Rectangle} biasanya mengizinkan \texttt{setWidth} dan \texttt{setHeight} secara independen. \texttt{Square} tidak dapat mempertahankan sifat persegi jika kedua setter tersebut benar-benar independen.
+
+\begin{lstlisting}[language=Java, caption={Pelanggaran LSP: Square tidak cocok menggantikan Rectangle mutable}, label={lst:lsp-bad}]
+public class Rectangle {
+    protected int width;
+    protected int height;
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int area() {
+        return width * height;
+    }
+}
+
+public class Square extends Rectangle {
+    @Override
+    public void setWidth(int width) {
+        this.width = width;
+        this.height = width;
+    }
+
+    @Override
+    public void setHeight(int height) {
+        this.width = height;
+        this.height = height;
+    }
+}
+
+public int resizeAndCompute(Rectangle rectangle) {
+    rectangle.setWidth(5);
+    rectangle.setHeight(4);
+    return rectangle.area(); // Klien wajar mengharapkan 20.
+}
+\end{lstlisting}
+
+Jika \texttt{resizeAndCompute(new Square())} menghasilkan 16, program tidak error secara sintaks, tetapi kontrak perilaku klien rusak. Ini pelanggaran LSP. Solusi yang lebih baik adalah tidak memaksa \texttt{Square} menjadi subclass \texttt{Rectangle} mutable. Gunakan abstraksi yang benar-benar dimiliki keduanya, misalnya \texttt{Shape}.
+
+\begin{lstlisting}[language=Java, caption={Penerapan LSP: abstraksi perilaku yang aman}, label={lst:lsp-good}]
+public interface Shape {
+    int area();
+}
+
+public final class Rectangle implements Shape {
+    private final int width;
+    private final int height;
+
+    public Rectangle(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    public int area() {
+        return width * height;
+    }
+}
+
+public final class Square implements Shape {
+    private final int side;
+
+    public Square(int side) {
+        this.side = side;
+    }
+
+    @Override
+    public int area() {
+        return side * side;
+    }
+}
+\end{lstlisting}
+
+Secara formal, tanda pelanggaran LSP dapat dibaca dari kontrak berikut:
+
+\begin{itemize}
+    \item Precondition subclass tidak boleh lebih ketat daripada superclass. Jika superclass menerima semua nilai positif, subclass tidak boleh tiba-tiba hanya menerima bilangan genap.
+    \item Postcondition subclass tidak boleh lebih lemah. Jika superclass menjanjikan objek tersimpan, subclass tidak boleh hanya mencetak ke layar.
+    \item Invariant superclass harus tetap dijaga. Jika superclass menjamin collection selalu terurut, subclass tidak boleh mengacak urutan.
+    \item Subclass tidak boleh mengejutkan klien dengan exception baru untuk operasi yang secara kontrak valid.
+\end{itemize}
+
+\subsubsection{Interface Segregation Principle (ISP)}
+
+\begin{jawab}[Inti Konsep.]
+ISP menyatakan bahwa klien tidak boleh dipaksa bergantung pada method yang tidak digunakan. Interface sebaiknya kecil, spesifik, dan mengikuti kebutuhan klien.
+\end{jawab}
+
+Pelanggaran ISP biasanya muncul pada \textit{fat interface}, yaitu interface yang menggabungkan terlalu banyak kemampuan. Class yang hanya membutuhkan sebagian kemampuan akhirnya dipaksa mengimplementasikan method kosong atau melempar \texttt{UnsupportedOperationException}. Ini bukan hanya buruk secara estetika, tetapi juga meningkatkan coupling: klien yang hanya membutuhkan satu operasi ikut terpengaruh ketika operasi lain pada interface berubah.
+
+\begin{lstlisting}[language=Java, caption={Pelanggaran ISP: interface terlalu gemuk}, label={lst:isp-bad}]
+public interface SmartDevice {
+    void turnOn();
+    void turnOff();
+    void connectToWifi();
+    void recordVideo();
+}
+
+public class BasicLamp implements SmartDevice {
+    @Override
+    public void turnOn() { }
+
+    @Override
+    public void turnOff() { }
+
+    @Override
+    public void connectToWifi() {
+        throw new UnsupportedOperationException("Lampu biasa tidak punya Wi-Fi");
+    }
+
+    @Override
+    public void recordVideo() {
+        throw new UnsupportedOperationException("Lampu biasa tidak punya kamera");
+    }
+}
+\end{lstlisting}
+
+Refactoring ISP memecah kontrak menjadi interface yang lebih kecil:
+
+\begin{lstlisting}[language=Java, caption={Penerapan ISP: interface spesifik per kemampuan}, label={lst:isp-good}]
+public interface Switchable {
+    void turnOn();
+    void turnOff();
+}
+
+public interface Networked {
+    void connectToWifi();
+}
+
+public interface VideoRecorder {
+    void recordVideo();
+}
+
+public class BasicLamp implements Switchable {
+    @Override
+    public void turnOn() { }
+
+    @Override
+    public void turnOff() { }
+}
+
+public class SecurityCamera implements Switchable, Networked, VideoRecorder {
+    @Override
+    public void turnOn() { }
+
+    @Override
+    public void turnOff() { }
+
+    @Override
+    public void connectToWifi() { }
+
+    @Override
+    public void recordVideo() { }
+}
+\end{lstlisting}
+
+Sumber NotebookLM juga menekankan bahwa di Java, karena class hanya dapat \texttt{extends} satu superclass, bentuk multiple inheritance yang relevan untuk ISP dilakukan dengan \texttt{implements} banyak interface. Artinya, Java tetap dapat menyusun objek dengan banyak kemampuan tanpa mewarisi implementasi dari banyak class.
+
+\subsubsection{Dependency Inversion Principle (DIP)}
+
+\begin{jawab}[Inti Konsep.]
+DIP menyatakan bahwa modul tingkat tinggi tidak boleh bergantung langsung pada modul tingkat rendah; keduanya sebaiknya bergantung pada abstraksi. Detail implementasi harus mengikuti kontrak abstrak, bukan sebaliknya.
+\end{jawab}
+
+Modul tingkat tinggi adalah bagian yang merepresentasikan kebijakan atau aturan penting aplikasi, misalnya proses checkout, registrasi pengguna, atau validasi transaksi. Modul tingkat rendah adalah detail teknis seperti database, email sender, file system, atau API eksternal. Jika modul tingkat tinggi membuat sendiri objek detail konkret, maka perubahan detail teknis akan memaksa perubahan pada logika utama.
+
+\begin{lstlisting}[language=Java, caption={Pelanggaran DIP: service bergantung pada detail konkret}, label={lst:dip-bad}]
+public class OrderService {
+    private final MySqlOrderRepository repository = new MySqlOrderRepository();
+    private final SmtpEmailSender emailSender = new SmtpEmailSender();
+
+    public void placeOrder(Order order) {
+        repository.save(order);
+        emailSender.send(order.customerEmail(), "Order created");
+    }
+}
+\end{lstlisting}
+
+Desain tersebut sulit diuji karena test akan ikut bergantung pada database MySQL dan SMTP. Desain juga sulit diubah karena mengganti email menjadi message queue mengharuskan perubahan pada \texttt{OrderService}. Dengan DIP, service bergantung pada interface:
+
+\begin{lstlisting}[language=Java, caption={Penerapan DIP dengan constructor injection}, label={lst:dip-good}]
+public interface OrderRepository {
+    void save(Order order);
+}
+
+public interface Notifier {
+    void notify(String recipient, String message);
+}
+
+public class OrderService {
+    private final OrderRepository repository;
+    private final Notifier notifier;
+
+    public OrderService(OrderRepository repository, Notifier notifier) {
+        this.repository = repository;
+        this.notifier = notifier;
+    }
+
+    public void placeOrder(Order order) {
+        repository.save(order);
+        notifier.notify(order.customerEmail(), "Order created");
+    }
+}
+
+public class MySqlOrderRepository implements OrderRepository {
+    @Override
+    public void save(Order order) {
+        // Simpan ke MySQL.
+    }
+}
+
+public class EmailNotifier implements Notifier {
+    @Override
+    public void notify(String recipient, String message) {
+        // Kirim email.
+    }
+}
+\end{lstlisting}
+
+Pola di atas disebut \textit{dependency injection}: dependency konkret diberikan dari luar, biasanya melalui constructor. Dalam aplikasi Java modern, framework seperti Spring sering mengotomatisasi injection, tetapi konsep dasarnya tetap sama: class penting tidak membuat sendiri detail yang mudah berubah.
+
+\begin{cmt}{DIP Bukan Sekadar Interface}{}
+Menambahkan interface tidak otomatis memenuhi DIP. Interface harus dimiliki oleh arah abstraksi yang tepat dan mencerminkan kebutuhan modul tingkat tinggi. Jika interface hanya menyalin semua method class konkret tanpa alasan desain, coupling konseptual tetap tinggi.
+\end{cmt}
+
+\subsubsection{Package Principles, Coupling, Stability, dan Abstractness}
+
+\begin{jawab}[Inti Konsep.]
+Selain lima prinsip SOLID pada level class, sumber juga menyebut prinsip pemaketan untuk mengatur kohesi dan coupling antarpaket. Tujuannya sama: perubahan tidak menjalar liar dan dependensi tidak membentuk siklus.
+\end{jawab}
+
+Ketika sistem membesar, masalah desain tidak hanya terjadi antarclass, tetapi juga antarpaket. Package principles membantu menjawab dua pertanyaan: class apa yang sebaiknya ditempatkan dalam paket yang sama, dan paket mana yang boleh bergantung pada paket lain.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.18\textwidth}|L{0.28\textwidth}|X|}
+\hline
+\textbf{Prinsip} & \textbf{Nama} & \textbf{Makna} \\
+\hline
+REP & Release Reuse Equivalency Principle & Unit yang digunakan ulang sebaiknya juga menjadi unit rilis. Jika pengguna me-reuse paket, mereka perlu versi rilis yang jelas. \\
+\hline
+CCP & Common Closure Principle & Class yang cenderung berubah karena alasan yang sama sebaiknya ditempatkan bersama. Ini adalah versi paket dari SRP. \\
+\hline
+CRP & Common Reuse Principle & Class yang sering digunakan bersama sebaiknya ditempatkan bersama; class yang tidak digunakan bersama sebaiknya tidak memaksa klien mengambil dependensi tidak perlu. Ini berkaitan dengan ISP pada level paket. \\
+\hline
+ADP & Acyclic Dependencies Principle & Graf dependensi antarpaket tidak boleh memiliki siklus. Siklus membuat perubahan dan build saling mengunci. \\
+\hline
+SDP & Stable Dependencies Principle & Paket yang kurang stabil sebaiknya bergantung pada paket yang lebih stabil, bukan sebaliknya. \\
+\hline
+SAP & Stable Abstractions Principle & Paket yang stabil sebaiknya cukup abstrak agar dapat diperluas tanpa mudah diubah. \\
+\hline
+\end{tabularx}
+\caption{Ringkasan package principles yang relevan dengan SOLID}
+\label{tab:package-principles-solid}
+\end{table}
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+SOLID & Akronim lima prinsip desain OOP: SRP, OCP, LSP, ISP, dan DIP. \\
+\hline
+\textit{Rigidity} & Gejala desain buruk ketika perubahan kecil menuntut banyak perubahan lanjutan. \\
+\hline
+\textit{Fragility} & Gejala desain buruk ketika perubahan di satu bagian merusak bagian lain yang tidak terduga. \\
+\hline
+\textit{Immobility} & Gejala desain buruk ketika komponen sulit digunakan ulang karena dependensi terlalu melekat. \\
+\hline
+SRP & Prinsip satu alasan perubahan untuk satu class atau modul. \\
+\hline
+OCP & Prinsip menambah perilaku melalui ekstensi tanpa memodifikasi kode stabil. \\
+\hline
+LSP & Prinsip bahwa subclass harus aman menggantikan superclass sesuai kontrak perilaku. \\
+\hline
+ISP & Prinsip bahwa interface harus spesifik agar klien tidak bergantung pada method yang tidak digunakan. \\
+\hline
+DIP & Prinsip bahwa policy tingkat tinggi bergantung pada abstraksi, bukan detail konkret. \\
+\hline
+\textit{Fat interface} & Interface yang terlalu besar dan memaksa implementor menyediakan method tidak relevan. \\
+\hline
+\textit{Dependency injection} & Teknik memberikan dependency dari luar class untuk mendukung DIP dan testing. \\
+\hline
+\textit{Afferent coupling} & Jumlah dependensi masuk: banyaknya komponen luar yang bergantung pada paket tertentu. \\
+\hline
+\textit{Efferent coupling} & Jumlah dependensi keluar: banyaknya komponen luar yang dibutuhkan oleh paket tertentu. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi SOLID OOP Principle}
+\label{tab:komponen-kunci-solid-oop-principle}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Metrik Instabilitas Paket}
+
+\begin{jawab}[Makna Rumus.]
+Metrik instabilitas digunakan untuk membaca posisi paket dalam graf dependensi. Nilai mendekati 0 berarti paket stabil karena banyak yang bergantung padanya dan ia sedikit bergantung keluar; nilai mendekati 1 berarti paket instabil karena ia lebih banyak bergantung keluar.
+\end{jawab}
+
+\begin{equation}
+    I = \frac{C_e}{C_a + C_e}
+    \label{eq:instability}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $I$: instabilitas paket, bernilai dari 0 sampai 1.
+    \item $C_a$: \textit{afferent coupling}, yaitu jumlah class atau paket luar yang bergantung pada paket ini.
+    \item $C_e$: \textit{efferent coupling}, yaitu jumlah class atau paket luar yang menjadi dependency paket ini.
+\end{itemize}
+
+Jika $C_a$ tinggi dan $C_e$ rendah, paket tersebut sulit diubah karena banyak pihak bergantung padanya; paket ini stabil. Jika $C_e$ tinggi dan $C_a$ rendah, paket lebih mudah berubah karena sedikit pihak bergantung padanya, tetapi ia sensitif terhadap perubahan dependency.
+
+\subsubsection{Rasio Abstractness}
+
+\begin{jawab}[Makna Rumus.]
+Rasio abstractness mengukur seberapa abstrak isi sebuah paket. Rumus ini relevan dengan SAP: paket yang sangat stabil sebaiknya memiliki abstraksi yang cukup agar tidak harus sering dimodifikasi.
+\end{jawab}
+
+\begin{equation}
+    A = \frac{N_a}{N_c}
+    \label{eq:abstractness}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $A$: rasio abstractness, bernilai dari 0 sampai 1.
+    \item $N_a$: jumlah abstract class dan interface dalam paket.
+    \item $N_c$: jumlah total class, abstract class, dan interface dalam paket.
+\end{itemize}
+
+Rumus ini bukan alat untuk menentukan nilai ujian secara mekanis, tetapi membantu menjelaskan mengapa paket yang stabil sering berisi interface atau abstract class. Paket yang banyak digunakan sebaiknya tidak terlalu bergantung pada detail konkret yang sering berubah.
+
+\subsubsection{Prosedur Identifikasi Pelanggaran SOLID}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu membaca cuplikan kode atau class diagram secara sistematis: cari gejala desain buruk, petakan ke prinsip SOLID, lalu usulkan refactoring yang tepat.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode identifikasi pelanggaran SOLID}, label={lst:solid-diagnosis}]
+Input: Cuplikan kode Java atau class diagram
+Output: Prinsip yang dilanggar dan usulan refactoring
+
+1. Untuk setiap class:
+   a. Periksa apakah class memiliki lebih dari satu alasan perubahan.
+      Jika ya, tandai kemungkinan pelanggaran SRP.
+   b. Periksa apakah fitur baru menuntut modifikasi class lama
+      melalui if/switch berdasarkan tipe.
+      Jika ya, tandai kemungkinan pelanggaran OCP.
+   c. Jika class mewarisi class lain, periksa apakah subclass
+      dapat menggantikan superclass tanpa mengubah ekspektasi klien.
+      Jika tidak, tandai pelanggaran LSP.
+2. Untuk setiap interface:
+   a. Periksa apakah implementor dipaksa membuat method kosong
+      atau melempar UnsupportedOperationException.
+      Jika ya, tandai pelanggaran ISP.
+3. Untuk setiap dependency:
+   a. Periksa apakah modul high-level membuat atau bergantung langsung
+      pada class low-level konkret.
+      Jika ya, tandai pelanggaran DIP.
+4. Usulkan perbaikan:
+   a. SRP: pisahkan tanggung jawab.
+   b. OCP: gunakan interface/polymorphism/strategy.
+   c. LSP: ubah hierarki atau kontrak abstraksi.
+   d. ISP: pecah interface menjadi kontrak kecil.
+   e. DIP: balik dependensi ke abstraksi dan gunakan injection.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan mengapa \textit{rigidity}, \textit{fragility}, dan \textit{immobility} menunjukkan desain buruk.
+    \item[$\square$] Saya dapat membedakan SRP, OCP, LSP, ISP, dan DIP tanpa hanya menghafal kepanjangannya.
+    \item[$\square$] Saya dapat mengenali class Java yang melanggar SRP karena mencampur domain logic, persistence, dan formatting.
+    \item[$\square$] Saya dapat menjelaskan mengapa percabangan tipe pada \texttt{GraphicEditor} melanggar OCP.
+    \item[$\square$] Saya dapat menjelaskan mengapa \texttt{Square extends Rectangle} dapat melanggar LSP pada desain mutable.
+    \item[$\square$] Saya dapat memecah \textit{fat interface} menjadi beberapa interface kecil sesuai ISP.
+    \item[$\square$] Saya dapat menerapkan DIP menggunakan interface dan constructor injection di Java.
+    \item[$\square$] Saya dapat menjelaskan peran REP, CCP, CRP, ADP, SDP, dan SAP pada level paket.
+    \item[$\square$] Saya dapat menghitung dan menafsirkan instabilitas paket dengan $I = \frac{C_e}{C_a + C_e}$.
+    \item[$\square$] Saya dapat menjelaskan hubungan materi SOLID dengan CPMK, dengan catatan bahwa CPMK formal tidak disebutkan dalam perkuliahan.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Definisi dan motivasi SOLID, tiga gejala \textit{bad design}, SRP/OCP/LSP/ISP/DIP, contoh GraphicEditor, contoh Square-Rectangle, \textit{fat interface}, dan dependency inversion dengan interface Java. \\
+\hline
+\textbf{Cukup Paham Konsep} & Package principles REP, CCP, CRP, ADP, SDP, SAP, metrik instabilitas, abstractness, dan hubungan SOLID dengan design pattern. \\
+\hline
+\textbf{Sudah Dikuasai} & Materi 1 sampai 10 pernah diujikan dalam kuis, termasuk prinsip OOP SOLID, tetapi tetap perlu pendalaman melalui analisis kode dan refactoring. \\
+\hline
+\end{tabularx}

@@ -1,0 +1,347 @@
+\section{Network Security}
+
+Network Security membahas cara membangun komunikasi aman di atas Internet yang pada dasarnya terbuka, digunakan bersama, dan tidak seluruh infrastrukturnya dapat dipercaya. Fokus utama materi ini adalah memahami tujuan keamanan, ancaman per-layer, blok kriptografi, autentikasi, distribusi kunci, protokol keamanan, firewall, dan serangan availability.
+
+Materi ini menutup rangkaian UAS karena seluruh layer sebelumnya dapat menjadi target serangan. IP dapat dipalsukan, TCP dapat diserang SYN flood atau hijacking, aplikasi dapat memiliki bug, wireless dapat disadap, dan congestion dapat dipicu secara sengaja oleh DDoS.
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item \pwajib Fondasi Network Security
+    \begin{enumerate}
+        \item \pwajib Shared resource, untrusted infrastructure, Alice, Bob, Mallory
+        \item \pwajib Authentication, confidentiality, integrity, availability
+    \end{enumerate}
+    \item \pwajib Kerentanan per Layer
+    \begin{enumerate}
+        \item \pwajib IP spoofing, broadcast amplification, Smurf attack, routing attacks
+        \item \pwajib TCP SYN flood, session hijacking, dan session reset
+        \item \pwajib Malware, buffer overflow, dan application-layer attacks
+    \end{enumerate}
+    \item \pwajib Cryptographic Building Blocks
+    \begin{enumerate}
+        \item \pwajib Plaintext, ciphertext, encryption, decryption, dan key
+        \item \pwajib Symmetric cipher, stream cipher, block cipher, CBC, DES, 3DES, AES
+        \item \pwajib Public-key cipher dan RSA
+        \item \pwajib Hash, message digest, collision resistance, one-way property, uniformity
+        \item \pwajib MAC, HMAC, nonce, dan challenge-response
+    \end{enumerate}
+    \item \pwajib Key Predistribution, PKI, dan Authentication Protocols
+    \begin{enumerate}
+        \item \pwajib KDC, session key, CA, X.509, PKI, CRL, chain of trust
+        \item \ppaham Web of trust dan PGP
+        \item \pwajib Diffie-Hellman, MitM, Needham-Schroeder, dan Kerberos
+    \end{enumerate}
+    \item \pwajib Security Systems by Layer
+    \begin{enumerate}
+        \item \pwajib PGP, SSH, TLS/SSL/HTTPS, IPsec, dan wireless security
+        \item \ppaham TLS 1.3\textsuperscript{\dag}
+        \item \pwajib CCMP pada WPA2/802.11i\textsuperscript{\ddag}
+    \end{enumerate}
+    \item \pwajib Firewalls, Filtering, Malware, dan Availability Attacks
+    \begin{enumerate}
+        \item \pwajib Stateful packet filter, proxy firewall, DMZ, ingress/egress filtering
+        \item \ppaham NAT sebagai perlindungan topologi internal
+        \item \pwajib Worm, virus, botnet, DoS, dan DDoS
+        \item \ppaham DNSSEC\textsuperscript{\dag}
+    \end{enumerate}
+    \item \pwajib Relasi Lintas Materi
+    \begin{enumerate}
+        \item \pwajib HTTP plaintext menjadi HTTPS dengan TLS
+        \item \pwajib IP tanpa autentikasi memerlukan IPsec untuk proteksi network-layer
+        \item \pwajib Wireless membutuhkan link-layer encryption
+        \item \pwajib DDoS memengaruhi resource allocation dan congestion control
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Penjelasan Konsep}
+
+\subsubsection{Fondasi Network Security}
+\begin{jawab}[Inti Konsep.]
+Network Security bertujuan membuat komunikasi tetap aman walaupun jaringan adalah shared resource dan melewati infrastruktur yang tidak seluruhnya dipercaya. Konsep ini penting karena penyerang dapat menyadap, memalsukan, mengubah, atau melumpuhkan komunikasi di berbagai layer.
+\end{jawab}
+
+Internet adalah **shared resource**, yaitu sumber daya bersama yang dipakai oleh banyak pihak dengan kepentingan berbeda. Sumber NotebookLM menekankan bahwa cryptography adalah ilmu komunikasi di hadapan musuh. Model klasiknya memakai **Alice** sebagai pengirim sah, **Bob** sebagai penerima sah, dan **Mallory** sebagai penyerang yang dapat menyadap, memodifikasi, atau menyisipkan pesan.
+
+Masalah utama keamanan jaringan adalah **untrusted infrastructure**. Pesan dari Alice ke Bob dapat melewati ISP, router, dan jaringan antara yang tidak dikendalikan Alice atau Bob. Karena itu, protokol keamanan harus tetap benar walaupun jalur di tengah tidak dipercaya.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|}
+\hline
+\textbf{Tujuan Keamanan} & \textbf{Makna} \\
+\hline
+Authentication & Memastikan identitas lawan komunikasi benar. \\
+\hline
+Confidentiality & Menjaga isi data tidak dapat dibaca pihak tak berwenang. \\
+\hline
+Integrity & Menjamin data tidak diubah, ditambah, atau dikurangi tanpa terdeteksi. \\
+\hline
+Availability & Menjaga layanan tetap dapat diakses walaupun ada serangan. \\
+\hline
+\end{tabularx}
+\caption{Tujuan utama secure communication channel}
+\label{tab:security-goals}
+\end{table}
+
+Keempat tujuan ini muncul kembali pada semua protokol keamanan. TLS menargetkan authentication, confidentiality, dan integrity untuk aplikasi; firewall dan mitigasi DDoS lebih dekat ke availability; WPA2/802.11i memberi proteksi link-layer untuk medium wireless.
+
+\subsubsection{Kerentanan per Layer}
+\begin{jawab}[Inti Konsep.]
+Setiap layer jaringan memiliki asumsi yang dapat dieksploitasi. IP dapat dipalsukan, routing dapat dibelokkan, TCP dapat dibanjiri atau dibajak, dan aplikasi dapat memiliki bug seperti buffer overflow.
+\end{jawab}
+
+Pada **Network Layer**, IP secara dasar mempercayai source address yang ditulis host pengirim. Ini membuka **IP spoofing**, yaitu pemalsuan alamat sumber. Spoofing dapat dipakai untuk menipu sistem yang memakai alamat IP sebagai autentikasi atau untuk melakukan amplification attack.
+
+**Smurf attack** adalah contoh broadcast amplification. Penyerang mengirim ICMP Echo Request ke broadcast network dengan source IP dipalsukan menjadi IP korban. Banyak host di broadcast network membalas ke korban, sehingga trafik ke korban berlipat ganda.
+
+Routing juga rentan. Pada BGP, penyerang dapat melakukan prefix hijacking atau path alteration. Pada OSPF, penyerang dapat menyebarkan informasi link-state palsu. Pada RIP, penyerang dapat mengumumkan rute dengan metrik sangat rendah agar trafik mengarah padanya.
+
+Pada **Transport Layer**, serangan umum meliputi:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|}
+\hline
+\textbf{Serangan} & \textbf{Mekanisme} \\
+\hline
+TCP SYN flood & Penyerang mengirim banyak SYN sehingga server mengalokasikan state setengah terbuka sampai resource habis. \\
+\hline
+Session hijacking & Penyerang menebak sequence number dan menyisipkan paket untuk mengambil alih koneksi sah. \\
+\hline
+Session reset & Penyerang mengirim paket RST palsu untuk memutus koneksi. \\
+\hline
+\end{tabularx}
+\caption{Serangan Transport Layer}
+\label{tab:transport-attacks}
+\end{table}
+
+Pada **Application Layer**, serangan sering menargetkan bug program, malware, worm, virus, atau buffer overflow. Jika input tidak divalidasi, penyerang dapat menimpa memori dan mengambil alih eksekusi program.
+
+Kerentanan per-layer menunjukkan bahwa keamanan tidak bisa hanya dipasang di satu tempat. Aplikasi, transport, network, dan data link membutuhkan perlindungan sesuai ancamannya masing-masing.
+
+\subsubsection{Cryptographic Building Blocks}
+\begin{jawab}[Inti Konsep.]
+Cryptographic building blocks adalah alat matematika dasar untuk confidentiality, integrity, dan authentication. Blok ini meliputi cipher simetris, cipher asimetris, hash, MAC/HMAC, dan nonce.
+\end{jawab}
+
+**Encryption** mengubah **plaintext** menjadi **ciphertext** menggunakan **key**. **Decryption** membalik ciphertext menjadi plaintext. Tanpa key yang benar, ciphertext harus tampak seperti data acak bagi penyerang.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.26\textwidth}|X|}
+\hline
+\textbf{Jenis} & \textbf{Makna} \\
+\hline
+Symmetric-key cipher & Alice dan Bob memakai shared secret yang sama; cepat dan cocok untuk data besar. \\
+\hline
+Stream cipher & Menghasilkan keystream pseudo-random lalu di-XOR dengan plaintext. \\
+\hline
+Block cipher & Memecah data ke blok tetap dan mengenkripsi tiap blok, misalnya DES, 3DES, AES. \\
+\hline
+Public-key cipher & Memakai pasangan public key/private key; lebih lambat tetapi membantu distribusi kunci. \\
+\hline
+\end{tabularx}
+\caption{Klasifikasi cipher}
+\label{tab:cipher-types}
+\end{table}
+
+Pada stream cipher, intuisi operasinya:
+\[
+    C = P \oplus K_s
+\]
+dengan $P$ plaintext, $K_s$ keystream, dan $C$ ciphertext. Penerima menghasilkan keystream yang sama lalu melakukan XOR lagi untuk memperoleh plaintext.
+
+Pada block cipher, mode **CBC (Cipher Block Chaining)** mengaitkan blok:
+\[
+    C_i = E_K(P_i \oplus C_{i-1})
+\]
+dengan $P_i$ blok plaintext, $C_i$ blok ciphertext, $E_K$ fungsi enkripsi dengan key $K$, dan $C_{i-1}$ ciphertext blok sebelumnya. Tujuannya agar blok plaintext identik tidak langsung menghasilkan ciphertext identik.
+
+**Public-key cryptography** memakai public key untuk operasi yang boleh diketahui umum dan private key untuk rahasia pemiliknya. RSA adalah contoh utama yang disebut sumber. Karena lebih lambat daripada symmetric cipher, public-key cipher sering dipakai untuk autentikasi atau pertukaran key, sedangkan data besar dienkripsi dengan session key simetris.
+
+**Cryptographic hash function** memetakan pesan panjang sembarang menjadi **message digest** berukuran tetap. Sifat yang diperlukan:
+\begin{itemize}
+    \item **One-way**: sulit mencari pesan asal dari digest.
+    \item **Collision resistant**: sulit mencari dua pesan berbeda dengan digest sama.
+    \item **Uniformity**: keluaran tersebar merata agar tidak mudah dieksploitasi.
+\end{itemize}
+
+Hash tanpa key tidak cukup untuk autentikasi karena Mallory dapat mengubah pesan dan menghitung hash baru. **MAC/HMAC** menambahkan shared key:
+\[
+    \text{HMAC} = H(K \parallel M)
+\]
+secara konseptual, dengan $K$ key rahasia dan $M$ pesan. Bob menghitung ulang HMAC dengan key yang sama. Jika cocok, pesan dianggap berasal dari pihak yang tahu key dan tidak berubah.
+
+Untuk mencegah replay, protokol memakai **nonce**, yaitu random bitstring yang hanya dipakai sekali. Pada challenge-response, Alice mengirim nonce; Bob membalas MAC atas nonce tersebut. Mallory tidak dapat memakai ulang respons lama karena nonce berubah.
+
+\subsubsection{Key Predistribution, PKI, dan Authentication Protocols}
+\begin{jawab}[Inti Konsep.]
+Distribusi kunci dan autentikasi menjawab masalah: bagaimana dua pihak yang belum pernah bertemu dapat memperoleh key yang benar dan yakin identitas lawannya sah. Konsep ini penting karena cipher kuat tetap gagal jika key diberikan kepada pihak yang salah.
+\end{jawab}
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Query mendalam NotebookLM untuk PKI, TLS, IPsec, firewall, dan malware beberapa kali mengembalikan jawaban yang tidak sesuai konteks. Bagian ini disusun dari Outline Final NotebookLM yang sudah disetujui dan pengetahuan umum standar keamanan jaringan, bukan dari jawaban mendalam yang berhasil untuk subtopik ini.
+\end{cmt}
+
+Pada sistem symmetric-key, **Key Distribution Center (KDC)** adalah pihak tepercaya yang membantu dua pihak memperoleh **session key**. Session key dipakai untuk satu sesi komunikasi agar key jangka panjang tidak langsung dipakai untuk seluruh trafik.
+
+Pada public-key, masalahnya adalah memastikan public key benar-benar milik pihak yang diklaim. **Certificate Authority (CA)** menandatangani **X.509 certificate** yang mengikat identitas dengan public key. **PKI (Public Key Infrastructure)** mencakup CA, certificate, **CRL (Certificate Revocation List)**, dan **chain of trust** dari root CA ke intermediate CA hingga certificate server.
+
+**Web of trust** adalah alternatif desentralisasi yang dipakai dalam ekosistem seperti PGP: pengguna saling menandatangani key, bukan bergantung penuh pada CA pusat.
+
+**Diffie-Hellman key agreement** memungkinkan dua pihak membangun shared secret melalui kanal terbuka. Namun, Diffie-Hellman murni rentan **Man-in-the-Middle** jika tidak diautentikasi: Mallory dapat membuat key terpisah dengan Alice dan Bob sambil berada di tengah.
+
+**Needham-Schroeder** dan **Kerberos** adalah contoh protokol autentikasi berbasis pihak tepercaya. Kerberos memakai ticket dan timestamp untuk mengurangi risiko replay serta memudahkan autentikasi dalam sistem client/server.
+
+Semua mekanisme ini mendukung protokol layer atas. TLS memakai certificate dan key exchange; PGP memakai kombinasi public-key dan symmetric-key; Kerberos menyediakan autentikasi terpusat dalam domain administrasi.
+
+\subsubsection{Security Systems by Layer}
+\begin{jawab}[Inti Konsep.]
+Security systems dapat ditempatkan di berbagai layer: PGP di aplikasi, TLS di atas transport, IPsec di network layer, dan WPA2/802.11i di data link wireless. Posisi layer menentukan apa yang dilindungi dan siapa yang harus mendukung protokol tersebut.
+\end{jawab}
+
+**PGP** mengamankan email pada Application Layer. Pola umumnya: pesan dienkripsi dengan symmetric session key karena efisien, lalu session key tersebut dienkripsi dengan public key penerima. PGP juga dapat memakai tanda tangan digital dan web of trust.
+
+**SSH** menggantikan remote login plaintext. Sumber outline membagi SSH menjadi:
+\begin{itemize}
+    \item **SSH-TRANS**: membangun terowongan transport terenkripsi.
+    \item **SSH-AUTH**: mengautentikasi user ke server.
+    \item **SSH-CONN**: memultipleksikan channel di atas koneksi aman.
+\end{itemize}
+
+**TLS/SSL/HTTPS** mengamankan aplikasi seperti web di atas TCP. Handshake menegosiasikan cipher suite, memvalidasi certificate server, membentuk pre-master secret, lalu menurunkan session keys. Setelah handshake, **record protocol** memecah data aplikasi menjadi record, menambahkan proteksi integrity, lalu mengenkripsi record.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+TLS 1.3 ditambahkan sebagai konteks modern. TLS 1.3 menyederhanakan handshake, menghapus banyak algoritma lama, memakai AEAD cipher suites, dan menekankan forward secrecy melalui ephemeral Diffie-Hellman. Mode 0-RTT dapat mempercepat koneksi ulang, tetapi memiliki pertimbangan replay risk sehingga tidak cocok untuk semua jenis request.
+\end{cmt}
+
+**IPsec** bekerja pada Network Layer. **Transport mode** melindungi payload IP antar-host tanpa membungkus seluruh paket IP lama; **tunnel mode** membungkus paket IP penuh dan umum dipakai VPN antar-gateway. **AH (Authentication Header)** memberi integrity dan anti-replay tanpa confidentiality. **ESP (Encapsulating Security Payload)** memberi encryption dan dapat juga memberi integrity. **IKE** menegosiasikan key dan security association.
+
+**Wireless security** bekerja pada Data Link Layer. WEP sudah usang. WPA2/IEEE 802.11i memakai mekanisme kunci dan AES. 
+
+\begin{cmt}{Catatan: Perbedaan dengan Sumber Lain}{}
+Outline NotebookLM menyebut CCMP sebagai CTR Counter Mode. Penjelasan yang lebih tepat: CCMP berbasis AES-CCM, yaitu counter mode untuk enkripsi dan CBC-MAC/MIC untuk autentikasi serta integritas frame. Jadi, CCMP bukan hanya enkripsi CTR, tetapi skema authenticate-and-encrypt untuk 802.11i/WPA2.
+\end{cmt}
+
+Pemilihan layer menentukan cakupan. TLS melindungi aplikasi tertentu, IPsec dapat melindungi semua IP traffic antar-host/gateway, sedangkan WPA2 hanya melindungi hop wireless.
+
+\subsubsection{Firewalls, Filtering, Malware, dan Availability Attacks}
+\begin{jawab}[Inti Konsep.]
+Firewall dan filtering membatasi trafik yang boleh masuk atau keluar, sedangkan malware, botnet, DoS, dan DDoS menyerang availability. Konsep ini penting karena confidentiality dan integrity tidak cukup jika layanan dapat dibuat tidak tersedia.
+\end{jawab}
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Query mendalam NotebookLM untuk firewall dan malware juga mengembalikan jawaban HTTP yang tidak relevan. Isi berikut mengikuti Outline Final NotebookLM yang sudah disetujui dan pengetahuan umum standar dari materi keamanan jaringan.
+\end{cmt}
+
+**Firewall** adalah titik kontrol perimeter yang menyaring trafik. **Stateful packet filter** melacak state koneksi, misalnya apakah paket TCP merupakan bagian dari koneksi yang sudah sah. **Proxy firewall** bertindak sebagai perantara aplikasi, menerima koneksi dari client dan membuat koneksi baru ke server. **DMZ (Demilitarized Zone)** adalah zona untuk server publik agar tidak langsung berada di jaringan internal sensitif.
+
+**Ingress filtering** menolak paket masuk yang tampak memalsukan alamat internal. **Egress filtering** membatasi paket keluar agar host internal yang terinfeksi tidak mudah dipakai untuk spoofing atau DDoS keluar. **NAT** menyembunyikan alamat private internal dan membuat koneksi masuk langsung lebih sulit, tetapi NAT bukan pengganti firewall penuh.
+
+**Malware** mencakup virus dan worm. Virus biasanya membutuhkan program host atau aksi pengguna; worm menyebar otomatis melalui jaringan dengan mengeksploitasi vulnerability, termasuk zero-day. Banyak host terinfeksi dapat menjadi **botnet**, yaitu kumpulan mesin yang dikendalikan command-and-control untuk spam, scanning, atau DDoS.
+
+**DoS (Denial of Service)** berusaha membuat layanan tidak tersedia dengan menghabiskan bandwidth, CPU, memory, socket, atau state server. **DDoS** melakukan hal yang sama dari banyak sumber sekaligus, sering memakai botnet.
+
+DDoS berhubungan dengan Congestion Control karena trafik palsu memenuhi link dan buffer, memicu packet drop dan delay tinggi. Bagi flow sah, dampaknya tampak seperti congestion berat walaupun penyebabnya adalah serangan.
+
+\begin{cmt}{Catatan: Sumber Pengetahuan Umum}{}
+DNSSEC ditambahkan sebagai contoh keamanan infrastruktur aplikasi. DNSSEC memberi autentikasi asal data dan integritas record DNS melalui tanda tangan digital, tetapi tidak menyembunyikan isi query atau jawaban. Ini berbeda dari TLS yang memberi confidentiality untuk koneksi aplikasi.
+\end{cmt}
+
+\subsubsection{Relasi Lintas Materi}
+\begin{jawab}[Inti Konsep.]
+Network Security mengikat seluruh materi jaringan: aplikasi butuh TLS, IP butuh mekanisme autentikasi tambahan, wireless butuh link-layer encryption, dan DDoS dapat merusak congestion control. Keamanan harus dipahami sebagai properti lintas-layer, bukan fitur satu protokol saja.
+\end{jawab}
+
+Dengan **Application Layer**, HTTP plaintext mudah disadap dan dimodifikasi, sehingga HTTPS memakai TLS. SMTP dapat diamankan dengan STARTTLS, sedangkan email end-to-end dapat memakai PGP.
+
+Dengan **Transport Layer**, TCP memberi reliability tetapi tidak otomatis memberi confidentiality atau authentication. TLS ditempatkan di atas TCP untuk melindungi byte stream aplikasi.
+
+Dengan **Network Layer**, IP tidak memvalidasi source address dan routing protocol dapat dibajak. IPsec menambahkan authentication, integrity, dan encryption pada level IP.
+
+Dengan **Wireless Network**, medium radio terbuka bagi penyadap sehingga security harus ada sejak link-layer. WPA2/802.11i/CCMP melindungi frame wireless, sedangkan TLS tetap diperlukan untuk end-to-end security aplikasi.
+
+Dengan **Congestion Control**, DDoS dan worm traffic dapat menciptakan congestion buatan. Serangan availability tidak hanya merusak server, tetapi juga menghabiskan bandwidth dan buffer jaringan.
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Stream Cipher XOR}
+\begin{jawab}[Makna Rumus.]
+Stream cipher mengenkripsi dengan menggabungkan plaintext dan keystream melalui XOR. Rumus ini menunjukkan mengapa pengirim dan penerima harus menghasilkan keystream yang sama dari key yang sama.
+\end{jawab}
+
+\begin{equation}
+    C = P \oplus K_s
+    \label{eq:stream-cipher}
+\end{equation}
+\begin{equation}
+    P = C \oplus K_s
+    \label{eq:stream-decipher}
+\end{equation}
+
+dengan $P$ plaintext, $C$ ciphertext, dan $K_s$ keystream.
+
+\subsubsection{Cipher Block Chaining}
+\begin{jawab}[Makna Rumus.]
+CBC mengaitkan blok plaintext dengan ciphertext blok sebelumnya agar pola plaintext identik tidak langsung terlihat sebagai pola ciphertext identik.
+\end{jawab}
+
+\begin{equation}
+    C_i = E_K(P_i \oplus C_{i-1})
+    \label{eq:cbc-encrypt}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $P_i$: plaintext block ke-$i$.
+    \item $C_i$: ciphertext block ke-$i$.
+    \item $E_K$: enkripsi block cipher dengan key $K$.
+    \item $C_{i-1}$: ciphertext block sebelumnya.
+\end{itemize}
+
+\subsubsection{HMAC Konseptual}
+\begin{jawab}[Makna Rumus.]
+HMAC menggabungkan message dan secret key agar integrity sekaligus authentication dapat diverifikasi. Penyerang yang tidak tahu key tidak dapat membuat HMAC valid untuk pesan yang diubah.
+\end{jawab}
+
+\begin{equation}
+    \text{HMAC} = H(K \parallel M)
+    \label{eq:hmac-concept}
+\end{equation}
+
+dengan $H$ fungsi hash, $K$ shared secret key, $M$ pesan, dan $\parallel$ operasi konkatenasi. Bentuk ini adalah intuisi konseptual; konstruksi HMAC nyata memakai inner/outer padding.
+
+\subsubsection{Challenge-Response dengan Nonce}
+\begin{jawab}[Tujuan Algoritma.]
+Challenge-response dengan nonce membuktikan bahwa pihak lawan mengetahui key saat ini, bukan sekadar memutar ulang jawaban lama.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode challenge-response}, label={lst:challenge-response}]
+Alice -> Bob: nonce N
+Bob computes R = HMAC(K_AB, N)
+Bob -> Alice: R
+Alice computes R_expected = HMAC(K_AB, N)
+if R == R_expected:
+    Bob is authenticated for this fresh challenge
+else:
+    reject
+\end{lstlisting}
+
+\subsubsection{SYN Flood Intuition}
+\begin{jawab}[Tujuan Algoritma.]
+SYN flood mengeksploitasi state yang dibuat server saat menerima SYN. Intuisi ini menjelaskan mengapa serangan availability dapat terjadi bahkan sebelum aplikasi menerima request penuh.
+\end{jawab}
+
+\begin{lstlisting}[caption={Intuisi SYN flood}, label={lst:syn-flood}]
+attacker repeats many times:
+    send TCP SYN with spoofed or unreachable source address
+
+server for each SYN:
+    allocate half-open connection state
+    send SYN-ACK
+    wait for final ACK that never arrives
+
+result:
+    backlog/state table fills
+    legitimate clients cannot connect
+\end{lstlisting}

@@ -1,0 +1,232 @@
+\section{Branch and Bound}
+
+Branch and Bound (B\&B) adalah strategi untuk persoalan optimisasi yang membentuk pohon ruang status dan memilih simpul berikutnya berdasarkan nilai batas atau \textit{cost}. Fokus utama UAS adalah memahami perbedaan B\&B dari backtracking, cara kerja \textit{least cost search}, dan penggunaan nilai batas untuk memangkas simpul.
+
+\subsection{Outline Fundamental Konsep Materi}
+\begin{enumerate}
+    \item Definisi B\&B
+    \begin{enumerate}
+        \item Persoalan optimisasi
+        \item Pohon ruang status
+        \item BFS dan \textit{least cost search}
+    \end{enumerate}
+    \item Perbandingan dengan backtracking
+    \begin{enumerate}
+        \item Persamaan: pohon ruang status dan pemangkasan
+        \item Perbedaan: DFS vs \textit{best-first rule}
+    \end{enumerate}
+    \item Fungsi batas
+    \begin{enumerate}
+        \item Lower bound untuk minimisasi
+        \item Upper bound untuk maksimasi
+        \item Solusi terbaik sejauh ini
+    \end{enumerate}
+    \item Aplikasi
+    \begin{enumerate}
+        \item 15-Puzzle
+        \item Travelling Salesperson Problem
+        \item Assignment Problem
+        \item 1/0 Knapsack
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+\subsubsection{Mengapa Materi Ini Penting}
+B\&B penting karena memberi cara sistematis untuk menangani persoalan optimisasi yang ruang solusinya sangat besar. Nilai batas membantu menentukan cabang yang masih layak dieksplorasi dan cabang yang tidak dapat mengalahkan solusi terbaik sejauh ini.
+
+\subsubsection{Implementasi Dasar}
+Implementasi dasar B\&B menyimpan simpul hidup di dalam struktur prioritas. Untuk minimisasi, simpul dengan cost terkecil diekspansi lebih dahulu. Untuk maksimasi, simpul dengan batas atas terbesar menjadi kandidat ekspansi.
+
+\subsubsection{Relevansi dengan Industri Saat Ini}
+\begin{cmt}{Keterbatasan Sumber}{}
+Sumber utama membahas relevansi melalui contoh persoalan optimisasi seperti TSP, assignment problem, 15-Puzzle, dan knapsack. Catatan ini tidak menambahkan klaim industri di luar contoh yang tersedia pada sumber.
+\end{cmt}
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+B\&B bergantung pada pemahaman pohon ruang status, BFS, dan backtracking. Materi ini juga terkait dengan Route Planning dan Program Dinamis karena sama-sama menangani pencarian solusi dengan biaya atau nilai optimal.
+
+\subsection{Pola Soal UAS Sebelumnya dan Prioritas}
+
+\begin{cmt}{Pola dari Soal 2022--2025}{}
+Branch and Bound muncul pada semua sumber soal yang diperiksa. Pola paling berulang adalah membangun pohon ruang status, menghitung bound/cost simpul, memilih simpul-E, dan mematikan simpul yang tidak menjanjikan.
+\end{cmt}
+
+Prioritas utama adalah assignment problem, knapsack, TSP, dan n-puzzle. Pada 2022, soal meminta pohon ruang status n-puzzle dengan Manhattan distance, perhitungan TSP memakai \textit{reduced cost matrix} dan bobot tur lengkap, serta pohon B\&B knapsack sampai level 1. Pada solusi 2023, soal assignment minimisasi meminta pohon, bound setiap simpul, simpul yang dibunuh, sampai goal node. Pada 2024, bentuknya knapsack maksimasi. Pada 2025, bentuknya assignment maksimasi profit.
+
+\begin{itemize}
+    \item \textbf{Pola hitung manual}: hitung $\hat{c}(i)$, bound assignment, bound knapsack, atau reduksi matriks TSP.
+    \item \textbf{Pola penelusuran}: tentukan simpul hidup, simpul-E, solusi terbaik sejauh ini, dan simpul yang dimatikan.
+    \item \textbf{Pola aplikasi}: gunakan B\&B untuk minimisasi waktu assignment, maksimasi profit assignment, maksimasi knapsack, TSP, atau n-puzzle.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.30\textwidth}|X|L{0.28\textwidth}|}
+\hline
+\textbf{Permasalahan yang Sering Muncul} & \textbf{Yang Biasanya Diminta} & \textbf{Fungsi/Komponen Wajib Dipahami} \\
+\hline
+Assignment problem & Menentukan assignment minimum/maksimum, membangun pohon ruang status, menghitung bound, dan memilih goal node. & Fungsi cost $\hat{c}(i)$, bound assignment, solusi terbaik sejauh ini, priority queue. \\
+\hline
+0/1 Knapsack & Membentuk pohon keputusan ambil/tidak ambil dan menghitung bound untuk memaksimalkan profit. & Upper bound profit, kapasitas tersisa, feasibility, pruning berdasarkan best profit. \\
+\hline
+TSP dan n-puzzle & Menghitung cost simpul TSP dengan \textit{reduced cost matrix} atau menghitung heuristik n-puzzle. & $\hat{c}(i)=\hat{f}(i)+\hat{g}(i)$, reduced cost, Manhattan distance, simpul-E. \\
+\hline
+\end{tabularx}
+\caption{Permasalahan dan fungsi penting pada Branch and Bound}
+\label{tab:pola-fungsi-branch-and-bound}
+\end{table}
+
+\subsubsection{Formula Eksplisit yang Perlu Dikuasai}
+
+\begin{jawab}[Inti Formula.]
+Pada Branch and Bound, setiap simpul harus memiliki bound. Untuk minimisasi, simpul dengan bound terkecil diekspansi dan simpul dengan bound $\ge$ solusi terbaik dipangkas. Untuk maksimasi, arah perbandingannya dibalik.
+\end{jawab}
+
+Fungsi cost umum:
+\begin{equation}
+    \hat{c}(i)=\hat{f}(i)+\hat{g}(i)
+    \label{eq:bnb-general-cost-extra}
+\end{equation}
+dengan $\hat{f}(i)$ sebagai biaya dari akar ke simpul $i$, dan $\hat{g}(i)$ sebagai taksiran biaya terbaik dari simpul $i$ ke solusi lengkap.
+
+Pada assignment problem minimisasi, jika simpul sudah menetapkan sebagian pasangan pekerja-pekerjaan, bound dapat dihitung:
+\begin{equation}
+    \operatorname{LB}(u)
+    =
+    \operatorname{cost\_so\_far}(u)
+    +
+    \sum_{r\in R(u)}
+    \min_{j\in J(u)} C_{rj}
+    \label{eq:assignment-lower-bound}
+\end{equation}
+dengan $R(u)$ adalah pekerja yang belum diberi pekerjaan, $J(u)$ pekerjaan yang belum dipakai, dan $C_{rj}$ biaya pekerja $r$ mengerjakan pekerjaan $j$.
+
+Pada 0/1 knapsack maksimasi, bound yang umum dipakai adalah relaksasi fractional knapsack:
+\begin{equation}
+    \operatorname{UB}(u)
+    =
+    p(u)
+    +
+    \sum_{\text{barang penuh}} p_i
+    +
+    \frac{K-w(u)-\sum_{\text{barang penuh}} w_i}{w_t}p_t
+    \label{eq:knapsack-upper-bound}
+\end{equation}
+dengan $K$ kapasitas, $p(u)$ profit sementara, $w(u)$ bobot sementara, dan barang diurutkan berdasarkan rasio $p_i/w_i$.
+
+Pada TSP dengan reduced cost matrix:
+\begin{equation}
+    \hat{c}(S)=\hat{c}(R)+A(i,j)+r
+    \label{eq:tsp-reduced-cost-extra}
+\end{equation}
+dengan $R$ simpul orang tua, $S$ simpul anak, $A(i,j)$ biaya sisi pada matriks tereduksi, dan $r$ total reduksi baris-kolom baru.
+
+Pada n-puzzle, cost simpul biasanya:
+\begin{equation}
+    \hat{c}(i)=g(i)+h(i)
+    \label{eq:npuzzle-cost}
+\end{equation}
+dengan $g(i)$ jumlah langkah dari akar dan $h(i)$ jumlah Manhattan distance semua tile terhadap posisi goal.
+
+\subsection{Penjelasan Konsep Fundamental}
+\subsubsection{Definisi Branch and Bound}
+\begin{jawab}[Inti Konsep.]
+B\&B adalah BFS yang dimodifikasi dengan \textit{least cost search}, sehingga simpul hidup yang diekspansi adalah simpul dengan nilai batas terbaik.
+\end{jawab}
+
+Setiap simpul diberi nilai $\hat{c}(i)$, yaitu taksiran lintasan termurah ke simpul tujuan yang melalui simpul status $i$. Pada kasus minimisasi, simpul dengan $\hat{c}(i)$ terkecil dipilih sebagai simpul-E.
+
+\subsubsection{Pemangkasan pada B\&B}
+\begin{jawab}[Inti Konsep.]
+Simpul dipangkas jika nilainya tidak lebih baik dari solusi terbaik sejauh ini, tidak feasible, atau sudah tidak memiliki pilihan lanjutan yang berguna.
+\end{jawab}
+
+Pemangkasan tidak hanya bergantung pada pelanggaran kendala, tetapi juga pada nilai objektif. Jika batas bawah suatu simpul minimisasi lebih buruk daripada solusi terbaik sejauh ini, simpul itu tidak perlu diekspansi.
+
+\subsubsection{Aplikasi B\&B}
+\begin{jawab}[Inti Konsep.]
+Contoh utama B\&B pada sumber adalah 15-Puzzle, TSP, Assignment Problem, dan 1/0 Knapsack.
+\end{jawab}
+
+Pada TSP, nilai batas dapat dihitung dengan matriks ongkos tereduksi atau bobot tur lengkap. Pada assignment problem, lower bound dapat dihitung dari nilai minimum per baris/kolom. Pada 1/0 knapsack, karena persoalan maksimasi, nilai batas simpul menyatakan batas atas dari nilai optimum.
+
+\subsection{Komponen Kunci Penting}
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+$\hat{c}(i)$ & Nilai taksiran cost atau bound untuk simpul $i$. \\
+\hline
+Simpul hidup & Simpul yang sudah dibangkitkan tetapi belum dimatikan. \\
+\hline
+Simpul-E & Simpul hidup yang dipilih untuk diekspansi. \\
+\hline
+\textit{Least cost search} & Aturan memilih simpul dengan cost terkecil pada persoalan minimisasi. \\
+\hline
+Solusi terbaik sejauh ini & Acuan untuk mematikan simpul yang tidak dapat memberi solusi lebih baik. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Branch and Bound}
+\label{tab:komponen-kunci-branch-and-bound}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+\subsubsection{Cost Simpul}
+\begin{jawab}[Makna Rumus.]
+Cost simpul memperkirakan ongkos solusi terbaik yang dapat dicapai melalui simpul tersebut.
+\end{jawab}
+
+\begin{equation}
+    \hat{c}(i)=\hat{f}(i)+\hat{g}(i)
+    \label{eq:cost-bnb}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $\hat{c}(i)$: cost simpul $i$.
+    \item $\hat{f}(i)$: ongkos mencapai simpul $i$ dari akar.
+    \item $\hat{g}(i)$: taksiran ongkos dari simpul $i$ ke tujuan.
+\end{itemize}
+
+\subsubsection{Bound TSP dengan Reduced Cost Matrix}
+\begin{jawab}[Makna Rumus.]
+Rumus ini menghitung batas bawah anak simpul pada TSP setelah memilih sisi $(i,j)$ dan melakukan reduksi ulang matriks.
+\end{jawab}
+
+\begin{equation}
+    \hat{c}(S)=\hat{c}(R)+A(i,j)+r
+    \label{eq:tsp-reduced-cost}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $R$: simpul orang tua.
+    \item $S$: simpul anak.
+    \item $A(i,j)$: elemen matriks tereduksi yang bersesuaian dengan sisi $(i,j)$.
+    \item $r$: total pengurang dari reduksi baris dan kolom berikutnya.
+\end{itemize}
+
+\subsection{Checklist Pemahaman}
+\subsubsection{Submateri yang Telah Dibahas}
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan B\&B sebagai BFS dengan \textit{least cost search}.
+    \item[$\square$] Saya dapat membedakan B\&B dan backtracking.
+    \item[$\square$] Saya dapat menjelaskan kriteria pemangkasan simpul.
+    \item[$\square$] Saya dapat menjelaskan makna lower bound dan upper bound.
+    \item[$\square$] Saya dapat menghitung bound sederhana dan menentukan simpul yang dipangkas.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Konsep bound, pemilihan simpul-E, pruning, perbedaan dengan backtracking, dan rumus TSP reduced cost. \\
+\hline
+\textbf{Cukup Paham Konsep} & 15-Puzzle, Assignment Problem, dan 1/0 Knapsack. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan. \\
+\hline
+\end{tabularx}

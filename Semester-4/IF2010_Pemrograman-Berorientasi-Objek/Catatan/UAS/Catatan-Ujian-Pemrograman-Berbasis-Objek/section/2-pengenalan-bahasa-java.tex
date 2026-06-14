@@ -1,0 +1,662 @@
+\section{Pengenalan Bahasa Java}
+
+Pengenalan Bahasa Java membahas cara Java memodelkan program sebagai kumpulan class, object, method, dan package, serta cara program Java dikompilasi menjadi bytecode yang dijalankan oleh Java Virtual Machine (JVM). Materi ini menjadi fondasi untuk seluruh topik setelahnya, karena inheritance, interface, generic, collection, stream, exception, multithreading, reflection, dan design pattern semuanya bergantung pada pemahaman struktur dasar Java.
+
+Untuk ujian OOP, penguasaan Java dasar tidak cukup berhenti pada hafalan sintaks. Yang lebih penting adalah memahami mengapa Java memiliki struktur tertentu: mengapa semua program berada di dalam class, mengapa \texttt{main} harus \texttt{static}, mengapa tipe primitif berbeda dari object, mengapa access modifier memengaruhi enkapsulasi, dan bagaimana package/import membantu modularitas.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Query NotebookLM untuk materi Pengenalan Bahasa Java tidak mengembalikan pembahasan Java dasar yang relevan; jawaban yang muncul kembali membahas SOLID. Karena itu, section ini disusun menggunakan pengetahuan umum Java yang stabil dan lazim dipakai pada pengajaran OOP. Bagian ini tidak mengklaim berasal langsung dari dokumen NotebookLM.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Identitas dan karakteristik Java \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Java sebagai bahasa berorientasi objek, statically typed, class-based, dan portable.
+        \item Prinsip \textit{write once, run anywhere} melalui bytecode dan JVM.
+        \item Peran JDK, JRE, JVM, compiler \texttt{javac}, dan launcher \texttt{java}.
+    \end{enumerate}
+    \item Struktur minimal program Java \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item File \texttt{.java}, class, method, statement, block, dan semicolon.
+        \item Method entry point \texttt{public static void main(String[] args)}.
+        \item Aturan nama public class dan nama file.
+    \end{enumerate}
+    \item Tipe data dan variabel \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Tipe primitif: \texttt{byte}, \texttt{short}, \texttt{int}, \texttt{long}, \texttt{float}, \texttt{double}, \texttt{char}, dan \texttt{boolean}.
+        \item Tipe referensi: class, array, interface, enum, record, dan \texttt{String}.
+        \item Literal, assignment, casting, overflow, dan nilai default.
+    \end{enumerate}
+    \item Class, object, field, method, dan constructor \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Class sebagai blueprint dan object sebagai instance.
+        \item Field menyimpan state; method mendefinisikan behavior.
+        \item Constructor membentuk invariant awal object.
+        \item \texttt{this}, \texttt{static}, \texttt{final}, dan overload method/constructor.
+    \end{enumerate}
+    \item Access modifier dan enkapsulasi \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item \texttt{private}, package-private, \texttt{protected}, dan \texttt{public}.
+        \item Getter/setter yang validasi state, bukan sekadar membuka semua field.
+        \item Hubungan access modifier dengan SRP, coupling, dan maintainability.
+    \end{enumerate}
+    \item Control flow dan ekspresi dasar \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Percabangan: \texttt{if}, \texttt{else}, \texttt{switch}.
+        \item Perulangan: \texttt{for}, enhanced \texttt{for}, \texttt{while}, dan \texttt{do-while}.
+        \item Operator, short-circuit evaluation, \texttt{break}, \texttt{continue}, dan \texttt{return}.
+    \end{enumerate}
+    \item Package, import, dan organisasi kode \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item Package sebagai namespace dan unit organisasi.
+        \item Import untuk menggunakan tipe dari package lain.
+        \item Classpath/module path sebagai lokasi pencarian class.
+    \end{enumerate}
+    \item Proses kompilasi dan eksekusi
+    \begin{enumerate}
+        \item \texttt{javac} mengubah source code menjadi bytecode \texttt{.class}.
+        \item JVM memuat class, memverifikasi bytecode, lalu mengeksekusi program.
+        \item Error kompilasi berbeda dari error runtime.
+    \end{enumerate}
+    \item Hubungan Java dasar dengan materi OOP lanjut
+    \begin{enumerate}
+        \item Inheritance dan interface membutuhkan pemahaman class, method, dan access modifier.
+        \item Generics dan collection membutuhkan pemahaman tipe referensi.
+        \item Exception, assertion, multithreading, dan reflection membutuhkan pemahaman runtime Java.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Java dasar adalah lapisan sintaks dan runtime yang membuat konsep OOP dapat diterapkan secara konkret. Tanpa memahami struktur class, method, object, tipe, access modifier, dan proses eksekusi JVM, materi OOP lanjut akan terasa seperti aturan terpisah yang sulit dihubungkan.
+\end{jawab}
+
+Dalam ujian, materi pengenalan Java sering menjadi sumber kesalahan kecil tetapi fatal. Misalnya, mahasiswa dapat memahami konsep class secara umum, tetapi salah menulis \texttt{main}; memahami object, tetapi mencampur field instance dengan field \texttt{static}; memahami tipe data, tetapi tidak sadar bahwa \texttt{String} adalah object immutable; atau memahami access modifier, tetapi tidak tahu bahwa tanpa modifier berarti package-private, bukan \texttt{public}. Kesalahan seperti ini menunjukkan bahwa pemahaman OOP belum terikat kuat pada bahasa Java sebagai alat implementasi.
+
+Java juga penting karena ia memisahkan source code, bytecode, dan runtime. Program Java tidak langsung menjadi executable native seperti beberapa bahasa lain. Source code dikompilasi menjadi bytecode yang dijalankan oleh JVM. Model ini menjelaskan portabilitas Java dan juga menjelaskan mengapa konsep seperti class loading, garbage collection, exception handling, reflection, dan multithreading menjadi bagian penting dari ekosistem Java.
+
+\begin{cmt}{Relevansi Industri}{}
+Dalam pengembangan aplikasi nyata, Java banyak digunakan untuk backend, enterprise system, Android lama, service berbasis Spring, data processing, dan sistem yang membutuhkan ekosistem library matang. Pemahaman Java dasar memengaruhi kualitas desain: penempatan package, visibilitas class, immutability, pemilihan tipe, dan penggunaan dependency semuanya menentukan apakah kode mudah diuji dan dirawat.
+\end{cmt}
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Materi ini menjadi prasyarat langsung bagi semua materi setelahnya. Java String membutuhkan pemahaman tipe referensi dan object. Java Inheritance membutuhkan pemahaman class, constructor, access modifier, overriding, dan polymorphism. Java Interface membutuhkan pemahaman kontrak method dan reference type. Generics membutuhkan pemahaman tipe statis. Collection dan Stream API membutuhkan pemahaman object, interface, lambda, dan generic. Exception dan assertion membutuhkan pemahaman control flow serta runtime error. Multithreading membutuhkan pemahaman object bersama, method, dan memory visibility. Reflection membutuhkan pemahaman bahwa class dan method memiliki metadata pada runtime.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Karakteristik Dasar Java}
+
+\begin{jawab}[Inti Konsep.]
+Java adalah bahasa pemrograman berorientasi objek yang \textit{statically typed}, \textit{class-based}, dan dirancang agar program dapat dikompilasi menjadi bytecode lalu dijalankan di JVM.
+\end{jawab}
+
+Java disebut \textit{statically typed} karena tipe variabel, parameter, return value, dan field diperiksa saat kompilasi. Jika sebuah method mengharapkan \texttt{int}, pemanggil tidak dapat sembarangan memberikan \texttt{String}. Pemeriksaan tipe ini membuat banyak kesalahan ditemukan sebelum program berjalan. Java juga \textit{class-based}, artinya struktur utama program adalah class. Object dibuat sebagai instance dari class, dan perilaku object dinyatakan melalui method.
+
+Java sering disebut portable karena hasil kompilasinya bukan instruksi mesin khusus satu sistem operasi, melainkan bytecode. Bytecode ini dijalankan oleh JVM yang tersedia untuk berbagai platform. Dengan demikian, source yang sama dapat dikompilasi dan dijalankan di lingkungan berbeda selama tersedia JVM yang sesuai.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.25\textwidth}|X|}
+\hline
+\textbf{Komponen} & \textbf{Peran} \\
+\hline
+JDK & Java Development Kit; berisi tools untuk mengembangkan program Java, termasuk \texttt{javac}, \texttt{java}, library standar, dan dokumentasi API. \\
+\hline
+JRE & Java Runtime Environment; lingkungan untuk menjalankan program Java. Pada praktik modern, JRE sering dipaketkan bersama JDK atau runtime distribusi tertentu. \\
+\hline
+JVM & Java Virtual Machine; mesin virtual yang memuat, memverifikasi, dan mengeksekusi bytecode Java. \\
+\hline
+\texttt{javac} & Compiler Java yang mengubah file \texttt{.java} menjadi file bytecode \texttt{.class}. \\
+\hline
+\texttt{java} & Launcher untuk menjalankan class yang memiliki entry point \texttt{main}. \\
+\hline
+Bytecode & Representasi hasil kompilasi yang portabel dan dijalankan oleh JVM. \\
+\hline
+\end{tabularx}
+\caption{Komponen dasar ekosistem Java}
+\label{tab:komponen-ekosistem-java}
+\end{table}
+
+\subsubsection{Struktur Minimal Program Java}
+
+\begin{jawab}[Inti Konsep.]
+Program Java minimal terdiri atas class dan method \texttt{main}. Method \texttt{main} menjadi entry point, yaitu titik awal eksekusi program ketika dijalankan dengan perintah \texttt{java}.
+\end{jawab}
+
+Contoh program Java paling sederhana:
+
+\begin{lstlisting}[language=Java, caption={Program Java minimal}, label={lst:java-minimal}]
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Halo, Java!");
+    }
+}
+\end{lstlisting}
+
+Setiap bagian dari program tersebut memiliki makna:
+
+\begin{itemize}
+    \item \texttt{public class HelloWorld}: mendefinisikan class bernama \texttt{HelloWorld}. Jika class ini \texttt{public}, nama file harus \texttt{HelloWorld.java}.
+    \item \texttt{public}: method dapat diakses dari luar class, sehingga JVM dapat memanggilnya sebagai entry point.
+    \item \texttt{static}: method milik class, bukan object tertentu. JVM dapat menjalankan \texttt{main} tanpa membuat object \texttt{HelloWorld} terlebih dahulu.
+    \item \texttt{void}: method tidak mengembalikan nilai.
+    \item \texttt{main}: nama khusus yang dicari JVM sebagai entry point.
+    \item \texttt{String[] args}: array argumen command-line yang diberikan saat program dijalankan.
+    \item \texttt{System.out.println}: pemanggilan method untuk mencetak teks ke standard output.
+\end{itemize}
+
+Aturan pentingnya adalah: satu file \texttt{.java} boleh memiliki beberapa top-level class, tetapi hanya boleh ada satu top-level class \texttt{public}; jika ada class \texttt{public}, nama file harus sama persis dengan nama class tersebut. Java bersifat case-sensitive, sehingga \texttt{HelloWorld}, \texttt{helloworld}, dan \texttt{HELLOWORLD} adalah nama berbeda.
+
+\subsubsection{Class, Object, Field, Method, dan Constructor}
+
+\begin{jawab}[Inti Konsep.]
+Class adalah cetak biru yang mendefinisikan state dan behavior; object adalah instance konkret dari class. Field menyimpan state, method menjalankan behavior, dan constructor membentuk object dalam keadaan awal yang valid.
+\end{jawab}
+
+Dalam OOP, class tidak seharusnya dipahami hanya sebagai tempat menaruh fungsi. Class memodelkan konsep. Jika kita membuat class \texttt{BankAccount}, maka field menyimpan state seperti saldo dan pemilik, sedangkan method merepresentasikan operasi yang sah seperti deposit dan withdraw. Constructor memastikan object dibuat dalam keadaan valid, misalnya saldo awal tidak negatif.
+
+\begin{lstlisting}[language=Java, caption={Class dengan field, constructor, dan method}, label={lst:java-class-object}]
+public class BankAccount {
+    private final String owner;
+    private long balance;
+
+    public BankAccount(String owner, long initialBalance) {
+        if (owner == null || owner.isBlank()) {
+            throw new IllegalArgumentException("Owner wajib diisi");
+        }
+        if (initialBalance < 0) {
+            throw new IllegalArgumentException("Saldo awal tidak boleh negatif");
+        }
+        this.owner = owner;
+        this.balance = initialBalance;
+    }
+
+    public void deposit(long amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Deposit harus positif");
+        }
+        balance += amount;
+    }
+
+    public void withdraw(long amount) {
+        if (amount <= 0 || amount > balance) {
+            throw new IllegalArgumentException("Penarikan tidak valid");
+        }
+        balance -= amount;
+    }
+
+    public long getBalance() {
+        return balance;
+    }
+}
+\end{lstlisting}
+
+Kata kunci \texttt{this} merujuk pada object saat ini. Pada constructor di atas, \texttt{this.owner} berarti field \texttt{owner} milik object yang sedang dibuat. Kata kunci \texttt{final} pada field \texttt{owner} berarti field tersebut harus diisi sekali dan tidak dapat diganti setelah constructor selesai. Namun \texttt{final} pada reference object bukan berarti object yang dirujuk selalu immutable; ia hanya berarti variabel referensinya tidak dapat diarahkan ke object lain.
+
+\begin{lstlisting}[language=Java, caption={Membuat dan menggunakan object}, label={lst:java-object-usage}]
+public class Main {
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount("Narendra", 100_000);
+        account.deposit(50_000);
+        account.withdraw(25_000);
+
+        System.out.println(account.getBalance()); // 125000
+    }
+}
+\end{lstlisting}
+
+Operator \texttt{new} membuat object baru di heap dan mengembalikan reference ke object tersebut. Variabel \texttt{account} menyimpan reference, bukan menyalin seluruh object. Ini penting untuk memahami aliasing, mutability, parameter passing, collection, dan object sharing pada multithreading.
+
+\subsubsection{Tipe Primitif dan Tipe Referensi}
+
+\begin{jawab}[Inti Konsep.]
+Java memiliki dua kelompok besar tipe: tipe primitif yang menyimpan nilai sederhana secara langsung, dan tipe referensi yang menyimpan reference menuju object atau array.
+\end{jawab}
+
+Tipe primitif adalah tipe bawaan yang bukan object. Java memiliki delapan tipe primitif. Tipe referensi mencakup class, interface, array, enum, record, dan \texttt{String}. Perbedaan ini penting karena operasi assignment, perbandingan, nilai default, dan kemungkinan \texttt{null} berbeda.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.18\textwidth}|L{0.20\textwidth}|X|}
+\hline
+\textbf{Tipe} & \textbf{Contoh} & \textbf{Catatan} \\
+\hline
+\texttt{byte} & \texttt{byte b = 10;} & Integer 8-bit bertanda. Jarang dipakai kecuali untuk data biner. \\
+\hline
+\texttt{short} & \texttt{short s = 1000;} & Integer 16-bit bertanda. \\
+\hline
+\texttt{int} & \texttt{int n = 42;} & Integer 32-bit; pilihan default untuk bilangan bulat. \\
+\hline
+\texttt{long} & \texttt{long x = 10L;} & Integer 64-bit; gunakan suffix \texttt{L} untuk literal long. \\
+\hline
+\texttt{float} & \texttt{float f = 1.5f;} & Floating point 32-bit; gunakan suffix \texttt{f}. \\
+\hline
+\texttt{double} & \texttt{double d = 1.5;} & Floating point 64-bit; pilihan default untuk bilangan desimal. \\
+\hline
+\texttt{char} & \texttt{char c = 'A';} & Karakter 16-bit berbasis unit UTF-16. \\
+\hline
+\texttt{boolean} & \texttt{boolean ok = true;} & Hanya bernilai \texttt{true} atau \texttt{false}; tidak dapat diganti dengan 0/1. \\
+\hline
+\end{tabularx}
+\caption{Tipe primitif Java}
+\label{tab:tipe-primitif-java}
+\end{table}
+
+Contoh perbedaan tipe primitif dan referensi:
+
+\begin{lstlisting}[language=Java, caption={Tipe primitif vs tipe referensi}, label={lst:primitive-reference}]
+int a = 10;
+int b = a;
+b = 20;
+System.out.println(a); // 10, karena nilai int disalin.
+
+BankAccount x = new BankAccount("A", 100);
+BankAccount y = x;
+y.deposit(50);
+System.out.println(x.getBalance()); // 150, karena x dan y merujuk object sama.
+\end{lstlisting}
+
+Tipe referensi dapat bernilai \texttt{null}, yaitu tidak merujuk object apa pun. Memanggil method pada reference \texttt{null} menyebabkan \texttt{NullPointerException}. Tipe primitif tidak dapat bernilai \texttt{null}. Untuk kebutuhan generic atau collection, Java menyediakan wrapper class seperti \texttt{Integer}, \texttt{Long}, \texttt{Double}, dan \texttt{Boolean}.
+
+\begin{cmt}{Autoboxing dan Unboxing}{}
+Java dapat mengubah primitif ke wrapper secara otomatis melalui autoboxing, misalnya \texttt{Integer x = 10;}. Sebaliknya, unboxing mengubah wrapper ke primitif, misalnya \texttt{int y = x;}. Hati-hati: unboxing reference \texttt{null} akan menyebabkan \texttt{NullPointerException}.
+\end{cmt}
+
+\subsubsection{Variabel, Scope, Assignment, dan Casting}
+
+\begin{jawab}[Inti Konsep.]
+Variabel adalah nama untuk menyimpan nilai atau reference. Scope menentukan wilayah program tempat variabel dapat diakses, sedangkan casting mengubah tipe nilai ketika konversi diperlukan dan valid.
+\end{jawab}
+
+Java membedakan local variable, parameter, field instance, dan field static. Local variable berada di dalam method atau block dan harus diinisialisasi sebelum dipakai. Field memiliki nilai default jika tidak diinisialisasi eksplisit. Misalnya, field \texttt{int} default-nya 0, \texttt{boolean} default-nya \texttt{false}, dan reference default-nya \texttt{null}. Namun, bergantung pada default field tanpa alasan jelas biasanya membuat kode sulit dibaca.
+
+\begin{lstlisting}[language=Java, caption={Scope dan shadowing variabel}, label={lst:scope-shadowing}]
+public class Counter {
+    private int value;
+
+    public Counter(int value) {
+        this.value = value; // parameter value menutupi field value.
+    }
+
+    public void add(int delta) {
+        int oldValue = value; // local variable hanya hidup di method ini.
+        value = oldValue + delta;
+    }
+}
+\end{lstlisting}
+
+Konversi tipe numerik dapat terjadi secara widening atau narrowing. Widening, seperti \texttt{int} ke \texttt{long}, aman karena rentang tipe tujuan lebih besar. Narrowing, seperti \texttt{long} ke \texttt{int}, membutuhkan cast eksplisit dan dapat kehilangan data.
+
+\begin{lstlisting}[language=Java, caption={Widening dan narrowing conversion}, label={lst:casting-java}]
+int small = 100;
+long wide = small;       // widening, otomatis.
+
+long big = 3_000_000_000L;
+int narrowed = (int) big; // narrowing, data dapat berubah karena overflow.
+\end{lstlisting}
+
+\subsubsection{Access Modifier dan Enkapsulasi}
+
+\begin{jawab}[Inti Konsep.]
+Access modifier mengatur siapa yang boleh mengakses class, field, constructor, atau method. Dalam OOP, access modifier adalah alat utama untuk enkapsulasi, yaitu menyembunyikan detail internal dan menjaga invariant object.
+\end{jawab}
+
+Java memiliki empat tingkat akses utama:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.18\textwidth}|L{0.22\textwidth}|X|}
+\hline
+\textbf{Modifier} & \textbf{Akses} & \textbf{Penggunaan Umum} \\
+\hline
+\texttt{private} & Hanya di dalam class yang sama. & Field internal, helper method, detail implementasi. \\
+\hline
+package-private & Class dalam package yang sama. Ditulis tanpa modifier. & Kolaborasi internal antarclass dalam package. \\
+\hline
+\texttt{protected} & Package yang sama dan subclass. & Method/field yang memang dirancang untuk inheritance. \\
+\hline
+\texttt{public} & Dapat diakses dari mana saja. & API utama yang sengaja diekspos. \\
+\hline
+\end{tabularx}
+\caption{Access modifier Java}
+\label{tab:access-modifier-java}
+\end{table}
+
+Enkapsulasi bukan sekadar membuat field \texttt{private} lalu menghasilkan getter dan setter untuk semua field. Jika semua field dapat diubah bebas melalui setter, invariant object tetap bocor. Enkapsulasi yang baik berarti object menyediakan operasi yang bermakna dan menjaga validitas state di dalam operasi tersebut.
+
+\begin{lstlisting}[language=Java, caption={Getter/setter buruk vs method domain yang menjaga invariant}, label={lst:encapsulation}]
+// Kurang baik: saldo dapat diset sembarangan dari luar.
+public void setBalance(long balance) {
+    this.balance = balance;
+}
+
+// Lebih baik: operasi bermakna dan tervalidasi.
+public void withdraw(long amount) {
+    if (amount <= 0 || amount > balance) {
+        throw new IllegalArgumentException("Penarikan tidak valid");
+    }
+    balance -= amount;
+}
+\end{lstlisting}
+
+\subsubsection{\texttt{static}, Instance Member, dan \texttt{final}}
+
+\begin{jawab}[Inti Konsep.]
+Member instance melekat pada object tertentu, sedangkan member \texttt{static} melekat pada class. Kata kunci \texttt{final} mencegah reassignment, inheritance, atau overriding tergantung tempat penggunaannya.
+\end{jawab}
+
+Field instance dimiliki tiap object. Jika ada dua object \texttt{BankAccount}, masing-masing memiliki \texttt{balance} sendiri. Field static dimiliki class, sehingga nilainya dibagi oleh semua object dari class tersebut. Static cocok untuk konstanta atau operasi yang tidak membutuhkan state object. Static tidak cocok untuk menyimpan state global yang mudah berubah karena dapat meningkatkan coupling dan menyulitkan testing.
+
+\begin{lstlisting}[language=Java, caption={Instance member, static member, dan final}, label={lst:static-final}]
+public class MathUtil {
+    public static final double PI = 3.141592653589793;
+
+    private MathUtil() {
+        // Mencegah instansiasi utility class.
+    }
+
+    public static int square(int x) {
+        return x * x;
+    }
+}
+\end{lstlisting}
+
+Makna \texttt{final} bergantung pada lokasinya:
+
+\begin{itemize}
+    \item \texttt{final} pada variabel: variabel tidak dapat diassign ulang.
+    \item \texttt{final} pada field: field harus diisi sebelum constructor selesai dan tidak dapat diganti setelahnya.
+    \item \texttt{final} pada method: method tidak dapat dioverride subclass.
+    \item \texttt{final} pada class: class tidak dapat diwarisi.
+\end{itemize}
+
+\subsubsection{Control Flow: Percabangan dan Perulangan}
+
+\begin{jawab}[Inti Konsep.]
+Control flow menentukan urutan eksekusi statement. Java menyediakan percabangan untuk memilih jalur eksekusi dan perulangan untuk mengulang proses selama kondisi tertentu terpenuhi.
+\end{jawab}
+
+Percabangan menggunakan \texttt{if}/\texttt{else} cocok untuk kondisi boolean umum. \texttt{switch} cocok ketika pilihan bergantung pada satu nilai diskret seperti enum, integer, atau string.
+
+\begin{lstlisting}[language=Java, caption={Percabangan if dan switch}, label={lst:control-if-switch}]
+if (score >= 80) {
+    grade = "A";
+} else if (score >= 70) {
+    grade = "B";
+} else {
+    grade = "C";
+}
+
+switch (day) {
+    case MONDAY -> System.out.println("Awal minggu");
+    case FRIDAY -> System.out.println("Menjelang akhir minggu");
+    default -> System.out.println("Hari biasa");
+}
+\end{lstlisting}
+
+Perulangan \texttt{for} cocok ketika jumlah iterasi jelas. \texttt{while} cocok ketika pengulangan bergantung kondisi yang belum tentu diketahui jumlahnya. Enhanced \texttt{for} cocok untuk membaca elemen array atau collection tanpa memerlukan indeks.
+
+\begin{lstlisting}[language=Java, caption={Perulangan dasar Java}, label={lst:loops-java}]
+for (int i = 0; i < 10; i++) {
+    System.out.println(i);
+}
+
+while (!queue.isEmpty()) {
+    Task task = queue.remove();
+    task.execute();
+}
+
+for (String name : names) {
+    System.out.println(name);
+}
+\end{lstlisting}
+
+Operator logika \texttt{\&\&} dan \texttt{||} menggunakan short-circuit evaluation. Pada \texttt{a \&\& b}, jika \texttt{a} sudah \texttt{false}, \texttt{b} tidak dievaluasi. Pada \texttt{a || b}, jika \texttt{a} sudah \texttt{true}, \texttt{b} tidak dievaluasi. Ini sering dipakai untuk mencegah \texttt{NullPointerException}.
+
+\begin{lstlisting}[language=Java, caption={Short-circuit untuk menjaga keamanan akses}, label={lst:short-circuit}]
+if (user != null && user.isActive()) {
+    System.out.println("User aktif");
+}
+\end{lstlisting}
+
+\subsubsection{Package, Import, dan Organisasi Kode}
+
+\begin{jawab}[Inti Konsep.]
+Package adalah namespace untuk mengelompokkan class yang berhubungan. Import membuat kode dapat menggunakan nama class dari package lain tanpa menulis fully qualified name setiap kali.
+\end{jawab}
+
+Package biasanya ditulis di baris pertama file Java. Struktur folder umumnya mengikuti nama package. Misalnya, class dengan package \texttt{id.ac.itb.oop.bank} biasanya berada pada folder \texttt{id/ac/itb/oop/bank}. Package membantu mencegah tabrakan nama dan memisahkan area tanggung jawab.
+
+\begin{lstlisting}[language=Java, caption={Package dan import}, label={lst:package-import}]
+package id.ac.itb.oop.bank;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
+public class Invoice {
+    private final List<BigDecimal> amounts;
+    private final LocalDate issuedAt;
+
+    public Invoice(List<BigDecimal> amounts, LocalDate issuedAt) {
+        this.amounts = List.copyOf(amounts);
+        this.issuedAt = issuedAt;
+    }
+}
+\end{lstlisting}
+
+Import tidak memasukkan kode secara tekstual seperti \texttt{\#include} di C/C++. Import hanya memberi tahu compiler bahwa nama pendek seperti \texttt{List} mengacu pada tipe \texttt{java.util.List}. Package \texttt{java.lang} otomatis diimpor, sehingga class seperti \texttt{String}, \texttt{System}, dan \texttt{Math} dapat langsung digunakan.
+
+\subsubsection{Kompilasi dan Eksekusi Program Java}
+
+\begin{jawab}[Inti Konsep.]
+Source code Java dikompilasi oleh \texttt{javac} menjadi bytecode \texttt{.class}. Bytecode kemudian dijalankan oleh JVM menggunakan perintah \texttt{java}.
+\end{jawab}
+
+Prosedur sederhana untuk program tanpa package:
+
+\begin{lstlisting}[caption={Kompilasi dan eksekusi program tanpa package}, label={lst:compile-simple}]
+Input: File HelloWorld.java
+Output: Program berjalan di JVM
+
+1. Tulis source code di HelloWorld.java.
+2. Jalankan: javac HelloWorld.java
+3. Compiler menghasilkan HelloWorld.class.
+4. Jalankan: java HelloWorld
+5. JVM mencari method public static void main(String[] args).
+6. JVM mengeksekusi bytecode dari method main.
+\end{lstlisting}
+
+Untuk program dengan package, lokasi output class dan nama yang dijalankan harus memperhatikan package:
+
+\begin{lstlisting}[caption={Kompilasi dan eksekusi program dengan package}, label={lst:compile-package}]
+Misal file: src/id/ac/itb/oop/Main.java
+Isi package: package id.ac.itb.oop;
+
+1. Kompilasi:
+   javac -d out src/id/ac/itb/oop/Main.java
+
+2. Jalankan:
+   java -cp out id.ac.itb.oop.Main
+\end{lstlisting}
+
+Error kompilasi terjadi ketika source code tidak memenuhi aturan bahasa, misalnya tipe tidak cocok, semicolon hilang, atau method tidak ditemukan. Error runtime terjadi setelah program berjalan, misalnya \texttt{NullPointerException}, pembagian dengan nol pada integer, atau akses indeks array di luar batas.
+
+\subsubsection{Hubungan Java dengan OOP}
+
+\begin{jawab}[Inti Konsep.]
+Java menerapkan OOP melalui class, object, encapsulation, inheritance, polymorphism, dan abstraction. Namun, desain OOP yang baik tetap membutuhkan pemahaman prinsip, bukan hanya penggunaan sintaks class.
+\end{jawab}
+
+Class dan object adalah dasar OOP di Java. Encapsulation diterapkan melalui private field dan method publik yang menjaga invariant. Inheritance diterapkan melalui \texttt{extends}; interface diterapkan melalui \texttt{implements}; polymorphism muncul ketika reference bertipe superclass atau interface dapat menunjuk object subclass atau implementasi konkret. Abstraction muncul ketika detail implementasi disembunyikan di balik method, abstract class, atau interface.
+
+\begin{lstlisting}[language=Java, caption={Polymorphism sederhana melalui interface}, label={lst:polymorphism-intro}]
+public interface NotificationSender {
+    void send(String recipient, String message);
+}
+
+public class EmailSender implements NotificationSender {
+    @Override
+    public void send(String recipient, String message) {
+        System.out.println("Email to " + recipient + ": " + message);
+    }
+}
+
+public class SmsSender implements NotificationSender {
+    @Override
+    public void send(String recipient, String message) {
+        System.out.println("SMS to " + recipient + ": " + message);
+    }
+}
+
+public class NotificationService {
+    private final NotificationSender sender;
+
+    public NotificationService(NotificationSender sender) {
+        this.sender = sender;
+    }
+
+    public void notifyUser(String recipient) {
+        sender.send(recipient, "Akun berhasil dibuat");
+    }
+}
+\end{lstlisting}
+
+Contoh tersebut menunjukkan hubungan materi Java dasar dengan SOLID. Service notifikasi tidak peduli apakah pengiriman dilakukan lewat email atau SMS; ia hanya bergantung pada interface. Ini adalah dasar polymorphism sekaligus pintu masuk menuju DIP dan design pattern.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+Java & Bahasa pemrograman OOP, statically typed, class-based, dan berjalan di JVM. \\
+\hline
+JDK & Paket pengembangan Java yang berisi compiler, launcher, dan library standar. \\
+\hline
+JVM & Mesin virtual yang menjalankan bytecode Java. \\
+\hline
+Bytecode & Hasil kompilasi Java dalam file \texttt{.class}. \\
+\hline
+Class & Blueprint yang mendefinisikan field, constructor, dan method. \\
+\hline
+Object & Instance konkret dari class. \\
+\hline
+Field & Data atau state yang dimiliki object atau class. \\
+\hline
+Method & Operasi atau behavior yang dapat dipanggil. \\
+\hline
+Constructor & Blok khusus untuk menginisialisasi object baru. \\
+\hline
+\texttt{main} & Entry point program Java. Bentuk umumnya adalah \texttt{public static void main} dengan parameter \texttt{String[] args}. \\
+\hline
+Primitive type & Tipe nilai sederhana seperti \texttt{int}, \texttt{double}, dan \texttt{boolean}. \\
+\hline
+Reference type & Tipe yang menyimpan reference ke object, array, class, interface, enum, atau record. \\
+\hline
+Access modifier & Pengatur visibilitas seperti \texttt{private}, package-private, \texttt{protected}, dan \texttt{public}. \\
+\hline
+Package & Namespace dan unit organisasi kode Java. \\
+\hline
+Import & Deklarasi untuk menggunakan tipe dari package lain dengan nama pendek. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Pengenalan Bahasa Java}
+\label{tab:komponen-kunci-pengenalan-java}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Alur Eksekusi Program Java}
+
+\begin{jawab}[Tujuan Algoritma.]
+Alur ini menjelaskan perjalanan program dari source code sampai berjalan di JVM. Pemahaman ini membantu membedakan error kompilasi, error runtime, dan masalah classpath.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode alur kompilasi dan eksekusi Java}, label={lst:alur-eksekusi-java}]
+Input: Source code Java
+Output: Program berjalan atau error terdeteksi
+
+1. Programmer menulis file .java.
+2. Compiler javac membaca source code.
+3. Compiler memeriksa sintaks, tipe, access modifier, dan referensi simbol.
+4. Jika ada kesalahan bahasa:
+      hentikan proses dan tampilkan compile-time error.
+5. Jika valid:
+      hasilkan satu atau lebih file .class berisi bytecode.
+6. Perintah java menjalankan class utama.
+7. JVM mencari method:
+      public static void main(String[] args)
+8. JVM memuat class yang diperlukan melalui class loader.
+9. JVM memverifikasi bytecode.
+10. JVM mengeksekusi instruksi bytecode.
+11. Jika terjadi kesalahan saat berjalan:
+      tangani exception jika ada handler, jika tidak program berhenti.
+\end{lstlisting}
+
+\subsubsection{Formula Tanda Tangan Method}
+
+\begin{jawab}[Makna Rumus.]
+Dalam Java, method signature dipakai untuk membedakan method overload. Signature terdiri dari nama method dan daftar tipe parameter, bukan return type.
+\end{jawab}
+
+\begin{equation}
+    \text{signature(method)} = \text{nama method} + \text{urutan tipe parameter}
+    \label{eq:method-signature-java}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item nama method: identifier method, misalnya \texttt{print}.
+    \item urutan tipe parameter: daftar tipe parameter secara berurutan, misalnya \texttt{(String, int)}.
+\end{itemize}
+
+Contohnya, \texttt{print(String)} dan \texttt{print(int)} adalah overload valid karena tipe parameternya berbeda. Namun, dua method yang hanya berbeda return type tidak valid karena return type tidak menjadi bagian dari signature untuk overload.
+
+\begin{lstlisting}[language=Java, caption={Overload valid dan tidak valid}, label={lst:method-signature}]
+public class Printer {
+    public void print(String text) { }
+    public void print(int number) { }
+
+    // Tidak valid jika hanya berbeda return type:
+    // public int print(String text) { return text.length(); }
+}
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan perbedaan JDK, JRE, JVM, \texttt{javac}, \texttt{java}, dan bytecode.
+    \item[$\square$] Saya dapat menulis struktur program Java minimal dengan \texttt{public static void main(String[] args)}.
+    \item[$\square$] Saya dapat menjelaskan mengapa class \texttt{public} harus memiliki nama yang sama dengan file.
+    \item[$\square$] Saya dapat membedakan class, object, field, method, dan constructor.
+    \item[$\square$] Saya dapat membedakan tipe primitif dan tipe referensi, termasuk risiko \texttt{null}.
+    \item[$\square$] Saya dapat menjelaskan perbedaan \texttt{private}, package-private, \texttt{protected}, dan \texttt{public}.
+    \item[$\square$] Saya dapat menggunakan \texttt{static} dan \texttt{final} secara tepat.
+    \item[$\square$] Saya dapat membaca dan menulis control flow dasar: \texttt{if}, \texttt{switch}, \texttt{for}, \texttt{while}, dan enhanced \texttt{for}.
+    \item[$\square$] Saya dapat menjelaskan fungsi package dan import.
+    \item[$\square$] Saya dapat menjelaskan alur kompilasi dan eksekusi program Java.
+    \item[$\square$] Saya dapat menghubungkan Java dasar dengan konsep OOP seperti encapsulation, abstraction, inheritance, dan polymorphism.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Struktur program Java, \texttt{main}, class-object-method-field-constructor, tipe primitif vs referensi, access modifier, \texttt{static}, \texttt{final}, package/import, dan alur \texttt{javac} ke JVM. \\
+\hline
+\textbf{Cukup Paham Konsep} & Detail widening/narrowing conversion, classpath, default value field, autoboxing/unboxing, dan method signature. \\
+\hline
+\textbf{Sudah Dikuasai} & Materi ini termasuk kelompok 1 sampai 10 yang sudah pernah diujikan dalam kuis, tetapi tetap perlu diperkuat karena menjadi prasyarat semua materi Java lanjutan. \\
+\hline
+\end{tabularx}

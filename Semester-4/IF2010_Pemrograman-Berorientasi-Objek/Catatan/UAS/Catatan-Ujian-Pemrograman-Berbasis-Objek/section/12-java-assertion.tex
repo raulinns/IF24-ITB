@@ -1,0 +1,181 @@
+\section{Java Assertion}
+
+Java Assertion membahas penggunaan kata kunci \texttt{assert} untuk memeriksa asumsi internal program saat development dan debugging. Assertion berbeda dari exception untuk validasi input publik. Assertion dipakai untuk menyatakan kondisi yang seharusnya selalu benar jika program ditulis dengan benar, misalnya invariant internal, postcondition sederhana, atau kondisi yang tidak mungkin terjadi.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini menggunakan pengetahuan umum Java. Assertion sering terlihat kecil, tetapi penting dibedakan dari exception agar tidak salah dipakai untuk validasi runtime yang wajib berjalan.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Konsep assertion
+    \begin{enumerate}
+        \item Memeriksa asumsi internal.
+        \item Dapat diaktifkan atau dinonaktifkan saat runtime.
+        \item Jika gagal, melempar \texttt{AssertionError}.
+    \end{enumerate}
+    \item Sintaks assertion
+    \begin{enumerate}
+        \item \texttt{assert expression;}
+        \item \texttt{assert expression : message;}
+    \end{enumerate}
+    \item Aktivasi assertion
+    \begin{enumerate}
+        \item \texttt{java -ea}.
+        \item \texttt{java -enableassertions}.
+        \item Default-nya assertion tidak aktif.
+    \end{enumerate}
+    \item Kapan memakai assertion
+    \begin{enumerate}
+        \item Invariant internal.
+        \item Cabang yang tidak seharusnya dicapai.
+        \item Pemeriksaan hasil antara dalam algoritma.
+    \end{enumerate}
+    \item Kapan tidak memakai assertion
+    \begin{enumerate}
+        \item Validasi parameter public method.
+        \item Validasi input pengguna.
+        \item Kode dengan side effect penting.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Assertion membantu menemukan bug internal lebih awal, tetapi tidak boleh menjadi satu-satunya mekanisme validasi yang dibutuhkan program saat production.
+\end{jawab}
+
+Karena assertion dapat dimatikan, program tidak boleh bergantung pada \texttt{assert} untuk menjaga keamanan, validasi input eksternal, atau perubahan state penting. Assertion adalah alat dokumentasi executable untuk asumsi programmer: jika asumsi salah, ada bug yang perlu diperbaiki.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Assertion berkaitan dengan Exception karena sama-sama dapat menghentikan alur program, tetapi tujuannya berbeda. Exception menangani kondisi gagal yang mungkin terjadi, sedangkan assertion memeriksa asumsi internal. Assertion juga berkaitan dengan inheritance dan design by contract karena dapat memeriksa invariant dan postcondition.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Sintaks Dasar Assertion}
+
+\begin{jawab}[Inti Konsep.]
+Assertion ditulis dengan \texttt{assert kondisi;} atau \texttt{assert kondisi : pesan;}. Jika kondisi false dan assertion aktif, JVM melempar \texttt{AssertionError}.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Sintaks dasar assert}, label={lst:assert-basic}]
+public int dividePositive(int a, int b) {
+    assert b != 0 : "b tidak boleh nol pada tahap ini";
+    return a / b;
+}
+\end{lstlisting}
+
+Pesan setelah titik dua dievaluasi hanya jika assertion gagal. Pesan dapat berupa string atau object lain yang akan dikonversi menjadi teks.
+
+\subsubsection{Mengaktifkan Assertion}
+
+\begin{jawab}[Inti Konsep.]
+Assertion default-nya tidak aktif. Jalankan program dengan \texttt{-ea} atau \texttt{-enableassertions} agar assertion dievaluasi.
+\end{jawab}
+
+\begin{lstlisting}[caption={Menjalankan program dengan assertion aktif}, label={lst:enable-assertion}]
+javac Main.java
+java -ea Main
+\end{lstlisting}
+
+Karena assertion dapat tidak aktif, jangan menaruh side effect penting di dalam ekspresi assert.
+
+\begin{lstlisting}[language=Java, caption={Assertion dengan side effect yang buruk}, label={lst:assert-side-effect}]
+// Buruk: remove hanya berjalan jika assertion aktif.
+assert list.remove(value);
+\end{lstlisting}
+
+\subsubsection{Assertion vs Exception}
+
+\begin{jawab}[Inti Konsep.]
+Gunakan exception untuk validasi yang harus selalu berjalan; gunakan assertion untuk asumsi internal yang seharusnya tidak salah jika kode benar.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Exception untuk validasi public method}, label={lst:exception-not-assert}]
+public void withdraw(long amount) {
+    if (amount <= 0) {
+        throw new IllegalArgumentException("Amount harus positif");
+    }
+    balance -= amount;
+    assert balance >= 0 : "Invariant saldo tidak boleh negatif";
+}
+\end{lstlisting}
+
+Parameter \texttt{amount} berasal dari pemanggil, sehingga harus divalidasi dengan exception. Setelah operasi, assertion dapat dipakai untuk memeriksa invariant internal.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+\texttt{assert} & Kata kunci untuk memeriksa asumsi internal. \\
+\hline
+\texttt{AssertionError} & Error yang dilempar ketika assertion gagal. \\
+\hline
+\texttt{-ea} & Opsi JVM untuk mengaktifkan assertion. \\
+\hline
+Invariant & Kondisi internal object yang harus selalu benar. \\
+\hline
+Precondition & Syarat yang harus dipenuhi sebelum operasi. \\
+\hline
+Postcondition & Syarat yang harus benar setelah operasi. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java Assertion}
+\label{tab:komponen-kunci-java-assertion}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Menentukan Assert atau Exception}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini mencegah penggunaan assertion untuk validasi yang seharusnya selalu aktif.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode memilih assert atau exception}, label={lst:assert-vs-exception}]
+Input: Kondisi yang ingin diperiksa
+Output: assert atau exception
+
+1. Jika kondisi berasal dari input pengguna atau public API:
+      gunakan exception.
+2. Jika kondisi harus tetap dicek di production:
+      gunakan exception.
+3. Jika kondisi adalah asumsi internal yang seharusnya selalu benar:
+      gunakan assert.
+4. Jika ekspresi pemeriksaan memiliki side effect penting:
+      jangan gunakan assert.
+5. Jika kegagalan perlu ditangani pemanggil:
+      gunakan exception.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menulis sintaks \texttt{assert}.
+    \item[$\square$] Saya dapat mengaktifkan assertion dengan \texttt{-ea}.
+    \item[$\square$] Saya dapat membedakan assertion dan exception.
+    \item[$\square$] Saya dapat menjelaskan mengapa assert tidak boleh dipakai untuk validasi input publik.
+    \item[$\square$] Saya dapat menghindari side effect dalam assertion.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Sintaks assert, aktivasi \texttt{-ea}, \texttt{AssertionError}, assert vs exception. \\
+\hline
+\textbf{Cukup Paham Konsep} & Invariant, precondition, postcondition, risiko side effect. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan; materi ini tidak disebut sebagai materi yang sudah diuji dalam kuis. \\
+\hline
+\end{tabularx}

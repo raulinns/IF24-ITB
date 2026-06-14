@@ -1,0 +1,462 @@
+\section{Design Pattern}
+
+Design Pattern adalah pola solusi yang sering muncul untuk masalah desain perangkat lunak berorientasi objek. Pattern bukan potongan kode yang harus dihafal mentah, melainkan nama dan struktur untuk solusi yang terbukti berguna dalam konteks tertentu. Materi ini harus dipahami bersama SOLID: SOLID membantu mengevaluasi kualitas desain, sedangkan design pattern memberi bentuk implementasi yang sering memenuhi prinsip tersebut.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini disusun menggunakan pengetahuan umum design pattern. Karena daftar pattern yang mungkin diajarkan tidak disebutkan rinci, catatan ini memilih pattern yang paling umum dan paling relevan untuk Java OOP: Singleton, Factory Method, Strategy, Observer, Adapter, Template Method, Decorator, dan Builder.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Konsep design pattern
+    \begin{enumerate}
+        \item Solusi berulang untuk masalah desain berulang.
+        \item Bukan kewajiban; dipakai ketika masalahnya cocok.
+        \item Pattern memiliki intent, struktur, konsekuensi, dan tradeoff.
+    \end{enumerate}
+    \item Kategori pattern
+    \begin{enumerate}
+        \item Creational: pembuatan object.
+        \item Structural: komposisi object/class.
+        \item Behavioral: komunikasi dan variasi perilaku.
+    \end{enumerate}
+    \item Pattern creational
+    \begin{enumerate}
+        \item Singleton.
+        \item Factory Method.
+        \item Builder.
+    \end{enumerate}
+    \item Pattern structural
+    \begin{enumerate}
+        \item Adapter.
+        \item Decorator.
+    \end{enumerate}
+    \item Pattern behavioral
+    \begin{enumerate}
+        \item Strategy.
+        \item Observer.
+        \item Template Method.
+    \end{enumerate}
+    \item Hubungan dengan SOLID
+    \begin{enumerate}
+        \item Strategy mendukung OCP dan DIP.
+        \item Factory mengurangi coupling ke class konkret.
+        \item Adapter mendukung DIP terhadap API eksternal.
+        \item Observer memisahkan publisher dan subscriber.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Design pattern penting karena memberi kosakata desain. Dengan menyebut ``Strategy'' atau ``Factory'', programmer dapat menjelaskan struktur solusi tanpa menggambarkan semua detail dari awal.
+\end{jawab}
+
+Namun, pattern harus dipakai secara pragmatis. Jika masalahnya sederhana, menambahkan banyak class pattern justru membuat kode berlebihan. Dalam ujian, yang penting adalah mengenali masalah desain, memilih pattern yang cocok, menjelaskan mengapa pattern itu menyelesaikan masalah, dan menulis skeleton Java yang benar.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Design pattern memanfaatkan inheritance, interface, generics, exception, collection, dan SOLID. Strategy dan Observer sangat bergantung pada interface. Factory dan Builder berkaitan dengan constructor dan object creation. Decorator dan Adapter memakai composition. Template Method memakai inheritance dan abstract method.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Strategy Pattern}
+
+\begin{jawab}[Inti Konsep.]
+Strategy memisahkan algoritma yang dapat berubah ke dalam interface sehingga klien dapat mengganti perilaku tanpa mengubah class utama.
+\end{jawab}
+
+Strategy cocok ketika ada banyak variasi algoritma, misalnya metode diskon, metode pembayaran, sorting, validasi, atau pengiriman notifikasi.
+
+\begin{itemize}
+    \item \textbf{Pattern name}: Strategy.
+    \item \textbf{Problem}: Gunakan ketika sebuah class memiliki perilaku atau algoritma yang dapat bervariasi, dan pemilihan algoritma tersebut sebaiknya dapat diganti tanpa mengubah class pemakai. Gejala umumnya adalah banyak \texttt{if}/\texttt{switch} untuk memilih cara menghitung, memvalidasi, mengurutkan, atau mengirim sesuatu.
+    \item \textbf{Solution}: Definisikan interface strategy yang menyatakan operasi umum. Setiap variasi algoritma dibuat sebagai concrete strategy. Context menyimpan reference ke interface strategy dan mendelegasikan pekerjaan ke object strategy tersebut.
+    \item \textbf{Consequences}: Context menjadi lebih terbuka untuk ekstensi dan lebih mudah diuji karena algoritma bisa diganti. Tradeoff-nya adalah jumlah class bertambah dan klien atau factory perlu menentukan strategy mana yang dipakai.
+\end{itemize}
+
+\begin{lstlisting}[language=Java, caption={Strategy Pattern untuk diskon}, label={lst:strategy-pattern}]
+public interface DiscountStrategy {
+    BigDecimal apply(BigDecimal price);
+}
+
+public class NoDiscount implements DiscountStrategy {
+    @Override
+    public BigDecimal apply(BigDecimal price) {
+        return price;
+    }
+}
+
+public class PercentageDiscount implements DiscountStrategy {
+    private final BigDecimal percent;
+
+    public PercentageDiscount(BigDecimal percent) {
+        this.percent = percent;
+    }
+
+    @Override
+    public BigDecimal apply(BigDecimal price) {
+        return price.subtract(price.multiply(percent));
+    }
+}
+
+public class CheckoutService {
+    private final DiscountStrategy discount;
+
+    public CheckoutService(DiscountStrategy discount) {
+        this.discount = discount;
+    }
+
+    public BigDecimal finalPrice(BigDecimal price) {
+        return discount.apply(price);
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Factory Method}
+
+\begin{jawab}[Inti Konsep.]
+Factory memindahkan logika pembuatan object ke method/class khusus sehingga klien tidak bergantung langsung pada banyak constructor konkret.
+\end{jawab}
+
+\begin{itemize}
+    \item \textbf{Pattern name}: Factory Method.
+    \item \textbf{Problem}: Gunakan ketika klien perlu membuat object, tetapi klien tidak seharusnya mengetahui class konkret yang dibuat. Pattern ini juga cocok ketika jenis object ditentukan oleh konfigurasi, input, environment, atau subclass.
+    \item \textbf{Solution}: Sediakan method pembuatan object yang mengembalikan tipe abstrak, misalnya interface atau superclass. Concrete factory atau subclass menentukan class konkret mana yang dibuat.
+    \item \textbf{Consequences}: Coupling klien terhadap constructor konkret berkurang dan object creation terkonsentrasi. Tradeoff-nya adalah desain dapat tetap perlu diubah saat tipe baru ditambahkan jika factory memakai \texttt{switch} statis, sehingga perlu dikombinasikan dengan registry atau dependency injection untuk ekstensi lebih fleksibel.
+\end{itemize}
+
+\begin{lstlisting}[language=Java, caption={Factory sederhana untuk parser}, label={lst:factory-pattern}]
+public interface Parser {
+    Document parse(String text);
+}
+
+public class JsonParser implements Parser {
+    public Document parse(String text) { return new Document(); }
+}
+
+public class XmlParser implements Parser {
+    public Document parse(String text) { return new Document(); }
+}
+
+public class ParserFactory {
+    public static Parser create(String format) {
+        return switch (format) {
+            case "json" -> new JsonParser();
+            case "xml" -> new XmlParser();
+            default -> throw new IllegalArgumentException("Format tidak dikenal");
+        };
+    }
+}
+\end{lstlisting}
+
+Factory sederhana masih dapat melanggar OCP jika setiap tipe baru harus mengubah switch. Namun, factory tetap berguna untuk memusatkan keputusan object creation di satu lokasi.
+
+\subsubsection{Builder Pattern}
+
+\begin{jawab}[Inti Konsep.]
+Builder membantu membuat object kompleks dengan banyak parameter opsional tanpa constructor panjang dan membingungkan.
+\end{jawab}
+
+\begin{itemize}
+    \item \textbf{Pattern name}: Builder.
+    \item \textbf{Problem}: Gunakan ketika pembuatan object membutuhkan banyak parameter, sebagian opsional, atau memiliki kombinasi konfigurasi yang membuat constructor terlalu panjang dan rawan salah urutan.
+    \item \textbf{Solution}: Pisahkan proses konstruksi ke object builder. Builder menyediakan method bertahap untuk mengisi konfigurasi, lalu method \texttt{build()} membuat object final yang valid.
+    \item \textbf{Consequences}: Kode pembuatan object menjadi lebih ekspresif dan object dapat dibuat immutable. Tradeoff-nya adalah ada class tambahan dan validasi harus dirancang jelas, terutama apakah validasi dilakukan saat setter builder dipanggil atau saat \texttt{build()}.
+\end{itemize}
+
+\begin{lstlisting}[language=Java, caption={Builder Pattern}, label={lst:builder-pattern}]
+public class ReportConfig {
+    private final String title;
+    private final boolean includeSummary;
+    private final int maxRows;
+
+    private ReportConfig(Builder builder) {
+        this.title = builder.title;
+        this.includeSummary = builder.includeSummary;
+        this.maxRows = builder.maxRows;
+    }
+
+    public static class Builder {
+        private String title = "Untitled";
+        private boolean includeSummary = true;
+        private int maxRows = 100;
+
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder includeSummary(boolean includeSummary) {
+            this.includeSummary = includeSummary;
+            return this;
+        }
+
+        public Builder maxRows(int maxRows) {
+            this.maxRows = maxRows;
+            return this;
+        }
+
+        public ReportConfig build() {
+            return new ReportConfig(this);
+        }
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Adapter Pattern}
+
+\begin{jawab}[Inti Konsep.]
+Adapter mengubah interface suatu class agar cocok dengan interface yang dibutuhkan klien. Pattern ini berguna ketika memakai library eksternal yang API-nya tidak sesuai domain kita.
+\end{jawab}
+
+\begin{itemize}
+    \item \textbf{Pattern name}: Adapter.
+    \item \textbf{Problem}: Gunakan ketika class atau library yang ingin dipakai memiliki interface yang tidak cocok dengan interface yang dibutuhkan sistem. Masalah ini umum terjadi saat mengintegrasikan API eksternal, legacy code, atau library pihak ketiga.
+    \item \textbf{Solution}: Buat adapter yang mengimplementasikan interface target milik sistem. Adapter menyimpan adaptee, yaitu object/library asli, lalu menerjemahkan pemanggilan dari interface target ke method adaptee.
+    \item \textbf{Consequences}: Klien tetap bergantung pada interface domain yang stabil dan detail API eksternal terisolasi. Tradeoff-nya adalah ada lapisan tambahan, dan adapter dapat menjadi tempat kompleks jika perbedaan model data antara sistem dan library terlalu besar.
+\end{itemize}
+
+\begin{lstlisting}[language=Java, caption={Adapter Pattern}, label={lst:adapter-pattern}]
+public interface Notifier {
+    void notify(String recipient, String message);
+}
+
+public class ExternalSmsClient {
+    public void sendSms(String phoneNumber, String text) { }
+}
+
+public class SmsNotifierAdapter implements Notifier {
+    private final ExternalSmsClient client;
+
+    public SmsNotifierAdapter(ExternalSmsClient client) {
+        this.client = client;
+    }
+
+    @Override
+    public void notify(String recipient, String message) {
+        client.sendSms(recipient, message);
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Decorator Pattern}
+
+\begin{jawab}[Inti Konsep.]
+Decorator menambahkan perilaku pada object secara dinamis dengan membungkus object yang memiliki interface sama.
+\end{jawab}
+
+\begin{itemize}
+    \item \textbf{Pattern name}: Decorator.
+    \item \textbf{Problem}: Gunakan ketika perilaku tambahan perlu dikombinasikan secara fleksibel tanpa membuat banyak subclass untuk setiap kombinasi fitur. Contohnya logging, caching, authorization, compression, atau encryption.
+    \item \textbf{Solution}: Definisikan component interface. Concrete component melakukan pekerjaan dasar. Decorator juga mengimplementasikan interface yang sama dan menyimpan component lain sebagai delegate, lalu menambahkan perilaku sebelum atau sesudah delegasi.
+    \item \textbf{Consequences}: Perilaku dapat ditumpuk secara dinamis dan mendukung OCP. Tradeoff-nya adalah debugging dapat lebih sulit karena banyak wrapper, dan urutan decorator dapat memengaruhi hasil.
+\end{itemize}
+
+\begin{lstlisting}[language=Java, caption={Decorator Pattern untuk logging}, label={lst:decorator-pattern}]
+public interface Repository {
+    void save(Order order);
+}
+
+public class DatabaseRepository implements Repository {
+    public void save(Order order) { }
+}
+
+public class LoggingRepository implements Repository {
+    private final Repository delegate;
+
+    public LoggingRepository(Repository delegate) {
+        this.delegate = delegate;
+    }
+
+    public void save(Order order) {
+        System.out.println("Saving order");
+        delegate.save(order);
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Observer Pattern}
+
+\begin{jawab}[Inti Konsep.]
+Observer memisahkan publisher dari subscriber. Ketika state/event berubah, publisher memberi tahu semua observer tanpa mengetahui detail implementasinya.
+\end{jawab}
+
+\begin{itemize}
+    \item \textbf{Pattern name}: Observer.
+    \item \textbf{Problem}: Gunakan ketika perubahan pada satu object perlu memberi tahu banyak object lain, tetapi publisher tidak boleh bergantung langsung pada class konkret subscriber. Contohnya event UI, domain event, notifikasi, atau sistem publish-subscribe sederhana.
+    \item \textbf{Solution}: Publisher menyimpan daftar observer melalui interface listener. Observer mendaftar ke publisher. Saat event terjadi, publisher memanggil method callback pada setiap observer.
+    \item \textbf{Consequences}: Publisher dan subscriber menjadi loosely coupled dan subscriber dapat ditambah/dihapus dinamis. Tradeoff-nya adalah alur program menjadi tidak langsung, urutan notifikasi perlu diperhatikan, dan subscriber yang lambat atau error dapat memengaruhi event dispatch jika tidak ditangani.
+\end{itemize}
+
+\begin{lstlisting}[language=Java, caption={Observer Pattern sederhana}, label={lst:observer-pattern}]
+public interface OrderListener {
+    void onOrderCreated(Order order);
+}
+
+public class OrderService {
+    private final List<OrderListener> listeners = new ArrayList<>();
+
+    public void addListener(OrderListener listener) {
+        listeners.add(listener);
+    }
+
+    public void create(Order order) {
+        // Simpan order.
+        for (OrderListener listener : listeners) {
+            listener.onOrderCreated(order);
+        }
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Template Method}
+
+\begin{jawab}[Inti Konsep.]
+Template Method mendefinisikan kerangka algoritma di superclass dan menyerahkan beberapa langkah ke subclass.
+\end{jawab}
+
+\begin{itemize}
+    \item \textbf{Pattern name}: Template Method.
+    \item \textbf{Problem}: Gunakan ketika beberapa algoritma memiliki urutan langkah yang sama, tetapi detail beberapa langkah berbeda antarvarian. Pattern ini cocok jika kerangka proses harus tetap konsisten.
+    \item \textbf{Solution}: Superclass mendefinisikan method template, biasanya \texttt{final}, yang memanggil langkah-langkah algoritma dalam urutan tetap. Langkah tertentu dibuat sebagai abstract method atau hook method yang dioverride subclass.
+    \item \textbf{Consequences}: Duplikasi kerangka algoritma berkurang dan urutan proses dikontrol superclass. Tradeoff-nya adalah subclass terikat kuat pada superclass, sehingga perubahan superclass dapat memengaruhi semua subclass dan risiko pelanggaran LSP harus dijaga.
+\end{itemize}
+
+\begin{lstlisting}[language=Java, caption={Template Method Pattern}, label={lst:template-method}]
+public abstract class DataImporter {
+    public final void importData(Path path) throws IOException {
+        String raw = Files.readString(path);
+        List<Record> records = parse(raw);
+        validate(records);
+        save(records);
+    }
+
+    protected abstract List<Record> parse(String raw);
+
+    protected void validate(List<Record> records) {
+        if (records.isEmpty()) {
+            throw new IllegalArgumentException("Data kosong");
+        }
+    }
+
+    protected abstract void save(List<Record> records);
+}
+\end{lstlisting}
+
+\subsubsection{Singleton Pattern}
+
+\begin{jawab}[Inti Konsep.]
+Singleton memastikan hanya ada satu instance dari sebuah class dan menyediakan akses global ke instance tersebut. Pattern ini harus dipakai hati-hati karena akses global dapat menyulitkan testing.
+\end{jawab}
+
+\begin{itemize}
+    \item \textbf{Pattern name}: Singleton.
+    \item \textbf{Problem}: Gunakan ketika secara konseptual hanya boleh ada satu instance yang mengoordinasikan resource atau konfigurasi tertentu, dan instance tersebut perlu diakses dari beberapa tempat. Contohnya registry sederhana atau konfigurasi immutable.
+    \item \textbf{Solution}: Batasi pembuatan object melalui constructor privat atau enum, simpan satu instance global, dan sediakan akses terkontrol ke instance tersebut.
+    \item \textbf{Consequences}: Menjamin satu instance dan akses mudah. Tradeoff-nya adalah global state dapat menyulitkan testing, menyembunyikan dependency, memperbesar coupling, dan berbahaya jika instance menyimpan mutable state yang diakses banyak thread.
+\end{itemize}
+
+\begin{lstlisting}[language=Java, caption={Singleton sederhana dengan enum}, label={lst:singleton-pattern}]
+public enum AppConfig {
+    INSTANCE;
+
+    public String appName() {
+        return "IF2010";
+    }
+}
+\end{lstlisting}
+
+Di Java, enum singleton sering dianggap aman terhadap serialization dan reflection tertentu. Namun, singleton yang menyimpan mutable global state tetap berisiko tinggi.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+Creational pattern & Pattern untuk pembuatan object. \\
+\hline
+Structural pattern & Pattern untuk menyusun relasi antarobject/class. \\
+\hline
+Behavioral pattern & Pattern untuk variasi perilaku dan komunikasi object. \\
+\hline
+Strategy & Memisahkan algoritma yang dapat diganti. \\
+\hline
+Factory & Memusatkan pembuatan object. \\
+\hline
+Builder & Membuat object kompleks secara bertahap. \\
+\hline
+Adapter & Menyesuaikan interface class/library lain. \\
+\hline
+Decorator & Menambah perilaku dengan wrapper. \\
+\hline
+Observer & Publisher memberi tahu subscriber. \\
+\hline
+Template Method & Superclass mendefinisikan kerangka algoritma. \\
+\hline
+Singleton & Membatasi instance menjadi satu. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Design Pattern}
+\label{tab:komponen-kunci-design-pattern}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Memilih Design Pattern}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu memilih pattern berdasarkan masalah desain, bukan berdasarkan hafalan nama pattern.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode pemilihan design pattern}, label={lst:pattern-choice}]
+Input: Masalah desain OOP
+Output: Pattern kandidat
+
+1. Jika banyak variasi algoritma dan klien harus bisa mengganti perilaku:
+      pertimbangkan Strategy.
+2. Jika object creation kompleks atau bergantung konfigurasi:
+      pertimbangkan Factory atau Builder.
+3. Jika API eksternal tidak cocok dengan interface domain:
+      pertimbangkan Adapter.
+4. Jika ingin menambah perilaku tanpa subclass berlapis:
+      pertimbangkan Decorator.
+5. Jika satu event perlu memberi tahu banyak subscriber:
+      pertimbangkan Observer.
+6. Jika kerangka algoritma tetap tetapi langkah tertentu bervariasi:
+      pertimbangkan Template Method.
+7. Jika hanya boleh ada satu instance:
+      pertimbangkan Singleton, tetapi evaluasi risiko global state.
+8. Jika pattern membuat desain lebih rumit daripada masalahnya:
+      jangan pakai pattern tersebut.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan fungsi design pattern dan kategorinya.
+    \item[$\square$] Saya dapat mengenali Strategy, Factory, Builder, Adapter, Decorator, Observer, Template Method, dan Singleton.
+    \item[$\square$] Saya dapat menulis skeleton Java untuk pattern utama.
+    \item[$\square$] Saya dapat menghubungkan pattern dengan SOLID.
+    \item[$\square$] Saya dapat menjelaskan tradeoff pattern dan risiko overengineering.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Strategy, Factory, Adapter, Observer, Template Method, hubungan pattern dengan SOLID, skeleton Java pattern. \\
+\hline
+\textbf{Cukup Paham Konsep} & Builder, Decorator, Singleton, kategori creational/structural/behavioral, tradeoff pattern. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan; materi ini berada di akhir daftar UAS sehingga perlu dipakai sebagai sintesis dari SOLID, interface, inheritance, dan exception. \\
+\hline
+\end{tabularx}

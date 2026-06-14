@@ -1,0 +1,415 @@
+\section{Program Dinamis}
+
+Program Dinamis (\textit{dynamic programming}) adalah strategi perancangan algoritma untuk persoalan optimisasi yang dapat dipecah menjadi subpersoalan bertahap. Inti metodenya adalah mendefinisikan status, menentukan keputusan pada setiap tahap, menyusun relasi rekurens, menyimpan nilai subpersoalan dalam tabel, lalu merekonstruksi solusi optimal jika diperlukan.
+
+Fokus UAS adalah kemampuan memformulasikan persoalan, bukan sekadar mengisi angka. Jawaban Program Dinamis yang baik selalu menjelaskan tahap, status, keputusan, basis, rekurens, tabel perhitungan, dan rekonstruksi solusi. Pola ini terlihat pada soal pencuri rumah, shortest path bertahap, pemilihan station, dan jalur terpendek dengan DP maju/mundur.
+
+\begin{cmt}{Keterbatasan Sumber Utama}{}
+NotebookLM yang diberikan dapat diakses, tetapi jawaban yang diperoleh untuk Program Dinamis hanya memuat outline global: tahap, status, prinsip optimalitas, memoization, pendekatan maju/mundur, serta aplikasi shortest path, integer knapsack, coin-row, capital budgeting, dan TSP. Detail teknis seperti pola tabel UAS, rekonstruksi solusi, dan edge case dilengkapi menggunakan pengetahuan umum yang relevan serta pola soal UAS 2022--2025.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Definisi dan motivasi Program Dinamis
+    \begin{enumerate}
+        \item Persoalan optimisasi.
+        \item Rangkaian keputusan.
+        \item Subpersoalan yang saling tumpang tindih.
+        \item Penyimpanan nilai subpersoalan.
+    \end{enumerate}
+
+    \item Karakteristik persoalan DP
+    \begin{enumerate}
+        \item Tahap (\textit{stage}).
+        \item Status (\textit{state}).
+        \item Keputusan (\textit{decision}).
+        \item Transisi status.
+        \item Fungsi nilai optimal.
+        \item Prinsip optimalitas.
+    \end{enumerate}
+
+    \item Cara membangun solusi DP
+    \begin{enumerate}
+        \item Menentukan struktur solusi optimal.
+        \item Mendefinisikan fungsi nilai.
+        \item Menentukan basis.
+        \item Menentukan relasi rekurens.
+        \item Mengisi tabel secara maju atau mundur.
+        \item Merekonstruksi solusi.
+    \end{enumerate}
+
+    \item Pendekatan perhitungan
+    \begin{enumerate}
+        \item Top-down dengan memoization.
+        \item Bottom-up dengan tabulation.
+        \item Program dinamis maju.
+        \item Program dinamis mundur.
+    \end{enumerate}
+
+    \item Aplikasi penting
+    \begin{enumerate}
+        \item Shortest path bertahap.
+        \item House robber atau coin-row.
+        \item Integer knapsack.
+        \item Coin exchange.
+        \item Capital budgeting.
+        \item Travelling Salesperson Problem (TSP) dengan DP.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+Program Dinamis penting karena banyak persoalan optimisasi tidak dapat diselesaikan dengan keputusan lokal yang sederhana. Greedy memilih keputusan terbaik saat ini, tetapi tidak selalu menghasilkan solusi global optimal. DP menghindari jebakan itu dengan menyimpan hasil optimal subpersoalan dan memastikan setiap keputusan dilihat dalam konteks tahap/status yang tepat.
+
+Dalam UAS, Program Dinamis biasanya menilai kedisiplinan formulasi. Jika tahap, status, dan rekurens salah, tabel angka yang dihasilkan hampir pasti salah. Sebaliknya, jika formulasi benar, pengisian tabel biasanya menjadi proses mekanis: setiap sel dihitung dari sel yang sudah tersedia.
+
+\begin{cmt}{Relevansi Praktis}{}
+Program Dinamis banyak muncul pada optimisasi rute, alokasi sumber daya, perencanaan produksi, bioinformatika, kompresi, dan penjadwalan. Catatan ini berfokus pada bentuk yang paling relevan untuk UAS: shortest path, knapsack, coin exchange, capital budgeting, TSP, dan persoalan pemilihan berurutan seperti pencuri rumah.
+\end{cmt}
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Program Dinamis berhubungan dengan Route Planning melalui persoalan lintasan terpendek. Route Planning mengekspansi simpul dari frontier, sedangkan DP memecah graf ke dalam tahap dan menyimpan nilai minimum per status. Keduanya dapat menghasilkan jalur terpendek, tetapi bentuk jawaban dan struktur perhitungannya berbeda.
+
+DP juga berhubungan dengan Branch and Bound pada persoalan optimisasi seperti knapsack dan TSP. Branch and Bound membangun pohon ruang status dan memangkas simpul berdasarkan bound, sedangkan DP membangun tabel subpersoalan agar kombinasi keputusan tidak dihitung berulang. Hubungan dengan Teori P/NP/NPC muncul karena beberapa persoalan seperti TSP dan knapsack memiliki versi yang sulit; DP dapat menyelesaikan varian tertentu dengan struktur atau batas ukuran tertentu, tetapi tidak otomatis membuat semua versi menjadi mudah.
+
+\subsection{Pola Soal UAS Sebelumnya dan Prioritas}
+
+\begin{cmt}{Pola dari Soal 2022--2025}{}
+Program Dinamis muncul pada semua sumber soal yang diperiksa. Soal 2022 memakai persoalan pencuri rumah: brute force, rekurens, dan perhitungan contoh. Solusi 2023 memakai DP backward pada pemilihan station. Soal 2024 meminta rute terpendek dengan tabel per tahap dan rekonstruksi solusi. Soal 2025 meminta shortest path pada graf yang sama dengan route planning, tetapi harus dikerjakan dengan DP maju dan tabel dinamis.
+\end{cmt}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.23\textwidth}|X|X|}
+\hline
+\textbf{Pola Soal} & \textbf{Yang Biasanya Diminta} & \textbf{Kemampuan Wajib} \\
+\hline
+Formulasi rekurens & Basis dan relasi rekursif untuk fungsi nilai optimal. & Menentukan status, keputusan, dan kasus dasar secara eksplisit. \\
+\hline
+Tabel DP per tahap & Mengisi tabel maju atau mundur. & Menghitung setiap sel dari sel tahap sebelumnya/berikutnya, bukan menebak hasil akhir. \\
+\hline
+Rekonstruksi solusi & Menuliskan jalur, pilihan rumah, item, atau station yang membentuk solusi optimal. & Menyimpan keputusan optimal atau melakukan traceback dari tabel. \\
+\hline
+Perbandingan dengan brute force & Menjelaskan nilai maksimum/minimum dan mengapa DP menghindari enumerasi penuh. & Memahami overlapping subproblems dan prinsip optimalitas. \\
+\hline
+\end{tabularx}
+\caption{Pola soal UAS Program Dinamis}
+\label{tab:pola-soal-program-dinamis}
+\end{table}
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Definisi Program Dinamis}
+
+\begin{jawab}[Inti Konsep.]
+Program Dinamis menyelesaikan persoalan optimisasi dengan menyusun solusi sebagai rangkaian keputusan dan menyimpan nilai optimal subpersoalan.
+\end{jawab}
+
+Kata ``program'' pada Program Dinamis berarti perencanaan, bukan kode program. Suatu persoalan cocok untuk DP jika solusi optimalnya dapat dibangun dari solusi optimal subpersoalan yang lebih kecil. Jika subpersoalan yang sama muncul berulang kali, tabel DP menghindari penghitungan ulang.
+
+DP biasanya dipakai untuk persoalan maksimum atau minimum. Contohnya: biaya minimum mencapai tujuan, profit maksimum dengan kapasitas tertentu, jumlah koin minimum untuk nilai tertentu, atau nilai maksimum dari pilihan yang tidak boleh bertetangga.
+
+\subsubsection{Tahap, Status, Keputusan, dan Transisi}
+
+\begin{jawab}[Inti Konsep.]
+Tahap menyatakan urutan pengambilan keputusan, status menyatakan informasi yang masih relevan pada tahap itu, dan keputusan mengubah satu status ke status lain.
+\end{jawab}
+
+Empat komponen ini harus ditulis jelas dalam jawaban:
+\begin{itemize}
+    \item \textbf{Tahap}: indeks waktu, posisi, item, rumah, atau lapisan graf yang sedang diproses.
+    \item \textbf{Status}: informasi minimum yang diperlukan untuk melanjutkan keputusan secara optimal.
+    \item \textbf{Keputusan}: pilihan yang tersedia pada suatu tahap/status.
+    \item \textbf{Transisi}: perubahan status akibat keputusan, termasuk biaya atau profit yang ditambahkan.
+\end{itemize}
+
+Status harus cukup informatif tetapi tidak berlebihan. Jika status terlalu miskin, rekurens tidak valid karena informasi penting hilang. Jika status terlalu kaya, tabel menjadi besar dan sulit dihitung.
+
+\subsubsection{Prinsip Optimalitas}
+
+\begin{jawab}[Inti Konsep.]
+Prinsip optimalitas menyatakan bahwa bagian dari solusi optimal juga harus optimal untuk subpersoalan yang sesuai.
+\end{jawab}
+
+Misalnya jalur terpendek dari $A$ ke $F$ melewati $D$. Maka bagian jalur dari $A$ ke $D$ harus merupakan jalur terpendek untuk mencapai $D$ dalam struktur tahap yang sama. Jika tidak, bagian tersebut dapat diganti dengan jalur yang lebih murah dan menghasilkan jalur total yang lebih baik, sehingga jalur awal bukan optimal.
+
+Prinsip ini menjadi alasan rekurens DP benar. Tanpa prinsip optimalitas, menyimpan nilai optimal subpersoalan dapat menyesatkan karena pilihan terbaik lokal untuk subpersoalan belum tentu kompatibel dengan solusi global.
+
+\subsubsection{Memoization dan Tabulation}
+
+\begin{jawab}[Inti Konsep.]
+Memoization menyimpan hasil fungsi rekursif saat dibutuhkan, sedangkan tabulation mengisi tabel secara sistematis dari basis menuju solusi akhir.
+\end{jawab}
+
+Top-down memoization dimulai dari persoalan utama, memanggil subpersoalan secara rekursif, lalu menyimpan hasilnya. Bottom-up tabulation dimulai dari subpersoalan basis, mengisi tabel sampai mencapai persoalan utama. Untuk UAS tertulis, bentuk tabulation lebih sering diminta karena mahasiswa harus menampilkan tabel per tahap.
+
+\subsubsection{Program Dinamis Maju dan Mundur}
+
+\begin{jawab}[Inti Konsep.]
+DP maju menghitung nilai dari tahap awal ke tahap akhir, sedangkan DP mundur menghitung nilai dari tahap akhir ke tahap awal.
+\end{jawab}
+
+Pada DP maju, nilai suatu status biasanya menyatakan biaya/profit terbaik untuk mencapai status tersebut dari awal. Pada DP mundur, nilai suatu status menyatakan biaya/profit terbaik dari status tersebut menuju akhir. Keduanya dapat menghasilkan solusi yang sama jika rekurens dan basisnya benar.
+
+Dalam soal shortest path bertahap, DP maju cocok jika graf disusun dari sumber ke tujuan. DP mundur cocok jika lebih mudah menghitung biaya minimum dari setiap simpul menuju tujuan.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+Tahap & Urutan keputusan atau lapisan subpersoalan. \\
+\hline
+Status & Informasi yang membedakan subpersoalan pada tahap tertentu. \\
+\hline
+Keputusan & Pilihan yang tersedia pada status tertentu. \\
+\hline
+Transisi & Perubahan status akibat keputusan. \\
+\hline
+Fungsi nilai $f$ & Nilai optimum suatu subpersoalan, misalnya biaya minimum atau profit maksimum. \\
+\hline
+Basis & Nilai awal rekurens yang diketahui langsung. \\
+\hline
+Relasi rekurens & Persamaan yang menghubungkan nilai suatu status dengan subpersoalan yang lebih kecil. \\
+\hline
+Tabel DP & Penyimpanan nilai subpersoalan. \\
+\hline
+Traceback & Proses merekonstruksi solusi dari keputusan optimal yang tersimpan. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Program Dinamis}
+\label{tab:komponen-kunci-program-dinamis}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Skema Umum Program Dinamis}
+
+\begin{jawab}[Tujuan Algoritma.]
+Skema ini membantu mengubah persoalan optimisasi menjadi tabel DP yang dapat dihitung.
+\end{jawab}
+
+\begin{lstlisting}[caption={Langkah pengembangan Program Dinamis}, label={lst:langkah-dp}]
+1. Tentukan tahap, status, dan keputusan.
+2. Definisikan fungsi nilai optimal f(...).
+3. Tentukan basis atau kondisi awal.
+4. Turunkan relasi rekurens dari pilihan keputusan.
+5. Tentukan arah pengisian tabel: maju atau mundur.
+6. Isi tabel sampai nilai optimum persoalan utama diperoleh.
+7. Rekonstruksi solusi dari keputusan optimal.
+\end{lstlisting}
+
+Skema umum minimisasi:
+\begin{equation}
+    f_k(s)=\min_{x\in D_k(s)}
+    \{c_k(s,x)+f_{k+1}(T_k(s,x))\}
+    \label{eq:dp-general-min}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $k$: tahap.
+    \item $s$: status pada tahap $k$.
+    \item $x$: keputusan.
+    \item $D_k(s)$: himpunan keputusan yang valid.
+    \item $c_k(s,x)$: biaya keputusan.
+    \item $T_k(s,x)$: status baru setelah keputusan $x$.
+\end{itemize}
+
+Untuk maksimisasi, operator $\min$ diganti menjadi $\max$ dan biaya dapat diganti profit.
+
+\subsubsection{Shortest Path Bertahap}
+
+\begin{jawab}[Makna Rumus.]
+Rumus shortest path DP menghitung biaya minimum mencapai suatu simpul dari simpul-simpul pendahulu pada tahap sebelumnya.
+\end{jawab}
+
+DP maju:
+\begin{equation}
+    f_k(v)=\min_{u\in \operatorname{Pred}(v)}
+    \{f_{k-1}(u)+c(u,v)\}
+    \label{eq:dp-shortest-forward}
+\end{equation}
+
+DP mundur:
+\begin{equation}
+    F_k(u)=\min_{v\in \operatorname{Succ}(u)}
+    \{c(u,v)+F_{k+1}(v)\}
+    \label{eq:dp-shortest-backward}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $\operatorname{Pred}(v)$: simpul pendahulu $v$.
+    \item $\operatorname{Succ}(u)$: simpul penerus $u$.
+    \item $c(u,v)$: biaya sisi dari $u$ ke $v$.
+\end{itemize}
+
+Untuk UAS, tabel shortest path harus disertai rekonstruksi jalur. Simpan simpul pendahulu yang memberi nilai minimum pada DP maju, atau simpul penerus yang memberi nilai minimum pada DP mundur.
+
+\subsubsection{House Robber atau Coin-Row}
+
+\begin{jawab}[Makna Rumus.]
+Rumus ini memilih antara melewati item ke-$i$ atau mengambil item ke-$i$ sehingga item sebelumnya tidak boleh diambil.
+\end{jawab}
+
+\begin{align}
+    F(0)&=0, \label{eq:dp-house-base-zero}\\
+    F(1)&=p_1, \label{eq:dp-house-base-one}\\
+    F(i)&=\max\{F(i-1),\;F(i-2)+p_i\}.
+    \label{eq:dp-house}
+\end{align}
+
+dengan:
+\begin{itemize}
+    \item $p_i$: nilai rumah atau koin ke-$i$.
+    \item $F(i-1)$: nilai maksimum jika item ke-$i$ tidak diambil.
+    \item $F(i-2)+p_i$: nilai maksimum jika item ke-$i$ diambil.
+\end{itemize}
+
+Rekonstruksi dilakukan dari belakang: jika $F(i)=F(i-1)$, item ke-$i$ tidak diambil; jika $F(i)=F(i-2)+p_i$, item ke-$i$ diambil dan lanjut ke $i-2$.
+
+\subsubsection{Integer Knapsack}
+
+\begin{jawab}[Makna Rumus.]
+Rumus knapsack memilih nilai maksimum antara tidak mengambil objek ke-$k$ atau mengambilnya jika kapasitas cukup.
+\end{jawab}
+
+\begin{equation}
+    f_k(y)=
+    \begin{cases}
+    f_{k-1}(y), & y < w_k,\\
+    \max\{f_{k-1}(y),\; p_k+f_{k-1}(y-w_k)\}, & y\ge w_k.
+    \end{cases}
+    \label{eq:dp-knapsack}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $k$: jumlah item pertama yang dipertimbangkan.
+    \item $y$: kapasitas yang tersedia.
+    \item $w_k$: bobot item ke-$k$.
+    \item $p_k$: profit item ke-$k$.
+\end{itemize}
+
+Untuk 0/1 knapsack, setiap item hanya boleh diambil sekali. Karena itu saat item ke-$k$ diambil, nilai sebelumnya berasal dari $f_{k-1}(y-w_k)$, bukan dari $f_k(y-w_k)$.
+
+\subsubsection{Coin Exchange}
+
+\begin{jawab}[Makna Rumus.]
+Coin exchange biasanya mencari jumlah koin minimum untuk membentuk nilai tertentu.
+\end{jawab}
+
+Jika tersedia denominasi koin $d_1,d_2,\ldots,d_r$, rumus minimum jumlah koin:
+\begin{equation}
+    F(x)=1+\min_{d_i\le x} F(x-d_i)
+    \label{eq:dp-coin-exchange}
+\end{equation}
+
+dengan basis:
+\begin{equation}
+    F(0)=0
+    \label{eq:dp-coin-base}
+\end{equation}
+
+Jika suatu nilai tidak dapat dibentuk, nilainya dianggap tak hingga agar tidak dipilih dalam operasi minimum.
+
+\subsubsection{TSP dengan Program Dinamis}
+
+\begin{jawab}[Makna Rumus.]
+DP untuk TSP menyimpan biaya minimum mencapai simpul terakhir tertentu setelah mengunjungi himpunan kota tertentu.
+\end{jawab}
+
+Salah satu formulasi umum adalah Held-Karp:
+\begin{equation}
+    C(S,j)=\min_{i\in S,\ i\ne j}\{C(S-\{j\},i)+c(i,j)\}
+    \label{eq:dp-tsp-held-karp}
+\end{equation}
+
+dengan:
+\begin{itemize}
+    \item $S$: himpunan kota yang sudah dikunjungi.
+    \item $j$: kota terakhir dalam lintasan.
+    \item $c(i,j)$: biaya dari kota $i$ ke kota $j$.
+\end{itemize}
+
+Formulasi ini menunjukkan bahwa DP dapat mengurangi enumerasi penuh, tetapi tetap mahal untuk jumlah kota besar karena statusnya berupa himpunan.
+
+\subsection{Cara Menjawab Soal Manual}
+
+\subsubsection{Template Jawaban Formulasi DP}
+
+\begin{enumerate}
+    \item \textbf{Tahap}: tuliskan apa yang menjadi urutan tahap.
+    \item \textbf{Status}: tuliskan arti indeks atau parameter fungsi nilai.
+    \item \textbf{Keputusan}: tuliskan pilihan yang tersedia.
+    \item \textbf{Fungsi nilai}: definisikan $f(k,s)$ atau notasi lain.
+    \item \textbf{Basis}: tuliskan nilai awal.
+    \item \textbf{Rekurens}: tuliskan persamaan minimum/maksimum.
+    \item \textbf{Tabel}: isi nilai per tahap.
+    \item \textbf{Rekonstruksi}: tuliskan solusi konkret, bukan hanya nilai optimum.
+\end{enumerate}
+
+\subsubsection{Template Tabel Shortest Path}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|L{0.16\textwidth}|L{0.18\textwidth}|X|L{0.20\textwidth}|}
+\hline
+\textbf{Tahap} & \textbf{Status} & \textbf{Perhitungan} & \textbf{Keputusan Optimal} \\
+\hline
+$k$ & $v$ & $f_k(v)=\min\{\cdots\}$ & Pendahulu/penerus terbaik \\
+\hline
+\end{tabularx}
+\caption{Template tabel DP untuk shortest path}
+\label{tab:template-dp-shortest-path}
+\end{table}
+
+\subsection{Kesalahan Umum dan Edge Case}
+
+\begin{itemize}
+    \item \textbf{Tidak mendefinisikan status}: tabel tanpa definisi status sulit dinilai karena pembaca tidak tahu arti sel.
+    \item \textbf{Basis hilang}: rekurens tidak bisa dievaluasi jika nilai awal tidak jelas.
+    \item \textbf{Mencampur DP maju dan mundur}: arah rekurens harus konsisten dengan tabel.
+    \item \textbf{Tidak merekonstruksi solusi}: banyak soal meminta jalur atau pilihan optimal, bukan hanya nilai.
+    \item \textbf{Menggunakan greedy sebagai DP}: memilih nilai terbesar saat ini bukan DP kecuali dibuktikan cocok dengan rekurens.
+    \item \textbf{Status tidak cukup}: jika status tidak menyimpan informasi penting, keputusan berikutnya dapat salah.
+    \item \textbf{Knapsack salah indeks}: 0/1 knapsack memakai baris $k-1$ saat mengambil item, bukan baris $k$.
+    \item \textbf{Tie tidak dijelaskan}: jika ada dua keputusan sama optimal, tuliskan salah satu dan sebutkan ada alternatif.
+\end{itemize}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan tujuan Program Dinamis dan perbedaannya dari Greedy.
+    \item[$\square$] Saya dapat menentukan tahap, status, keputusan, transisi, basis, dan fungsi nilai.
+    \item[$\square$] Saya dapat menjelaskan prinsip optimalitas dan overlapping subproblems.
+    \item[$\square$] Saya dapat membedakan memoization dan tabulation.
+    \item[$\square$] Saya dapat membedakan DP maju dan DP mundur.
+    \item[$\square$] Saya dapat menyusun rekurens shortest path bertahap.
+    \item[$\square$] Saya dapat menyusun rekurens house robber/coin-row.
+    \item[$\square$] Saya dapat menyusun rekurens integer knapsack.
+    \item[$\square$] Saya dapat mengisi tabel DP dan merekonstruksi solusi optimal.
+    \item[$\square$] Saya dapat menjelaskan hubungan DP dengan Route Planning, Branch and Bound, dan Teori P/NP/NPC.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Tahap, status, keputusan, basis, relasi rekurens, tabel DP, rekonstruksi solusi, shortest path bertahap, dan house robber/coin-row. \\
+\hline
+\textbf{Cukup Paham Konsep} & Integer knapsack, coin exchange, capital budgeting, TSP dengan DP, memoization versus tabulation, dan DP maju versus mundur. \\
+\hline
+\textbf{Sudah Dikuasai} & Belum ditentukan. \\
+\hline
+\end{tabularx}

@@ -1,0 +1,188 @@
+% arara: pdflatex
+\documentclass[11pt,a4paper]{article}
+
+\input{preamble.sty}
+
+\title{%
+    \vspace{-2cm}
+    \textbf{\LARGE Catatan Ujian Akhir Semester} \\[0.25em]
+    \Large IF2230 Jaringan Komputer \\[0.25em]
+    \normalsize Semester Genap Tahun Akademik 2025/2026 \\[2em]
+}
+
+\author{%
+    Catatan berbasis sumber NotebookLM \\[0.25em]
+    Program Studi Teknik Informatika \\[0.25em]
+    Sekolah Teknik Elektro dan Informatika \\[0.25em]
+    Institut Teknologi Bandung \\[0.25em]
+}
+
+\date{Disusun untuk UAS Senin, 8 Juni 2026}
+
+\begin{document}
+\pagenumbering{gobble}
+\begin{titlepage}
+    \maketitle
+    \thispagestyle{empty}
+\end{titlepage}
+
+\clearpage
+\pagenumbering{roman}
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic}
+
+\section{Informasi Ujian}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.32\textwidth}|X|}
+\hline
+\textbf{Nama mata kuliah} & Jaringan Komputer \\
+\hline
+\textbf{Kode mata kuliah} & IF2230 \\
+\hline
+\textbf{Semester/Tahun akademik} & Genap 2025/2026 \\
+\hline
+\textbf{Jenis ujian} & UAS \\
+\hline
+\textbf{Tanggal ujian} & Senin, 8 Juni 2026 \\
+\hline
+\textbf{Mode penyusunan} & Seluruh materi sekaligus, diproses satu per satu berdasarkan sumber NotebookLM \\
+\hline
+\end{tabularx}
+\caption{Informasi ujian}
+\label{tab:informasi-ujian}
+\end{table}
+
+\subsection*{Inventarisasi Sumber NotebookLM}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|r|L{0.24\textwidth}|L{0.12\textwidth}|X|L{0.10\textwidth}|L{0.12\textwidth}|}
+\hline
+\textbf{No.} & \textbf{Nama Sumber} & \textbf{Jenis} & \textbf{Relevansi Awal} & \textbf{Status} & \textbf{Kategori} \\
+\hline
+1 & 07-Transport-Layer.pdf & PDF/Slides & Sumber inti Transport Layer: UDP, TCP, port, socket, reliability, flow control. & Terbaca & Inti \\
+\hline
+2 & 08-Congestion-Control.pdf & PDF/Slides & Sumber inti Congestion Control: alokasi sumber daya, antrean, TCP congestion control, RED, QoS. & Terbaca & Inti \\
+\hline
+3 & 09a-Application-Layer.pdf & PDF/Slides & Sumber inti Application Layer: arsitektur aplikasi, DNS, API, layanan transport, HTTP/SMTP/SIP. & Terbaca & Inti \\
+\hline
+4 & 09b-The Application Layer - Lecture Deck.pdf & PDF/Slides & Sumber lanjutan Application Layer: DNS, HTTP, cache, email, POP, IMAP, MIME. & Terbaca & Inti \\
+\hline
+5 & 10-Wireless-Network.pdf & PDF/Slides & Sumber inti Wireless Network: wireless hosts, base stations, karakter link nirkabel, taksonomi jaringan nirkabel. & Terbaca & Inti \\
+\hline
+6 & 11-Network-Security.pdf & PDF/Slides & Sumber inti Network Security: kerentanan per layer dan mekanisme keamanan jaringan. & Terbaca & Inti \\
+\hline
+7 & Bundel Soal Jaringan Komputer.pdf & PDF/Arsip soal & Sumber latihan dan validasi pola ujian: TCP, DNS, HTTP, security, congestion control, wireless. & Terbaca & Pendukung \\
+\hline
+8 & compnetworks.pdf & PDF/Buku teks & Rujukan teoretis Computer Networks: A Systems Approach untuk seluruh topik UAS. & Terbaca & Pendukung \\
+\hline
+\end{tabularx}
+\caption{Inventaris sumber NotebookLM}
+\label{tab:inventaris-sumber}
+\end{table}
+
+\section{Capaian Pembelajaran Mata Kuliah}
+
+\begin{enumerate}
+    \item CPMK1. Menyebutkan struktur tipikal layer arsitektur network
+    \item CPMK2. Menjelaskan prinsip dasar medium access layer
+    \item CPMK3. Menjelaskan prinsip switched networks dan reliable message delivery
+    \item CPMK4. Menjelaskan prinsip routing dan packet forwarding pada jaringan ip
+    \item CPMK5. Mengkonfigurasi lan dan jaringan ip
+    \item CPMK6. Mengimplementasikan aplikasi jaringan/aplikasi client server sederhana
+\end{enumerate}
+
+\section{Keterpenuhan CPMK}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|L{0.18\textwidth}|L{0.30\textwidth}|X|}
+\hline
+\textbf{CPMK} & \textbf{Materi Terkait} & \textbf{Keterpenuhan dalam Catatan} \\
+\hline
+CPMK1 & Semua materi & Dipenuhi melalui peta hubungan layer: Application, Transport, Network/IP, Wireless/Data Link, dan Security lintas layer. \\
+\hline
+CPMK2 & Wireless Network & Dipenuhi melalui pembahasan medium wireless, karakter link radio, hidden/exposed terminal, CSMA/CA, RTS/CTS, dan keamanan 802.11. \\
+\hline
+CPMK3 & Transport Layer, Congestion Control & Dipenuhi melalui TCP reliable byte stream, ACK, retransmission, sliding window, flow control, congestion window, antrean, dan QoS. \\
+\hline
+CPMK4 & Congestion Control, Application Layer, Wireless Network & Dipenuhi sebagian melalui hubungan IP best-effort, bottleneck, DNS, CDN, dan routing overlay; detail forwarding/routing bukan fokus daftar UAS ini. \\
+\hline
+CPMK5 & Application Layer, Wireless Network, Network Security & Dipenuhi sebagian melalui DNS, socket, port, dan layanan jaringan; konfigurasi LAN/IP detail belum menjadi bagian utama sumber yang sudah diproses. \\
+\hline
+CPMK6 & Application Layer, Transport Layer & Dipenuhi melalui socket API, client-server, HTTP, SMTP, DNS, dan pemilihan TCP/UDP untuk aplikasi. \\
+\hline
+\end{tabularx}
+\caption{Pemetaan CPMK terhadap materi UAS}
+\label{tab:keterpenuhan-cpmk}
+\end{table}
+
+\section{Daftar Materi yang Diujikan}
+
+\begin{enumerate}
+    \item Transport Layer
+    \item Congestion Control
+    \item Application Layer
+    \item Wireless Network
+    \item Network Security
+\end{enumerate}
+
+\section{Outline Keseluruhan Materi}
+
+Berdasarkan sumber NotebookLM, urutan konseptual yang logis dapat dibaca secara top-down: Application Layer menjelaskan kebutuhan aplikasi; Transport Layer menjelaskan layanan antar-proses; Congestion Control menjelaskan pengaturan beban jaringan; Wireless Network menjelaskan medium nirkabel yang memengaruhi performa protokol di atasnya; Network Security membahas perlindungan lintas layer.
+
+\subsection{Application Layer}
+\begin{itemize}
+    \item Aplikasi jaringan berjalan sebagai proses di end systems dan memakai socket untuk mengakses layanan transport.
+    \item Topik inti: arsitektur client-server, peer-to-peer, hybrid, DNS, HTTP, email, CDN, dan protokol aplikasi multimedia/manajemen.
+    \item Hubungan utama: kebutuhan aplikasi menentukan pilihan TCP, UDP, RTP, atau layanan keamanan seperti TLS.
+\end{itemize}
+
+\subsection{Transport Layer}
+\begin{itemize}
+    \item Mengubah layanan host-to-host menjadi process-to-process dengan port, socket, multiplexing, dan demultiplexing.
+    \item Topik inti: UDP, TCP, reliable byte stream, handshake, teardown, retransmission, timeout, sliding window, dan flow control.
+    \item Hubungan utama: menjadi dasar bagi HTTP, SMTP, DNS, RTP, congestion control, dan TLS/SSL.
+\end{itemize}
+
+\subsection{Congestion Control}
+\begin{itemize}
+    \item Mengatur pemakaian bandwidth dan buffer agar jaringan tetap efektif dan adil.
+    \item Topik inti: FIFO, tail drop, fair queuing, WFQ, AIMD, slow start, fast retransmit, fast recovery, RED, DECbit, Vegas, DiffServ, dan RSVP.
+    \item Hubungan utama: TCP menafsirkan packet loss sebagai sinyal kongesti; wireless loss dapat merusak asumsi tersebut.
+\end{itemize}
+
+\subsection{Wireless Network}
+\begin{itemize}
+    \item Membahas host nirkabel, base station, karakter link radio, hidden terminal, dan dampaknya pada protokol di atasnya.
+    \item Topik inti: mode infrastructure/ad hoc, taksonomi hop, standar 802.11, Bluetooth, cellular, CSMA/CA, RTS/CTS, mobility, dan keamanan wireless.
+\end{itemize}
+
+\subsection{Network Security}
+\begin{itemize}
+    \item Membahas ancaman dan mekanisme keamanan lintas layer, termasuk keamanan aplikasi, transport, IP, dan wireless.
+    \item Topik inti: secure channel, kriptografi, hash, PKI, autentikasi, TLS, IPsec, 802.11i, firewall, filtering, NAT, malware, dan DDoS.
+\end{itemize}
+
+\newpage
+\input{section/1-transport-layer.tex}
+
+\newpage
+\input{section/2-congestion-control.tex}
+
+\newpage
+\input{section/3-application-layer.tex}
+
+\newpage
+\input{section/4-wireless-network.tex}
+
+\newpage
+\input{section/5-network-security.tex}
+
+\end{document}

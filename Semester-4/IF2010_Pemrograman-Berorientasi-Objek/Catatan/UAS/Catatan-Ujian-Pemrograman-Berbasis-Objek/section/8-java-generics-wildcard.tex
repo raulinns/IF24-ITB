@@ -1,0 +1,224 @@
+\section{Java Generics Wildcard}
+
+Generics wildcard membahas penggunaan tanda \texttt{?} untuk menyatakan tipe generic yang tidak diketahui secara tepat. Wildcard diperlukan karena generic Java bersifat invariant: \texttt{List<Integer>} bukan subtype dari \texttt{List<Number>} walaupun \texttt{Integer} adalah subtype dari \texttt{Number}. Untuk membuat API fleksibel tetapi tetap aman, Java menyediakan upper bounded wildcard \texttt{? extends T} dan lower bounded wildcard \texttt{? super T}.
+
+\begin{cmt}{Keterbatasan Sumber}{}
+Section ini menggunakan pengetahuan umum Java. Wildcard adalah materi yang biasanya tidak dapat dipahami hanya dari sintaks; karena itu penekanan utama diberikan pada alasan type safety dan prinsip PECS.
+\end{cmt}
+
+\subsection{Outline Fundamental Konsep Materi}
+
+\begin{enumerate}
+    \item Masalah invariance \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item \texttt{List<Integer>} bukan subtype dari \texttt{List<Number>}.
+        \item Invariance mencegah penulisan nilai yang tidak aman.
+    \end{enumerate}
+    \item Unbounded wildcard \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item \texttt{List<?>} berarti list dengan elemen tipe tidak diketahui.
+        \item Aman untuk membaca sebagai \texttt{Object}, tidak aman untuk menambah selain \texttt{null}.
+    \end{enumerate}
+    \item Upper bounded wildcard \textbf{[SUDAH DIKUASAI]}
+    \begin{enumerate}
+        \item \texttt{? extends T}.
+        \item Cocok untuk producer: data dibaca dari struktur.
+    \end{enumerate}
+    \item Lower bounded wildcard
+    \begin{enumerate}
+        \item \texttt{? super T}.
+        \item Cocok untuk consumer: data ditulis ke struktur.
+    \end{enumerate}
+    \item PECS
+    \begin{enumerate}
+        \item Producer Extends.
+        \item Consumer Super.
+    \end{enumerate}
+    \item Wildcard capture
+    \begin{enumerate}
+        \item Compiler dapat menangkap tipe wildcard dalam helper method.
+        \item Berguna untuk operasi internal yang perlu tipe konsisten.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Pentingnya Materi dan Relevansinya}
+
+\begin{jawab}[Inti Relevansi.]
+Wildcard membuat API generic cukup fleksibel untuk menerima banyak subtype, tetapi tetap menjaga type safety. Materi ini penting untuk memahami Collection, Stream, Comparator, dan banyak method library Java.
+\end{jawab}
+
+Tanpa wildcard, method yang menerima list number akan terlalu kaku. Dengan \texttt{List<? extends Number>}, method dapat menerima \texttt{List<Integer>}, \texttt{List<Double>}, dan \texttt{List<BigDecimal>}. Namun, fleksibilitas ini dibayar dengan batasan: jika tipe tepat elemen tidak diketahui, compiler membatasi operasi tulis.
+
+\subsubsection{Dependensi dan Hubungan dengan Materi Lain}
+
+Wildcard bergantung pada Generics, Inheritance, dan type system. Collection sering memakai wildcard pada method seperti \texttt{addAll}. Comparator memakai \texttt{Comparator<? super T>}. Stream API juga sering memanfaatkan variance dalam method generic.
+
+\subsection{Penjelasan Konsep Fundamental}
+
+\subsubsection{Invariance pada Generic Java}
+
+\begin{jawab}[Inti Konsep.]
+Generic Java invariant: meskipun \texttt{Integer extends Number}, \texttt{List<Integer>} bukan subtype dari \texttt{List<Number>}. Ini mencegah penulisan elemen yang salah tipe.
+\end{jawab}
+
+Jika \texttt{List<Integer>} boleh diperlakukan sebagai \texttt{List<Number>}, maka kode dapat menambahkan \texttt{Double} ke list integer, yang jelas merusak type safety.
+
+\begin{lstlisting}[language=Java, caption={Alasan List<Integer> bukan List<Number>}, label={lst:generic-invariance}]
+List<Integer> integers = new ArrayList<>();
+// List<Number> numbers = integers; // Tidak boleh.
+
+// Jika boleh, ini akan berbahaya:
+// numbers.add(3.14);
+// Integer x = integers.get(0); // Akan rusak.
+\end{lstlisting}
+
+\subsubsection{Unbounded Wildcard}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{List<?>} berarti list berisi elemen dari tipe tertentu yang tidak diketahui. Elemen aman dibaca sebagai \texttt{Object}, tetapi tidak aman ditambah nilai konkret.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Unbounded wildcard}, label={lst:unbounded-wildcard}]
+public static void printAll(List<?> values) {
+    for (Object value : values) {
+        System.out.println(value);
+    }
+}
+\end{lstlisting}
+
+Karena tipe elemen tidak diketahui, \texttt{values.add("x")} tidak aman. List tersebut mungkin sebenarnya \texttt{List<Integer>}. Nilai yang boleh ditambahkan hanya \texttt{null}, tetapi ini jarang berguna.
+
+\subsubsection{Upper Bounded Wildcard: \texttt{? extends T}}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{? extends T} berarti tipe tidak diketahui yang merupakan subtype dari \texttt{T}. Struktur ini cocok sebagai producer karena elemen dapat dibaca sebagai \texttt{T}.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Upper bounded wildcard untuk membaca number}, label={lst:upper-wildcard}]
+public static double sum(List<? extends Number> numbers) {
+    double total = 0.0;
+    for (Number number : numbers) {
+        total += number.doubleValue();
+    }
+    return total;
+}
+
+sum(List.of(1, 2, 3));
+sum(List.of(1.5, 2.5));
+\end{lstlisting}
+
+Namun, kita tidak dapat menambahkan \texttt{Integer} ke \texttt{List<? extends Number>} karena list tersebut mungkin sebenarnya \texttt{List<Double>}. Compiler hanya menjamin bahwa elemen yang keluar minimal dapat diperlakukan sebagai \texttt{Number}.
+
+\subsubsection{Lower Bounded Wildcard: \texttt{? super T}}
+
+\begin{jawab}[Inti Konsep.]
+\texttt{? super T} berarti tipe tidak diketahui yang merupakan supertype dari \texttt{T}. Struktur ini cocok sebagai consumer karena aman menerima nilai bertipe \texttt{T}.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={Lower bounded wildcard untuk menulis data}, label={lst:lower-wildcard}]
+public static void addDefaultIntegers(List<? super Integer> target) {
+    target.add(0);
+    target.add(1);
+    target.add(2);
+}
+
+List<Number> numbers = new ArrayList<>();
+addDefaultIntegers(numbers);
+\end{lstlisting}
+
+Ketika membaca dari \texttt{List<? super Integer>}, compiler hanya aman menganggap hasilnya \texttt{Object}, karena list tersebut bisa \texttt{List<Integer>}, \texttt{List<Number>}, atau \texttt{List<Object>}.
+
+\subsubsection{PECS: Producer Extends, Consumer Super}
+
+\begin{jawab}[Inti Konsep.]
+PECS adalah aturan praktis: jika sumber data menghasilkan nilai untuk dibaca, gunakan \texttt{extends}; jika target data menerima nilai untuk ditulis, gunakan \texttt{super}.
+\end{jawab}
+
+\begin{lstlisting}[language=Java, caption={PECS pada copy method}, label={lst:pecs-copy}]
+public static <T> void copy(List<? extends T> source, List<? super T> target) {
+    for (T item : source) {
+        target.add(item);
+    }
+}
+
+List<Integer> ints = List.of(1, 2, 3);
+List<Number> nums = new ArrayList<>();
+copy(ints, nums);
+\end{lstlisting}
+
+\texttt{source} adalah producer karena menghasilkan \texttt{T}; \texttt{target} adalah consumer karena menerima \texttt{T}. Ini contoh paling penting untuk memahami wildcard.
+
+\subsection{Komponen Kunci Penting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|L{0.28\textwidth}|X|}
+\hline
+\textbf{Komponen Kunci} & \textbf{Makna atau Peran} \\
+\hline
+Wildcard & Tanda \texttt{?} untuk tipe generic yang tidak diketahui. \\
+\hline
+Invariant & Sifat bahwa \texttt{Generic<Sub>} bukan subtype dari \texttt{Generic<Super>}. \\
+\hline
+\texttt{? extends T} & Upper bounded wildcard; cocok untuk producer. \\
+\hline
+\texttt{? super T} & Lower bounded wildcard; cocok untuk consumer. \\
+\hline
+PECS & Producer Extends, Consumer Super. \\
+\hline
+Wildcard capture & Mekanisme compiler/helper method untuk menangkap tipe wildcard. \\
+\hline
+\end{tabularx}
+\caption{Komponen kunci dalam materi Java Generics Wildcard}
+\label{tab:komponen-kunci-java-wildcard}
+\end{table}
+
+\subsection{Algoritma dan Rumus Penting}
+
+\subsubsection{Prosedur Memilih Wildcard}
+
+\begin{jawab}[Tujuan Algoritma.]
+Prosedur ini membantu menentukan wildcard yang tepat berdasarkan operasi baca dan tulis.
+\end{jawab}
+
+\begin{lstlisting}[caption={Pseudocode memilih wildcard}, label={lst:wildcard-decision}]
+Input: Parameter generic pada method
+Output: Bentuk tipe parameter
+
+1. Jika method hanya membaca elemen dari parameter:
+      gunakan ? extends T.
+2. Jika method hanya menulis elemen T ke parameter:
+      gunakan ? super T.
+3. Jika method membaca dan menulis elemen dengan tipe yang sama:
+      gunakan parameter tipe biasa T, bukan wildcard.
+4. Jika method hanya butuh mencetak/mengecek ukuran:
+      gunakan ?.
+5. Jika wildcard membuat kode internal sulit:
+      gunakan helper method dengan parameter tipe untuk capture.
+\end{lstlisting}
+
+\subsection{Checklist Pemahaman}
+
+\subsubsection{Submateri yang Telah Dibahas}
+
+\begin{itemize}
+    \item[$\square$] Saya dapat menjelaskan mengapa \texttt{List<Integer>} bukan \texttt{List<Number>}.
+    \item[$\square$] Saya dapat memakai \texttt{List<?>}.
+    \item[$\square$] Saya dapat memakai \texttt{? extends T} untuk producer.
+    \item[$\square$] Saya dapat memakai \texttt{? super T} untuk consumer.
+    \item[$\square$] Saya dapat menerapkan prinsip PECS.
+\end{itemize}
+
+\subsubsection{Prioritas Belajar}
+
+\begin{tabularx}{\textwidth}{|L{0.22\textwidth}|X|}
+\hline
+\textbf{Prioritas} & \textbf{Materi yang Perlu Dikuasai} \\
+\hline
+\textbf{Wajib Dikuasai} & Invariance, \texttt{?}, \texttt{? extends}, \texttt{? super}, PECS, contoh copy. \\
+\hline
+\textbf{Cukup Paham Konsep} & Wildcard capture dan hubungan wildcard dengan Comparator/Collection API. \\
+\hline
+\textbf{Sudah Dikuasai} & Pernah tercakup dalam materi kuis, tetapi perlu latihan karena sering membingungkan secara tipe. \\
+\hline
+\end{tabularx}
