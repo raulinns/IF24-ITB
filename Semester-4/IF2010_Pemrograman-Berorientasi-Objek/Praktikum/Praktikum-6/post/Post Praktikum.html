@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" xml:lang="en" class="yui3-js-enabled"><head>
+    <title>Post Praktikum</title>
+    <link rel="shortcut icon" href="https://olympia.id/theme/image.php/boost/theme/1573780592/favicon">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="keywords" content="moodle, Post Praktikum">
+<link rel="stylesheet" type="text/css" href="Post%20Praktikum_files/combo.css"><script type="text/javascript" async="" src="Post%20Praktikum_files/js"></script><script async="" src="Post%20Praktikum_files/analytics.js"></script><script charset="utf-8" id="yui_3_17_2_1_1781461933892_8" src="Post%20Praktikum_files/combo_003" async=""></script><script charset="utf-8" id="yui_3_17_2_1_1781461933892_18" src="Post%20Praktikum_files/javascript_005.php" async=""></script><script charset="utf-8" id="yui_3_17_2_1_1781461933892_60" src="Post%20Praktikum_files/javascript_002.php" async=""></script><script charset="utf-8" id="yui_3_17_2_1_1781461933892_61" src="Post%20Praktikum_files/javascript.php" async=""></script><script charset="utf-8" id="yui_3_17_2_1_1781461933892_62" src="Post%20Praktikum_files/combo_002" async=""></script><script id="firstthemesheet" type="text/css">/** Required in order to fix style inclusion problems in IE with YUI **/</script><link rel="stylesheet" type="text/css" href="Post%20Praktikum_files/styles.css">
+<script type="text/javascript">
+//<![CDATA[
+var M = {}; M.yui = {};
+M.pageloadstarttime = new Date();
+M.cfg = {"wwwroot":"https:\/\/olympia.id","sesskey":"dYV1iHLCvZ","themerev":"1573780592","slasharguments":1,"theme":"boost","iconsystemmodule":"core\/icon_system_fontawesome","jsrev":"1573780592","admin":"admin","svgicons":true,"usertimezone":"Asia\/Jakarta","contextid":590551};var yui1ConfigFn = function(me) {if(/-skin|reset|fonts|grids|base/.test(me.name)){me.type='css';me.path=me.path.replace(/\.js/,'.css');me.path=me.path.replace(/\/yui2-skin/,'/assets/skins/sam/yui2-skin')}};
+var yui2ConfigFn = function(me) {var parts=me.name.replace(/^moodle-/,'').split('-'),component=parts.shift(),module=parts[0],min='-min';if(/-(skin|core)$/.test(me.name)){parts.pop();me.type='css';min=''}
+if(module){var filename=parts.join('-');me.path=component+'/'+module+'/'+filename+min+'.'+me.type}else{me.path=component+'/'+component+'.'+me.type}};
+YUI_config = {"debug":false,"base":"https:\/\/olympia.id\/lib\/yuilib\/3.17.2\/","comboBase":"https:\/\/olympia.id\/theme\/yui_combo.php?","combine":true,"filter":null,"insertBefore":"firstthemesheet","groups":{"yui2":{"base":"https:\/\/olympia.id\/lib\/yuilib\/2in3\/2.9.0\/build\/","comboBase":"https:\/\/olympia.id\/theme\/yui_combo.php?","combine":true,"ext":false,"root":"2in3\/2.9.0\/build\/","patterns":{"yui2-":{"group":"yui2","configFn":yui1ConfigFn}}},"moodle":{"name":"moodle","base":"https:\/\/olympia.id\/theme\/yui_combo.php?m\/1573780592\/","combine":true,"comboBase":"https:\/\/olympia.id\/theme\/yui_combo.php?","ext":false,"root":"m\/1573780592\/","patterns":{"moodle-":{"group":"moodle","configFn":yui2ConfigFn}},"filter":null,"modules":{"moodle-core-event":{"requires":["event-custom"]},"moodle-core-dragdrop":{"requires":["base","node","io","dom","dd","event-key","event-focus","moodle-core-notification"]},"moodle-core-chooserdialogue":{"requires":["base","panel","moodle-core-notification"]},"moodle-core-languninstallconfirm":{"requires":["base","node","moodle-core-notification-confirm","moodle-core-notification-alert"]},"moodle-core-blocks":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification"]},"moodle-core-actionmenu":{"requires":["base","event","node-event-simulate"]},"moodle-core-dock":{"requires":["base","node","event-custom","event-mouseenter","event-resize","escape","moodle-core-dock-loader","moodle-core-event"]},"moodle-core-dock-loader":{"requires":["escape"]},"moodle-core-handlebars":{"condition":{"trigger":"handlebars","when":"after"}},"moodle-core-notification":{"requires":["moodle-core-notification-dialogue","moodle-core-notification-alert","moodle-core-notification-confirm","moodle-core-notification-exception","moodle-core-notification-ajaxexception"]},"moodle-core-notification-dialogue":{"requires":["base","node","panel","escape","event-key","dd-plugin","moodle-core-widget-focusafterclose","moodle-core-lockscroll"]},"moodle-core-notification-alert":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-confirm":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-exception":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-ajaxexception":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-checknet":{"requires":["base-base","moodle-core-notification-alert","io-base"]},"moodle-core-tooltip":{"requires":["base","node","io-base","moodle-core-notification-dialogue","json-parse","widget-position","widget-position-align","event-outside","cache-base"]},"moodle-core-popuphelp":{"requires":["moodle-core-tooltip"]},"moodle-core-formchangechecker":{"requires":["base","event-focus","moodle-core-event"]},"moodle-core-maintenancemodetimer":{"requires":["base","node"]},"moodle-core-lockscroll":{"requires":["plugin","base-build"]},"moodle-core_availability-form":{"requires":["base","node","event","event-delegate","panel","moodle-core-notification-dialogue","json"]},"moodle-backup-backupselectall":{"requires":["node","event","node-event-simulate","anim"]},"moodle-backup-confirmcancel":{"requires":["node","node-event-simulate","moodle-core-notification-confirm"]},"moodle-course-dragdrop":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification","moodle-course-coursebase","moodle-course-util"]},"moodle-course-formatchooser":{"requires":["base","node","node-event-simulate"]},"moodle-course-categoryexpander":{"requires":["node","event-key"]},"moodle-course-management":{"requires":["base","node","io-base","moodle-core-notification-exception","json-parse","dd-constrain","dd-proxy","dd-drop","dd-delegate","node-event-delegate"]},"moodle-course-util":{"requires":["node"],"use":["moodle-course-util-base"],"submodules":{"moodle-course-util-base":{},"moodle-course-util-section":{"requires":["node","moodle-course-util-base"]},"moodle-course-util-cm":{"requires":["node","moodle-course-util-base"]}}},"moodle-course-modchooser":{"requires":["moodle-core-chooserdialogue","moodle-course-coursebase"]},"moodle-form-dateselector":{"requires":["base","node","overlay","calendar"]},"moodle-form-showadvanced":{"requires":["node","base","selector-css3"]},"moodle-form-shortforms":{"requires":["node","base","selector-css3","moodle-core-event"]},"moodle-form-passwordunmask":{"requires":[]},"moodle-question-preview":{"requires":["base","dom","event-delegate","event-key","core_question_engine"]},"moodle-question-qbankmanager":{"requires":["node","selector-css3"]},"moodle-question-searchform":{"requires":["base","node"]},"moodle-question-chooser":{"requires":["moodle-core-chooserdialogue"]},"moodle-availability_completion-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_date-form":{"requires":["base","node","event","io","moodle-core_availability-form"]},"moodle-availability_grade-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_group-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_grouping-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_profile-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-mod_assign-history":{"requires":["node","transition"]},"moodle-mod_forum-subscriptiontoggle":{"requires":["base-base","io-base"]},"moodle-mod_quiz-dragdrop":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification","moodle-mod_quiz-quizbase","moodle-mod_quiz-util-base","moodle-mod_quiz-util-page","moodle-mod_quiz-util-slot","moodle-course-util"]},"moodle-mod_quiz-questionchooser":{"requires":["moodle-core-chooserdialogue","moodle-mod_quiz-util","querystring-parse"]},"moodle-mod_quiz-toolboxes":{"requires":["base","node","event","event-key","io","moodle-mod_quiz-quizbase","moodle-mod_quiz-util-slot","moodle-core-notification-ajaxexception"]},"moodle-mod_quiz-modform":{"requires":["base","node","event"]},"moodle-mod_quiz-autosave":{"requires":["base","node","event","event-valuechange","node-event-delegate","io-form"]},"moodle-mod_quiz-util":{"requires":["node","moodle-core-actionmenu"],"use":["moodle-mod_quiz-util-base"],"submodules":{"moodle-mod_quiz-util-base":{},"moodle-mod_quiz-util-slot":{"requires":["node","moodle-mod_quiz-util-base"]},"moodle-mod_quiz-util-page":{"requires":["node","moodle-mod_quiz-util-base"]}}},"moodle-mod_quiz-repaginate":{"requires":["base","event","node","io","moodle-core-notification-dialogue"]},"moodle-mod_quiz-quizbase":{"requires":["base","node"]},"moodle-message_airnotifier-toolboxes":{"requires":["base","node","io"]},"moodle-filter_glossary-autolinker":{"requires":["base","node","io-base","json-parse","event-delegate","overlay","moodle-core-event","moodle-core-notification-alert","moodle-core-notification-exception","moodle-core-notification-ajaxexception"]},"moodle-filter_mathjaxloader-loader":{"requires":["moodle-core-event"]},"moodle-editor_atto-rangy":{"requires":[]},"moodle-editor_atto-editor":{"requires":["node","transition","io","overlay","escape","event","event-simulate","event-custom","node-event-html5","node-event-simulate","yui-throttle","moodle-core-notification-dialogue","moodle-core-notification-confirm","moodle-editor_atto-rangy","handlebars","timers","querystring-stringify"]},"moodle-editor_atto-plugin":{"requires":["node","base","escape","event","event-outside","handlebars","event-custom","timers","moodle-editor_atto-menu"]},"moodle-editor_atto-menu":{"requires":["moodle-core-notification-dialogue","node","event","event-custom"]},"moodle-report_eventlist-eventfilter":{"requires":["base","event","node","node-event-delegate","datatable","autocomplete","autocomplete-filters"]},"moodle-report_loglive-fetchlogs":{"requires":["base","event","node","io","node-event-delegate"]},"moodle-gradereport_grader-gradereporttable":{"requires":["base","node","event","handlebars","overlay","event-hover"]},"moodle-gradereport_history-userselector":{"requires":["escape","event-delegate","event-key","handlebars","io-base","json-parse","moodle-core-notification-dialogue"]},"moodle-tool_capability-search":{"requires":["base","node"]},"moodle-tool_lp-dragdrop-reorder":{"requires":["moodle-core-dragdrop"]},"moodle-tool_monitor-dropdown":{"requires":["base","event","node"]},"moodle-assignfeedback_editpdf-editor":{"requires":["base","event","node","io","graphics","json","event-move","event-resize","transition","querystring-stringify-simple","moodle-core-notification-dialog","moodle-core-notification-alert","moodle-core-notification-exception","moodle-core-notification-ajaxexception"]},"moodle-atto_accessibilitychecker-button":{"requires":["color-base","moodle-editor_atto-plugin"]},"moodle-atto_accessibilityhelper-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_align-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_bold-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_charmap-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_clear-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_collapse-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_emoticon-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_equation-button":{"requires":["moodle-editor_atto-plugin","moodle-core-event","io","event-valuechange","tabview","array-extras"]},"moodle-atto_html-codemirror":{"requires":["moodle-atto_html-codemirror-skin"]},"moodle-atto_html-beautify":{},"moodle-atto_html-button":{"requires":["promise","moodle-editor_atto-plugin","moodle-atto_html-beautify","moodle-atto_html-codemirror","event-valuechange"]},"moodle-atto_image-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_indent-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_italic-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_link-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_managefiles-usedfiles":{"requires":["node","escape"]},"moodle-atto_managefiles-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_media-button":{"requires":["moodle-editor_atto-plugin","moodle-form-shortforms"]},"moodle-atto_noautolink-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_orderedlist-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_recordrtc-recording":{"requires":["moodle-atto_recordrtc-button"]},"moodle-atto_recordrtc-button":{"requires":["moodle-editor_atto-plugin","moodle-atto_recordrtc-recording"]},"moodle-atto_rtl-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_strike-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_subscript-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_superscript-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_table-button":{"requires":["moodle-editor_atto-plugin","moodle-editor_atto-menu","event","event-valuechange"]},"moodle-atto_title-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_underline-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_undo-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_unorderedlist-button":{"requires":["moodle-editor_atto-plugin"]}}},"gallery":{"name":"gallery","base":"https:\/\/olympia.id\/lib\/yuilib\/gallery\/","combine":true,"comboBase":"https:\/\/olympia.id\/theme\/yui_combo.php?","ext":false,"root":"gallery\/1573780592\/","patterns":{"gallery-":{"group":"gallery"}}}},"modules":{"core_filepicker":{"name":"core_filepicker","fullpath":"https:\/\/olympia.id\/lib\/javascript.php\/1573780592\/repository\/filepicker.js","requires":["base","node","node-event-simulate","json","async-queue","io-base","io-upload-iframe","io-form","yui2-treeview","panel","cookie","datatable","datatable-sort","resize-plugin","dd-plugin","escape","moodle-core_filepicker","moodle-core-notification-dialogue"]},"core_comment":{"name":"core_comment","fullpath":"https:\/\/olympia.id\/lib\/javascript.php\/1573780592\/comment\/comment.js","requires":["base","io-base","node","json","yui2-animation","overlay","escape"]},"mathjax":{"name":"mathjax","fullpath":"https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/mathjax\/2.7.2\/MathJax.js?delayStartupUntil=configured"},"core_question_flags":{"name":"core_question_flags","fullpath":"https:\/\/olympia.id\/lib\/javascript.php\/1573780592\/question\/flags.js","requires":["base","dom","event-delegate","io-base"]},"core_question_engine":{"name":"core_question_engine","fullpath":"https:\/\/olympia.id\/lib\/javascript.php\/1573780592\/question\/qengine.js","requires":["node","event"]},"mod_quiz":{"name":"mod_quiz","fullpath":"https:\/\/olympia.id\/lib\/javascript.php\/1573780592\/mod\/quiz\/module.js","requires":["base","dom","event-delegate","event-key","core_question_engine","moodle-core-formchangechecker"]}}};
+M.yui.loader = {modules: {}};
+
+//]]>
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-72717768-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<meta property="og:url" content="https://olympia.id">
+<meta property="og:site_name" content="Olympia">
+<meta property="og:title" content="Programming Learning Platform">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    config: ["Accessible.js", "Safe.js"],
+    errorSettings: { message: ["!"] },
+    skipStartupTypeset: true,
+    messageStyle: "none"
+});
+</script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="core/first" src="Post%20Praktikum_files/requirejs.php"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="jquery" src="Post%20Praktikum_files/javascript_004.php"></script></head>
+<body id="page-mod-quiz-review" class="format-weeks  path-mod path-mod-quiz gecko dir-ltr lang-en yui-skin-sam yui3-skin-sam olympia-id pagelayout-incourse course-135 context-590551 cmid-7689 category-2  jsenabled">
+
+<div id="page-wrapper">
+
+    <div>
+    <a class="sr-only sr-only-focusable" href="#maincontent">Skip to main content</a>
+</div><script type="text/javascript" src="Post%20Praktikum_files/combo"></script><script type="text/javascript" src="Post%20Praktikum_files/javascript_006.php"></script>
+<script type="text/javascript">
+//<![CDATA[
+document.body.className += ' jsenabled';
+//]]>
+</script>
+
+
+
+    <nav class="fixed-top navbar navbar-light bg-white navbar-expand moodle-has-zindex" aria-label="Site navigation">
+    
+            <div data-region="drawer-toggle" class="d-inline-block mr-3">
+                <button aria-expanded="false" aria-controls="nav-drawer" type="button" class="btn nav-link float-sm-left mr-1 btn-secondary" data-action="toggle-drawer" data-side="left" data-preference="drawer-open-nav"><i class="icon fa fa-bars fa-fw " aria-hidden="true" aria-label=""></i><span class="sr-only">Side panel</span></button>
+            </div>
+    
+            <a href="https://olympia.id/" class="navbar-brand 
+                    d-none d-sm-inline
+                    ">
+                <span class="site-name d-none d-md-inline">Olympia</span>
+            </a>
+    
+            <ul class="navbar-nav d-none d-md-flex">
+                <!-- custom_menu -->
+                
+                <!-- page_heading_menu -->
+                
+            </ul>
+            <ul class="nav navbar-nav ml-auto">
+                <div class="d-none d-lg-block">
+                
+            </div>
+                <!-- navbar_plugin_output -->
+                <li class="nav-item">
+                <div class="popover-region collapsed popover-region-notifications" id="nav-notification-popover-container" data-userid="75304" data-region="popover-region">
+    <div class="popover-region-toggle nav-link" data-region="popover-region-toggle" aria-role="button" aria-controls="popover-region-container-6a2ef3ada6dd06a2ef3ad9fd9f4" aria-haspopup="true" aria-label="Show notification window with no new notifications" tabindex="0">
+                <i class="icon fa fa-bell fa-fw " aria-hidden="true" title="Toggle notifications menu" aria-label="Toggle notifications menu"></i>
+        <div class="count-container hidden" data-region="count-container">0</div>
+
+    </div>
+    <div id="popover-region-container-6a2ef3ada6dd06a2ef3ad9fd9f4" class="popover-region-container" data-region="popover-region-container" aria-expanded="false" aria-hidden="true" aria-label="Notification window" role="region">
+        <div class="popover-region-header-container">
+            <h3 class="popover-region-header-text" data-region="popover-region-header-text">Notifications</h3>
+            <div class="popover-region-header-actions" data-region="popover-region-header-actions">        <a class="mark-all-read-button" href="#" title="Mark all as read" data-action="mark-all-read" role="button">
+            <span class="normal-icon"><i class="icon fa fa-check fa-fw " aria-hidden="true" title="Mark all as read" aria-label="Mark all as read"></i></span>
+            <span class="loading-icon icon-no-margin"><i class="icon fa fa-circle-o-notch fa-spin fa-fw " aria-hidden="true" title="Loading" aria-label="Loading"></i></span>
+        </a>
+        <a href="https://olympia.id/message/notificationpreferences.php?userid=75304" title="Notification preferences">
+            <i class="icon fa fa-cog fa-fw " aria-hidden="true" title="Notification preferences" aria-label="Notification preferences"></i>
+        </a>
+</div>
+        </div>
+        <div class="popover-region-content-container" data-region="popover-region-content-container">
+            <div class="popover-region-content" data-region="popover-region-content">
+                        <div class="all-notifications" data-region="all-notifications" role="log" aria-busy="false" aria-atomic="false" aria-relevant="additions"></div>
+        <div class="empty-message" tabindex="0" data-region="empty-message">You have no notifications</div>
+
+            </div>
+            <span class="loading-icon icon-no-margin"><i class="icon fa fa-circle-o-notch fa-spin fa-fw " aria-hidden="true" title="Loading" aria-label="Loading"></i></span>
+        </div>
+                <a class="see-all-link" href="https://olympia.id/message/output/popup/notifications.php">
+                    <div class="popover-region-footer-container">
+                        <div class="popover-region-seeall-text">See all</div>
+                    </div>
+                </a>
+    </div>
+</div>
+                </li>
+                <!-- user_menu -->
+                <li class="nav-item d-flex align-items-center">
+                    <div class="usermenu"><div class="action-menu moodle-actionmenu nowrap-items d-inline" id="action-menu-1" data-enhance="moodle-core-actionmenu">
+
+        <div class="menubar d-flex " id="action-menu-1-menubar" role="menubar">
+
+            
+
+
+                <div class="action-menu-trigger">
+                    <div class="dropdown">
+                        <a href="#" tabindex="0" class=" dropdown-toggle icon-no-margin" id="dropdown-1" aria-label="User menu" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="action-menu-1-menu">
+                            
+                            <span class="userbutton"><span class="usertext mr-1">13524044 Narendra Dharma Wistara M.</span><span class="avatars"><span class="avatar current"><img src="Post%20Praktikum_files/f2.png" alt="Picture of 13524044 Narendra Dharma Wistara M." title="Picture of 13524044 Narendra Dharma Wistara M." class="userpicture defaultuserpic" width="35" height="35" role="presentation"></span></span></span>
+                                
+                            <b class="caret"></b>
+                        </a>
+                            <div class="dropdown-menu dropdown-menu-right menu  align-tr-br" id="action-menu-1-menu" data-rel="menu-content" aria-labelledby="action-menu-toggle-1" role="menu" data-align="tr-br">
+                                        <a href="https://olympia.id/my/" class="dropdown-item menu-action" role="menuitem" data-title="mymoodle,admin" aria-labelledby="actionmenuaction-1">
+                                                <i class="icon fa fa-tachometer fa-fw " aria-hidden="true" title="Dashboard" aria-label="Dashboard"></i>
+                                            <span class="menu-action-text" id="actionmenuaction-1">
+                                                Dashboard
+                                            </span>
+                                        </a>
+                                        <div class="dropdown-divider" role="presentation"><span class="filler">&nbsp;</span></div>
+                                        <a href="https://olympia.id/user/profile.php?id=75304" class="dropdown-item menu-action" role="menuitem" data-title="profile,moodle" aria-labelledby="actionmenuaction-2">
+                                                <i class="icon fa fa-user fa-fw " aria-hidden="true" title="Profile" aria-label="Profile"></i>
+                                            <span class="menu-action-text" id="actionmenuaction-2">
+                                                Profile
+                                            </span>
+                                        </a>
+                                        <a href="https://olympia.id/grade/report/overview/index.php" class="dropdown-item menu-action" role="menuitem" data-title="grades,grades" aria-labelledby="actionmenuaction-3">
+                                                <i class="icon fa fa-table fa-fw " aria-hidden="true" title="Grades" aria-label="Grades"></i>
+                                            <span class="menu-action-text" id="actionmenuaction-3">
+                                                Grades
+                                            </span>
+                                        </a>
+                                        <a href="https://olympia.id/message/index.php" class="dropdown-item menu-action" role="menuitem" data-title="messages,message" aria-labelledby="actionmenuaction-4">
+                                                <i class="icon fa fa-comment fa-fw " aria-hidden="true" title="Messages" aria-label="Messages"></i>
+                                            <span class="menu-action-text" id="actionmenuaction-4">
+                                                Messages
+                                            </span>
+                                        </a>
+                                        <a href="https://olympia.id/user/preferences.php" class="dropdown-item menu-action" role="menuitem" data-title="preferences,moodle" aria-labelledby="actionmenuaction-5">
+                                                <i class="icon fa fa-wrench fa-fw " aria-hidden="true" title="Preferences" aria-label="Preferences"></i>
+                                            <span class="menu-action-text" id="actionmenuaction-5">
+                                                Preferences
+                                            </span>
+                                        </a>
+                                        <div class="dropdown-divider" role="presentation"><span class="filler">&nbsp;</span></div>
+                                        <a href="https://olympia.id/login/logout.php?sesskey=dYV1iHLCvZ" class="dropdown-item menu-action" role="menuitem" data-title="logout,moodle" aria-labelledby="actionmenuaction-6">
+                                                <i class="icon fa fa-sign-out fa-fw " aria-hidden="true" title="Log out" aria-label="Log out"></i>
+                                            <span class="menu-action-text" id="actionmenuaction-6">
+                                                Log out
+                                            </span>
+                                        </a>
+                            </div>
+                    </div>
+                </div>
+
+        </div>
+
+</div></div>
+                </li>
+            </ul>
+            <!-- search_box -->
+    </nav>
+    
+
+    <div id="page" class="container-fluid">
+        <header id="page-header" class="row">
+    <div class="col-12 pt-3 pb-3">
+        <div class="card ">
+            <div class="card-body ">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <div class="page-context-header"><div class="page-header-headings"><h1>ITB_IF2010_2_2526 Pemrograman Berorientasi Objek</h1></div></div>
+                    </div>
+
+                </div>
+                <div class="d-flex flex-wrap">
+                    <div id="page-navbar">
+                        <nav role="navigation">
+    <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="https://olympia.id/my/">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">My courses</li>
+                <li class="breadcrumb-item">
+                    <a href="https://olympia.id/course/view.php?id=135" title="ITB_IF2010_2_2526 Pemrograman Berorientasi Objek">ITB_IF2010_2_2526</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="https://olympia.id/course/view.php?id=135#section-12">Praktikum 6</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="https://olympia.id/mod/quiz/view.php?id=7689" title="Quiz">Post Praktikum</a>
+                </li>
+    </ol>
+</nav>
+                    </div>
+                    <div class="ml-auto d-flex">
+                        
+                    </div>
+                    <div id="course-header">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        <div id="page-content" class="row pb-3">
+            <div id="region-main-box" class="col-12">
+                <section id="region-main" class="has-blocks mb-3">
+
+                    <span class="notifications" id="user-notifications"></span>
+                    <div role="main"><span id="maincontent"></span><table class="generaltable generalbox quizreviewsummary"><tbody><tr><th class="cell" scope="row">Started on</th><td class="cell">Monday, 15 June 2026, 12:09 AM</td></tr><tr><th class="cell" scope="row">State</th><td class="cell">Finished</td></tr><tr><th class="cell" scope="row">Completed on</th><td class="cell">Monday, 15 June 2026, 1:32 AM</td></tr><tr><th class="cell" scope="row">Time taken</th><td class="cell">1 hour 22 mins</td></tr><tr><th class="cell" scope="row">Grade</th><td class="cell"><b>400.00</b> out of 400.00 (<b>100</b>%)</td></tr></tbody></table><form action="https://olympia.id/mod/quiz/review.php?attempt=395783&amp;cmid=7689" method="post" class="questionflagsaveform" autocomplete="off" id="yui_3_17_2_1_1781461933892_70"><div><div id="q1" class="que programming programming correct"><div class="info"><h3 class="no">Question <span class="qno">1</span></h3><div class="state">Correct</div><div class="grade">Mark 100.00 out of 100.00</div><div class="questionflag editable" aria-atomic="true" aria-relevant="text" aria-live="assertive" id="yui_3_17_2_1_1781461933892_24"><input type="hidden" name="q423209:1_:flagged" value="0"><input type="hidden" value="qaid=2194385&amp;qubaid=423209&amp;qid=13869&amp;slot=1&amp;checksum=bbaea674ccfbbe9af04465dba9d3827f&amp;sesskey=dYV1iHLCvZ&amp;newstate=" class="questionflagpostdata">
+<input type="hidden" class="questionflagvalue" id="q423209:1_:flaggedcheckbox" name="q423209:1_:flagged" value="0"><input type="image" class="questionflagimage" src="Post%20Praktikum_files/unflagged.png" title="Flag this question for future reference" alt="Not flagged"><span class="questionflagtext" title="Flag this question for future reference">Flag question</span></div></div><div class="content"><div class="formulation clearfix"><h4 class="accesshide">Question text</h4><input type="hidden" name="q423209:1_:sequencecheck" value="2"><div class="qtext"><table class="qtype_programming_limit">
+<tbody><tr class="">
+<td class="cell c0" style="">Time limit</td>
+<td class="cell c1 lastcol" style="">3 s</td>
+</tr>
+<tr class="lastrow">
+<td class="cell c0" style="">Memory limit</td>
+<td class="cell c1 lastcol" style="">64 MB</td>
+</tr>
+</tbody>
+</table>
+<h1>Vending Machine</h1>
+<div>
+    <p>Setelah Kebin dan Stewart berhasil membantu pengelolaan kedai jus
+ milik Dr. Neroifa. Dr. Neroifa ingin melakukan ekspansi usahanya dengan
+ cara menjual jusnya di dalam Vending Machine yang terletak di daerah 
+ramai penduduk. Anda diminta untuk membantu Dr. Neroifa agar vending 
+machine jus dapat berjalan dengan baik pada: <b><a href="https://olympia.id/pluginfile.php/582222/question/questiontext/423209/1/13869/VendingMachine.java">VendingMachine.java</a></b>.</p></div>
+<p>Untuk memudahkan pengujian class, berikut program&nbsp;<b><a href="https://olympia.id/pluginfile.php/582222/question/questiontext/423209/1/13869/Main.java">Main</a></b> yang dapat Anda coba.</p><p>Berikut contoh input dan outputnya <a href="https://olympia.id/pluginfile.php/582222/question/questiontext/423209/1/13869/contoh.zip"><b>File</b></a>.</p>
+
+<div style="background: #fff; border: 1px dashed #ccc; padding: 15px 20px; border-radius: 8px; margin-top: 30px; text-align: center;">
+    <h4 style="margin-top: 0; color: #2980b9;">Format Pengumpulan</h4>
+    <p style="margin-bottom: 0;">
+        Kumpulkan file: <code>VendingMachine.java</code>.<br> Pastikan program dapat dikompilasi dan dijalankan dengan benar.
+    </p>
+</div></div><div class="ablock"><div class="languages"><select class="select custom-select qtype_programming_language" disabled="disabled" id="menuq423209:1_language" name="q423209:1_language"><option selected="selected" value="java-8">Java 8</option></select></div><div class="answer"></div><div class="attachments"><p><a href="https://olympia.id/pluginfile.php/590551/question/response_attachments/423209/1/172749869/VendingMachine.java?forcedownload=1"><img class="icon icon" alt="Text file" title="Text file" src="Post%20Praktikum_files/sourcecode.png">VendingMachine.java</a></p></div></div></div><div class="outcome clearfix"><h4 class="accesshide">Feedback</h4><div class="feedback"><div class="specificfeedback"><div>
+    <h3>Score: 100</h3>
+    
+        <br>
+        <h3>Blackbox</h3>
+        <h4>Score: 90</h4>
+        <h4>Verdict: Accepted</h4>
+            <h4>Evaluator: Exact</h4>
+            <table class="qtype_programming_result">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Score</th>
+                        <th>Verdict</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>9</td>
+                        <td>Accepted</td>
+                        <td>
+0.17 sec, 27.99 MB</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>9</td>
+                        <td>Accepted</td>
+                        <td>
+0.24 sec, 27.99 MB</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>9</td>
+                        <td>Accepted</td>
+                        <td>
+0.22 sec, 27.96 MB</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>9</td>
+                        <td>Accepted</td>
+                        <td>
+0.28 sec, 27.89 MB</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>9</td>
+                        <td>Accepted</td>
+                        <td>
+0.26 sec, 28.04 MB</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>9</td>
+                        <td>Accepted</td>
+                        <td>
+0.25 sec, 27.95 MB</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>9</td>
+                        <td>Accepted</td>
+                        <td>
+0.26 sec, 28.22 MB</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>9</td>
+                        <td>Accepted</td>
+                        <td>
+0.26 sec, 27.96 MB</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>9</td>
+                        <td>Accepted</td>
+                        <td>
+0.27 sec, 29.96 MB</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>9</td>
+                        <td>Accepted</td>
+                        <td>
+0.18 sec, 28.48 MB</td>
+                    </tr>
+                </tbody>
+            </table>
+        <br>
+        <h3>Whitebox</h3>
+        <h4>Score: 10</h4>
+        <table class="qtype_programming_result">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Score</th>
+                    <th>Checker</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>10</td>
+                    <td>PMD</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+</div></div><div class="generalfeedback"><p></p><p><br></p><p></p></div></div></div></div></div><div id="q2" class="que programming programming correct"><div class="info"><h3 class="no">Question <span class="qno">2</span></h3><div class="state">Correct</div><div class="grade">Mark 100.00 out of 100.00</div><div class="questionflag editable" aria-atomic="true" aria-relevant="text" aria-live="assertive" id="yui_3_17_2_1_1781461933892_33"><input type="hidden" name="q423209:2_:flagged" value="0"><input type="hidden" value="qaid=2194386&amp;qubaid=423209&amp;qid=13876&amp;slot=2&amp;checksum=41ce910607e8c16d01b87205f6b28be7&amp;sesskey=dYV1iHLCvZ&amp;newstate=" class="questionflagpostdata">
+<input type="hidden" class="questionflagvalue" id="q423209:2_:flaggedcheckbox" name="q423209:2_:flagged" value="0"><input type="image" class="questionflagimage" src="Post%20Praktikum_files/unflagged.png" title="Flag this question for future reference" alt="Not flagged"><span class="questionflagtext" title="Flag this question for future reference">Flag question</span></div></div><div class="content"><div class="formulation clearfix"><h4 class="accesshide">Question text</h4><input type="hidden" name="q423209:2_:sequencecheck" value="6"><div class="qtext"><table class="qtype_programming_limit">
+<tbody><tr class="">
+<td class="cell c0" style="">Time limit</td>
+<td class="cell c1 lastcol" style="">1 s</td>
+</tr>
+<tr class="lastrow">
+<td class="cell c0" style="">Memory limit</td>
+<td class="cell c1 lastcol" style="">64 MB</td>
+</tr>
+</tbody>
+</table>
+<h1>Sliding Window Sum Paralel</h1>
+
+<p>
+    Kebin sedang menganalisis deret angka besar. Ia ingin menghitung jumlah elemen setiap
+    <i>sub-array</i> berurutan dengan panjang tetap (window). Karena datanya bisa sangat besar, Kebin membagi pekerjaan ke beberapa <strong>thread</strong>. Setiap thread menghitung sebagian window dan menyimpan hasilnya ke posisi yang sesuai.<br>
+    <em>Sliding window</em> adalah teknik untuk mengambil potongan data 
+berurutan dengan ukuran tetap, lalu menggeser potongan itu satu langkah 
+demi satu langkah. Misal data = <code>[1, 2, 3, 4, 5]</code> dan ukuran window <code>W = 3</code>. Maka window
+    yang terbentuk adalah:
+</p>
+<ul>
+    <li>Window 0: <code>[1, 2, 3]</code> sum = 6</li>
+    <li>Window 1: <code>[2, 3, 4]</code> sum = 9</li>
+    <li>Window 2: <code>[3, 4, 5]</code> sum = 12</li>
+</ul>
+Jika panjang data <code>N</code> dan ukuran window <code>W</code>, maka jumlah window yang valid adalah <code>M = N - W + 1</code>.<br> Buatlah program yang menghitung <em>sum sliding window</em> secara paralel. Perbaikilah file <a href="https://olympia.id/pluginfile.php/582222/question/questiontext/423209/2/13876/Main.java">Main.java</a> dan <a href="https://olympia.id/pluginfile.php/582222/question/questiontext/423209/2/13876/WindowThread.java">WindowThread.java</a>
+<p></p>
+
+<h2>Spesifikasi</h2>
+<ul>
+    <li>Jumlah setiap kemungkinan window adalah <code>M = N - W + 1</code>.</li>
+    <li>Bagi semua window ke <code>T</code> threads dengan selisih &lt;= 1.</li>
+    <li>Jika <code>M</code> tidak habis dibagi <code>T</code>, thread dengan indeks lebih kecil mendapat 1 window ekstra. Contoh: M=8, T=3, Banyak window per thread [3, 3, 2].</li>
+    <li>Setiap thread menghitung sum setiap window dan menulis hasilnya ke array output.</li>
+</ul>
+
+<h2>Format Input</h2>
+<pre>N
+A1 A2 ... AN
+W
+T
+</pre>
+
+<h2>Format Output</h2>
+<pre>Thread 0:
+window idx 0, sum = S0
+window idx 1, sum = S1
+...
+
+Thread 1:
+...
+
+Thread T:
+...
+window idx (M-1), sum = S(M-1)
+</pre>
+
+<h2>Contoh</h2>
+<p><b>Input</b></p>
+<pre>8
+1 2 3 4 5 6 7 8
+4
+3
+</pre>
+
+<p><b>Output</b></p>
+<pre>Thread 0:
+window idx 0, sum = 10
+window idx 1, sum = 14
+
+Thread 1:
+window idx 2, sum = 18
+window idx 3, sum = 22
+
+Thread 2:
+window idx 4, sum = 26
+
+
+</pre>
+
+<h2>Batasan</h2>
+<ul>
+    <li>1 ≤ N ≤ 1.000.000</li>
+    <li>1 ≤ W ≤ N</li>
+    <li>1 ≤ T ≤ 64</li>
+    <li>Nilai elemen A dalam rentang int</li>
+</ul>
+
+<h2>Catatan</h2>
+<ul>
+    <li>Dilarang menggunakan busy-wait atau <code>Thread.sleep</code> untuk sinkronisasi.</li>
+  	<li>Kumpulkan Main.java dan WindowThread.java dalam satu zip file.</li>
+</ul></div><div class="ablock"><div class="languages"><select class="select custom-select qtype_programming_language" disabled="disabled" id="menuq423209:2_language" name="q423209:2_language"><option selected="selected" value="java-8">Java 8</option></select></div><div class="answer"></div><div class="attachments"><p><a href="https://olympia.id/pluginfile.php/590551/question/response_attachments/423209/2/172750077/soal.zip?forcedownload=1"><img class="icon icon" alt="Archive (ZIP)" title="Archive (ZIP)" src="Post%20Praktikum_files/archive.png">soal.zip</a></p></div></div></div><div class="outcome clearfix"><h4 class="accesshide">Feedback</h4><div class="feedback"><div class="specificfeedback"><div>
+    <h3>Score: 100</h3>
+    
+        <br>
+        <h3>Blackbox</h3>
+        <h4>Score: 80</h4>
+        <h4>Verdict: Accepted</h4>
+            <h4>Evaluator: Exact</h4>
+            <table class="qtype_programming_result">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Score</th>
+                        <th>Verdict</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>8</td>
+                        <td>Accepted</td>
+                        <td>
+0.06 sec, 29.07 MB</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>8</td>
+                        <td>Accepted</td>
+                        <td>
+0.06 sec, 28.28 MB</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>8</td>
+                        <td>Accepted</td>
+                        <td>
+0.06 sec, 28.80 MB</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>8</td>
+                        <td>Accepted</td>
+                        <td>
+0.06 sec, 28.52 MB</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>8</td>
+                        <td>Accepted</td>
+                        <td>
+0.07 sec, 30.46 MB</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>8</td>
+                        <td>Accepted</td>
+                        <td>
+0.24 sec, 45.98 MB</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>8</td>
+                        <td>Accepted</td>
+                        <td>
+0.26 sec, 50.45 MB</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>8</td>
+                        <td>Accepted</td>
+                        <td>
+0.30 sec, 49.25 MB</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>8</td>
+                        <td>Accepted</td>
+                        <td>
+0.33 sec, 48.15 MB</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>8</td>
+                        <td>Accepted</td>
+                        <td>
+0.32 sec, 47.75 MB</td>
+                    </tr>
+                </tbody>
+            </table>
+        <br>
+        <h3>Whitebox</h3>
+        <h4>Score: 20</h4>
+        <table class="qtype_programming_result">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Score</th>
+                    <th>Checker</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>20</td>
+                    <td>PMD</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+</div></div></div></div></div></div><div id="q3" class="que programming programming correct"><div class="info"><h3 class="no">Question <span class="qno">3</span></h3><div class="state">Correct</div><div class="grade">Mark 100.00 out of 100.00</div><div class="questionflag editable" aria-atomic="true" aria-relevant="text" aria-live="assertive" id="yui_3_17_2_1_1781461933892_42"><input type="hidden" name="q423209:3_:flagged" value="0"><input type="hidden" value="qaid=2194387&amp;qubaid=423209&amp;qid=13874&amp;slot=3&amp;checksum=100708a5060f432cfa1a9ae408b9daaf&amp;sesskey=dYV1iHLCvZ&amp;newstate=" class="questionflagpostdata">
+<input type="hidden" class="questionflagvalue" id="q423209:3_:flaggedcheckbox" name="q423209:3_:flagged" value="0"><input type="image" class="questionflagimage" src="Post%20Praktikum_files/unflagged.png" title="Flag this question for future reference" alt="Not flagged"><span class="questionflagtext" title="Flag this question for future reference">Flag question</span></div></div><div class="content"><div class="formulation clearfix"><h4 class="accesshide">Question text</h4><input type="hidden" name="q423209:3_:sequencecheck" value="2"><div class="qtext"><table class="qtype_programming_limit">
+<tbody><tr class="">
+<td class="cell c0" style="">Time limit</td>
+<td class="cell c1 lastcol" style="">1 s</td>
+</tr>
+<tr class="lastrow">
+<td class="cell c0" style="">Memory limit</td>
+<td class="cell c1 lastcol" style="">64 MB</td>
+</tr>
+</tbody>
+</table>
+<p style="text-align: center;"><b>Plugin Loader</b></p>
+
+<p><b>Latar Belakang</b></p>
+<p>
+    Dalam pengembangan perangkat lunak yang modular, seringkali kita 
+ingin menambahkan fitur baru tanpa harus mengubah kode utama. Hal ini 
+biasanya dilakukan dengan sistem <strong>Plugin</strong>. Program utama akan mencari dan memuat kelas-kelas plugin
+    secara dinamis saat dijalankan.
+</p>
+<p>
+    Pada tugas ini, Anda diminta untuk mengimplementasikan sebuah <code>PluginLoader</code> sederhana menggunakan <strong>Java Reflection</strong>.
+</p>
+
+<p><b>File yang Disediakan</b></p>
+<table>
+    <thead>
+        <tr>
+            <th>File</th>
+            <th>Deskripsi</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code><a href="https://olympia.id/pluginfile.php/582222/question/questiontext/423209/3/13874/Plugin.java">Plugin.java</a></code></td>
+            <td>Interface yang harus diimplementasikan oleh setiap plugin. Memiliki method <code>void start()</code>.</td>
+        </tr>
+        <tr>
+            <td><code><a href="https://olympia.id/pluginfile.php/582222/question/questiontext/423209/3/13874/PluginLoader.java">PluginLoader.java</a></code></td>
+            <td>Kelas yang akan Anda lengkapi. Berisi method <code>loadPlugin</code>.</td>
+        </tr>
+        <tr>
+            <td><code><a href="https://olympia.id/pluginfile.php/582222/question/questiontext/423209/3/13874/Main.java">Main.java</a></code></td>
+            <td>Driver.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><b><br></b></p>
+<p><b>Tugas Anda</b></p>
+<p>Lengkapi method berikut di dalam <code>PluginLoader.java</code>:</p>
+<pre><code>public static Plugin loadPlugin(String className) throws Exception</code></pre>
+
+<p><b>Spesifikasi:</b></p>
+<ol>
+    <li>Muat kelas berdasarkan <code>className</code> menggunakan Reflection.</li>
+    <li>Pastikan kelas tersebut merupakan implementasi dari interface <code>Plugin</code>.</li>
+    <li>Jika validasi pada poin 2 gagal, lempar <code>IllegalArgumentException</code> dengan pesan: <br>
+        <code>"Kelas &lt;className&gt; tidak mengimplementasikan interface Plugin"</code>
+    </li>
+    <li>Buat dan kembalikan <i>instance</i> dari kelas tersebut menggunakan <i>default constructor</i>.</li>
+</ol>
+
+<div>
+    <strong>Referensi Dokumentasi</strong>
+    <ul>
+        <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html" target="_blank">Dokumentasi Kelas: java.lang.Class</a></li>
+        <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Constructor.html" target="_blank">Dokumentasi Kelas: java.lang.reflect.Constructor</a></li>
+        <li><a href="https://docs.oracle.com/javase/tutorial/reflect/index.html" target="_blank">Oracle Java Tutorial: The Reflection API</a></li>
+    </ul>
+</div>
+
+<p>Format Pengumpulan</p>
+<p>Kumpulkan file <code>PluginLoader.java</code></p>
+
+<p>Contoh Input &amp; Output</p>
+<p>Misalkan terdapat kelas <code>ValidPlugin</code> yang mengimplementasikan <code>Plugin</code> dan <code>InvalidPlugin</code> yang tidak.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Input (className)</th>
+            <th>Output / Exception</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>ValidPlugin</code></td>
+            <td>(Plugin berhasil dijalankan)</td>
+        </tr>
+        <tr>
+            <td><code>InvalidPlugin</code></td>
+            <td><code>java.lang.IllegalArgumentException: Kelas InvalidPlugin tidak mengimplementasikan interface Plugin</code></td>
+        </tr>
+        <tr>
+            <td><code>NonExistent</code></td>
+            <td><code>java.lang.ClassNotFoundException: NonExistent</code></td>
+        </tr>
+    </tbody>
+</table></div><div class="ablock"><div class="languages"><select class="select custom-select qtype_programming_language" disabled="disabled" id="menuq423209:3_language" name="q423209:3_language"><option selected="selected" value="java-8">Java 8</option></select></div><div class="answer"></div><div class="attachments"><p><a href="https://olympia.id/pluginfile.php/590551/question/response_attachments/423209/3/172749938/PluginLoader.java?forcedownload=1"><img class="icon icon" alt="Text file" title="Text file" src="Post%20Praktikum_files/sourcecode.png">PluginLoader.java</a></p></div></div></div><div class="outcome clearfix"><h4 class="accesshide">Feedback</h4><div class="feedback"><div class="specificfeedback"><div>
+    <h3>Score: 100</h3>
+    
+        <br>
+        <h3>Blackbox</h3>
+        <h4>Score: 100</h4>
+        <h4>Verdict: Accepted</h4>
+            <h4>Evaluator: Exact</h4>
+            <table class="qtype_programming_result">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Score</th>
+                        <th>Verdict</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>25</td>
+                        <td>Accepted</td>
+                        <td>
+0.12 sec, 28.41 MB</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>25</td>
+                        <td>Accepted</td>
+                        <td>
+0.11 sec, 28.54 MB</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>25</td>
+                        <td>Accepted</td>
+                        <td>
+0.09 sec, 27.84 MB</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>25</td>
+                        <td>Accepted</td>
+                        <td>
+0.07 sec, 29.26 MB</td>
+                    </tr>
+                </tbody>
+            </table>
+</div></div></div></div></div></div><div id="q4" class="que programming programming correct"><div class="info"><h3 class="no">Question <span class="qno">4</span></h3><div class="state">Correct</div><div class="grade">Mark 100.00 out of 100.00</div><div class="questionflag editable" aria-atomic="true" aria-relevant="text" aria-live="assertive" id="yui_3_17_2_1_1781461933892_51"><input type="hidden" name="q423209:4_:flagged" value="0"><input type="hidden" value="qaid=2194388&amp;qubaid=423209&amp;qid=13875&amp;slot=4&amp;checksum=ca4be93a722f56d450642cd77a23e2b8&amp;sesskey=dYV1iHLCvZ&amp;newstate=" class="questionflagpostdata">
+<input type="hidden" class="questionflagvalue" id="q423209:4_:flaggedcheckbox" name="q423209:4_:flagged" value="0"><input type="image" class="questionflagimage" src="Post%20Praktikum_files/unflagged.png" title="Flag this question for future reference" alt="Not flagged"><span class="questionflagtext" title="Flag this question for future reference">Flag question</span></div></div><div class="content"><div class="formulation clearfix"><h4 class="accesshide">Question text</h4><input type="hidden" name="q423209:4_:sequencecheck" value="7"><div class="qtext"><table class="qtype_programming_limit">
+<tbody><tr class="">
+<td class="cell c0" style="">Time limit</td>
+<td class="cell c1 lastcol" style="">1 s</td>
+</tr>
+<tr class="lastrow">
+<td class="cell c0" style="">Memory limit</td>
+<td class="cell c1 lastcol" style="">64 MB</td>
+</tr>
+</tbody>
+</table>
+<p><b>Nama File</b>: WeatherSystem.zip<br></p>
+
+<p><span><b>[ BONUS ]</b></span></p><p><b>Latar Belakang</b></p>
+<p>
+    <b>Observer Pattern</b> adalah salah satu <em>behavioral design pattern</em> yang mendefinisikan
+    mekanisme <em>subscription</em>: satu objek (<em>subject/publisher</em>) menyimpan daftar objek lain
+    (<em>observer/subscriber</em>) dan secara otomatis memberitahu mereka setiap kali terjadi perubahan
+    pada state-nya. Pola ini memisahkan logika "apa yang berubah" dari logika "siapa yang perlu tahu",
+    sehingga komponen menjadi longgar-kait (<em>loosely coupled</em>).
+</p>
+<p>
+    Struktur dasar Observer Pattern terdiri dari:
+</p>
+<ul>
+    <li><b>Subject (Publisher)</b>: menyimpan daftar observer dan memanggil <code>update()</code>
+        pada masing-masing observer setiap kali state berubah.</li>
+    <li><b>Observer (Subscriber)</b>: mendefinisikan interface <code>update()</code> yang dipanggil
+        oleh subject.</li>
+    <li><b>Concrete Observer</b>: implementasi nyata dari observer yang bereaksi terhadap notifikasi.</li>
+</ul>
+
+<p><b>Deskripsi Soal</b></p>
+<p>
+    Kamu diminta membangun sistem pemantau cuaca berbasis <b>Observer Pattern</b>.
+    Dalam sistem ini, sebuah <em>stasiun cuaca</em> (subject) menyimpan data suhu dan kelembaban.
+    Setiap kali data cuaca diperbarui, semua tampilan yang terdaftar (<em>observer</em>)
+    akan <b>otomatis diberitahu</b> dan menampilkan nilai terkini.
+</p>
+<p>
+    File <code>Main.java</code> (driver) sudah disediakan dan <b>tidak boleh diubah</b>.
+    Tugas kamu adalah mengimplementasikan file-file <a href="https://olympia.id/pluginfile.php/582222/question/questiontext/423209/4/13875/code.zip">berikut</a>:
+</p>
+<ul>
+    <li><code>WeatherObserver.java</code>: interface observer</li>
+    <li><code>WeatherStation.java</code>: subject yang mengelola daftar observer dan data cuaca</li>
+    <li><code>TemperatureDisplay.java</code>: observer yang menampilkan suhu</li>
+    <li><code>HumidityDisplay.java</code>: observer yang menampilkan kelembaban</li>
+</ul>
+<p>
+    Kumpulkan <code>WeatherSystem.zip</code> yang berisi semua file <code>.java</code> yang kamu buat,
+    termasuk <code>Main.java</code>.
+</p>
+
+<p><b>Spesifikasi</b></p>
+
+<p><b>1. Interface <code>WeatherObserver</code></b></p>
+<p>Interface yang mendefinisikan kontrak untuk semua observer cuaca.</p>
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+    <thead style="background: #f2f2f2;">
+        <tr><th>Method</th><th>Keterangan</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>void update(double temperature, double humidity)</code></td>
+            <td>Dipanggil oleh subject saat data cuaca berubah. Implementasi masing-masing observer menentukan tampilannya.</td>
+        </tr>
+        <tr>
+            <td><code>String getName()</code></td>
+            <td>Mengembalikan nama unik observer ini.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><b>2. Kelas <code>WeatherStation</code> (Subject / Observable)</b></p>
+<p>
+    Menyimpan data cuaca terkini dan mengelola daftar observer.
+    Wajib memiliki field <code>observers</code> bertipe <code>List&lt;WeatherObserver&gt;</code>
+    dan method <code>notifyObservers()</code> yang dipanggil setiap kali data berubah.
+</p>
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+    <thead style="background: #f2f2f2;">
+        <tr><th>Method / Constructor</th><th>Keterangan</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>WeatherStation()</code></td>
+            <td>Inisialisasi stasiun dengan suhu=0.0, kelembaban=0.0, dan daftar observer kosong.</td>
+        </tr>
+        <tr>
+            <td><code>void addObserver(WeatherObserver observer)</code></td>
+            <td>Menambahkan observer ke daftar.</td>
+        </tr>
+        <tr>
+            <td><code>boolean removeObserver(String name)</code></td>
+            <td>Menghapus observer dengan nama yang sesuai. Mengembalikan <code>true</code> jika berhasil, <code>false</code> jika tidak ditemukan.</td>
+        </tr>
+        <tr>
+            <td><code>boolean hasObserver(String name)</code></td>
+            <td>Mengembalikan <code>true</code> jika observer dengan nama tersebut sudah terdaftar.</td>
+        </tr>
+        <tr>
+            <td><code>void setMeasurements(double temperature, double humidity)</code></td>
+            <td>Memperbarui data cuaca lalu memanggil <code>notifyObservers()</code>.</td>
+        </tr>
+        <tr>
+            <td><code>private void notifyObservers()</code></td>
+            <td>Memanggil <code>update(temperature, humidity)</code> pada setiap observer dalam urutan pendaftaran.</td>
+        </tr>
+        <tr>
+            <td><code>double getTemperature()</code></td>
+            <td>Mengembalikan suhu saat ini.</td>
+        </tr>
+        <tr>
+            <td><code>double getHumidity()</code></td>
+            <td>Mengembalikan kelembaban saat ini.</td>
+        </tr>
+        <tr>
+            <td><code>int getObserverCount()</code></td>
+            <td>Mengembalikan jumlah observer yang terdaftar.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><b>3. Kelas <code>TemperatureDisplay</code> (Concrete Observer)</b></p>
+<p>Observer yang mencetak suhu saat dipanggil oleh stasiun cuaca.</p>
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+    <thead style="background: #f2f2f2;">
+        <tr><th>Method / Constructor</th><th>Keterangan</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>TemperatureDisplay(String name)</code></td>
+            <td>Membuat tampilan suhu dengan nama yang diberikan.</td>
+        </tr>
+        <tr>
+            <td><code>void update(double temperature, double humidity)</code></td>
+            <td>Mencetak: <code>Display &lt;nama&gt;: Suhu &lt;suhu&gt;</code><br>
+                Format suhu: satu angka desimal (<code>%.1f</code>).<br>
+                Contoh: <code>Display TempA: Suhu 25.0</code></td>
+        </tr>
+        <tr>
+            <td><code>String getName()</code></td>
+            <td>Mengembalikan nama tampilan ini.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><b>4. Kelas <code>HumidityDisplay</code> (Concrete Observer)</b></p>
+<p>Observer yang mencetak kelembaban saat dipanggil oleh stasiun cuaca.</p>
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+    <thead style="background: #f2f2f2;">
+        <tr><th>Method / Constructor</th><th>Keterangan</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>HumidityDisplay(String name)</code></td>
+            <td>Membuat tampilan kelembaban dengan nama yang diberikan.</td>
+        </tr>
+        <tr>
+            <td><code>void update(double temperature, double humidity)</code></td>
+            <td>Mencetak: <code>Display &lt;nama&gt;: Kelembaban &lt;kelembaban&gt;%</code><br>
+                Format kelembaban: satu angka desimal (<code>%.1f</code>).<br>
+                Contoh: <code>Display HumidA: Kelembaban 60.0%</code></td>
+        </tr>
+        <tr>
+            <td><code>String getName()</code></td>
+            <td>Mengembalikan nama tampilan ini.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><b>Constraint Whitebox</b></p>
+<p>
+    Implementasi kamu akan divalidasi secara struktural oleh PMD. Pastikan:
+</p>
+<ul>
+    <li><code>WeatherStation</code> memiliki field bernama <code>observers</code>.</li>
+    <li><code>WeatherStation</code> memiliki method bernama <code>notifyObservers</code>.</li>
+    <li>Method <code>setMeasurements</code> di <code>WeatherStation</code> memanggil <code>notifyObservers()</code>.</li>
+</ul>
+
+<p><b>Format Masukan</b></p>
+<p>Baris pertama berisi integer <code>Q</code> (jumlah perintah). Diikuti <code>Q</code> baris perintah:</p>
+<ul>
+    <li><code>REGISTER &lt;TEMP_DISPLAY|HUMIDITY_DISPLAY&gt; &lt;nama&gt;</code>: daftarkan observer baru</li>
+    <li><code>REMOVE &lt;nama&gt;</code>: hapus observer dari daftar</li>
+    <li><code>UPDATE &lt;suhu&gt; &lt;kelembaban&gt;</code>: perbarui data cuaca (memicu notifikasi ke semua observer)</li>
+    <li><code>STATUS</code>: tampilkan informasi stasiun</li>
+</ul>
+
+<p><b>Format Keluaran</b></p>
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+    <thead style="background: #f2f2f2;">
+        <tr><th>Perintah</th><th>Kondisi</th><th>Keluaran</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><b>REGISTER</b></td><td>berhasil</td><td><code>OK</code></td></tr>
+        <tr><td><b>REGISTER</b></td><td>nama sudah terdaftar</td><td><code>ALREADY_REGISTERED</code></td></tr>
+        <tr><td><b>REGISTER</b></td><td>tipe tidak dikenal</td><td><code>UNKNOWN_OBSERVER_TYPE</code></td></tr>
+        <tr><td><b>REMOVE</b></td><td>berhasil</td><td><code>OK</code></td></tr>
+        <tr><td><b>REMOVE</b></td><td>nama tidak ditemukan</td><td><code>NOT_FOUND</code></td></tr>
+        <tr>
+            <td><b>UPDATE</b></td><td>-</td>
+            <td>Setiap observer mencetak satu baris (dalam urutan pendaftaran).<br>
+                <code>TemperatureDisplay</code>: <code>Display &lt;nama&gt;: Suhu &lt;suhu&gt;</code><br>
+                <code>HumidityDisplay</code>: <code>Display &lt;nama&gt;: Kelembaban &lt;kelembaban&gt;%</code><br>
+                Jika tidak ada observer, tidak ada keluaran.
+            </td>
+        </tr>
+        <tr><td><b>STATUS</b></td><td>-</td><td><code>Station: Suhu=&lt;suhu&gt;, Kelembaban=&lt;kelembaban&gt;%, Observer=&lt;jumlah&gt;</code></td></tr>
+        <tr><td><b>Perintah tidak dikenal</b></td><td>-</td><td><code>UNKNOWN_COMMAND</code></td></tr>
+    </tbody>
+</table>
+<p>Semua nilai suhu dan kelembaban dicetak dengan satu angka desimal (contoh: <code>25.0</code>, <code>60.0</code>).</p>
+
+<p><b>Contoh Masukan dan Keluaran</b></p>
+
+<p><b>Masukan 1:</b></p>
+<div style="background: #1a1a2e; color: #ffffff; padding: 18px; border-radius: 8px; font-family: 'Consolas', monospace; white-space: pre; font-size: 0.9em;">5
+REGISTER TEMP_DISPLAY TempA
+REGISTER HUMIDITY_DISPLAY HumidA
+STATUS
+UPDATE 25.0 60.0
+STATUS</div>
+
+<p><b>Keluaran 1:</b></p>
+<div style="background: #1a1a2e; color: #ffffff; padding: 18px; border-radius: 8px; font-family: 'Consolas', monospace; white-space: pre; font-size: 0.9em;">OK
+OK
+Station: Suhu=0.0, Kelembaban=0.0%, Observer=2
+Display TempA: Suhu 25.0
+Display HumidA: Kelembaban 60.0%
+Station: Suhu=25.0, Kelembaban=60.0%, Observer=2</div>
+
+<p><b>Masukan 2:</b></p>
+<div style="background: #1a1a2e; color: #ffffff; padding: 18px; border-radius: 8px; font-family: 'Consolas', monospace; white-space: pre; font-size: 0.9em;">8
+REGISTER TEMP_DISPLAY TA
+REGISTER HUMIDITY_DISPLAY HA
+UPDATE 20.0 50.0
+REMOVE TA
+STATUS
+UPDATE 25.0 65.0
+REMOVE HA
+STATUS</div>
+
+<p><b>Keluaran 2:</b></p>
+<div style="background: #1a1a2e; color: #ffffff; padding: 18px; border-radius: 8px; font-family: 'Consolas', monospace; white-space: pre; font-size: 0.9em;">OK
+OK
+Display TA: Suhu 20.0
+Display HA: Kelembaban 50.0%
+OK
+Station: Suhu=20.0, Kelembaban=50.0%, Observer=1
+Display HA: Kelembaban 65.0%
+OK
+Station: Suhu=25.0, Kelembaban=65.0%, Observer=0</div>
+
+<p><b>Masukan 3:</b></p>
+<div style="background: #1a1a2e; color: #ffffff; padding: 18px; border-radius: 8px; font-family: 'Consolas', monospace; white-space: pre; font-size: 0.9em;">6
+REGISTER TEMP_DISPLAY Screen1
+REGISTER TEMP_DISPLAY Screen1
+REGISTER HUMIDITY_DISPLAY Screen1
+STATUS
+UPDATE 25.0 60.0
+STATUS</div>
+
+<p><b>Keluaran 3:</b></p>
+<div style="background: #1a1a2e; color: #ffffff; padding: 18px; border-radius: 8px; font-family: 'Consolas', monospace; white-space: pre; font-size: 0.9em;">OK
+ALREADY_REGISTERED
+ALREADY_REGISTERED
+Station: Suhu=0.0, Kelembaban=0.0%, Observer=1
+Display Screen1: Suhu 25.0
+Station: Suhu=25.0, Kelembaban=60.0%, Observer=1</div></div><div class="ablock"><div class="languages"><select class="select custom-select qtype_programming_language" disabled="disabled" id="menuq423209:4_language" name="q423209:4_language"><option selected="selected" value="java-8">Java 8</option></select></div><div class="answer"></div><div class="attachments"><p><a href="https://olympia.id/pluginfile.php/590551/question/response_attachments/423209/4/172751978/jawaban.zip?forcedownload=1"><img class="icon icon" alt="Archive (ZIP)" title="Archive (ZIP)" src="Post%20Praktikum_files/archive.png">jawaban.zip</a></p></div></div></div><div class="outcome clearfix"><h4 class="accesshide">Feedback</h4><div class="feedback"><div class="specificfeedback"><div>
+    <h3>Score: 100</h3>
+    
+        <br>
+        <h3>Blackbox</h3>
+        <h4>Score: 100</h4>
+        <h4>Verdict: Accepted</h4>
+            <h4>Evaluator: Exact</h4>
+            <table class="qtype_programming_result">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Score</th>
+                        <th>Verdict</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>10</td>
+                        <td>Accepted</td>
+                        <td>
+0.08 sec, 31.84 MB</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>10</td>
+                        <td>Accepted</td>
+                        <td>
+0.17 sec, 34.21 MB</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>10</td>
+                        <td>Accepted</td>
+                        <td>
+0.08 sec, 32.46 MB</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>10</td>
+                        <td>Accepted</td>
+                        <td>
+0.08 sec, 31.97 MB</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>10</td>
+                        <td>Accepted</td>
+                        <td>
+0.17 sec, 34.05 MB</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>10</td>
+                        <td>Accepted</td>
+                        <td>
+0.08 sec, 29.85 MB</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>10</td>
+                        <td>Accepted</td>
+                        <td>
+0.07 sec, 30.28 MB</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>10</td>
+                        <td>Accepted</td>
+                        <td>
+0.17 sec, 33.67 MB</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>10</td>
+                        <td>Accepted</td>
+                        <td>
+0.17 sec, 33.54 MB</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>Accepted</td>
+                        <td>
+0.16 sec, 33.63 MB</td>
+                    </tr>
+                </tbody>
+            </table>
+</div></div></div></div></div></div><input type="hidden" name="sesskey" value="dYV1iHLCvZ"><div class="submitbtns"></div></div></form><div class="submitbtns"><a class="mod_quiz-next-nav" href="https://olympia.id/mod/quiz/view.php?id=7689">Finish review</a></div></div>
+                    <div class="m-t-2 m-b-1 activity-navigation">
+<div class="row">
+    <div class="col-md-4">        <div class="pull-left">
+                <a href="https://olympia.id/mod/quiz/view.php?id=7686&amp;forceview=1" id="prev-activity-link" class="btn btn-link" title="Praktikum 6">◄ Praktikum 6</a>
+
+        </div>
+</div>
+    <div class="col-md-4">        <div class="mdl-align">
+            <div class="urlselect">
+    <form method="post" action="https://olympia.id/course/jumpto.php" class="form-inline" id="url_select_f6a2ef3ad9fd9f13">
+        <input type="hidden" name="sesskey" value="dYV1iHLCvZ">
+            <label for="jump-to-activity" class="sr-only">
+                Jump to...
+            </label>
+        <select id="jump-to-activity" class="custom-select urlselect" name="jump">
+                    <option value="" selected="selected">Jump to...</option>
+                    <option value="/mod/forum/view.php?id=7587&amp;forceview=1">Announcements</option>
+                    <option value="/mod/url/view.php?id=7618&amp;forceview=1">C++ Docs (cppreference)</option>
+                    <option value="/mod/url/view.php?id=7619&amp;forceview=1">C++ docs (w3schools)</option>
+                    <option value="/mod/url/view.php?id=7620&amp;forceview=1">Peer Assessment dan Evaluasi Praktikum</option>
+                    <option value="/mod/url/view.php?id=7663&amp;forceview=1">Materi</option>
+                    <option value="/mod/url/view.php?id=7671&amp;forceview=1">Dokumentasi Java 8</option>
+                    <option value="/mod/quiz/view.php?id=7588&amp;forceview=1">Kelas: 4 Sekawan</option>
+                    <option value="/mod/quiz/view.php?id=7591&amp;forceview=1">Post praktikum 1</option>
+                    <option value="/mod/resource/view.php?id=7606&amp;forceview=1">Slide Tutorial 2</option>
+                    <option value="/mod/quiz/view.php?id=7607&amp;forceview=1">Soal Tutorial 2</option>
+                    <option value="/mod/quiz/view.php?id=7615&amp;forceview=1">Inheritance, Polymorphism, Virtual</option>
+                    <option value="/mod/quiz/view.php?id=7621&amp;forceview=1">Post Praktikum 2</option>
+                    <option value="/mod/resource/view.php?id=7624&amp;forceview=1">Template &amp;amp; Generic, Exception Handling, STL</option>
+                    <option value="/mod/quiz/view.php?id=7625&amp;forceview=1">Soal Tutorial 3</option>
+                    <option value="/mod/quiz/view.php?id=7633&amp;forceview=1">Template &amp;amp; Generics, Exception Handling, dan STL</option>
+                    <option value="/mod/quiz/view.php?id=7634&amp;forceview=1">Post Praktikum 3</option>
+                    <option value="/mod/quiz/view.php?id=7635&amp;forceview=1">SEMANGAT!</option>
+                    <option value="/mod/quiz/view.php?id=7645&amp;forceview=1">Post UTS</option>
+                    <option value="/mod/quiz/view.php?id=7641&amp;forceview=1">SUSULAN</option>
+                    <option value="/mod/quiz/view.php?id=7642&amp;forceview=1">Intro to Java</option>
+                    <option value="/mod/resource/view.php?id=7643&amp;forceview=1">Slide Tutorial</option>
+                    <option value="/mod/quiz/view.php?id=7651&amp;forceview=1">Intro Java</option>
+                    <option value="/mod/resource/view.php?id=7662&amp;forceview=1">Slide Tutorial 5</option>
+                    <option value="/mod/quiz/view.php?id=7661&amp;forceview=1">Interface, Generic, Generic wildcard, collection</option>
+                    <option value="/mod/quiz/view.php?id=7670&amp;forceview=1">Praktikum 5</option>
+                    <option value="/mod/quiz/view.php?id=7672&amp;forceview=1">Post Praktikum 5</option>
+                    <option value="/mod/quiz/view.php?id=7679&amp;forceview=1">Exception, Assertion, Multithreading, Reflection</option>
+                    <option value="/mod/resource/view.php?id=7685&amp;forceview=1">Slide Tutorial 6</option>
+                    <option value="/mod/quiz/view.php?id=7686&amp;forceview=1">Praktikum 6</option>
+                    <option value="/mod/quiz/view.php?id=7690&amp;forceview=1">UAS</option>
+        </select>
+            <noscript>
+                <input type="submit" class="btn btn-secondary" value="Go">
+            </noscript>
+    </form>
+</div>
+
+        </div>
+</div>
+    <div class="col-md-4">        <div class="pull-right">
+                <a href="https://olympia.id/mod/quiz/view.php?id=7690&amp;forceview=1" id="next-activity-link" class="btn btn-link" title="UAS">UAS ►</a>
+
+        </div>
+</div>
+</div>
+</div>
+                    
+
+                </section>
+                <section data-region="blocks-column" class="d-print-none">
+                    <aside id="block-region-side-pre" class="block-region" data-blockregion="side-pre" data-droptarget="1"><a href="#sb-1" class="sr-only sr-only-focusable">Skip &lt;span id="mod_quiz_navblock_title"&gt;Quiz navigation&lt;/span&gt;</a>
+
+<section id="mod_quiz_navblock" class=" block block__fake  card mb-3" role="navigation" data-block="_fake" aria-labelledby="instance-0-header">
+
+    <div class="card-body p-3">
+
+            <h5 id="instance-0-header" class="card-title d-inline"><span id="mod_quiz_navblock_title">Quiz navigation</span></h5>
+
+
+        <div class="card-text content mt-3">
+            <div class="qn_buttons clearfix allquestionsononepage"><a class="qnbutton correct free btn btn-secondary thispage" id="quiznavbutton1" title="Correct" data-quiz-page="0" href="#"><span class="thispageholder"></span><span class="trafficlight"></span><span class="accesshide">Question </span>1<span class="accesshide"> This page <span class="flagstate"></span></span></a><a class="qnbutton correct free btn btn-secondary thispage" id="quiznavbutton2" title="Correct" data-quiz-page="1" href="#q2"><span class="thispageholder"></span><span class="trafficlight"></span><span class="accesshide">Question </span>2<span class="accesshide"> This page <span class="flagstate"></span></span></a><a class="qnbutton correct free btn btn-secondary thispage" id="quiznavbutton3" title="Correct" data-quiz-page="2" href="#q3"><span class="thispageholder"></span><span class="trafficlight"></span><span class="accesshide">Question </span>3<span class="accesshide"> This page <span class="flagstate"></span></span></a><a class="qnbutton correct free btn btn-secondary thispage" id="quiznavbutton4" title="Correct" data-quiz-page="3" href="#q4"><span class="thispageholder"></span><span class="trafficlight"></span><span class="accesshide">Question </span>4<span class="accesshide"> This page <span class="flagstate"></span></span></a></div><div class="othernav"><a href="https://olympia.id/mod/quiz/review.php?attempt=395783&amp;cmid=7689&amp;showall=0">Show one page at a time</a><a class="mod_quiz-next-nav" href="https://olympia.id/mod/quiz/view.php?id=7689">Finish review</a></div>
+            <div class="footer"></div>
+            
+        </div>
+
+    </div>
+
+</section>
+
+  <span id="sb-1"></span></aside>
+                </section>
+            </div>
+        </div>
+    </div>
+    
+    <div id="nav-drawer" data-region="drawer" class="d-print-none moodle-has-zindex closed" aria-hidden="true" tabindex="-1">
+        <nav class="list-group">
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135" data-key="coursehome" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="60" data-nodetype="0" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-graduation-cap fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">ITB_IF2010_2_2526</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/user/index.php?id=135" data-key="participants" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="90" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-users fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Participants</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/badges/view.php?type=2&amp;id=135" data-key="badgesview" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="70" data-nodetype="0" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-shield fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Badges</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/admin/tool/lp/coursecompetencies.php?courseid=135" data-key="competencies" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="70" data-nodetype="0" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-check-square-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Competencies</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/grade/report/index.php?id=135" data-key="grades" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="70" data-nodetype="0" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-table fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Grades</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-0" data-key="2053" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">General</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-1" data-key="2054" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Praktikum 1</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-2" data-key="2055" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Tutorial 2</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-3" data-key="2056" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Praktikum 2</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-4" data-key="2057" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Tutorial 3</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-5" data-key="2059" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Praktikum 3</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-6" data-key="2060" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">UTS Praktikum</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-7" data-key="2061" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Tutorial 4</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-8" data-key="2062" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Praktikum 4</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-9" data-key="2063" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Tutorial 5</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-10" data-key="2065" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Praktikum 5</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-11" data-key="2066" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Tutorial 6</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action active" href="https://olympia.id/course/view.php?id=135#section-12" data-key="2067" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="1" data-isactive="1" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body font-weight-bold">Praktikum 6</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135#section-13" data-key="2068" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="30" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="135">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-folder-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">UAS</span>
+                    </div>
+                </div>
+            </a>
+        </nav>
+        <nav class="list-group m-t-1">
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/my/" data-key="myhome" data-isexpandable="0" data-indent="0" data-showdivider="1" data-type="1" data-nodetype="1" data-collapse="0" data-forceopen="1" data-isactive="0" data-hidden="0" data-preceedwithhr="0">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-tachometer fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Dashboard</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/?redirect=0" data-key="home" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="70" data-nodetype="0" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="myhome">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-home fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Site home</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/calendar/view.php?view=month&amp;course=135" data-key="calendar" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="60" data-nodetype="0" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="1">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-calendar fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Calendar</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/user/files.php" data-key="privatefiles" data-isexpandable="0" data-indent="0" data-showdivider="0" data-type="70" data-nodetype="0" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="1">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-file-o fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">Private files</span>
+                    </div>
+                </div>
+            </a>
+            <div class="list-group-item" data-key="mycourses" data-isexpandable="1" data-indent="0" data-showdivider="0" data-type="0" data-nodetype="1" data-collapse="0" data-forceopen="1" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="myhome">
+                <div class="m-l-0">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-graduation-cap fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body">My courses</span>
+                    </div>
+                </div>
+            </div>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=132" data-key="132" data-isexpandable="1" data-indent="1" data-showdivider="0" data-type="20" data-nodetype="1" data-collapse="0" data-forceopen="0" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="mycourses">
+                <div class="m-l-1">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-graduation-cap fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">ITB_IF2110_1_2526</span>
+                    </div>
+                </div>
+            </a>
+            <a class="list-group-item list-group-item-action " href="https://olympia.id/course/view.php?id=135" data-key="135" data-isexpandable="1" data-indent="1" data-showdivider="0" data-type="20" data-nodetype="1" data-collapse="0" data-forceopen="1" data-isactive="0" data-hidden="0" data-preceedwithhr="0" data-parent-key="mycourses">
+                <div class="m-l-1">
+                    <div class="media">
+                        <span class="media-left">
+                            <i class="icon fa fa-graduation-cap fa-fw " aria-hidden="true" aria-label=""></i>
+                        </span>
+                        <span class="media-body ">ITB_IF2010_2_2526</span>
+                    </div>
+                </div>
+            </a>
+        </nav>
+    </div>
+    <footer id="page-footer" class="py-3 bg-dark text-light">
+        <div class="container">
+            <div id="course-footer"></div>
+    
+    
+            <div class="logininfo">You are logged in as <a href="https://olympia.id/user/profile.php?id=75304" title="View profile">13524044 Narendra Dharma Wistara M.</a> (<a href="https://olympia.id/login/logout.php?sesskey=dYV1iHLCvZ">Log out</a>)</div>
+            <div class="tool_usertours-resettourcontainer"></div>
+            <div class="homelink"><a href="https://olympia.id/course/view.php?id=135">ITB_IF2010_2_2526</a></div>
+            <nav class="nav navbar-nav d-md-none">
+                    <ul class="list-unstyled pt-3">
+                    </ul>
+            </nav>
+            <div class="tool_dataprivacy"><a href="https://olympia.id/admin/tool/dataprivacy/summary.php">Data retention summary</a></div><a href="https://download.moodle.org/mobile?version=2018120302&amp;lang=en&amp;iosappid=633359593&amp;androidappid=com.moodle.moodlemobile">Get the mobile app</a>
+            <script type="text/javascript">
+//<![CDATA[
+var require = {
+    baseUrl : 'https://olympia.id/lib/requirejs.php/1573780592/',
+    // We only support AMD modules with an explicit define() statement.
+    enforceDefine: true,
+    skipDataMain: true,
+    waitSeconds : 0,
+
+    paths: {
+        jquery: 'https://olympia.id/lib/javascript.php/1573780592/lib/jquery/jquery-3.2.1.min',
+        jqueryui: 'https://olympia.id/lib/javascript.php/1573780592/lib/jquery/ui-1.12.1/jquery-ui.min',
+        jqueryprivate: 'https://olympia.id/lib/javascript.php/1573780592/lib/requirejs/jquery-private'
+    },
+
+    // Custom jquery config map.
+    map: {
+      // '*' means all modules will get 'jqueryprivate'
+      // for their 'jquery' dependency.
+      '*': { jquery: 'jqueryprivate' },
+      // Stub module for 'process'. This is a workaround for a bug in MathJax (see MDL-60458).
+      '*': { process: 'core/first' },
+
+      // 'jquery-private' wants the real jQuery module
+      // though. If this line was not here, there would
+      // be an unresolvable cyclic dependency.
+      jqueryprivate: { jquery: 'jquery' }
+    }
+};
+
+//]]>
+</script>
+<script type="text/javascript" src="Post%20Praktikum_files/javascript_003.php"></script>
+<script type="text/javascript">
+//<![CDATA[
+require(['core/first'], function() {
+;
+require(["media_videojs/loader"], function(loader) {
+    loader.setUp(function(videojs) {
+        videojs.options.flash.swf = "https://olympia.id/media/player/videojs/videojs/video-js.swf";
+videojs.addLanguage("en",{
+ "Audio Player": "Audio Player",
+ "Video Player": "Video Player",
+ "Play": "Play",
+ "Pause": "Pause",
+ "Replay": "Replay",
+ "Current Time": "Current Time",
+ "Duration Time": "Duration Time",
+ "Remaining Time": "Remaining Time",
+ "Stream Type": "Stream Type",
+ "LIVE": "LIVE",
+ "Loaded": "Loaded",
+ "Progress": "Progress",
+ "Progress Bar": "Progress Bar",
+ "progress bar timing: currentTime={1} duration={2}": "{1} of {2}",
+ "Fullscreen": "Fullscreen",
+ "Non-Fullscreen": "Non-Fullscreen",
+ "Mute": "Mute",
+ "Unmute": "Unmute",
+ "Playback Rate": "Playback Rate",
+ "Subtitles": "Subtitles",
+ "subtitles off": "subtitles off",
+ "Captions": "Captions",
+ "captions off": "captions off",
+ "Chapters": "Chapters",
+ "Descriptions": "Descriptions",
+ "descriptions off": "descriptions off",
+ "Audio Track": "Audio Track",
+ "Volume Level": "Volume Level",
+ "You aborted the media playback": "You aborted the media playback",
+ "A network error caused the media download to fail part-way.": "A network error caused the media download to fail part-way.",
+ "The media could not be loaded, either because the server or network failed or because the format is not supported.": "The media could not be loaded, either because the server or network failed or because the format is not supported.",
+ "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.": "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.",
+ "No compatible source was found for this media.": "No compatible source was found for this media.",
+ "The media is encrypted and we do not have the keys to decrypt it.": "The media is encrypted and we do not have the keys to decrypt it.",
+ "Play Video": "Play Video",
+ "Close": "Close",
+ "Close Modal Dialog": "Close Modal Dialog",
+ "Modal Window": "Modal Window",
+ "This is a modal window": "This is a modal window",
+ "This modal can be closed by pressing the Escape key or activating the close button.": "This modal can be closed by pressing the Escape key or activating the close button.",
+ ", opens captions settings dialog": ", opens captions settings dialog",
+ ", opens subtitles settings dialog": ", opens subtitles settings dialog",
+ ", opens descriptions settings dialog": ", opens descriptions settings dialog",
+ ", selected": ", selected",
+ "captions settings": "captions settings",
+ "subtitles settings": "subititles settings",
+ "descriptions settings": "descriptions settings",
+ "Text": "Text",
+ "White": "White",
+ "Black": "Black",
+ "Red": "Red",
+ "Green": "Green",
+ "Blue": "Blue",
+ "Yellow": "Yellow",
+ "Magenta": "Magenta",
+ "Cyan": "Cyan",
+ "Background": "Background",
+ "Window": "Window",
+ "Transparent": "Transparent",
+ "Semi-Transparent": "Semi-Transparent",
+ "Opaque": "Opaque",
+ "Font Size": "Font Size",
+ "Text Edge Style": "Text Edge Style",
+ "None": "None",
+ "Raised": "Raised",
+ "Depressed": "Depressed",
+ "Uniform": "Uniform",
+ "Dropshadow": "Dropshadow",
+ "Font Family": "Font Family",
+ "Proportional Sans-Serif": "Proportional Sans-Serif",
+ "Monospace Sans-Serif": "Monospace Sans-Serif",
+ "Proportional Serif": "Proportional Serif",
+ "Monospace Serif": "Monospace Serif",
+ "Casual": "Casual",
+ "Script": "Script",
+ "Small Caps": "Small Caps",
+ "Reset": "Reset",
+ "restore all settings to the default values": "restore all settings to the default values",
+ "Done": "Done",
+ "Caption Settings Dialog": "Caption Settings Dialog",
+ "Beginning of dialog window. Escape will cancel and close the window.": "Beginning of dialog window. Escape will cancel and close the window.",
+ "End of dialog window.": "End of dialog window."
+});
+
+    });
+});;
+
+require(['jquery', 'message_popup/notification_popover_controller'], function($, controller) {
+    var container = $('#nav-notification-popover-container');
+    var controller = new controller(container);
+    controller.registerEventListeners();
+    controller.registerListNavigationEventListeners();
+});
+;
+
+        require(['jquery'], function($) {
+            $('#jump-to-activity').change(function() {
+                $('#url_select_f6a2ef3ad9fd9f13').submit();
+            });
+        });
+    ;
+
+require(['theme_boost/loader']);
+require(['theme_boost/drawer'], function(mod) {
+    mod.init();
+});
+;
+require(["core/notification"], function(amd) { amd.init(590551, []); });;
+require(["core/log"], function(amd) { amd.setConfig({"level":"warn"}); });;
+require(["core/page_global"], function(amd) { amd.init(); });
+});
+//]]>
+</script>
+<script type="text/javascript">
+//<![CDATA[
+M.yui.add_module({"core_question_engine":{"name":"core_question_engine","fullpath":"https:\/\/olympia.id\/lib\/javascript.php\/1573780592\/question\/qengine.js","requires":["node","event"]},"mod_quiz":{"name":"mod_quiz","fullpath":"https:\/\/olympia.id\/lib\/javascript.php\/1573780592\/mod\/quiz\/module.js","requires":["base","dom","event-delegate","event-key","core_question_engine","moodle-core-formchangechecker"]}});
+
+//]]>
+</script>
+<script type="text/javascript">
+//<![CDATA[
+M.str = {"moodle":{"lastmodified":"Last modified","name":"Name","error":"Error","info":"Information","yes":"Yes","no":"No","cancel":"Cancel","changesmadereallygoaway":"You have made changes. Are you sure you want to navigate away and lose your changes?","confirm":"Confirm","areyousure":"Are you sure?","closebuttontitle":"Close","unknownerror":"Unknown error"},"repository":{"type":"Type","size":"Size","invalidjson":"Invalid JSON string","nofilesattached":"No files attached","filepicker":"File picker","logout":"Logout","nofilesavailable":"No files available","norepositoriesavailable":"Sorry, none of your current repositories can return files in the required format.","fileexistsdialogheader":"File exists","fileexistsdialog_editor":"A file with that name has already been attached to the text you are editing.","fileexistsdialog_filemanager":"A file with that name has already been attached","renameto":"Rename to \"{$a}\"","referencesexist":"There are {$a} alias\/shortcut files that use this file as their source","select":"Select"},"admin":{"confirmdeletecomments":"You are about to delete comments, are you sure?","confirmation":"Confirmation"},"question":{"flagged":"Flagged"},"quiz":{"functiondisabledbysecuremode":"That functionality is currently disabled","startattempt":"Start attempt","timesup":"Time is up!"}};
+//]]>
+</script>
+<script type="text/javascript">
+//<![CDATA[
+(function() {Y.use("moodle-filter_mathjaxloader-loader",function() {M.filter_mathjaxloader.configure({"mathjaxconfig":"\nMathJax.Hub.Config({\n    config: [\"Accessible.js\", \"Safe.js\"],\n    errorSettings: { message: [\"!\"] },\n    skipStartupTypeset: true,\n    messageStyle: \"none\"\n});\n","lang":"en"});
+});
+ M.util.js_pending('random6a2ef3ad9fd9f1'); Y.use('core_question_flags', function(Y) { M.core_question_flags.init(Y, "https:\/\/olympia.id\/question\/toggleflag.php", [{"src":"https:\/\/olympia.id\/theme\/image.php\/boost\/core\/1573780592\/i\/unflagged","title":"Flag this question for future reference","alt":"Not flagged"},{"src":"https:\/\/olympia.id\/theme\/image.php\/boost\/core\/1573780592\/i\/flagged","title":"Remove flag","alt":"Flagged"}], ["Flag question","Remove flag"]);  M.util.js_complete('random6a2ef3ad9fd9f1'); });
+ M.util.js_pending('random6a2ef3ad9fd9f2'); Y.use('mod_quiz', function(Y) { M.mod_quiz.nav.init(Y);  M.util.js_complete('random6a2ef3ad9fd9f2'); });
+M.util.help_popups.setup(Y);
+ M.util.js_pending('random6a2ef3ad9fd9f14'); Y.use('mod_quiz', function(Y) { M.mod_quiz.init_review_form(Y);  M.util.js_complete('random6a2ef3ad9fd9f14'); });
+ M.util.js_pending('random6a2ef3ad9fd9f15'); Y.on('domready', function() { M.util.js_complete("init");  M.util.js_complete('random6a2ef3ad9fd9f15'); });
+})();
+//]]>
+</script>
+
+        </div>
+    </footer></div><div id="yui3-css-stamp" style="position: absolute !important; visibility: hidden !important" class=""></div>
+
+
+</body></html>
