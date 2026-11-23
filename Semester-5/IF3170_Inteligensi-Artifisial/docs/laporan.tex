@@ -1,0 +1,1084 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm,headheight=16pt,headsep=18pt]{geometry}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{inconsolata}
+\usepackage{caption}
+\usepackage[section]{placeins}
+\usepackage{needspace}
+\usepackage{float}
+\usepackage[normalem]{ulem}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/}{./}}
+
+\renewcommand{\contentsname}{Daftar Isi}
+\renewcommand{\appendixname}{Lampiran}
+\renewcommand{\tablename}{Tabel}
+\renewcommand{\figurename}{Gambar}
+\setcounter{tocdepth}{3}
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0pt}
+\lstset{language=Python,basicstyle=\ttfamily\footnotesize,keywordstyle=\bfseries,emphstyle=\bfseries,breaklines=true,frame=single,showstringspaces=false,columns=fullflexible,aboveskip=3pt,belowskip=3pt,floatplacement=htbp,float=htbp,float=true}
+\makeatletter
+\setlength{\@fpsep}{10pt}
+\makeatother
+\setlength{\textfloatsep}{10pt}
+\setlength{\intextsep}{10pt}
+\captionsetup{font=small,labelfont=bf,labelsep=period,skip=6pt}
+\raggedbottom
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.75}
+\AddToHook{cmd/subsection/before}{\FloatBarrier\Needspace{7\baselineskip}}
+\AddToHook{cmd/subsubsection/before}{\FloatBarrier\Needspace{5\baselineskip}}
+% Jalur cuplikan kode juga berlaku jika editor mengompilasi dari folder docs.
+\IfFileExists{src/backend/app/domain/package.py}{}{\lstset{inputpath=../}}
+\renewcommand{\lstlistingname}{Cuplikan}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{IF3170 -- Inteligensi Artifisial}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Kompilasi dari root repositori (jalankan dua kali agar daftar isi terbarui):
+% pdflatex -output-directory=docs docs/laporan.tex
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+    \centering
+    {\Huge\bfseries Laporan Tugas Besar 1\par}
+    \vspace{0.5cm}
+    {\LARGE\scshape IF3170 Inteligensi Artifisial\par}
+    \vspace{0.3cm}
+    {\Large\scshape Optimasi Pengisian Paket pada Truk Peti Kemas\par}
+    \vspace{0.2cm}
+    {\Large\scshape dengan Algoritma Local Search\par}
+    \vspace{0.3cm}
+    {\Large\scshape Tahun Akademik 2026--2027\par}
+    \vfill
+    % Logo dari situs resmi ITB:
+    % https://itb.ac.id/assets/images/Logo%20ITB_COLOR_2026%404x.png
+    \includegraphics[width=7.5cm,keepaspectratio]{logo-itb.png}\par
+    \vfill
+    {\large\bfseries Disusun oleh:\par}
+    \vspace{0.3cm}
+    {\large Kelompok 37\par}
+    \vspace{0.3cm}
+    {\large Samuelson Dharmawan Tanuraharja -- 13524001\par}
+    {\large Nicholas Wise Saragih Sumbayak -- 13524037\par}
+    {\large Neswa Eka Anggara -- 13524136\par}
+    \vfill
+    {\large\scshape Laboratorium Inteligensi Artifisial\par}
+    {\large\scshape Program Studi Teknik Informatika\par}
+    {\large\scshape Sekolah Teknik Elektro dan Informatika\par}
+    {\large\scshape Institut Teknologi Bandung\par}
+\end{titlepage}
+
+\pagenumbering{arabic}
+\hypersetup{pageanchor=true}
+{\small\linespread{0.92}\selectfont\tableofcontents}
+\clearpage
+
+\section{Pendahuluan}
+\subsection{Latar Belakang}
+Saat menyiapkan pengiriman Mejiro Express, Special Week menghadapi paket dengan ukuran, nilai, berat, dan tingkat kerapuhan yang berbeda-beda. Persoalannya adalah menentukan paket yang dapat dimuat ke dalam truk peti kemas beserta penempatannya dalam ruang tiga dimensi. Paket bernilai tinggi menarik untuk dibawa, tetapi ruang peti kemas dan kapasitas angkut truk terbatas. Selain itu, susunan harus mencegah paket bertumpang tindih atau melayang, dan paket rapuh tidak boleh menjadi penopang paket lain \cite{spesifikasi}.
+
+Keputusan pemilihan dan penempatan saling berkaitan. Memuat suatu paket mengurangi ruang tersisa dan menambah berat muatan, sedangkan posisi dan orientasinya memengaruhi kemungkinan menempatkan paket lain dengan memenuhi batasan keselamatan. Oleh sebab itu, persoalan ini mencakup pemilihan paket sekaligus penyusunan seluruh paket yang dimuat, sementara paket yang tidak terpilih tetap berada di luar peti kemas.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{mejiro.jpeg}
+    % Sumber: 真夏の银堡垒🐴C108土曜日 東地区 ホ-10a on X.
+    % Nama sumber Unicode disematkan sebagai PDF agar pdfLaTeX tetap didukung.
+    \caption[Mejiro Express sebagaimana ditunjukkan dalam
+    spesifikasi]{Mejiro Express sebagaimana ditunjukkan dalam
+    spesifikasi \protect\\(Sumber: \protect\raisebox{-0.3ex}{\protect\includegraphics[height=2.2ex]{special-week-credit.pdf}} on X).}
+    \label{fig:special-week}
+\end{figure}
+\FloatBarrier
+
+\Needspace{7\baselineskip}
+\subsection{Rumusan Persoalan dan Tujuan}
+Persoalan menerima paket berbentuk balok atau kubus serta peti kemas dengan ukuran dan kapasitas angkut tertentu. Setiap paket dapat dipilih untuk dimuat atau dibiarkan di luar, dan paket yang dimuat perlu ditempatkan dengan posisi serta orientasi yang sesuai. Tujuannya adalah memperoleh susunan yang memenuhi batas ruang, kapasitas berat, dan aturan penopang, dengan total nilai paket termuat sebesar mungkin \cite{spesifikasi}.
+
+\subsection{Entitas dan Atribut}\label{sec:entitas}
+Masukan persoalan terdiri atas paket dan sebuah truk. Tabel~\ref{tab:entitas-atribut} merangkum atribut yang diperlukan; contoh angka hanya ilustrasi, bukan data fixture maupun hasil eksperimen.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.55cm}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.5cm}X@{}}
+        \toprule
+        Entitas & Atribut & Contoh & Keterangan \\
+        \midrule
+        Paket & ID & \texttt{RusdiPackage} & Identitas paket. \\
+        Paket & Dimensions & $\{w:3,l:4,h:1\}$ & Lebar $w$ (\textit{width}), panjang $l$ (\textit{length}), dan tinggi $h$ (\textit{height}) paket. \\
+        Paket & Orientation & $\{w:x,l:y,h:z\}$ & Enam pemetaan sumbu yang sejajar dengan sisi paket. Rotasi $90^\circ$ terhadap $z$ mengubah contoh menjadi $\{w:y,l:x,h:z\}$. \\
+        Paket & Value & 60 & Nilai paket dalam satuan unit. \\
+        Paket & Weight & 5 & Berat dalam satuan berat. \\
+        Paket & IsFragile & \texttt{False} & Boolean; \texttt{False} berarti tidak rapuh. \\
+        Paket & ETA & 3 & Perkiraan sisa hari hingga kedatangan (\textit{Estimated Time of Arrival}). \\
+        Truk & Dimensions & $\{w:10,l:20,h:5\}$ & Lebar $w$, panjang $l$, dan tinggi $h$ peti kemas. \\
+        Truk & MaxCapacity & 500 & Kapasitas maksimum dalam satuan berat. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Entitas, atribut, dan contoh ilustratif persoalan.}
+    \label{tab:entitas-atribut}
+\end{table}
+
+\subsection{Ketentuan Representasi}\label{sec:representasi}
+Paket dan peti kemas berbentuk balok atau kubus dengan dimensi yang dapat berbeda. Secara konseptual, data dapat dinyatakan sebagai pasangan kunci-nilai seperti JSON, tanpa membatasi struktur data. State mencakup semua paket: paket termuat berada seluruhnya di dalam peti kemas, sedangkan yang tidak termuat berada seluruhnya di luar. Posisi dinyatakan dengan koordinat bilangan bulat tiga dimensi. Orientasi memiliki enam permutasi dimensi, yang diperoleh melalui rotasi $90^\circ$ terhadap sumbu $x$, $y$, atau $z$. State awal dibangkitkan secara acak.
+
+Langkah perubahan (\textit{move}) untuk membentuk tetangga (\textit{neighbor}) pada setiap iterasi meliputi:
+\begin{enumerate}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Menukar penempatan dua paket, baik keduanya di dalam, keduanya di luar, maupun satu di dalam dan satu di luar peti kemas.
+    \item Memindahkan paket ke koordinat yang berbeda.
+    \item Merotasi paket $90^\circ$ terhadap sumbu $x$, $y$, atau $z$.
+\end{enumerate}
+Representasi solusi akhir (\textit{final state}) memetakan seluruh paket ke status, posisi, dan orientasinya, serta menentukan keterisian setiap koordinat dalam peti kemas. State dan visualisasi harus menunjukkan:
+\begin{enumerate}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Keadaan seluruh paket, baik yang termuat maupun yang berada di luar.
+    \item Keadaan peti kemas pada truk.
+    \item Total nilai paket pada state tersebut.
+\end{enumerate}
+Ketentuan ini tidak menetapkan struktur penyimpanan tertentu untuk pemetaan tersebut \cite{spesifikasi}.
+
+\subsection{Batasan Persoalan}\label{sec:constraint-persoalan}
+Untuk paket termuat $i$, nyatakan sudut kiri-bawah-belakang sebagai $(x_i,y_i,z_i)$ dan dimensi efektif sebagai $(w_i,l_i,h_i)$. Alas setiap paket termuat adalah
+\begin{equation}
+ B_i=\{(x,y,z_i)\mid x_i\leq x<x_i+w_i,\ y_i\leq y<y_i+l_i\}.
+ \label{eq:alas-paket}
+\end{equation}
+Seluruh volume paket termuat harus berada di dalam batas truk. Paket-paket tidak boleh berbagi volume; dua paket boleh bersentuhan pada batas permukaannya. Titik alas memiliki penopang (\textit{support}) apabila $z_i=0$, yaitu berada di lantai truk, atau permukaan atas paket lain berada tepat di bawah titik tersebut. Paket disebut melayang apabila tidak ada satu pun titik alas yang memiliki penopang. Dengan demikian, dukungan parsial cukup; seluruh alas tidak harus ditopang. Paket rapuh tidak boleh menjadi penopang paket lain, dan jumlah berat paket termuat tidak boleh melebihi kapasitas truk \cite{spesifikasi}. Himpunan $\mathcal{F}$ menyatakan seluruh susunan yang memenuhi batasan tersebut.
+
+\subsection{Fungsi Objektif}\label{sec:tujuan-persoalan}
+Untuk satu truk, tujuan persoalan adalah memaksimalkan total nilai paket termuat di antara susunan yang sah:
+\begin{equation}
+ \max_{s\in\mathcal{F}} f(s),\qquad f(s)=\sum_{i\text{ termuat pada }s}\mathrm{Value}_i.
+ \label{eq:problem-objective}
+\end{equation}
+Paket di luar peti kemas tidak berkontribusi terhadap nilai tersebut. ETA merupakan atribut paket, tetapi tidak menjadi bobot pada fungsi objektif utama \cite{spesifikasi}.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[scale=0.8, every node/.style={font=\small}]
+        \draw[thick] (0,0) rectangle (8,3.5);
+        \node[anchor=south west] at (0,3.5) {Peti kemas (tampak samping)};
+        \filldraw[fill=blue!18] (0.6,0) rectangle (2.6,1.1);
+        \node at (1.6,0.55) {$p_1$};
+        \filldraw[fill=green!18] (2.6,0) rectangle (5.1,1.5);
+        \node at (3.85,0.75) {$p_2$};
+        \filldraw[fill=orange!23] (2.9,1.5) rectangle (4.6,2.4);
+        \node at (3.75,1.95) {$p_3$};
+        \draw[dashed] (8.6,-0.25) rectangle (11.5,2.3);
+        \node[align=center] at (10.05,2.85) {Paket di luar};
+        \filldraw[fill=gray!18] (9.15,0.45) rectangle (10.85,1.5);
+        \node at (10,0.98) {$p_4$};
+    \end{tikzpicture}
+    \caption{Ilustrasi konseptual paket termuat dan paket di luar peti kemas. Susunan sebenarnya ditentukan dalam tiga dimensi.}
+    \label{fig:ilustrasi-pemuatan}
+\end{figure}
+
+\clearpage
+\section{Dasar Teori}
+\subsection{Optimasi dan \textit{Local Search}}
+Dalam optimasi, \textit{objective function} memberi nilai pada setiap kandidat solusi, dan pencarian diarahkan pada kandidat bernilai tinggi. Jika terdapat \textbf{\textit{constraint}} (batasan), kandidat yang dipertimbangkan termasuk dalam himpunan yang memenuhi batasan tersebut. Dengan $\mathcal{F}$ sebagai himpunan kandidat yang sah, tujuan umum masalah maksimisasi dapat ditulis $\max_{s\in\mathcal{F}} f(s)$, dengan $f(s)$ sebagai nilai kandidat $s$ \cite{russell-norvig}.
+
+\textit{Local search} bekerja pada satu kandidat lengkap dan memperbaikinya melalui perubahan bertahap. Nilai solusi ditentukan oleh konfigurasi akhir, bukan urutan perubahan yang membentuknya. Pendekatan ini sesuai ketika ruang kemungkinan terlalu besar untuk diperiksa satu per satu \cite{russell-norvig,slide-local-search}.
+
+\subsection{\textit{State}, \textit{Neighbor}, dan \textit{Search Landscape}}
+\textbf{\textit{State}} (keadaan) adalah kandidat solusi yang lengkap. Pencarian berawal dari \textit{initial state} (state awal), yang dapat dibangkitkan secara acak. Sebuah \textit{move} (langkah perubahan) menghasilkan \textbf{\textit{neighbor}} (tetangga), yaitu state yang berbeda pada sebagian komponennya. Kumpulan neighbor yang dapat dicapai menentukan arah perpindahan dari state saat ini \cite{slide-local-search}.
+
+Nilai setiap state dapat dibayangkan sebagai ketinggian dalam \textit{search landscape} (lanskap pencarian). \textbf{\textit{Local maximum}} (puncak lokal) bernilai setidaknya sama tinggi dengan seluruh neighbor-nya, walaupun state lain mungkin memiliki nilai lebih tinggi. Nilai tertinggi di seluruh ruang pencarian disebut \textit{global maximum} (puncak global). \textit{Plateau} (daerah datar) merupakan kumpulan state bertetangga dengan nilai yang sama. Puncak lokal dan plateau menjelaskan mengapa pencarian yang hanya menerima kenaikan nilai dapat berhenti sebelum mencapai nilai tertinggi keseluruhan \cite{russell-norvig,slide-local-search}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.72\textwidth,trim=30bp 105bp 315bp 73bp,clip]{landscape-slide.pdf}
+    \caption{\textit{Search landscape} dengan global maximum, local maximum, dan plateau. Diambil dari salindia \textit{Beyond Classical Search} \cite{slide-local-search}.}
+    \label{fig:search-landscape}
+\end{figure}
+
+\subsection{\textit{Hill Climbing}}
+Seperti terlihat pada Gambar~\ref{fig:search-landscape}, pencarian yang hanya memilih kenaikan nilai dapat berhenti di local maximum. \textbf{\textit{Hill climbing}} memulai dari satu state, membandingkannya dengan neighbor, lalu berpindah menurut aturan varian yang digunakan. Pada \textit{steepest-ascent hill climbing}, versi teoretis mengevaluasi seluruh neighbor dan memilih yang memiliki nilai tertinggi, selama nilainya melebihi state saat ini. Jika beberapa neighbor sama-sama terbaik, pemilihan salah satunya tidak mengubah nilai yang dicapai pada langkah itu.
+
+Dalam implementasi, seluruh neighborhood tidak diperiksa. Algoritma membangkitkan sampel terbatas neighbor yang sah, lalu memilih kandidat bernilai tertinggi dari sampel tersebut. Karena itu, \textbf{pemeriksaan terbatas pada sampel} berarti tidak ditemukannya peningkatan hanya menunjukkan bahwa sampel saat itu tidak memuat kandidat yang lebih baik; keadaan ini belum memastikan semua neighbor sudah diperiksa. Steepest-ascent menghindari langkah yang menurunkan atau mempertahankan skor, sehingga pencarian dapat berakhir di puncak lokal atau berhenti saat sampelnya tidak menunjukkan kenaikan \cite{russell-norvig,slide-local-search}.
+
+\textit{Stochastic hill climbing} memilih secara acak dari neighbor yang meningkatkan skor. Pemilihan seragam memberi setiap kandidat peningkat peluang yang sama, sedangkan skema berbobot dapat memberi peluang lebih besar kepada kenaikan yang lebih besar. Implementasi mengambil satu neighbor acak per iterasi dan menerimanya jika skornya meningkat ketat. Jika kandidat tidak meningkatkan skor, state tetap dipertahankan dan pencarian melanjutkan iterasi hingga batas yang ditentukan. Kebijakan ini tidak menerima langkah setara untuk melintasi plateau \cite{russell-norvig,slide-local-search}.
+
+\textit{Hill climbing with sideways move} juga menerima neighbor yang skornya sama, sehingga dapat bergerak di antara state pada plateau dan mungkin mencapai state yang memiliki peningkatan di sisi lain. Langkah setara tidak menaikkan skor, dan tanpa batas dapat membuat pencarian berputar atau bergerak lama tanpa kemajuan. Karena itu, \textbf{jumlah langkah setara berturut-turut dibatasi}. Langkah yang meningkatkan skor mengatur ulang hitungan tersebut; setelah batas tercapai, langkah setara berikutnya ditolak, sementara peningkatan ketat tetap dapat diterima.
+
+\textit{Random-restart hill climbing} mengulang steepest-ascent dari state awal berbeda untuk mencoba wilayah pencarian lain. Implementasi menjalankan satu climb dari state awal yang diberikan, lalu melakukan 10 restart, sehingga terdapat 11 climb. Setiap climb memiliki anggaran iterasinya sendiri; total pekerjaan dapat lebih besar daripada satu climb, tetapi jumlah restart dan sampel tetap membatasi bagian ruang yang diperiksa. Hasil terbaik dipilih dari seluruh climb, sedangkan state akhir adalah hasil climb terakhir. Restart dapat mengurangi ketergantungan pada satu puncak lokal, tetapi tidak memastikan optimum global; pencarian tetap tidak mengetahui solusi terbaik yang belum dikunjungi \cite{russell-norvig,slide-local-search}.
+
+Gambar~\ref{fig:hill-climb} memperlihatkan fungsi dua variabel dengan satu puncak. Pada masalah maksimisasi, perpindahan ke nilai yang lebih tinggi dapat dibayangkan sebagai langkah menaiki permukaan tersebut. Susunan paket merupakan state diskret dengan banyak constraint, sehingga lanskapnya tidak harus sehalus ilustrasi ini; puncak lokal dan plateau tetap menjadi hambatan seperti pada Gambar~\ref{fig:search-landscape}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.62\textwidth]{hill-climb.png}
+    \caption{Ilustrasi permukaan objektif untuk hill climbing. Sumber: \href{https://upload.wikimedia.org/wikipedia/commons/0/05/Hill_climb.png}{Wikimedia Commons, \textit{Hill climb.png}}.}
+    \label{fig:hill-climb}
+\end{figure}
+
+\subsection{\textit{Simulated Annealing}}
+Hill climbing tidak selalu bisa keluar dari local maximum dengan move yang hanya memperbaiki nilai. \textbf{\textit{Simulated annealing}} sesekali menerima move yang menurunkan nilai agar pencarian dapat berpindah ke daerah lain. Peluang menerima penurunan ditentukan oleh \textit{temperature} (temperatur). Untuk $\Delta f=f(s')-f(s)<0$ dan $T>0$, peluang menerima neighbor $s'$ adalah
+\begin{equation}
+    \Pr(\text{accept }s')=\exp\!\left(\frac{\Delta f}{T}\right).
+    \label{eq:annealing}
+\end{equation}
+Pada temperature tinggi, algoritma lebih sering menerima penurunan nilai sehingga dapat keluar dari local maximum. Seiring temperature turun, peluang itu mengecil. \textit{Cooling schedule} (jadwal penurunan temperatur) menentukan seberapa cepat perilaku pencarian berubah. Jadwal yang terlalu cepat dapat membuat pencarian kembali terjebak sebelum sempat menjelajahi state lain \cite{russell-norvig,slide-local-search}.
+
+Gambar~\ref{fig:annealing-landscape} menunjukkan perpindahan pada lanskap biaya, termasuk langkah yang sementara menaikkan biaya sebelum pencarian mencapai daerah yang lebih rendah. Ilustrasi ini memakai sudut pandang minimisasi. Untuk persoalan pemuatan yang memaksimalkan $f(s)$, biaya dapat dinyatakan sebagai $E(s)=-f(s)$, sehingga kenaikan biaya pada gambar setara dengan penurunan skor objektif yang sesekali diterima oleh SA.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.62\textwidth]{simulated-annealing.jpg}
+    \caption{Ilustrasi perpindahan simulated annealing pada lanskap biaya. Sumber: \href{https://ars.els-cdn.com/content/image/3-s2.0-B9780128150108000028-f02-14-9780128150108.jpg}{Elsevier, ilustrasi 2.14}.}
+    \label{fig:annealing-landscape}
+\end{figure}
+
+\subsection{\textit{Genetic Algorithm}}
+Jika hill climbing dan simulated annealing mengubah satu state dalam satu lintasan pencarian, \textbf{\textit{genetic algorithm}} bekerja dengan \textit{population} (populasi) yang berisi sejumlah \textit{individual} (kandidat solusi). Setiap individual dinilai memakai \textit{fitness function} (fungsi penilaian). Melalui \textit{selection} (pemilihan induk), individual yang lebih baik mendapat peluang lebih besar untuk menghasilkan keturunan \cite{russell-norvig,slide-local-search}.
+
+Generasi baru dibentuk melalui \textit{crossover} (penggabungan bagian dari dua induk) dan \textit{mutation} (perubahan acak pada individual). Crossover mewariskan bagian dari solusi yang sudah ada, sementara mutation membantu menjaga keragaman population. Ukuran population dan banyaknya \textit{generation} (generasi) memengaruhi jumlah kandidat yang diperiksa serta waktu pencarian. Bila suatu operator menghasilkan kandidat yang melanggar constraint, kandidat itu perlu ditangani sebelum dipakai sebagai solusi \cite{russell-norvig,slide-local-search}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.82\textwidth,trim=30bp 150bp 30bp 80bp,clip]{genetic-algorithm-slide.pdf}
+    \caption{Alur selection, crossover, dan mutation pada genetic algorithm. Diambil dari salindia \textit{Beyond Classical Search} \cite{slide-local-search}.}
+    \label{fig:genetic-algorithm}
+\end{figure}
+
+\clearpage
+\section{Pembahasan dan Implementasi}
+\subsection{Arsitektur Aplikasi}
+Pengguna mengubah paket dan truk melalui formulir web yang dimulai dari fixture armada bawaan di \path{src/frontend/src/mocks/fleetFixture.ts}. Configuration Manager juga mendukung impor dan ekspor berkas konfigurasi.
+
+Konfigurasi diperiksa melalui endpoint \texttt{POST} \path{/api/problems/validate}. Endpoint ini memvalidasi model dan batas masukan, bukan susunan paket. Ketika run dimulai, frontend memeriksa parameter lalu mengirim problem, algoritma, seed, objektif, parameter, dan pilihan riwayat ke \texttt{POST} \path{/api/experiments/run}. Backend memvalidasi skema dan anggaran eksekusi, membangkitkan state awal, menjalankan algoritma, lalu memeriksa kelayakan state awal, akhir, dan terbaik serta kecocokan skornya sebelum membentuk respons.
+
+Run dari UI tidak menyimpan hasil secara default. Pengguna harus mengaktifkan \textit{Save run} pada panel setup untuk menulis hasil ke direktori keluaran. Request run maupun batch tanpa pilihan simpan juga tidak menulis berkas. Daftar run tersimpan dimuat dan dapat diperbarui melalui UI, serta tersedia melalui \path|GET /api/experiments|. Endpoint preset GA dan batch tersedia melalui \path|GET /api/experiments/presets/genetic_algorithm| dan \path|POST /api/experiments/batch|. Problem yang sedang diedit untuk run berikutnya terpisah dari problem asli milik run yang sedang ditampilkan.
+
+\subsubsection{Struktur Aplikasi}
+
+\begin{lstlisting}[language={},frame=single,basicstyle=\ttfamily\footnotesize]
+.
+|-- data/
+|-- output/
+|-- test/
+|-- src/
+    |-- backend/
+    |   |-- app/
+    |       |-- api/
+    |       |-- domain/
+    |       |-- experiments/
+    |       |-- optimization/
+    |-- frontend/
+        |-- src/
+            |-- api/
+            |-- charts/
+            |-- modals/
+            |-- panels/
+            |-- scene/
+            |-- shell/
+            |-- stores/
+            |-- mocks/
+\end{lstlisting}
+
+Di backend, \path{domain} mendefinisikan data, \path{optimization} memuat validator dan algoritma, sedangkan \path{experiments} mengatur eksekusi, ringkasan, dan pencatatan hasil. Di frontend, \path{api} menangani request serta pemeriksaan respons; \path{charts}, \path{modals}, \path{panels}, \path{scene}, dan \path{shell} memisahkan grafik, dialog, panel, visualisasi tiga dimensi, dan kontrol antarmuka. Fixture armada berada di \path{src/frontend/src/mocks}; \path{stores} memuat state eksperimen aktif serta replay, sedangkan daftar run tersimpan dikelola di aplikasi. Dataset uji yang dipakai untuk GA berada di \path{test/testing-dataset.json}. Run individual yang sengaja disimpan ditulis sebagai \path{output/<id>.json}; batch sebagai \path{output/<id>.batch.json} dan \path{output/<id>.batch.csv}. Tiga berkas GA untuk laporan diberi nama \path{output/ga-seed-42.json}, \path{output/ga-seed-123.json}, dan \path{output/ga-seed-2026.json}; masing-masing memuat konfigurasi, metrik, serta state awal, akhir, dan terbaik lengkap.
+
+\subsubsection{Tech Stack}
+Backend ditulis dengan \textbf{Python 3.12}. \textbf{FastAPI} menyediakan endpoint untuk memvalidasi problem, menjalankan eksperimen tunggal atau batch, dan membaca hasil yang tersimpan. Model \textbf{Pydantic} memeriksa tipe serta rentang nilai saat request diterima. Sesudah itu, modul optimasi menjalankan aturan yang sama untuk semua algoritma. \textbf{NumPy} digunakan untuk occupancy grid tiga dimensi, sehingga pemeriksaan ruang terisi dapat dilakukan pada irisan sel paket.
+
+Frontend dibangun dengan \textbf{React} dan \textbf{TypeScript}. Komponen React memisahkan form problem, kontrol pencarian, visualisasi, dan ringkasan hasil. TypeScript membantu menjaga bentuk request dan respons tetap sesuai kontrak backend. \textbf{Vite} dipakai untuk menjalankan frontend selama pengembangan dan menghasilkan berkas aplikasi saat build.
+
+Untuk menampilkan hasil, \textbf{React Three Fiber} dan \textbf{Three.js} menggambar peti kemas serta posisi paket dalam ruang tiga dimensi. \textbf{Recharts} menampilkan perubahan skor selama iterasi. \textbf{Zustand} menyimpan state eksperimen aktif serta indeks iterasi untuk replay.
+
+\subsection{Format Berkas Konfigurasi}
+Berkas konfigurasi memakai envelope JSON berversi yang menyimpan nama konfigurasi dan problem truk-paket; format ekspor yang sama digunakan untuk impor melalui Configuration Manager dan \texttt{POST /api/configs}. Field \texttt{description} opsional. UI juga menerima problem JSON langsung dengan \texttt{trucks} dan \texttt{packages}, lalu mengemasnya sebagai konfigurasi dengan nama dari berkas.
+
+\begin{lstlisting}[language={},frame=single,basicstyle=\ttfamily\footnotesize,caption={Contoh envelope berkas konfigurasi JSON},label={lst:config-envelope}]
+{
+  "schema_version": 1,
+  "name": "Fleet example",
+  "description": "Optional note",
+  "problem": {
+    "trucks": [{
+      "id": "truck-1", "width": 10, "length": 20,
+      "height": 8, "max_capacity": 1000
+    }],
+    "packages": [{
+      "id": "package-1", "width": 2, "length": 3,
+      "height": 1, "value": 10, "weight": 5,
+      "is_fragile": false, "eta": 1
+    }]
+  }
+}
+\end{lstlisting}
+
+\textbf{Constraints dan penanganan kesalahan:}
+\begin{itemize}
+    \item Field wajib: \texttt{name} dan \texttt{problem}. Deskripsi opsional. Nilai \texttt{schema\_version} hanya 1 dan menjadi default jika tidak diisi. Field tambahan pada envelope request API ditolak.
+    \item Nama setelah trim tidak boleh kosong dan maksimal 80 karakter; deskripsi maksimal 500 karakter.
+    \item Problem memerlukan 1--20 truk dan 0--100 paket. ID unik per jenis entitas dan maksimal 128 karakter.
+    \item Dimensi harus bilangan bulat positif; \texttt{value}, \texttt{weight}, dan \texttt{max\_capacity} finite dan tidak negatif; \texttt{eta} bilangan bulat tidak negatif; \texttt{is\_fragile} boolean JSON.
+    \item Total volume truk dibatasi 100.000 sel dan ukuran request 256 KiB.
+    \item JSON rusak ditolak UI sebelum dikirim; validasi skema atau field di backend menghasilkan HTTP 422 jika gagal. Nama konfigurasi duplikat (tanpa membedakan kapitalisasi) menghasilkan 409; konfigurasi yang tidak ditemukan 404, dan konfigurasi bawaan tidak dapat dihapus (403).
+    \item Konfigurasi valid belum berarti susunan feasible: berkas tidak memerlukan koordinat atau orientasi. Pencarian membentuk placement kemudian, dan validator state memeriksanya secara terpisah. Mode algoritma dan seed bukan bagian payload konfigurasi; parameter pencarian diatur pada panel setup.
+\end{itemize}
+
+\subsection{Pemodelan Problem dan Constraint}
+Pemodelan dimulai dari data paket dan truk. Dari data itu, program membentuk state yang mencatat posisi setiap paket dan memeriksa constraint-nya. HC/SA hanya menilai neighbor yang sah. Pada GA, offspring tidak sah juga dievaluasi, tetapi penalti fitness memengaruhi seleksi. State awal, akhir, dan terbaik yang dikembalikan tetap feasible; skor hasil merupakan objective mentah.
+
+\subsubsection{Data Problem}
+Sesuai atribut konseptual pada Subbab~\ref{sec:entitas}, \texttt{Problem} menyimpan daftar \texttt{PackageSpec} dan \texttt{TruckSpec}. Dimensi lebar, panjang, dan tinggi diratakan menjadi field \texttt{width}, \texttt{length}, dan \texttt{height}; \texttt{IsFragile} menjadi \texttt{is\_fragile}, dan \texttt{MaxCapacity} menjadi \texttt{max\_capacity}. Atribut \texttt{Value}, \texttt{Weight}, dan \texttt{ETA} masing-masing disimpan sebagai \texttt{value}, \texttt{weight}, dan \texttt{eta}. Truk memiliki \texttt{id} sebagai identitas implementasi tambahan. Dukungan beberapa truk merupakan perluasan dari persoalan satu truk; setiap paket ditugaskan ke paling banyak satu truk. Cuplikan~\ref{lst:package-spec} hingga~\ref{lst:problem-spec} memperlihatkan hubungan ketiga kelas tersebut.
+
+\lstinputlisting[firstline=15,lastline=25,emph={PackageSpec,Field},caption={Atribut paket pada \texttt{PackageSpec}},label={lst:package-spec}]{src/backend/app/domain/package.py}
+\lstinputlisting[firstline=6,lastline=13,emph={TruckSpec,Field},caption={Atribut truk pada \texttt{TruckSpec}},label={lst:truck-spec}]{src/backend/app/domain/truck.py}
+\lstinputlisting[firstline=7,lastline=19,emph={Problem,validate_ids_and_trucks},caption={Daftar paket dan truk dalam \texttt{Problem}},label={lst:problem-spec}]{src/backend/app/domain/problem.py}
+
+Validasi masukan dilakukan sejak model dibuat. Dimensi harus berupa bilangan bulat positif, sedangkan nilai, berat, ETA, dan kapasitas tidak boleh negatif maupun tak hingga. \texttt{Problem} menolak ID paket atau truk yang berulang dan mensyaratkan setidaknya satu truk. Karena \texttt{trucks} berupa daftar, struktur yang sama dapat dipakai untuk satu truk maupun beberapa truk. Setelah data ini tersedia, penempatan setiap paket dicatat dalam state.
+
+\subsubsection{Representasi State dan Orientasi}
+Kelas \texttt{State} berisi daftar \texttt{PackagePlacement}, sesuai Subbab~\ref{sec:representasi}. Pada state yang sah, setiap paket memiliki tepat satu placement berisi ID paket dan truk, \texttt{Position}, serta \texttt{Orientation}. Orientasi disimpan pada placement, bukan \texttt{PackageSpec}. Posisi menunjuk sudut kiri-bawah-belakang ($x$ mengikuti lebar, $y$ panjang, $z$ tinggi). Paket di luar memiliki \texttt{truck\_id} dan \texttt{position} bernilai \texttt{None}. Posisi dan orientasi pada placement, bersama dimensi pada \texttt{PackageSpec}, menentukan pemetaan spasial; grid keterisian dibentuk saat validasi, bukan diserialisasi sebagai bagian terpisah dari \texttt{State}.
+
+\lstinputlisting[firstline=24,lastline=34,emph={PackagePlacement,validate_assignment},caption={Model penempatan paket},label={lst:placement}]{src/backend/app/domain/truck.py}
+
+Enam pilihan \texttt{Orientation} didefinisikan pada \path{app/domain/package.py}. Fungsi \path{get_oriented_dimensions} mengubah orientasi menjadi dimensi efektif $(w_i,l_i,h_i)$ tanpa mengubah dimensi asli paket. Untuk kubus atau balok dengan sisi yang sama, beberapa orientasi menghasilkan dimensi efektif identik. Fungsi \path{get_unique_orientations} menghapus pilihan duplikat tersebut saat orientasi akan diacak. State yang terbentuk kemudian diperiksa sebagai satu kesatuan, bukan per paket saja.
+
+\subsubsection{Validasi Constraint}
+Fungsi \path{validate_state} pada \path{app/optimization/constraints.py} menjadi \textbf{pemeriksa akhir setiap kandidat} terhadap batasan Subbab~\ref{sec:constraint-persoalan}, termasuk alas $B_i$ pada Persamaan~\ref{eq:alas-paket} dan dukungan parsial. Pemeriksaan dimulai dari kelengkapan assignment. Setiap paket dalam \texttt{Problem} harus muncul sekali dalam \texttt{State}, sedangkan ID paket dan truk yang tidak dikenal ditolak. Paket yang berada di luar tidak memakai ruang maupun kapasitas truk.
+
+Validator membuat \textit{occupancy grid} (grid keterisian) NumPy bagi setiap truk. Bentuk grid mengikuti $(W_t,L_t,H_t)$, dengan sel kosong bernilai $-1$ dan sel terisi menyimpan indeks paket. Jika paket $i$ ditempatkan di truk $t$ pada $(x_i,y_i,z_i)$ dengan dimensi efektif $(w_i,l_i,h_i)$, seluruh bagian paket harus memenuhi
+\begin{equation}
+\begin{aligned}
+0\leq x_i,\quad x_i+w_i\leq W_t,\\
+0\leq y_i,\quad y_i+l_i\leq L_t,\\
+0\leq z_i,\quad z_i+h_i\leq H_t.
+\end{aligned}
+\label{eq:batas-truk}
+\end{equation}
+Dalam kode, \path{_collect_occupancies} membandingkan posisi dan dimensi paket dengan ukuran grid. Cuplikan~\ref{lst:boundary} menunjukkan pemeriksaan paket yang melewati dinding peti kemas. Setelah lolos, irisan sel yang akan ditempati diperiksa lagi. Cuplikan~\ref{lst:overlap} menolak paket ketika irisan tersebut sudah berisi indeks paket lain. Karena grid dibuat per truk, paket pada truk berbeda tidak saling bertabrakan.
+
+\begin{lstlisting}[emph={any,errors,unsafe_trucks},caption={Pemeriksaan batas peti kemas},label={lst:boundary}]
+if any(
+    start < 0 or start + size > limit
+    for start, size, limit in zip(origin, dimensions, grid.shape, strict=True)
+):
+    errors.append(
+        f"Package {placement.package_id} is out of bounds in truck {truck_id}"
+    )
+    unsafe_trucks.add(truck_id)
+    continue
+\end{lstlisting}
+\begin{lstlisting}[emph={np,any,errors,unsafe_trucks},caption={Pemeriksaan overlap pada occupancy grid},label={lst:overlap}]
+for placement, package_index, region in regions:
+    truck_id = placement.truck_id
+    assert truck_id is not None
+    cells = occupancies[truck_id][region]
+    if np.any(cells != -1):
+        errors.append(
+            f"Package {placement.package_id} overlaps another in truck {truck_id}"
+        )
+        unsafe_trucks.add(truck_id)
+        continue
+    cells[...] = package_index
+\end{lstlisting}
+
+Paket pada $z_i=0$ ditopang oleh lantai truk. Untuk paket di atas lantai, validator memeriksa sel tepat di bawah alasnya, yakni pada $z_i-1$. Paket dinyatakan \textbf{melayang} jika tidak ada satu pun sel alas yang mendapat support dari paket lain. Jika ada support tetapi salah satu paket penopang bersifat rapuh, susunan juga ditolak. Pemeriksaan ini mengikuti definisi support pada tugas, yaitu cukup ada satu titik alas yang ditopang. Validator tidak mensyaratkan seluruh alas paket bersentuhan dengan penopang. Bagian inti pemeriksaan tersebut tampak pada Cuplikan~\ref{lst:support}.
+
+\begin{lstlisting}[emph={supporters,unique,any,is_fragile},caption={Pemeriksaan support dan paket rapuh},label={lst:support}]
+w, l, _ = get_oriented_dimensions(
+    packages[placement.package_id], placement.orientation
+)
+x, y, z = position.x, position.y, position.z
+below = occupancies[truck_id][x : x + w, y : y + l, z - 1]
+supporters = np.unique(below[below >= 0])
+if supporters.size == 0:
+    support_errors.append(
+        f"Package {placement.package_id} is floating in truck {truck_id}"
+    )
+elif any(problem.packages[int(index)].is_fragile for index in supporters):
+    fragile_errors.append(
+        f"Package {placement.package_id} rests on fragile support "
+        f"in truck {truck_id}"
+    )
+\end{lstlisting}
+
+Setelah posisi dan support diperiksa, validator menghitung beban setiap truk. Untuk truk $t$, jumlah berat paket yang ditugaskan kepadanya harus memenuhi
+\begin{equation}
+\sum_{i\in P_t}\mathrm{weight}_i\leq\mathrm{max\_capacity}_t.
+\label{eq:kapasitas}
+\end{equation}
+Cuplikan~\ref{lst:capacity} menunjukkan bahwa berat dijumlahkan dengan \texttt{Decimal}. Dengan cara ini, batas seperti $0.1+0.2\leq0.3$ tidak keliru akibat pembulatan bilangan \textit{floating point}. Hasil \path{validate_state} berupa \texttt{ValidationResult} yang memuat status \texttt{valid}, daftar \texttt{errors}, dan total berat per truk. Jika assignment atau geometri sudah ambigu, pemeriksaan support dilewati karena grid tidak lagi dapat dipercaya, sementara kesalahan yang sudah ditemukan tetap dilaporkan.
+
+\begin{lstlisting}[emph={Decimal,exact_weights,max_capacity,errors},caption={Penjumlahan berat dan pemeriksaan kapasitas},label={lst:capacity}]
+exact_weights = {truck.id: Decimal(0) for truck in problem.trucks}
+for placement in loaded:
+    assert placement.truck_id is not None
+    exact_weights[placement.truck_id] += Decimal(
+        str(packages[placement.package_id].weight)
+    )
+truck_weights = {
+    truck_id: float(weight) for truck_id, weight in exact_weights.items()
+}
+for truck in problem.trucks:
+    if exact_weights[truck.id] > Decimal(str(truck.max_capacity)):
+        errors.append(
+            f"Truck {truck.id} exceeds capacity: "
+            f"{truck_weights[truck.id]} > {truck.max_capacity}"
+        )
+\end{lstlisting}
+
+\subsubsection{Objective Function}
+Setelah state dinyatakan sah, program menghitung nilainya melalui \texttt{ObjectiveMode} pada \path{app/optimization/objective.py}. \textbf{Mode utama}, \texttt{TOTAL\_VALUE}, mengimplementasikan fungsi objektif pada Persamaan~\ref{eq:problem-objective} di Subbab~\ref{sec:tujuan-persoalan}; agregasi seluruh armada merupakan perluasan atas rumusan konseptual satu truk:
+\begin{equation}
+f_{\mathrm{total}}(s)=\sum_{i:\,\mathrm{truck}_i\ne\mathrm{None}}\mathrm{value}_i.
+\label{eq:total-value}
+\end{equation}
+Mode tambahan, \texttt{ETA\_WEIGHTED\_VALUE}, memberi bobot lebih besar pada paket yang ETA-nya lebih dekat. Ini ekstensi opsional, bukan objektif konseptual utama:
+\begin{equation}
+f_{\mathrm{ETA}}(s)=\sum_{i:\,\mathrm{truck}_i\ne\mathrm{None}}
+\frac{\mathrm{value}_i}{\mathrm{eta}_i+1}.
+\label{eq:eta-value}
+\end{equation}
+Kontribusi setiap paket termuat dihitung oleh \path{objective_contributions}, lalu dijumlahkan oleh \path{evaluate_objective} dengan \path{math.fsum}. Evaluator tidak memberi penalti atas pelanggaran constraint dan tidak memeriksa kelayakan state. Dalam HC dan SA, neighbor yang dinilai terlebih dahulu harus sah. Pada GA, objective mentah tetap tidak berpenalti, tetapi offspring tidak sah juga dievaluasi; fitness terpisah menerapkan penalti berdasarkan jumlah error validator.
+
+\subsection{Implementasi Algoritma \textit{Local Search}}
+\subsubsection{Inisialisasi State dan Pembangkitan Neighbor}
+Sebelum pencarian dimulai, \path{runner.py} membuat satu \textit{random number generator} dari \textit{seed} yang diterima. Generator yang sama diteruskan ke inisialisasi dan algoritma agar run dengan input serta seed yang sama dapat diulang. Hill climbing dan simulated annealing menerima satu initial state dari \path{generate_random_feasible_state}. Genetic algorithm memakai fungsi yang sama untuk membentuk anggota populasi awal.
+
+Untuk memenuhi ketentuan state awal acak pada Subbab~\ref{sec:representasi}, inisialisasi memulai semua paket di luar truk, lalu mengacak urutan paket dan tujuan penempatannya. Untuk setiap truk yang dicoba, fungsi memilih orientasi dan posisi. Koordinat $x$ dan $y$ diambil dari rentang yang masih muat, sedangkan $z$ diambil dari lantai atau permukaan atas paket lain. Kandidat baru hanya disimpan bila lolos \path{validate_state}. Paket dapat tetap di luar saat target luar terpilih atau ketika percobaan penempatan gagal. Cuplikan~\ref{lst:initial-state} menunjukkan titik awal konstruksi tersebut.
+
+\begin{lstlisting}[emph={State,PackagePlacement,shuffle},caption={Pembentukan initial state dalam \texttt{initializer.py}},label={lst:initial-state}]
+state = State(
+    placements=[PackagePlacement(package_id=p.id) for p in problem.packages]
+)
+indices = list(range(len(problem.packages)))
+rng.shuffle(indices)
+\end{lstlisting}
+
+Setelah initial state tersedia, neighbor dibentuk melalui tiga operasi pada Subbab~\ref{sec:representasi}. \texttt{RELOCATE} memindahkan paket ke koordinat lain, mengeluarkannya dari truk, atau memuatnya kembali; implementasi multi-truk juga memungkinkan transfer antartruk. \texttt{ROTATE} mengubah orientasi paket termuat sambil mempertahankan titik posisinya. \texttt{SWAP} menukar tujuan truk dan posisi dua paket, termasuk kasus satu paket di luar, sementara masing-masing mempertahankan orientasinya. Peluang pemilihan awalnya berturut-turut $0{,}50$, $0{,}25$, dan $0{,}25$. Setiap move bekerja pada salinan state agar state asal tidak berubah.
+
+Proposal move belum tentu memenuhi constraint. Untuk hill climbing dan simulated annealing, \path{generate_random_neighbor} mengulang proposal sampai menemukan state sah atau mencapai batas percobaan, seperti pada Cuplikan~\ref{lst:valid-neighbor}. Varian HC selain stochastic dapat meminta beberapa neighbor berbeda melalui \path{sample_valid_neighbors}; stochastic dan simulated annealing meminta satu neighbor. Pada genetic algorithm, offspring yang tidak sah tetap berada di populasi dan dinilai dengan fitness berpenalti, tanpa repair.
+
+\begin{lstlisting}[emph={propose_random_move,validate_state,valid},caption={Penerimaan neighbor yang sah dalam \texttt{neighbors.py}},label={lst:valid-neighbor}]
+for _ in range(config.max_attempts):
+    candidate = propose_random_move(problem, state, rng, config)
+    if candidate is not None and validate_state(problem, candidate.state).valid:
+        return candidate
+return None
+\end{lstlisting}
+
+\subsubsection{Hill Climbing}
+Keempat varian hill climbing diimplementasikan dalam kelas \texttt{HillClimbing} pada \path{app/optimization/algorithms/hill_climbing.py}. Steepest-ascent, sideways, dan random-restart mengambil sampel neighbor sah melalui \path{sample_valid_neighbors}; stochastic meminta satu melalui \path{generate_random_neighbor}. Jumlah kandidat untuk tiga varian pertama diatur oleh \path{candidates_per_iteration} (default 50). Generator dibatasi percobaannya (default 30), sehingga neighbor dapat tidak tersedia. Perbedaan tiap varian terletak pada cara memilih kandidat dan melanjutkan pencarian. Cuplikan berikut merangkum bagian implementasi yang digunakan masing-masing varian, dengan pencatatan riwayat tidak ditampilkan.
+
+\textit{Steepest-ascent hill climbing} membandingkan skor state saat ini dengan seluruh neighbor sah yang berhasil masuk ke sampel iterasi. Secara teoretis, steepest-ascent memilih neighbor terbaik dari seluruh neighborhood; implementasi hanya dapat memilih yang terbaik dari sampel, yang jumlahnya dibatasi dan dapat kurang dari target bila proposal sah tidak cukup ditemukan. Jadi, \texttt{local\_optimum} menandai tidak adanya peningkatan pada sampel, bukan bukti bahwa semua neighbor sudah diperiksa. Langkah yang lebih baik dipilih, dan jika beberapa kandidat berbagi skor tertinggi, satu dipilih secara acak seperti pada Cuplikan~\ref{lst:hc-steepest}. Aturan ini mengarahkan pencarian ke kenaikan tertinggi yang teramati, tetapi dapat berhenti di puncak lokal atau sebelum menemukan peningkat di luar sampel.
+
+\begin{lstlisting}[emph={top_score,current_score,pool,rng},caption={Inti pemilihan neighbor pada steepest-ascent},label={lst:hc-steepest}]
+top_score = max(scores)
+if top_score <= current_score:
+    termination_reason = "local_optimum"
+    break
+pool = [
+    (n, score)
+    for n, score in zip(neighbors, scores)
+    if score == top_score
+]
+selected, selected_score = rng.choice(pool)
+current, current_score = selected.state, selected_score
+\end{lstlisting}
+
+\textit{Stochastic hill climbing} meminta satu neighbor acak setiap iterasi. Metode ini hanya menerima skor yang meningkat ketat. Skor setara atau lebih rendah mempertahankan state. Jika generator tidak menemukan neighbor, percobaan juga dicatat tanpa perpindahan. Kedua kondisi tersebut tidak menghentikan pencarian. Iterasi berlanjut hingga batas API, yaitu 2.000. Satu sampel gagal tidak membuktikan optimum lokal. Cuplikan~\ref{lst:hc-stochastic} merangkum kebijakan saat ini.
+
+\begin{lstlisting}[emph={candidate,current_score,accepted},caption={Satu neighbor acak per iterasi pada stochastic HC},label={lst:hc-stochastic}]
+candidate = generate_random_neighbor(problem, current, rng, neighbor_config)
+if candidate is not None:
+    candidate_score = evaluate_objective(problem, candidate.state, objective_mode)
+    if candidate_score > current_score:
+        current, current_score = candidate.state, candidate_score
+\end{lstlisting}
+
+\textit{Hill climbing with sideways move} memilih kandidat dengan skor tertinggi dalam sampel seperti steepest-ascent, termasuk kandidat yang skornya sama dengan state saat ini. Langkah setara memungkinkan pencarian berpindah di plateau, tempat kenaikan mungkin belum terlihat dari posisi sekarang. Batas \path{max_sideways} berlaku untuk langkah setara berturut-turut: setiap langkah tersebut menambah penghitung, dan peningkatan skor mengatur ulang penghitung ke nol. Dengan batas default 100, pencarian dapat mengambil hingga 100 langkah setara berurutan; jika langkah setara berikutnya masih diperlukan, pencarian berhenti dengan alasan \texttt{max\_sideways}. Cuplikan~\ref{lst:hc-sideways} memperlihatkan aturan tersebut. Kandidat yang menurunkan skor tetap ditolak, dan jumlah langkah sideways dicatat. Batas ini mengendalikan penelusuran plateau, tetapi tidak menjamin bahwa plateau telah ditelusuri seluruhnya.
+
+\begin{lstlisting}[emph={top_score,max_sideways,consecutive_sideways,improved},caption={Penerimaan dan penghitungan sideways move},label={lst:hc-sideways}]
+if top_score > current_score or (
+    top_score == current_score and consecutive_sideways < max_sideways
+):
+    pool = [
+        (n, score)
+        for n, score in zip(neighbors, scores)
+        if score == top_score
+    ]
+    selected, selected_score = rng.choice(pool)
+    improved = selected_score > current_score
+    current, current_score = selected.state, selected_score
+    if improved:
+        consecutive_sideways = 0
+    else:
+        consecutive_sideways += 1
+        sideways_moves += 1
+\end{lstlisting}
+
+\textit{Random-restart hill climbing} memakai steepest-ascent untuk setiap climb, dimulai dari state awal runner lalu dilanjutkan dengan state sah baru pada tiap restart. Dengan 10 restart, implementasi melakukan 11 climb. Setiap climb mendapat batas \path{max_iterations} sendiri, sehingga anggaran itu berlaku per climb, bukan dibagi di antara semua restart. Cuplikan~\ref{lst:hc-restart} memperlihatkan pengulangan dan pemilihan hasil: \textbf{state akhir} berasal dari climb terakhir, sedangkan \texttt{best\_state} dan skor terbaik berasal dari climb dengan hasil tertinggi di seluruh pengulangan. Riwayat menggabungkan iterasi dengan penanda restart dan skor terbaik kumulatif. Restart memberi kesempatan untuk memulai dari wilayah lain dan mengurangi risiko bergantung pada satu puncak lokal, dengan biaya climb tambahan. Karena jumlahnya tetap terbatas dan tiap climb hanya memeriksa sampel neighborhood, metode ini tidak memastikan pencarian menemukan optimum global.
+
+\begin{lstlisting}[emph={max_restarts,generate_random_feasible_state,STEEPEST_ASCENT,climbs,best},caption={Pengulangan steepest-ascent pada random restart},label={lst:hc-restart}]
+start = initial_state
+for restart in range(config.max_restarts + 1):
+    if restart > 0:
+        start = generate_random_feasible_state(problem, rng)
+    climb = self._climb(
+        problem,
+        start,
+        variant=HillClimbingVariant.STEEPEST_ASCENT,
+        objective_mode=objective_mode,
+        rng=rng,
+        config=config,
+        include_state_history=include_state_history,
+    )
+    climbs.append(climb)
+best = max(climbs, key=lambda climb: climb.best_score)
+\end{lstlisting}
+
+Varian selain stochastic dapat berhenti saat tidak menemukan neighbor sah. Stochastic tetap melanjutkan sampai batas iterasi. Batas API ialah 2.000 iterasi; sampling varian lain meminta hingga 50 kandidat, dan random-restart dibatasi hingga 20 restart. State saat ini dan terbaik disimpan terpisah.
+
+\subsubsection{Simulated Annealing}
+Kelas \texttt{SimulatedAnnealing} memulai pencarian dari state sah yang sama jenisnya dengan hill climbing, tetapi hanya mengambil \textbf{satu neighbor acak} pada setiap iterasi. Move dengan $\Delta f\geq0$ langsung diterima. Untuk $\Delta f<0$, algoritma menggunakan peluang $\exp(\Delta f/T)$ sebagaimana dijelaskan pada Bab~2. Cuplikan~\ref{lst:annealing-accept} menunjukkan keputusan tersebut di dalam kode.
+
+\begin{lstlisting}[emph={delta,acceptance_probability,accepted,temperature},caption={Penerimaan move pada \texttt{simulated\_annealing.py}},label={lst:annealing-accept}]
+delta = candidate_score - current_score
+acceptance_probability = (
+    1.0 if delta >= 0 else math.exp(delta / temperature)
+)
+accepted = delta >= 0 or rng.random() < acceptance_probability
+if accepted:
+    current = candidate.state.model_copy(deep=True)
+    current_score = candidate_score
+\end{lstlisting}
+
+Temperatur awal dapat diberikan sebagai parameter. Jika kosong, nilainya diambil dari rata-rata value paket dengan batas bawah $1$. Setelah satu iterasi selesai, temperatur dikalikan \texttt{alpha}, yang bernilai antara nol dan satu. Pencarian berhenti saat temperatur berada di bawah \texttt{min\_temperature}, batas iterasi tercapai, atau neighbor sah tidak ditemukan. \texttt{best\_state} disimpan terpisah dari state saat ini, sebab simulated annealing dapat menerima move yang menurunkan skor. Riwayat iterasi mencatat temperatur, peluang penerimaan, keputusan move, dan skor. Parameter \texttt{stuck\_patience} hanya menandai dan menghitung kejadian ketika skor terbaik tidak membaik cukup lama; parameter ini tidak menghentikan pencarian.
+
+\subsubsection{Genetic Algorithm}
+Kelas \texttt{GeneticAlgorithm} memulai dari populasi feasible. Objective tetap dihitung tanpa penalti dan digunakan untuk skor hasil serta arsip solusi feasible. Seleksi memakai fitness terpisah: untuk nilai objective mentah $V$, batas atas $U$, dan jumlah error validator $C$, tetapkan $q=\mathrm{clamp}(V/U,0,1)$ bila $U>0$, selain itu $q=0$. Fitness ialah $1+q$ bila $C=0$, dan $q/(1+C)$ bila $C>0$. Dengan demikian, penalti hanya memengaruhi seleksi; $C$ adalah hitungan diagnostik, bukan ukuran lengkap tingkat keparahan fisik, dan pemeriksaan dukungan dapat dilewati bila geometri ambigu.
+
+Reproduksi memakai roulette berbobot fitness, single-point crossover dalam urutan paket kanonis, dan mutasi paling banyak satu gen melalui \path{propose_relocate}. Populasi generasi berikutnya dibentuk seluruhnya dari offspring, tanpa elitisme. Offspring tidak feasible tidak diperbaiki dan tetap dalam populasi. Arsip eksternal menyimpan solusi feasible terbaik, tidak ikut reproduksi; bila populasi akhir tidak memiliki solusi feasible, state akhir memakai arsip dan metadata menandai fallback. State awal, akhir, terbaik, dan snapshot riwayat tetap feasible serta skornya objective mentah.
+
+Cuplikan berikut memperlihatkan pembentukan populasi baru:
+\begin{lstlisting}[emph={next_population,roulette_select,single_point_crossover,propose_relocate},caption={Pembentukan offspring GA},label={lst:ga-generation}]
+next_population = []
+for _ in range(config.population_size):
+    a = roulette_select(population, fitnesses, rng)
+    b = roulette_select(population, fitnesses, rng)
+    child = (
+        single_point_crossover(problem, a, b, rng)
+        if rng.random() < config.crossover_probability
+        else rng.choice((a, b)).model_copy(deep=True)
+    )
+    if rng.random() < config.mutation_probability:
+        proposal = propose_relocate(problem, child, rng)
+        if proposal is not None:
+            child = proposal.state
+    next_population.append(child)
+\end{lstlisting}
+
+Default GA adalah populasi 50, 100 generasi, crossover 1,0, mutasi 0,2, dan elite 0; konfigurasi API membatasi populasi hingga 100 dan generasi hingga 200. Riwayat dimulai pada generasi 0 dan mencatat maksimum fitness di \texttt{metadata.max\_fitness} serta rata-rata fitness di \texttt{mean\_score}; keduanya bukan objective mentah yang ditampilkan sebagai skor current/best.
+
+\clearpage
+\section{Eksperimen dan Analisis}
+\subsection{Rancangan Eksperimen}
+Bagian ini memuat 36 catatan eksekusi pada satu dataset: 18 run baseline (12 run Hill Climbing/HC, tiga run Simulated Annealing/SA, dan tiga run Genetic Algorithm/GA) serta 18 run sweep parameter GA. Ringkasan perbandingan enam metode di bawah tetap memakai 18 run baseline; hasil sweep dibahas terpisah.
+
+\subsubsection{Data Uji}
+Objektif utama adalah \textbf{\texttt{TOTAL\_VALUE}}, yaitu jumlah nilai paket termuat tanpa pembobotan ETA. Dataset pengujian terdiri atas satu truk \texttt{truck-a} berukuran $10\times8\times6$ dan berkapasitas 100, serta sembilan paket pada Tabel~\ref{tab:data-eksperimen} dengan atribut asli. Dataset yang sama digunakan untuk membandingkan hasil antaralgoritma dan seed. Pada baseline, GA memakai satu konfigurasi tetap: populasi 50, 100 generasi, crossover 1,0, mutasi 0,2, elitisme 0, dan arsip solusi feasible eksternal.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabularx}{\textwidth}{@{}l X r r c r@{}}
+        \toprule
+        ID & Dimensi $(w,l,h)$ & Nilai & Berat & Rapuh & ETA \\
+        \midrule
+        P01 & $(4,3,2)$ & 40 & 20 & Tidak & 2 \\
+        P02 & $(3,3,2)$ & 30 & 15 & Tidak & 1 \\
+        P03 & $(2,2,1)$ & 25 & 5 & Ya & 0 \\
+        P04 & $(2,4,3)$ & 35 & 18 & Tidak & 3 \\
+        P05 & $(3,2,2)$ & 20 & 10 & Tidak & 4 \\
+        P06 & $(1,1,1)$ & 8 & 2 & Ya & 1 \\
+        P07 & $(5,4,3)$ & 50 & 30 & Tidak & 2 \\
+        P08 & $(6,6,6)$ & 60 & 40 & Tidak & 5 \\
+        P09 & $(2,2,2)$ & 12 & 6 & Tidak & 0 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Data paket pada dataset pengujian.}
+    \label{tab:data-eksperimen}
+\end{table}
+
+Jumlah nilai seluruh paket adalah 280. Dengan batas kapasitas 100 kg dan aturan penempatan yang digunakan, nilai optimum global dataset ini adalah 208; pembuktiannya diberikan pada Subbab~\ref{sec:optimum-eksperimen}. Pengujian difokuskan pada satu truk dengan batas kapasitas 100 kg.
+
+\subsubsection{Konfigurasi Parameter dan Pengulangan Eksperimen}
+Setiap konfigurasi baseline memiliki \textbf{tiga pengulangan dengan seed 42, 123, dan 2026}. Rancangan baseline mencakup empat varian HC masing-masing tiga run, tiga run SA, serta satu konfigurasi GA dengan tiga run; keseluruhannya \textbf{18 catatan eksekusi}. Delapan belas run sweep GA tambahan dijelaskan terpisah. Konfigurasi baseline dan sweep dirangkum pada Tabel~\ref{tab:konfigurasi-eksperimen}.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.3cm} X r@{}}
+        \toprule
+        Metode & Konfigurasi & Run \\
+        \midrule
+        HC steepest-ascent & Maksimum 2.000 iterasi, 50 kandidat per iterasi; tanpa sideways atau restart. & 3 \\
+        HC stochastic & Maksimum 2.000 iterasi; satu neighbor acak per iterasi, diterima jika skornya meningkat. & 3 \\
+        HC sideways & Maksimum 2.000 iterasi, 50 kandidat per iterasi, maksimum 100 sideways berturut-turut. & 3 \\
+        HC random-restart & Maksimum 10 restart; 11 climb, masing-masing maksimum 2.000 iterasi dan 50 kandidat per iterasi. & 3 \\
+        SA & $T_0=30$, $\alpha=0{,}995$, $T_{\min}=0{,}001$, maksimum 5.000 iterasi, ambang stagnasi 50 iterasi. & 3 \\
+        GA & Populasi 50; 100 generasi; crossover 1,0; mutasi 0,2; elitisme 0. & 3 \\
+        GA sweep populasi & Generasi tetap 100; populasi 20, 50, dan 100; crossover 1,0; mutasi 0,2; elitisme 0. & 9 \\
+        GA sweep generasi & Populasi tetap 50; 50, 100, dan 200 generasi; crossover 1,0; mutasi 0,2; elitisme 0. & 9 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Kontrol dan jumlah run per kelompok eksperimen.}
+    \label{tab:konfigurasi-eksperimen}
+\end{table}
+
+Metrik yang dianalisis meliputi skor objektif awal, akhir, dan terbaik, runtime, jumlah iterasi aktual, serta berat dan jumlah paket termuat pada state akhir. Skor terbaik dibedakan dari skor akhir karena solusi terakhir tidak selalu menjadi solusi terbaik sepanjang pencarian. Runtime GA yang tercatat mencakup inisialisasi dan pencarian, tidak termasuk serialisasi, validasi akhir, penyimpanan, komunikasi HTTP, atau rendering. Durasi dibahas secara deskriptif berdasarkan run yang tercatat.
+
+\subsection{Hasil Eksperimen dan Visualisasi Program}
+Pengujian mencakup empat varian HC, SA, dan GA dengan objektif Total value. Hasil setiap run meliputi skor awal, akhir, dan terbaik; visualisasi HC/SA memperlihatkan susunan paket pada state akhir beserta jumlah paket dan berat muatannya.
+\subsubsection{Hill Climbing}
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l r r r r r r r@{}}
+\toprule
+Metode & Seed & Awal & Akhir & Terbaik & ms & Iterasi & kg \\
+\midrule
+Steepest-ascent & 42 & 188 & 208 & 208 & 403 & 2 & 100 \\
+Steepest-ascent & 123 & 68 & 170 & 170 & 632 & 5 & 76 \\
+Steepest-ascent & 2026 & 93 & 208 & 208 & 488 & 4 & 100 \\
+Stochastic & 42 & 188 & 208 & 208 & 932 & 2000 & 100 \\
+Stochastic & 123 & 68 & 170 & 170 & 1148 & 2000 & 76 \\
+Stochastic & 2026 & 93 & 185 & 185 & 1150 & 2000 & 88 \\
+Sideways & 42 & 188 & 208 & 208 & 16530 & 102 & 100 \\
+Sideways & 123 & 68 & 208 & 208 & 16996 & 108 & 100 \\
+Sideways & 2026 & 93 & 208 & 208 & 16100 & 104 & 100 \\
+Random-restart & 42 & 188 & 190 & 208 & 5064 & 49 & 96 \\
+Random-restart & 123 & 68 & 190 & 208 & 4135 & 42 & 91 \\
+Random-restart & 2026 & 93 & 208 & 208 & 4794 & 42 & 100 \\
+\bottomrule
+\end{tabular}
+\caption{Hasil 12 run HC. Kolom kg adalah berat muatan akhir; seluruh run berakhir dengan tujuh paket termuat.}
+\label{tab:hasil-hc}
+\end{table}
+
+Steepest-ascent berhenti dengan alasan \textit{Local optimum} pada seluruh seed dan menghasilkan skor akhir 208, 170, dan 208. Status tersebut berarti tidak ditemukan peningkatan pada kandidat yang diperiksa saat penghentian. Stochastic menghasilkan skor akhir sekaligus skor terbaik 208, 170, dan 185, dengan berat akhir 100, 76, dan 88 kg. Ketiga run stochastic menjalankan 2.000 iterasi dan berhenti karena \textit{Max iterations}. Kandidat yang tidak meningkatkan skor ditolak tanpa menghentikan pencarian.
+
+Sideways mencapai skor akhir 208 pada ketiga seed dan berhenti karena \textit{Max sideways}. Jumlah iterasi aktual 102, 108, dan 104 lebih kecil daripada batas 2.000 iterasi. Ringkasan UI mencatat jumlah sideways total 100, 101, dan 100; angka total ini perlu dibedakan dari batas 100 sideways berturut-turut pada konfigurasi.
+
+Random-restart menjalankan 10 restart dan berhenti karena \textit{Max restarts}. Skor terbaik selalu 208, tetapi skor akhir pada seed 42 dan 123 adalah 190. Selisih tersebut menunjukkan perlunya membedakan solusi terakhir dengan solusi terbaik sepanjang seluruh climb. Pada dua run tersebut berat muatan akhir masing-masing 96 kg dan 91 kg, meskipun nilai akhir sama. Ketiga seed tetap memuat tujuh paket pada state akhir.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/RR42.png}
+\caption{Random-restart seed 42: skor akhir 190, skor terbaik 208, 49 iterasi, dan 10 restart. Pilihan Final menampilkan muatan akhir 96 kg.}
+\label{fig:rr-manual}
+\end{figure}
+
+\subsubsection{Simulated Annealing}
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l r r r r r r r@{}}
+\toprule
+Metode & Seed & Awal & Akhir & Terbaik & ms & Iterasi & kg \\
+\midrule
+SA & 42 & 188 & 208 & 208 & 889 & 856 & 100 \\
+SA & 123 & 68 & 208 & 208 & 2014 & 2057 & 100 \\
+SA & 2026 & 93 & 208 & 208 & 1998 & 2057 & 100 \\
+\bottomrule
+\end{tabular}
+\caption{Hasil tiga run SA. Seluruh state akhir memuat tujuh paket.}
+\label{tab:hasil-sa}
+\end{table}
+
+SA mencapai skor akhir dan terbaik 208 pada seluruh seed. Seed 42 berhenti karena \textit{No valid neighbor} setelah 856 iterasi, dengan suhu akhir yang ditampilkan 0,41. Seed 123 dan 2026 berhenti karena \textit{Temperature minimum} setelah 2.057 iterasi, dengan suhu akhir ditampilkan 0,001. Jumlah \textit{stuck events} masing-masing adalah 2, 2, dan 3; metrik ini bukan jumlah iterasi stagnasi berturut-turut. Penghentian aktual pada ketiga run terjadi sebelum batas 5.000 iterasi.
+
+Konfigurasi SA menggunakan $T_0=30$, $\alpha=0{,}995$, $T_{\min}=0{,}001$, dan ambang stagnasi 50.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/SA42.png}
+\caption{SA seed 42: pengaturan parameter, state akhir, skor awal/akhir/terbaik, runtime, dan alasan penghentian.}
+\label{fig:sa-manual}
+\end{figure}
+
+\subsubsection{Genetic Algorithm}
+Tiga run GA menggunakan satu konfigurasi tetap (populasi 50, 100 generasi) dan seed 42, 123, serta 2026. Tabel melaporkan objective mentah (total value), runtime backend, jumlah paket, dan berat state akhir. Seluruh state awal/akhir/terbaik lolos validasi; seluruh run mencapai generation limit pada tepat $I=G=100$ generasi dan tidak memakai fallback arsip sebagai state akhir.
+
+\begin{table}[htbp]
+\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}r r r r r r r l@{}}
+\toprule
+Seed & Awal & Akhir & Terbaik & ms & Paket & kg & Berkas \\
+\midrule
+42 & 200 & 208 & 208 & 875 & 7 & 100 & \path{ga-seed-42.json} \\
+123 & 208 & 162 & 208 & 787 & 6 & 74 & \path{ga-seed-123.json} \\
+2026 & 200 & 208 & 208 & 898 & 7 & 100 & \path{ga-seed-2026.json} \\
+\bottomrule
+\end{tabular}
+\caption{Hasil GA untuk satu konfigurasi tetap (populasi 50, 100 generasi, crossover 1,0, mutasi 0,2, elitisme 0), tiga seed.}
+\label{tab:hasil-ga}
+\end{table}
+
+Rata-rata skor akhir adalah 192,67 dengan simpangan baku populasi 21,68; rata-rata skor terbaik 208,00 dan runtime backend rata-rata 853 ms. Skor akhir seed 123 sebesar 162 berada di bawah skor terbaik 208 karena reproduksi tidak memakai elitisme. Arsip solusi terbaik disimpan terpisah dan tidak memaksa state akhir sama dengan arsip.
+
+\subsubsection{Variasi Parameter Genetic Algorithm}
+Untuk menilai pengaruh parameter secara terpisah, dilakukan 18 run baru pada dataset yang sama: populasi 50 dengan 50, 100, dan 200 generasi; serta generasi tetap 100 dengan populasi 20, 50, dan 100. Setiap konfigurasi dijalankan dengan seed 42, 123, dan 2026. Crossover tetap 1,0, mutasi 0,2, dan elitisme 0. Run populasi 50/generasi 100 pada kedua sweep merupakan pengulangan baseline, bukan data baseline lama yang digunakan ulang. Tabel hasil, termasuk nilai tiap run, tersedia berikut; state awal dan akhir lengkap dicantumkan pada Lampiran~\ref{sec:ga-sweep-states}, sedangkan data batch mentah tersimpan di \path{docs/hasil-test/ga-sweep/batch.json}.
+
+\IfFileExists{docs/hasil-test/ga-sweep/results.tex}{\input{docs/hasil-test/ga-sweep/results.tex}}{\input{hasil-test/ga-sweep/results.tex}}
+\begin{figure}[htbp]
+    \centering
+    \IfFileExists{docs/hasil-test/ga-sweep/ga-parameter-sweeps.pdf}{\includegraphics[width=0.98\textwidth]{docs/hasil-test/ga-sweep/ga-parameter-sweeps.pdf}}{\includegraphics[width=0.98\textwidth]{hasil-test/ga-sweep/ga-parameter-sweeps.pdf}}
+    \caption{Perbandingan skor dan runtime pada sweep ukuran populasi dan jumlah generasi.}
+    \label{fig:ga-parameter-sweeps}
+\end{figure}
+\textbf{Pengaruh jumlah generasi.} Pada populasi tetap 50, rata-rata objective akhir untuk 50, 100, dan 200 generasi berturut-turut adalah 177,67; 192,67; dan 185,67, dengan rata-rata durasi 436,33; 768,33; dan 1.422,67 ms. Rata-rata skor terbaik naik dari 205,33 pada 50 generasi menjadi 208 pada 100 dan 200 generasi. Penambahan generasi memperpanjang pencarian, tetapi tidak selalu meningkatkan skor akhir karena reproduksi tanpa elitisme dapat kehilangan individu terbaik.
+
+\textbf{Pengaruh ukuran populasi.} Pada generasi tetap 100, populasi 20, 50, dan 100 menghasilkan rata-rata objective akhir 155,33; 192,67; dan 187,00, dengan rata-rata durasi 280,00; 759,67; dan 1.724,33 ms. Rata-rata skor terbaiknya adalah 200,00; 208,00; dan 208,00. Pada tiga seed ini, \textbf{populasi 50 dan 100 generasi memberikan rata-rata skor akhir tertinggi pada kedua sweep}, sedangkan penambahan populasi menjadi 100 belum memperbaiki hasil dan membutuhkan waktu lebih lama. Hasil ini terbatas pada dataset dan seed yang diuji.
+
+\subsection{Analisis Eksperimen}
+
+Ringkasan metode baseline dihitung dari tiga seed per metode. Simpangan baku yang digunakan adalah simpangan baku populasi deskriptif, $\sigma=\sqrt{\sum_{i=1}^{3}(x_i-\bar{x})^2/3}$. Jumlah pengulangan ini terbatas dan tidak digunakan untuk menyatakan signifikansi statistik.
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Metode & $\bar f_{akhir}$ & $\sigma_{akhir}$ & $\bar f_{terbaik}$ & $\bar t$ (s) & $\bar I$ \\
+\midrule
+Steepest-ascent & 195.33 & 17.91 & 195.33 & 0.508 & 3.67 \\
+Stochastic & 187.67 & 15.63 & 187.67 & 1.077 & 2000.00 \\
+Sideways & 208.00 & 0.00 & 208.00 & 16.542 & 104.67 \\
+Random-restart & 196.00 & 8.49 & 208.00 & 4.664 & 44.33 \\
+SA & 208.00 & 0.00 & 208.00 & 1.634 & 1656.67 \\
+GA & 192.67 & 21.68 & 208.00 & 0.853 & 100.00 \\
+\bottomrule
+\end{tabular}
+\caption{Ringkasan deskriptif tiga seed per metode pada 18 run baseline: rata-rata skor akhir, simpangan baku populasi skor akhir, rata-rata skor terbaik, runtime, dan iterasi aktual.}
+\label{tab:ringkasan-manual}
+\end{table}
+
+\subsubsection{Kedekatan terhadap Optimum Global}
+\label{sec:optimum-eksperimen}
+Nilai optimum global dapat ditentukan untuk dataset sembilan paket ini. Jika batas ruang, support, dan fragile diabaikan sementara, setiap solusi tetap harus memenuhi batas berat. Dengan $x_i\in\{0,1\}$ sebagai penanda paket termuat, diperoleh batas atas
+\[
+ U=\max\left\{\sum_{i=1}^{9}v_i x_i\;\middle|\;\sum_{i=1}^{9}w_i x_i\leq100\right\}.
+\]
+Pemeriksaan seluruh $2^9=512$ subset menghasilkan $U=208$. Subset yang mencapai nilai tersebut adalah P01, P02, P03, P04, P05, P06, dan P07 dengan berat total 100 kg. Karena pemeriksaan ini melonggarkan kendala penempatan, nilai solusi sah pada persoalan asli \textbf{tidak dapat melebihi 208}.
+
+Batas tersebut dapat dicapai dengan susunan pada Tabel~\ref{tab:sertifikat-optimum}. Semua paket memakai orientasi dimensi asli dan berada di lantai truk; P08 dan P09 berada di luar. Susunan ini berada dalam ukuran truk $10\times8\times6$, tanpa overlap, dan tidak menempatkan paket di atas paket fragile. Pemeriksaan dengan validator menghasilkan state sah tanpa pelanggaran. Adanya solusi sah bernilai 208 dan batas atas 208 membuktikan bahwa $f^*=208$ untuk dataset dan aturan kendala ini. Susunan tersebut menjadi sertifikat kelayakan untuk pembuktian, bukan rekonstruksi posisi paket dari run yang tercatat.
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}l c c r r@{}}
+\toprule
+Paket & Dimensi $(w,l,h)$ & Posisi $(x,y,z)$ & Nilai & Berat (kg) \\
+\midrule
+P01 & $(4,3,2)$ & $(5,0,0)$ & 40 & 20 \\
+P02 & $(3,3,2)$ & $(5,3,0)$ & 30 & 15 \\
+P03 & $(2,2,1)$ & $(2,6,0)$ & 25 & 5 \\
+P04 & $(2,4,3)$ & $(0,4,0)$ & 35 & 18 \\
+P05 & $(3,2,2)$ & $(2,4,0)$ & 20 & 10 \\
+P06 & $(1,1,1)$ & $(4,6,0)$ & 8 & 2 \\
+P07 & $(5,4,3)$ & $(0,0,0)$ & 50 & 30 \\
+\midrule
+Total & & & 208 & 100 \\
+\bottomrule
+\end{tabular}
+\caption{Satu susunan sah yang mencapai batas atas nilai 208. Posisi menyatakan sudut bawah paket menurut sumbu lebar, panjang, dan tinggi.}
+\label{tab:sertifikat-optimum}
+\end{table}
+
+Kedekatan hasil pencarian diukur melalui gap relatif $g(f)=100(f^*-f)/f^*$. Skor 208 memiliki gap 0\%, skor 190 memiliki gap 8,65\%, skor 185 memiliki gap 11,06\%, dan skor 170 memiliki gap 18,27\%. Tabel~\ref{tab:gap-optimum} memisahkan gap skor akhir dari gap skor terbaik.
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l r r c c@{}}
+\toprule
+Metode & $\bar g_{akhir}$ (\%) & $\bar g_{terbaik}$ (\%) & Akhir optimum & Terbaik optimum \\
+\midrule
+Steepest-ascent & 6,09 & 6,09 & 2/3 & 2/3 \\
+Stochastic & 9,78 & 9,78 & 1/3 & 1/3 \\
+Sideways & 0,00 & 0,00 & 3/3 & 3/3 \\
+Random-restart & 5,77 & 0,00 & 1/3 & 3/3 \\
+SA & 0,00 & 0,00 & 3/3 & 3/3 \\
+GA & 7,37 & 0,00 & 2/3 & 3/3 \\
+\bottomrule
+\end{tabular}
+\caption{Gap rata-rata terhadap optimum 208 serta jumlah run yang mencapai optimum dari tiga seed.}
+\label{tab:gap-optimum}
+\end{table}
+
+Steepest-ascent berhenti ketika sampel kandidat tidak menyediakan peningkatan. Pada seed 123, hasilnya 170, meskipun solusi global 208 tersedia. Penghentian berlabel \textit{Local optimum} \textbf{berlaku terhadap kandidat yang diperiksa}; sampling tersebut tidak mencakup seluruh neighbor yang mungkin.
+
+Stochastic tetap mencoba satu neighbor acak sampai batas 2.000 iterasi, tetapi \textbf{hanya menerima peningkatan ketat}. Metode ini mencapai optimum pada seed 42, sedangkan seed 123 dan 2026 berakhir di 170 dan 185. Gap yang tersisa menunjukkan bahwa penambahan percobaan neighbor dalam anggaran ini belum cukup untuk memperoleh optimum pada kedua seed tersebut. Stochastic menolak langkah setara dan menurun, sehingga pilihan perpindahannya terbatas. Ringkasan akhir belum membuktikan bahwa state terakhir adalah optimum lokal untuk semua neighbor.
+
+Sideways menerima langkah bernilai sama sehingga dapat mengubah susunan paket tanpa langsung meningkatkan objektif. Kemampuan tersebut menyediakan jalur untuk melanjutkan pencarian pada plateau dan sesuai dengan \textbf{hasil akhirnya yang mencapai 208 pada semua seed}. Setelah nilai optimum tercapai, langkah setara masih dapat berlanjut sampai batas sideways tercapai. Tanpa riwayat skor per iterasi, bagian lintasan yang melewati plateau tidak dapat ditentukan dari ringkasan akhir saja.
+
+Random-restart memulai climb baru dari state acak sehingga pencarian mencoba lebih dari satu daerah solusi. Skor terbaik 208 pada seluruh seed menunjukkan bahwa mekanisme ini berhasil menemukan optimum dalam setiap run. Pada seed 42 dan 123, climb terakhir berakhir di 190 sehingga skor akhirnya lebih rendah daripada optimum yang sudah ditemukan. \textbf{Solusi terbaik sepanjang run perlu digunakan} ketika memilih susunan untuk diterapkan.
+
+SA dapat menerima langkah yang menurunkan skor dengan probabilitas yang bergantung pada suhu. Mekanisme ini memungkinkan pencarian meninggalkan daerah yang sulit diperbaiki hanya dengan langkah meningkat. Ketiga run SA mencapai 208, termasuk seed 123 yang menghasilkan 170 pada steepest-ascent dan stochastic. Hasil ini sesuai dengan kemampuan eksplorasi SA, tetapi ringkasan akhir tidak menunjukkan langkah menurun mana yang berperan dalam mencapai optimum.
+
+\subsubsection{Perbandingan Hasil Pencarian Antaralgoritma}
+Untuk HC/SA, berdasarkan rata-rata skor akhir, \textbf{sideways dan SA berada pada urutan tertinggi dengan 208}, diikuti random-restart 196,00, steepest-ascent 195,33, dan stochastic 187,67. Selisih random-restart terhadap steepest-ascent hanya 0,67 poin pada rata-rata tiga seed, tetapi keduanya berbeda dalam penyimpanan hasil terbaik: random-restart menemukan 208 pada semua run, sedangkan steepest-ascent hanya pada dua run.
+
+Pada HC/SA seed 42, semua metode mencapai skor akhir 208 kecuali random-restart, yang berakhir di 190 setelah sempat mencapai 208. Pada seed 123, sideways dan SA meningkatkan skor awal 68 menjadi 208. Steepest-ascent dan stochastic berakhir di 170, sedangkan random-restart menemukan skor terbaik 208. Pada seed 2026, skor terbaik stochastic adalah 185; keempat metode HC/SA lainnya mencapai 208.
+
+Seluruh state akhir HC/SA memuat tujuh paket; GA memuat enam hingga tujuh paket. Berat akhir HC/SA berkisar 76 sampai 100 kg, sedangkan nilainya berkisar 170 sampai 208. Karena objektif memaksimalkan total nilai, jumlah paket yang sama tidak menjamin kualitas solusi yang sama. Dua run random-restart juga memiliki nilai akhir 190 dengan berat berbeda, yaitu 96 dan 91 kg. Pemilihan komposisi paket dan susunan yang memungkinkan paket bernilai tinggi masuk lebih menentukan daripada jumlah paket saja.
+
+\subsubsection{Perbandingan Durasi Pencarian}
+Pada HC/SA, rata-rata runtime steepest-ascent adalah 0,508 detik, stochastic 1,077 detik, SA 1,634 detik, random-restart 4,664 detik, dan sideways 16,542 detik. Di antara run HC/SA, steepest-ascent memiliki rata-rata runtime terendah, tetapi tidak mencapai optimum pada seed 123. Sideways dan SA sama-sama mencapai skor akhir optimum pada seluruh seed; \textbf{runtime SA yang tercatat sekitar sepersepuluh runtime sideways.}
+
+Steepest-ascent selesai dalam 2 sampai 5 iterasi karena berhenti ketika tidak menemukan peningkatan pada sampel kandidat. Stochastic menjalankan seluruh 2.000 iterasi dengan runtime 0,932 sampai 1,150 detik. Percobaan yang ditolak tetap dihitung sebagai iterasi, sehingga angka tersebut tidak sama dengan jumlah perpindahan state. Sideways menjalankan 102 sampai 108 iterasi dan terus memeriksa kandidat pada langkah bernilai sama, sehingga membutuhkan waktu lebih lama. Random-restart mengulang proses climb sampai 10 restart; biaya pengulangan itu menaikkan runtime dibanding satu climb, sekaligus menghasilkan skor terbaik optimum pada seluruh seed.
+
+SA menjalankan 856 sampai 2.057 iterasi dengan runtime 0,889 sampai 2,014 detik. Biaya satu iterasi tidak setara antaralgoritma: steepest-ascent, sideways, dan random-restart memeriksa hingga 50 kandidat per iterasi, sedangkan stochastic dan SA meminta satu neighbor. Karena itu, jumlah iterasi SA yang lebih besar tetap dapat menghasilkan runtime lebih rendah daripada sideways. Pada seed 42, SA berhenti karena tidak memperoleh neighbor sah; dua seed lainnya berhenti saat suhu mencapai batas minimum. Perbedaan penghentian ini menjelaskan sebagian variasi jumlah iterasi dan durasinya.
+
+Jika tujuan pemakaian adalah memperoleh skor akhir optimum pada ketiga seed ini, SA memberikan kombinasi kualitas dan durasi yang lebih baik daripada sideways. Jika waktu pencarian lebih diutamakan, steepest-ascent menghasilkan solusi dalam kurang dari satu detik pada ketiga run, dengan risiko skor di bawah optimum. Kesimpulan ini berlaku pada dataset dan konfigurasi yang diuji; runtime yang dibandingkan mencakup inisialisasi dan pencarian.
+
+\subsubsection{Konsistensi Hasil Akhir}
+Skor awal HC/SA untuk seed 42, 123, dan 2026 adalah 188, 68, dan 93 pada seluruh metode tersebut. Dengan demikian, setiap seed menyediakan titik pembandingan skor awal yang sama. Kesamaan skor tersebut tidak membuktikan bahwa koordinat semua paket identik.
+
+\textbf{Sideways dan SA menghasilkan skor akhir 208 pada tiga dari tiga run dengan simpangan baku nol}. Steepest-ascent menghasilkan 208, 170, dan 208 dengan simpangan baku 17,91, sedangkan stochastic menghasilkan 208, 170, dan 185 dengan simpangan baku 15,63. Stochastic memiliki sebaran skor lebih kecil, tetapi rata-ratanya 187,67 berada di bawah steepest-ascent yang mencapai 195,33. Frekuensi pencapaian optimum stochastic adalah satu dari tiga run, sedangkan steepest-ascent dua dari tiga run. Oleh sebab itu, penilaian konsistensi perlu menyertakan rata-rata dan frekuensi pencapaian optimum, selain simpangan baku.
+
+Random-restart menghasilkan skor akhir 190, 190, dan 208 dengan simpangan baku 8,49. Skor terbaiknya selalu 208 sehingga simpangan baku skor terbaik adalah nol. Metode ini konsisten menemukan optimum, sementara solusi pada akhir climb terakhir masih bervariasi. Perbedaan tersebut menjelaskan mengapa evaluasi yang hanya memakai skor akhir akan melewatkan keberhasilan pencarian sebelumnya.
+
+Konsistensi skor juga perlu dibedakan dari konsistensi runtime. SA memiliki skor akhir tetap, tetapi runtime bervariasi dari 0,889 sampai 2,014 detik akibat perbedaan lama pencarian. Sideways memiliki rentang runtime 16,100 sampai 16,996 detik dengan skor akhir yang sama. Tiga seed ini menunjukkan perilaku pada sampel pengujian dan belum membuktikan tingkat keberhasilan untuk seed lain atau dataset yang lebih besar.
+
+\subsubsection{Analisis Genetic Algorithm pada Konfigurasi Tetap}
+Pengujian GA menggunakan populasi 50, 100 generasi, probabilitas crossover 1,0, probabilitas mutasi 0,2, dan tanpa elitisme. Tiga run memakai seed 42, 123, dan 2026. Analisis berikut menilai kualitas hasil dan variasi antarseed pada konfigurasi tersebut.
+
+Skor terbaik ketiga run adalah 208, sama dengan optimum global yang dibuktikan pada Subbab~\ref{sec:optimum-eksperimen}. Riwayat pencarian menunjukkan bahwa seed 42 pertama kali mencapai skor terbaik 208 pada generasi 36, sedangkan seed 2026 pada generasi 52. Pada seed 123, skor 208 sudah tersedia pada populasi awal, yaitu generasi 0. Dengan demikian, dua run memperbaiki skor awal 200 menjadi 208, sementara satu run sudah memiliki solusi optimum sebelum reproduksi dimulai. Untuk ketiga seed ini, anggaran 100 generasi mencakup titik pertama ditemukannya optimum. Hasil tersebut tidak menjamin anggaran yang sama akan cukup untuk semua seed atau dataset lain.
+
+Skor akhir GA adalah 208, 162, dan 208. Pada seed 123, populasi akhir menghasilkan solusi dengan nilai 162, enam paket termuat, dan berat 74 kg. Skor ini memiliki gap 22,12\% terhadap optimum. \textbf{Reproduksi tanpa elitisme memungkinkan solusi terbaik hilang dari populasi berikutnya}; arsip eksternal tetap menyimpan solusi sah terbaik bernilai 208. Karena itu, perbedaan skor akhir dan terbaik perlu diperhatikan ketika memilih keluaran GA untuk digunakan. Dua seed lainnya berakhir dengan tujuh paket, berat 100 kg, dan gap nol.
+
+Rata-rata skor akhir adalah 192,67, simpangan baku populasi 21,68, dan gap rata-rata 7,37\%. Berdasarkan skor akhir, GA mencapai optimum pada dua dari tiga run. Berdasarkan skor terbaik, GA mencapai optimum pada tiga dari tiga run dengan simpangan baku nol. Variasi skor akhir tersebut menunjukkan bahwa keberhasilan menemukan optimum tidak selalu diikuti keberhasilan mempertahankannya dalam populasi terakhir.
+
+Dibandingkan metode lain, rata-rata skor akhir GA berada di bawah sideways dan SA (208), random-restart (196,00), serta steepest-ascent (195,33), tetapi di atas stochastic (187,67). Jika solusi terbaik sepanjang pencarian yang dipilih, GA setara dengan sideways, random-restart, dan SA karena semuanya mencapai 208 pada setiap seed. Perbandingan peningkatan skor perlu mempertimbangkan inisialisasi: GA dimulai dari populasi dengan skor awal 200, 208, dan 200, sedangkan HC/SA dimulai dari satu state dengan skor awal 188, 68, dan 93.
+
+Runtime GA yang tercatat adalah 875, 787, dan 898 ms, dengan rata-rata 853 ms atau 0,853 detik. Seluruh run menyelesaikan 100 generasi dan berhenti karena batas generasi. Durasi berkisar 0,787 sampai 0,898 detik, sementara skor akhir bervariasi.
+
+Pada analisis konfigurasi tetap ini, populasi dan generasi tidak berubah, sehingga variasi hasilnya dibandingkan antar-seed. Pengaruh perubahan kedua parameter dibahas terpisah pada Subbab variasi parameter GA; hasil baseline sendiri hanya menggambarkan konfigurasi populasi 50 dan 100 generasi.
+
+\clearpage
+\section{Kesimpulan dan Saran}
+\subsection{Kesimpulan}
+Persoalan pemuatan paket pada truk peti kemas telah dimodelkan sebagai pencarian lokal dengan objektif \texttt{TOTAL\_VALUE}, dan keenam metode dijalankan di atas validator constraint yang sama sehingga setiap skor berasal dari susunan yang sah. Pada dataset pengujian, optimum global terbukti bernilai 208 (Subbab~\ref{sec:optimum-eksperimen}).
+
+Berdasarkan Tabel~\ref{tab:ringkasan-manual} dan Tabel~\ref{tab:gap-optimum}, \textbf{simulated annealing merupakan metode paling optimal} pada pengujian ini: skor akhirnya mencapai optimum 208 pada ketiga seed dengan rata-rata runtime 1,634 detik. Sideways juga mencapai 208 pada seluruh seed, tetapi membutuhkan sekitar sepuluh kali runtime SA. Random-restart dan GA selalu menemukan 208 sebagai skor terbaik, tetapi skor akhirnya bervariasi, sehingga keluaran yang digunakan harus berupa state terbaik sepanjang pencarian. Steepest-ascent paling cepat, tetapi hanya mencapai optimum pada dua dari tiga run, sedangkan stochastic memiliki rata-rata skor akhir terendah, yaitu 187,67.
+
+Kesimpulan perbandingan enam metode tersebut terbatas pada satu dataset sembilan paket, tiga seed, dan konfigurasi baseline yang diuji. Sweep GA tambahan membandingkan ukuran populasi serta jumlah generasi pada dataset yang sama, tanpa menjamin hasil berlaku universal.
+
+\subsection{Saran}
+Pengembangan dan pengujian selanjutnya dapat mencakup hal-hal berikut.
+\begin{enumerate}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Menambah jumlah seed serta menguji dataset yang lebih besar dan skenario multi-truk agar konsistensi setiap metode dapat dinilai lebih kuat.
+    \item Menambah seed dan dataset untuk menguji apakah kecenderungan sweep parameter GA yang teramati tetap berlaku pada kondisi lain.
+    \item Menggunakan mekanisme elitisme pada GA agar solusi terbaik tidak hilang dari populasi akhir, sebagaimana terjadi pada seed 123.
+\end{enumerate}
+
+\pagebreak
+\section{Pembagian Tugas Tiap Anggota Kelompok}
+\begin{table}[ht]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{@{}p{7cm}lX@{}}
+        \toprule
+        \textbf{Nama Lengkap} & \textbf{NIM} & \textbf{Tugas/Kontribusi} \\
+        \midrule
+        Samuelson Dharmawan Tanuraharja & 13524001 & Pembangkit neighbor (\textit{relocate}, \textit{rotate}, \textit{swap}); seluruh varian \textit{hill climbing}; kontrol \textit{hill climbing}; visualisasi tiga dimensi dengan \textit{Three.js}, termasuk tampilan multi-truk. \\
+        Nicholas Wise Saragih Sumbayak & 13524037 & Model domain (problem, state, orientasi); \textit{genetic algorithm} beserta \textit{repair}; \textit{experiment runner} dan metrik ringkasan; komponen hasil dan grafik umum. \\
+        Neswa Eka Anggara & 13524136 & Occupancy grid dan validator constraint; fungsi objektif; inisialisasi state; \textit{simulated annealing}; skema dan rute FastAPI; kontrol problem dan armada. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Pembagian tugas anggota kelompok}
+\end{table}
+
+\renewcommand{\refname}{Daftar Pustaka}
+\addcontentsline{toc}{section}{Daftar Pustaka}
+\begin{thebibliography}{9}
+\bibitem{spesifikasi}
+Tim Asisten Laboratorium Inteligensi Artifisial, ``Spesifikasi Tugas Besar 1 IF3170 Inteligensi Artifisial 2026/2027,'' ver. 1.4, Institut Teknologi Bandung, Bandung, Indonesia, Sep. 2026.
+
+\bibitem{russell-norvig}
+S. J. Russell and P. Norvig, \emph{Artificial Intelligence: A Modern Approach}, 4th ed. Hoboken, NJ, USA: Pearson, 2021.
+
+\bibitem{slide-local-search}
+Tim Pengajar IF3170 Inteligensi Artifisial, ``Beyond Classical Search,'' lecture slides, Institut Teknologi Bandung, Bandung, Indonesia, 2026.
+\end{thebibliography}
+
+\clearpage
+\section{Lampiran}
+\subsection{Form Penggunaan \textit{Generative} AI}
+\begin{center}
+    {\large\bfseries SURAT PERNYATAAN PENGGUNAAN AI\par}
+\end{center}
+\vspace{-0.3em}
+\noindent Dengan ini, \sout{saya}/kami*:
+
+\begin{tabular}{@{}l@{\hspace{1.2em}}l@{\hspace{0.8em}}p{0.62\textwidth}@{}}
+    Nama/NIM & : & Samuelson D.T./13524001, Neswa E.K./13524136, Nicholas W.S.S./13524037 \\
+    Fakultas/Sekolah & : & STEI-K \\
+    Kode Mata Kuliah & : & IF3170 \\
+    Nama Mata Kuliah & : & Artificial Intelligence \\
+    Judul Tugas/Proposal & : & Tugas Besar 1 \\
+\end{tabular}
+
+\vspace{0.6em}
+\noindent Menyatakan bahwa \sout{saya}/kami* menggunakan/\sout{tidak menggunakan}* AI dalam pengerjaan maupun penyusunan luaran tugas pada mata kuliah yang tertulis di atas.
+
+\vspace{0.4em}
+\noindent Jika Ya, maka alat AI/kecerdasan buatan yang digunakan adalah:
+
+\vspace{0.4em}
+\begin{table}[H]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}X|c|>{\centering\arraybackslash}p{2.6cm}|}
+        \hline
+        \multicolumn{1}{|c|}{\textbf{Lingkup Pekerjaan}} & \textbf{Digunakan?} & \textbf{Tingkat Penggunaan} \\
+        \hline
+        \textbf{Pemeriksaan Ejaan:} menggunakan tools seperti Grammarly, Paperpal, Deepl, Quillbot, Grammarbot, LanguageTool, ProWritingAid, ChatGPT, Google Gemini, atau sejenisnya. & \sout{Ya}/Tidak* & No AI \\
+        \hline
+        \textbf{Pembuatan Teks:} menggunakan tools seperti ChatGPT, Gemini, Paperpal, Copilot, GrammarlyGO, WordAI, WriteSonic, Jasper, Jenni AI, atau sejenisnya. & Ya/\sout{Tidak}* & AI-assisted idea generation and structuring \\
+        \hline
+        \textbf{Bantuan Diskusi dalam Penyusunan Konten:} menggunakan tools seperti ChatGPT, Gemini, Copilot, Perplexity, Jenni AI, Zoom-Companion, atau sejenisnya. & Ya/\sout{Tidak}* & AI task completion-Human evaluation (using agentic AI) \\
+        \hline
+        \textbf{Pembuatan Gambar, Video, dan/atau Grafik:} menggunakan tools seperti Craiyon, DALL-E, Midjourney, Stable Diffusion, Microsoft Designer, Gemini, Canva AI, atau sejenisnya. & \sout{Ya}/Tidak* & No AI \\
+        \hline
+        \textbf{Lainnya, Jelaskan:}\vspace{1.6em} & & \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\noindent \sout{Saya}/Kami* juga menyatakan bahwa setiap penggunaan AI/kecerdasan buatan yang dilakukan pada mata kuliah tersebut telah dinyatakan di dalam surat ini.
+
+\vspace{0.5em}
+\hfill\begin{minipage}{6.5cm}
+    \raggedleft
+    Bandung, 20 Oktober 2026\par
+    \vspace{0.2em}
+    \centerline{\includegraphics[width=3.6cm,trim=46bp 55bp 37bp 52bp,clip]{ttd_son.png}}
+    \vspace{0.2em}
+    a.n. Samuelson D.\ T.\\
+    13524001\par
+\end{minipage}
+
+\clearpage
+\subsection{Bukti Pengujian Manual}
+Tangkapan layar berikut memperlihatkan state akhir, skor objektif, runtime, dan jumlah iterasi setiap run, melengkapi Gambar~\ref{fig:rr-manual} dan Gambar~\ref{fig:sa-manual}.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/steep42.png}
+\caption{Bukti Steepest-ascent seed 42: skor akhir 208, skor terbaik 208, runtime 403 ms, dan 2 iterasi.}
+\label{fig:bukti-HC-STEEP-S42}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/steep123.png}
+\caption{Bukti Steepest-ascent seed 123: skor akhir 170, skor terbaik 170, runtime 632 ms, dan 5 iterasi.}
+\label{fig:bukti-HC-STEEP-S123}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/steep2026.png}
+\caption{Bukti Steepest-ascent seed 2026: skor akhir 208, skor terbaik 208, runtime 488 ms, dan 4 iterasi.}
+\label{fig:bukti-HC-STEEP-S2026}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/stochastic42.png}
+\caption{Bukti Stochastic seed 42: skor akhir 208, skor terbaik 208, runtime 932 ms, dan 2.000 iterasi.}
+\label{fig:bukti-HC-STOCH-S42}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/stochastic123.png}
+\caption{Bukti Stochastic seed 123: skor akhir 170, skor terbaik 170, runtime 1148 ms, dan 2.000 iterasi.}
+\label{fig:bukti-HC-STOCH-S123}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/stochastic2026.png}
+\caption{Bukti Stochastic seed 2026: skor akhir 185, skor terbaik 185, runtime 1150 ms, dan 2.000 iterasi.}
+\label{fig:bukti-HC-STOCH-S2026}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/sideways42.png}
+\caption{Bukti Sideways seed 42: skor akhir 208, skor terbaik 208, runtime 16530 ms, dan 102 iterasi.}
+\label{fig:bukti-HC-SIDE-S42}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/sideways123.png}
+\caption{Bukti Sideways seed 123: skor akhir 208, skor terbaik 208, runtime 16996 ms, dan 108 iterasi.}
+\label{fig:bukti-HC-SIDE-S123}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/sideways2026.png}
+\caption{Bukti Sideways seed 2026: skor akhir 208, skor terbaik 208, runtime 16100 ms, dan 104 iterasi.}
+\label{fig:bukti-HC-SIDE-S2026}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/RR123.png}
+\caption{Bukti Random-restart seed 123: skor akhir 190, skor terbaik 208, runtime 4135 ms, dan 42 iterasi.}
+\label{fig:bukti-HC-RESTART-S123}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/RR2026.png}
+\caption{Bukti Random-restart seed 2026: skor akhir 208, skor terbaik 208, runtime 4794 ms, dan 42 iterasi.}
+\label{fig:bukti-HC-RESTART-S2026}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/SA123.png}
+\caption{Bukti SA seed 123: skor akhir 208, skor terbaik 208, runtime 2014 ms, dan 2057 iterasi.}
+\label{fig:bukti-SA-S123}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{hasil-test/SA2026.png}
+\caption{Bukti SA seed 2026: skor akhir 208, skor terbaik 208, runtime 1998 ms, dan 2057 iterasi.}
+\label{fig:bukti-SA-S2026}
+\end{figure}
+
+\clearpage
+\subsection{Catatan State Eksperimen GA}\label{sec:ga-sweep-states}
+State awal dan akhir lengkap untuk seluruh run sweep GA ditampilkan berikut.
+\IfFileExists{docs/hasil-test/ga-sweep/states.tex}{\input{docs/hasil-test/ga-sweep/states.tex}}{\input{hasil-test/ga-sweep/states.tex}}
+
+\end{document}
